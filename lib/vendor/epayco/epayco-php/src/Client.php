@@ -247,3 +247,4 @@ class Client extends GraphqlClient
         return isset($response->body) ? $response->body : false;
     }
 }
+

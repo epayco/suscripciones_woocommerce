@@ -6,7 +6,7 @@ PHP wrapper for Epayco API
 ## Description
 
 API to interact with Epayco
-https://epayco.co/docs/api/
+https://api.epayco.co/
 
 ### Dependencias
 
@@ -253,7 +253,7 @@ $pse = $epayco->bank->create(array(
 #### Retrieve
 
 ```php
-$pse = $epayco->bank->get("transactionID");
+$pse = $epayco->bank->get("ticketId");
 ```
 
 #### Split Payments
@@ -261,16 +261,35 @@ $pse = $epayco->bank->get("transactionID");
 Previous requirements:
 https://docs.epayco.co/tools/split-payment
 
+#### Split 1-1
+
 ```php
-$split_bank_pay = $epayco->bank->create(array(
+$split_pay = $epayco->bank->create(array(
     //Other customary parameters...
     "splitpayment" => "true",
     "split_app_id" => "P_CUST_ID_CLIENTE APPLICATION",
     "split_merchant_id" => "P_CUST_ID_CLIENTE COMMERCE",
     "split_type" => "02",
     "split_primary_receiver" => "P_CUST_ID_CLIENTE APPLICATION",
-    "split_primary_receiver_fee" => "10",
-    "split_receivers" => json_encode(array(array('id'=>'P_CUST_ID_CLIENTE 1ST RECEIVER','fee'=>'1000','fee_type' => '01')))
+    "split_primary_receiver_fee"=>"10"
+));
+```
+#### Split multiple:
+use the following attributes in case you need to do a dispersion with multiple providers
+```php
+$split_pay = $epayco->charge->create(array(
+    //Other customary parameters...
+    "splitpayment" => "true",
+    "split_app_id" => "P_CUST_ID_CLIENTE APPLICATION",
+    "split_merchant_id" => "P_CUST_ID_CLIENTE COMMERCE",
+    "split_type" => "02",
+    "split_primary_receiver" => "P_CUST_ID_CLIENTE APPLICATION",
+    "split_primary_receiver_fee"=>"0",
+    "split_rule"=>'multiple', //sí se envía este campo el split_receivers se vuelve un campo obligatorio
+    "split_receivers" => json_encode(array(
+    		array('id'=>'P_CUST_ID_CLIENTE 1 RECEIVER','total'=>'58000','iva'=>'8000','base_iva'=>'50000','fee' => '10'),
+    		array('id'=>'P_CUST_ID_CLIENTE 2 RECEIVER','total'=>'58000','iva'=>'8000','base_iva'=>'50000','fee' => '10')
+    	 )) // Campo obligatorio sí se envía el campo split_rule
 ));
 ```
 
@@ -293,7 +312,7 @@ $cash = $epayco->cash->create("efecty", array(
     "last_name" => "PAYCO",
     "email" => "test@mailinator.com",
     "cell_phone" => "3010000001",
-    "end_date" => "data_max_5_days",
+    "end_date" => "data_max_5_days", // yy-mm-dd
     "ip" => "190.000.000.000",  // This is the client's IP, it is required
     "url_response" => "https://ejemplo.com/respuesta.html",
     "url_confirmation" => "https://ejemplo.com/confirmacion",
@@ -334,16 +353,35 @@ $cash = $epayco->cash->transaction("id_transaction");
 Previous requirements:
 https://docs.epayco.co/tools/split-payment
 
+#### Split 1-1
+
 ```php
-$split_cash_pay = $epayco->cash->create("efecty", array(
+$split_pay = $epayco->cash->create(array(
     //Other customary parameters...
     "splitpayment" => "true",
     "split_app_id" => "P_CUST_ID_CLIENTE APPLICATION",
     "split_merchant_id" => "P_CUST_ID_CLIENTE COMMERCE",
     "split_type" => "02",
     "split_primary_receiver" => "P_CUST_ID_CLIENTE APPLICATION",
-    "split_primary_receiver_fee" => "10",
-    "split_receivers" => json_encode(array(array('id'=>'P_CUST_ID_CLIENTE 1ST RECEIVER','fee'=>'1000','fee_type' => '01')))
+    "split_primary_receiver_fee"=>"10"
+));
+```
+#### Split multiple:
+use the following attributes in case you need to do a dispersion with multiple providers
+```php
+$split_pay = $epayco->charge->create(array(
+    //Other customary parameters...
+    "splitpayment" => "true",
+    "split_app_id" => "P_CUST_ID_CLIENTE APPLICATION",
+    "split_merchant_id" => "P_CUST_ID_CLIENTE COMMERCE",
+    "split_type" => "02",
+    "split_primary_receiver" => "P_CUST_ID_CLIENTE APPLICATION",
+    "split_primary_receiver_fee"=>"0",
+    "split_rule"=>'multiple', // si se envía este parámetro el campo split_receivers se vuelve obligatorio
+    "split_receivers" => json_encode(array(
+    		array('id'=>'P_CUST_ID_CLIENTE 1 RECEIVER','total'=>'58000','iva'=>'8000','base_iva'=>'50000','fee' => '10'),
+    		array('id'=>'P_CUST_ID_CLIENTE 2 RECEIVER','total'=>'58000','iva'=>'8000','base_iva'=>'50000','fee' => '10')
+    	 )) // Campo obligatorio sí se envía split_rule
 ));
 ```
 
@@ -376,13 +414,11 @@ $pay = $epayco->charge->create(array(
 
     //Extra params: These params are optional and can be used by the commerce
     "use_default_card_customer" => true,/*if the user wants to be charged with the card that the customer currently has as default = true*/
-    "extra1" => "",
-    "extra2" => "",
-    "extra3" => "",
-    "extra4" => "",
-    "extra5" => "",
-    "extra6" => "",
-    "extra7" => "",
+    "extras"=> array(
+        "extra1" => "data 1",
+        "extra2" => "data 2",
+        "extra3" => "data 3",
+    )
 ));
 ```
 
@@ -397,6 +433,8 @@ $pay = $epayco->charge->transaction("id_transaction");
 Previous requirements:
 https://docs.epayco.co/tools/split-payment
 
+#### Split 1-1
+
 ```php
 $split_pay = $epayco->charge->create(array(
     //Other customary parameters...
@@ -405,7 +443,24 @@ $split_pay = $epayco->charge->create(array(
     "split_merchant_id" => "P_CUST_ID_CLIENTE COMMERCE",
     "split_type" => "02",
     "split_primary_receiver" => "P_CUST_ID_CLIENTE APPLICATION",
-    "split_primary_receiver_fee"=>"10",
-    "split_receivers" => array(array('id'=>'P_CUST_ID_CLIENTE 1ST RECEIVER','fee'=>'1000','fee_type' => '01'))
+    "split_primary_receiver_fee"=>"10"
+));
+```
+#### Split multiple:
+use the following attributes in case you need to do a dispersion with multiple providers
+```php
+$split_pay = $epayco->charge->create(array(
+    //Other customary parameters...
+    "splitpayment" => "true",
+    "split_app_id" => "P_CUST_ID_CLIENTE APPLICATION",
+    "split_merchant_id" => "P_CUST_ID_CLIENTE COMMERCE",
+    "split_type" => "02",
+    "split_primary_receiver" => "P_CUST_ID_CLIENTE APPLICATION",
+    "split_primary_receiver_fee"=>"0",
+    "split_rule"=>'multiple', // sí se envía este parámetro el campo split_receivers se vuelve obligatorio
+    "split_receivers" => json_encode(array(
+    		array('id'=>'P_CUST_ID_CLIENTE 1 RECEIVER','total'=>'58000','iva'=>'8000','base_iva'=>'50000','fee' => '10'),
+    		array('id'=>'P_CUST_ID_CLIENTE 2 RECEIVER','total'=>'58000','iva'=>'8000','base_iva'=>'50000','fee' => '10')
+    	 )) //Campo obligatorio sí se envía split_rule
 ));
 ```
