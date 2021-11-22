@@ -219,8 +219,9 @@
                           height:39px;
                           width:144px;
                           background-position:center;
-                          border-color: white;
+                          border-color: #28303d;
                           border-radius: 6px;
+                          background-color: #28303d;
                           "></button>
                     </center>
 
