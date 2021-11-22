@@ -15,11 +15,7 @@ https://api.epayco.co/
 ## Installation
 
 ```javascript
-{
-  "require" : {
-    "epayco/epayco-php" : "dev-master"
-  }
-}
+composer require epayco/epayco-php
 ```
 
 Add `autoload` to composer
@@ -215,6 +211,12 @@ $sub = $epayco->subscriptions->charge(array(
 
 ### PSE
 
+#### Listar bancos
+```php
+$bancos = $epayco->bank->pseBank();
+//$bancos representa un object con toda la lista de bancos disponibles para transacciones con PSE
+```
+
 #### Create
 
 ```php
@@ -237,9 +239,9 @@ $pse = $epayco->bank->create(array(
         "ip" => "190.000.000.000",  // This is the client's IP, it is required
         "url_response" => "https://ejemplo.com/respuesta.html",
         "url_confirmation" => "https://ejemplo.com/confirmacion",
-        "method_confirmation" => "GET",
+        "metodoconfirmacion" => "GET",
 
-        //Extra params: These params are optional and can be used by the commerce
+        //Los parámetros extras deben ser enviados tipo string, si se envía tipo array generara error.
         "extra1" => "",
         "extra2" => "",
         "extra3" => "",
@@ -261,21 +263,9 @@ $pse = $epayco->bank->get("ticketId");
 Previous requirements:
 https://docs.epayco.co/tools/split-payment
 
-#### Split 1-1
 
-```php
-$split_pay = $epayco->bank->create(array(
-    //Other customary parameters...
-    "splitpayment" => "true",
-    "split_app_id" => "P_CUST_ID_CLIENTE APPLICATION",
-    "split_merchant_id" => "P_CUST_ID_CLIENTE COMMERCE",
-    "split_type" => "02",
-    "split_primary_receiver" => "P_CUST_ID_CLIENTE APPLICATION",
-    "split_primary_receiver_fee"=>"10"
-));
-```
-#### Split multiple:
-use the following attributes in case you need to do a dispersion with multiple providers
+#### Split payment
+use the following attributes in case you need to do a dispersion with one or multiple providers
 ```php
 $split_pay = $epayco->charge->create(array(
     //Other customary parameters...
@@ -318,7 +308,7 @@ $cash = $epayco->cash->create("efecty", array(
     "url_confirmation" => "https://ejemplo.com/confirmacion",
     "method_confirmation" => "GET",
 
-    //Extra params: These params are optional and can be used by the commerce
+    //Los parámetros extras deben ser enviados tipo string, si se envía tipo array generara error.
     "extra1" => "",
     "extra2" => "",
     "extra3" => "",
@@ -353,21 +343,9 @@ $cash = $epayco->cash->transaction("id_transaction");
 Previous requirements:
 https://docs.epayco.co/tools/split-payment
 
-#### Split 1-1
+#### Split Payment:
 
-```php
-$split_pay = $epayco->cash->create(array(
-    //Other customary parameters...
-    "splitpayment" => "true",
-    "split_app_id" => "P_CUST_ID_CLIENTE APPLICATION",
-    "split_merchant_id" => "P_CUST_ID_CLIENTE COMMERCE",
-    "split_type" => "02",
-    "split_primary_receiver" => "P_CUST_ID_CLIENTE APPLICATION",
-    "split_primary_receiver_fee"=>"10"
-));
-```
-#### Split multiple:
-use the following attributes in case you need to do a dispersion with multiple providers
+use the following attributes in case you need to do a dispersion with one or multiple providers
 ```php
 $split_pay = $epayco->charge->create(array(
     //Other customary parameters...
@@ -411,14 +389,14 @@ $pay = $epayco->charge->create(array(
     "ip" => "190.000.000.000",  // This is the client's IP, it is required
     "url_response" => "https://tudominio.com/respuesta.php",
     "url_confirmation" => "https://tudominio.com/confirmacion.php",
-
-    //Extra params: These params are optional and can be used by the commerce
+    
     "use_default_card_customer" => true,/*if the user wants to be charged with the card that the customer currently has as default = true*/
-    "extras"=> array(
+    //Los parámetros extras deben ser enviados tipo string, si se envía tipo array generara error.
         "extra1" => "data 1",
         "extra2" => "data 2",
         "extra3" => "data 3",
-    )
+        "extra4" => "data 4",
+        "extra5" => "data 5"
 ));
 ```
 
@@ -433,21 +411,9 @@ $pay = $epayco->charge->transaction("id_transaction");
 Previous requirements:
 https://docs.epayco.co/tools/split-payment
 
-#### Split 1-1
+#### Split payment:
 
-```php
-$split_pay = $epayco->charge->create(array(
-    //Other customary parameters...
-    "splitpayment" => "true",
-    "split_app_id" => "P_CUST_ID_CLIENTE APPLICATION",
-    "split_merchant_id" => "P_CUST_ID_CLIENTE COMMERCE",
-    "split_type" => "02",
-    "split_primary_receiver" => "P_CUST_ID_CLIENTE APPLICATION",
-    "split_primary_receiver_fee"=>"10"
-));
-```
-#### Split multiple:
-use the following attributes in case you need to do a dispersion with multiple providers
+use the following attributes in case you need to do a dispersion with one or multiple providers
 ```php
 $split_pay = $epayco->charge->create(array(
     //Other customary parameters...

@@ -1,1 +1,731 @@
-(function(){var e,t,r,a,n;languages=new Array,e="https://api.secure.payco.co/",languages.es={errors:[{type:101,title:"[101] Datos ilegibles",description:"Los Datos son ilegibles compruebe la integridad del formulario"},{type:102,title:"[102] Error publicKey",description:"La publicKey es ilegible o no se tiene acceso, por favor compruebe"},{type:103,title:"[103] Campo erróneo o vacío",description:"El formato es incorrecto o esta vacío en:"}]},languages.en={errors:[{type:101,title:"[101] Illegible data",description:"The Data is illegible check the integrity of the form"},{type:102,title:"[102] Error publicKey",description:"The publicKey is unreadable or not accessible, please check"},{type:103,title:"[103] Bad or empty field",description:"The format is incorrect or the field is empty:"}]},t=function(e,t){if("undefined"==typeof localStorage||void 0===localStorage.getItem)return null;try{return localStorage.getItem("hashKey","1"),localStorage.removeItem("hashKey"),localStorage(e,t)}catch(e){return e,null}},r=function(e,t){if("undefined"==typeof localStorage||void 0===localStorage.setItem)return null;try{return localStorage.setItem("hashKey","1"),localStorage.removeItem("hashKey"),localStorage(e,t)}catch(e){return e,null}},getError=function(e,t,r){$(r).find("button").prop("disabled",!1);let a=ePayco.getLanguage();if("es"==a||"en"==a)var n=languages[ePayco.getLanguage()].errors,o=e;else{var l;n=languages.en.errors,o=e}for(var i=0;i<n.length;i++)o==n[i].type&&(l=n[i]);if(t){var c=l.description.slice(0,47);l.description=c+" "+t}return console.log(l),alert(l.description),l},dump=function(e){return e},a=t("epayco_publish_key"),n=t("epayco_language"),window.ePayco||(window.ePayco={setPublicKey:function(e){"string"==typeof e?r("epayco_publish_key",a=e):getError(102)},setLanguage:function(e){"string"==typeof e?r("epayco_language",n=e):getError(102)},getPublicKey:function(){return a},getLanguage:function(){return n},_errors:{alert:function(e){alert(e)}},_utils:{objectKeys:function(e){var t,r;for(r in t=[],e)Object.prototype.hasOwnProperty.call(e,r)&&t.push(r);return t},parseForm:function(e){var t,r,a,n,o,l,c,u,s,g,d,p,y,f,m,h,v,b,_,S,P,E,k;if(c={},"object"==typeof e){if("undefined"!=typeof jQuery&&(e instanceof jQuery||"jquery"in Object(e))&&"object"!=typeof(e=e.get()[0]))return{};if(e.nodeType){for(E=e.getElementsByTagName("textarea"),l=e.getElementsByTagName("input"),P=e.getElementsByTagName("select"),t=new Array(E.length+l.length+P.length),i=u=0,b=E.length-1;u<=b;i=u+=1)t[i]=E[i];for(i=p=0,_=l.length-1;p<=_;i=p+=1)t[i+E.length]=l[i];for(i=f=0,S=P.length-1;f<=S;i=f+=1)t[i+E.length+l.length]=P[i];for(h=0,g=t.length;h<g;h++)if((o=t[h])&&(a=o.getAttribute("data-epayco"))){for(k="SELECT"===o.tagName?o.value:o.getAttribute("value")||o.innerHTML||o.value,m=null,y=c,s=null,v=0,d=(n=a.replace(/\]/g,"").replace(/\-/g,"_").split(/\[/)).length;v<d;v++)y[r=n[v]]||(y[r]={}),m=y,s=r,y=y[r];m[s]=k}}else c=e}return c},requestUrl:function(e){(new XMLHttpRequest).withCredentials},createTokenEncrypt:function(t,r,a){var n,o=t;$.ajax({type:"POST",url:e+"token/encrypt",crossDomain:!0,dataType:"json",data:{public_key:ePayco.getPublicKey(),session:o}}).done(function(t){function l(e,t){if(e&&"undefined"!==t)try{return CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(e),t).toString().toString()}catch(r){return console.log(r),CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(e),CryptoJS.enc.Utf8.parse(t).toString()).toString()}else console.log("hay algunos valores invalidos")}dump(t),n=t.data.token;var i=JSON.stringify(function(){for(var e=[],t=0;t<r.customer.length;t++)e.push({type:r.customer[t].type,value:l(r.customer[t].value,n)});var a={type:"publicKey",value:ePayco.getPublicKey()},i={type:"session",value:o};return e.push(a),e.push(i),e}());$.ajax({type:"POST",url:e+"token/tokenize",crossDomain:!0,dataType:"json",data:{values:i},error:function(){console.log("No se ha podido obtener la información")}}).done(function(e){(e.data.status="created")?(console.log("created"),a(e.data.token,null)):(console.log("not created"),a(null,e.data.token))}).fail(function(e){dump(e)})}).fail(function(e){dump(e)})},createGuid:function(){function e(){return Math.floor(65536*(1+Math.random())).toString(16).substring(1)}return e()+e()+"-"+e()+"-"+e()+"-"+e()+"-"+e()+e()+e()},log:function(e){if("undefined"!=typeof console&&console.log)return console.log(e)}}})}).call(this),function(){var e,t,r,a,n,o,l=[].indexOf||function(e){for(var t=0,r=this.length;t<r;t++)if(t in this&&this[t]===e)return t;return-1};t=[{name:"amex",pattern:/^3[47]/,valid_length:[15]},{name:"diners_club_carte_blanche",pattern:/^30[0-5]/,valid_length:[14]},{name:"diners_club_international",pattern:/^36/,valid_length:[14]},{name:"laser",pattern:/^(6304|670[69]|6771)/,valid_length:[16,17,18,19]},{name:"visa_electron",pattern:/^(4026|417500|4508|4844|491(3|7))/,valid_length:[16]},{name:"visa",pattern:/^4/,valid_length:[16]},{name:"mastercard",pattern:/^5[1-5]/,valid_length:[16]},{name:"maestro",pattern:/^(5018|5020|5038|6304|6759|676[1-3])/,valid_length:[12,13,14,15,16,17,18,19]}],e=["visa","mastercard","maestro","visa_electron","amex","diners_club_carte_blanche","diners_club_international"],r=function(r){var a,n,o,i,c;for(c=function(){var r,n,o,i;for(i=[],r=0,n=t.length;r<n;r++)o=(a=t[r]).name,l.call(e,o)>=0&&i.push(a);return i}(),o=0,i=c.length;o<i;o++)if(n=c[o],r.match(n.pattern))return n;return null},is_valid_luhn=function(e){var t,r,a,n,o,l;for(l=0,n=r=0,a=(o=e.split("").reverse()).length;r<a;n=++r)t=+(t=o[n]),l+=n%2?(t*=2)<10?t:t-9:t;return l%10==0},a=function(e,t){var r;return r=e.length,l.call(t.valid_length,r)>=0},n=function(e){return"string"==typeof e&&e.match(/^[\d]{1,2}$/)?parseInt(e):e},o=function(e){return"number"==typeof e&&e<100&&(e+=2e3),"string"==typeof e&&e.match(/^([\d]{2,2}|20[\d]{2,2})$/)?(e.match(/^([\d]{2,2})$/)&&(e="20"+e),parseInt(e)):e},ePayco.card={},ePayco.card.name=function(e){return(new RegExp).test(e)},ePayco.card.email=function(e){return new RegExp(/^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/).test(e)},ePayco.card.validateNumber=function(e){var t,n,o;return e="string"==typeof e?e.replace(/[ -]/g,""):"number"==typeof e?e.toString():"",o=!1,n=!1,null!=(t=r(e))&&(o=is_valid_luhn(e),n=a(e,t)),o&&n},ePayco.card.validateCVC=function(e){return"number"==typeof e&&e>=0&&e<1e4||"string"==typeof e&&null!==e.match(/^[\d]{3,4}$/)},ePayco.card.validateExpirationDate=function(e,t){var r,a;return r=n(e),a=o(t),"number"==typeof r&&r>0&&r<13&&"number"==typeof a&&a>2020&&a<2035&&new Date(a,r,new Date(a,r,0).getDate())>new Date}}.call(this),function(){ePayco.token={},ePayco.token.create=function(e,t){var r=ePayco._utils.parseForm(e);if("object"==typeof r&&ePayco._utils.objectKeys(r).length>0)if(r.card){var a,n;function o(){return Math.floor(65536*(1+Math.random())).toString(16).substring(1)}a={customer:[{type:"name",value:r.card.name,required:!0,validate:ePayco.card.name(r.card.name)},{type:"email",value:r.card.email,required:!0,validate:ePayco.card.email(r.card.email)},{type:"number",value:r.card.number.replace(/ /g,""),required:!0,validate:ePayco.card.validateNumber(r.card.number.replace(/ /g,""))},{type:"cvc",value:r.card.cvc,required:!0,validate:ePayco.card.validateCVC(r.card.cvc)},{type:"date_exp",value:r.card.exp_month+"/"+r.card.exp_year,required:!0,validate:ePayco.card.validateExpirationDate(r.card.exp_month,r.card.exp_year)}]},null==(n=null==localStorage.getItem("keyUserIndex")?localStorage.setItem("keyUserIndex",ePayco._utils.createGuid()):localStorage.getItem("keyUserIndex"))&&(n=localStorage.setItem("keyUserIndex",o()+o()+"-"+o()+"-"+o()+"-"+o()+"-"+o()+o()+o())),sessionID=n||o()+o()+"-"+o()+"-"+o()+"-"+o()+"-"+o()+o()+o();for(var l=0;l<a.customer.length;l++){var i=a.customer[l];if(i.required&&!i.validate){let r=getError(103,i.type,e);return t(r.description,null),!1}}ePayco._utils.createTokenEncrypt(sessionID,a,function(e,r){e?(console.log("1"),t(r,e)):(console.log("2"),t(r,null))})}else getError(101)}}.call(this);
+(function () {
+    var $tag,
+        Base64,
+        antifraud_config,
+        base_url,
+        getAntifraudConfig,
+        localStorageGet,
+        localStorageSet,
+        public_key,
+        session_id,
+        setPublicKey,
+        setLanguage,
+        _language,
+        debug,
+        alerts;
+    languages = new Array();
+    base_url = "https://api.secure.epayco.co/";
+    session_id = "";
+    //_language = "es";
+
+    debug = true;
+    alerts = true;
+    antifraud_config = {};
+    languages["es"] = {
+        errors: [
+            {
+                type: 101,
+                title: "[101] Datos ilegibles",
+                description:
+                    "Los Datos son ilegibles compruebe la integridad del formulario",
+            },
+            {
+                type: 102,
+                title: "[102] Error publicKey",
+                description:
+                    "La publicKey es ilegible o no se tiene acceso, por favor compruebe",
+            },
+            {
+                type: 103,
+                title: "[103] Campo errÃ³neo o vacÃ­o",
+                description: "El formato es incorrecto o esta vacÃ­o en:",
+            },
+        ],
+    };
+    languages["en"] = {
+        errors: [
+            {
+                type: 101,
+                title: "[101] Illegible data",
+                description: "The Data is illegible check the integrity of the form",
+            },
+            {
+                type: 102,
+                title: "[102] Error publicKey",
+                description:
+                    "The publicKey is unreadable or not accessible, please check",
+            },
+            {
+                type: 103,
+                title: "[103] Bad or empty field",
+                description: "The format is incorrect or the field is empty:",
+            },
+        ],
+    };
+
+    localStorageGet = function (key, value) {
+        var error;
+        if (
+            typeof localStorage !== "undefined" &&
+            typeof localStorage.getItem !== "undefined"
+        ) {
+            try {
+                localStorage.getItem("hashKey", "1");
+                localStorage.removeItem("hashKey");
+                return localStorage(key, value);
+            } catch (_error) {
+                error = _error;
+                return null;
+            }
+        } else {
+            return null;
+        }
+    };
+
+    localStorageSet = function (key, value) {
+        var error;
+        if (
+            typeof localStorage !== "undefined" &&
+            typeof localStorage.setItem !== "undefined"
+        ) {
+            try {
+                localStorage.setItem("hashKey", "1");
+                localStorage.removeItem("hashKey");
+                return localStorage(key, value);
+            } catch (_error) {
+                error = _error;
+                return null;
+            }
+        } else {
+            return null;
+        }
+    };
+
+    getError = function (type, name, form) {
+        $(form).find("button").prop("disabled", false);
+        let languageCheckout = ePayco.getLanguage();
+        if (languageCheckout == "es" || languageCheckout == "en") {
+            var data = languages[ePayco.getLanguage()].errors,
+                typeError = type,
+                result;
+        } else {
+            var data = languages["en"].errors,
+                typeError = type,
+                result;
+        }
+
+        for (var i = 0; i < data.length; i++) {
+            if (typeError == data[i].type) {
+                result = data[i];
+            }
+        }
+
+        if (name) {
+            var org = result.description.slice(0, 47);
+            result.description = org + " " + name;
+        }
+
+        if (debug) console.log(result);
+
+        if (alerts) {
+            alert(result.description);
+        }
+        return result;
+    };
+
+    dump = function (data) {
+        return data;
+    };
+
+    public_key = localStorageGet("epayco_publish_key");
+    _language = localStorageGet("epayco_language");
+    if (!window.ePayco) {
+        window.ePayco = {
+            setPublicKey: function (key) {
+                if (typeof key === "string") {
+                    public_key = key;
+                    localStorageSet("epayco_publish_key", public_key);
+                } else {
+                    getError(102);
+                }
+            },
+            setLanguage: function (key) {
+                if (typeof key === "string") {
+                    _language = key;
+                    localStorageSet("epayco_language", _language);
+                } else {
+                    getError(102);
+                }
+            },
+            getPublicKey: function () {
+                return public_key;
+            },
+            getLanguage: function () {
+                return _language;
+            },
+            _errors: {
+                alert: function (error) {
+                    alert(error);
+                },
+            },
+            _utils: {
+                objectKeys: function (obj) {
+                    var keys, p;
+                    keys = [];
+                    for (p in obj) {
+                        if (Object.prototype.hasOwnProperty.call(obj, p)) {
+                            keys.push(p);
+                        }
+                    }
+                    return keys;
+                },
+
+                parseForm: function (form_object) {
+                    var all_inputs,
+                        attribute,
+                        attribute_name,
+                        attributes,
+                        input,
+                        inputs,
+                        json_object,
+                        l,
+                        last_attribute,
+                        len,
+                        len1,
+                        m,
+                        node,
+                        o,
+                        parent_node,
+                        q,
+                        r,
+                        ref1,
+                        ref2,
+                        ref3,
+                        selects,
+                        textareas,
+                        val;
+
+                    json_object = {};
+
+                    if (typeof form_object === "object") {
+                        if (
+                            typeof jQuery !== "undefined" &&
+                            (form_object instanceof jQuery || "jquery" in Object(form_object))
+                        ) {
+                            form_object = form_object.get()[0];
+                            if (typeof form_object !== "object") {
+                                return {};
+                            }
+                        }
+
+                        if (form_object.nodeType) {
+                            textareas = form_object.getElementsByTagName("textarea");
+                            inputs = form_object.getElementsByTagName("input");
+                            selects = form_object.getElementsByTagName("select");
+                            all_inputs = new Array(
+                                textareas.length + inputs.length + selects.length
+                            );
+
+                            for (
+                                i = l = 0, ref1 = textareas.length - 1;
+                                l <= ref1;
+                                i = l += 1
+                            ) {
+                                all_inputs[i] = textareas[i];
+                            }
+
+                            for (i = m = 0, ref2 = inputs.length - 1; m <= ref2; i = m += 1) {
+                                all_inputs[i + textareas.length] = inputs[i];
+                            }
+
+                            for (
+                                i = o = 0, ref3 = selects.length - 1;
+                                o <= ref3;
+                                i = o += 1
+                            ) {
+                                all_inputs[i + textareas.length + inputs.length] = selects[i];
+                            }
+                            for (q = 0, len = all_inputs.length; q < len; q++) {
+                                input = all_inputs[q];
+
+                                if (input) {
+                                    attribute_name = input.getAttribute("data-epayco");
+                                    if (attribute_name) {
+                                        if (input.tagName === "SELECT") {
+                                            val = input.value;
+                                        } else {
+                                            val =
+                                                input.getAttribute("value") ||
+                                                input.innerHTML ||
+                                                input.value;
+                                        }
+                                        attributes = attribute_name
+                                            .replace(/\]/g, "")
+                                            .replace(/\-/g, "_")
+                                            .split(/\[/);
+                                        parent_node = null;
+                                        node = json_object;
+                                        last_attribute = null;
+                                        for (r = 0, len1 = attributes.length; r < len1; r++) {
+                                            attribute = attributes[r];
+                                            if (!node[attribute]) {
+                                                node[attribute] = {};
+                                            }
+                                            parent_node = node;
+                                            last_attribute = attribute;
+                                            node = node[attribute];
+                                        }
+                                        parent_node[last_attribute] = val;
+                                    }
+                                }
+                            }
+                        } else {
+                            json_object = form_object;
+                        }
+                    }
+                    return json_object;
+                },
+
+                requestUrl: function (params) {
+                    var rep, error, success;
+                    if (typeof new XMLHttpRequest().withCredentials !== "undefined") {
+                    }
+                },
+
+                createTokenEncrypt: function (id, payment, callback) {
+                    var error = undefined,
+                        result = undefined;
+                    var key;
+                    debugger
+                    $.ajax({
+                        type: "POST",
+                        url: base_url + "token/encrypt",
+                        crossDomain: true,
+                        dataType: "json",
+                        data: {
+                            public_key: ePayco.getPublicKey(),
+                            session: id,
+                        },
+                    })
+                        .done(function (token) {
+                            if (debug) {
+                                dump(token);
+                            }
+
+                            key = token.data.token;
+                            function encrypt(text, secret) {
+                                if (text && secret !== "undefined") {
+                                    try {
+                                        var string = CryptoJS.AES.encrypt(
+                                            CryptoJS.enc.Utf8.parse(text),
+                                            secret
+                                        ).toString();
+                                        return string.toString();
+                                    } catch (error) {
+                                        var string = CryptoJS.AES.encrypt(
+                                            CryptoJS.enc.Utf8.parse(text),
+                                            CryptoJS.enc.Utf8.parse(secret).toString()
+                                        );
+                                        return string.toString();
+                                    }
+                                } else {
+                                    console.log("hay algunos valores invalidos");
+                                    return;
+                                }
+                            }
+                            function encryptE(value, userKey) {
+                                var key = CryptoJS.enc.Hex.parse(userKey),
+                                    iv = CryptoJS.enc.Hex.parse(userKey),
+                                    text = CryptoJS.AES.encrypt(value, key, {
+                                        iv: iv,
+                                        mode: CryptoJS.mode.CBC,
+                                        padding: CryptoJS.pad.Pkcs7,
+                                    });
+                                return text.ciphertext.toString(CryptoJS.enc.Base64);
+                            }
+                            function createCreditCard() {
+                                var encryptData = [];
+                                for (var i = 0; i < payment.customer.length; i++) {
+                                    //
+                                    encryptData.push({
+                                        type: payment.customer[i].type,
+                                        value: encrypt(payment.customer[i].value, key),
+                                    });
+                                }
+                                var publicKey = {
+                                    type: "publicKey",
+                                    value: ePayco.getPublicKey(),
+                                };
+                                var session = {
+                                    type: "session",
+                                    value: localStorage.getItem("keyUserIndex"),
+                                };
+                                encryptData.push(publicKey);
+                                encryptData.push(session);
+                                return encryptData;
+                            }
+
+                            var json = JSON.stringify(createCreditCard());
+                            $.ajax({
+                                type: "POST",
+                                url: base_url + "token/tokenize",
+                                crossDomain: true,
+                                dataType: "json",
+                                data: {
+                                    values: json,
+                                },
+                                error: function () {
+                                    console.log("No se ha podido obtener la informaciÃ³n");
+                                },
+                            })
+                                .done(function (done) {
+                                    alert(JSON.stringify(done));
+                                    if ((done.data.status = "created")) {
+                                        callback(done.data.token, null);
+                                    } else {
+                                        callback(null, done.data);
+                                    }
+                                })
+                                .fail(function (error) {
+                                    if (debug) {
+                                        dump(error);
+                                    }
+                                });
+                        })
+
+                        .fail(function (error) {
+                            if (debug) {
+                                dump(error);
+                            }
+                        });
+                },
+
+                createGuid: function () {
+                    function s4() {
+                        return Math.floor((1 + Math.random()) * 0x10000)
+                            .toString(16)
+                            .substring(1);
+                    }
+                    return (
+                        s4() +
+                        s4() +
+                        "-" +
+                        s4() +
+                        "-" +
+                        s4() +
+                        "-" +
+                        s4() +
+                        "-" +
+                        s4() +
+                        s4() +
+                        s4()
+                    );
+                },
+
+                log: function (data) {
+                    if (typeof console !== "undefined" && console.log) {
+                        return console.log(data);
+                    }
+                },
+            },
+        };
+    }
+}.call(this));
+
+(function () {
+    var accepted_cards,
+        card_types,
+        get_card_type,
+        is_valid_length,
+        parseMonth,
+        parseYear,
+        indexOf =
+            [].indexOf ||
+            function (item) {
+                for (var i = 0, l = this.length; i < l; i++) {
+                    if (i in this && this[i] === item) return i;
+                }
+                return -1;
+            };
+
+    card_types = [
+        {
+            name: "amex",
+            pattern: /^3[47]/,
+            valid_length: [15],
+        },
+        {
+            name: "diners_club_carte_blanche",
+            pattern: /^30[0-5]/,
+            valid_length: [14],
+        },
+        {
+            name: "diners_club_international",
+            pattern: /^36/,
+            valid_length: [14],
+        },
+        {
+            name: "laser",
+            pattern: /^(6304|670[69]|6771)/,
+            valid_length: [16, 17, 18, 19],
+        },
+        {
+            name: "visa_electron",
+            pattern: /^(4026|417500|4508|4844|491(3|7))/,
+            valid_length: [16],
+        },
+        {
+            name: "visa",
+            pattern: /^4/,
+            valid_length: [16],
+        },
+        {
+            name: "mastercard",
+            pattern: /^5[1-5]/,
+            valid_length: [16],
+        },
+        {
+            name: "maestro",
+            pattern: /^(5018|5020|5038|6304|6759|676[1-3])/,
+            valid_length: [12, 13, 14, 15, 16, 17, 18, 19],
+        },
+    ];
+
+    accepted_cards = [
+        "visa",
+        "mastercard",
+        "maestro",
+        "visa_electron",
+        "amex",
+        "diners_club_carte_blanche",
+        "diners_club_international",
+    ];
+
+    get_card_type = function (number) {
+        var card, card_type, i, len, ref;
+        ref = (function () {
+            var j, len, ref, results;
+            results = [];
+            for (j = 0, len = card_types.length; j < len; j++) {
+                card = card_types[j];
+                if (((ref = card.name), indexOf.call(accepted_cards, ref) >= 0)) {
+                    results.push(card);
+                }
+            }
+            return results;
+        })();
+
+        for (i = 0, len = ref.length; i < len; i++) {
+            card_type = ref[i];
+            if (number.match(card_type.pattern)) {
+                return card_type;
+            }
+        }
+        return null;
+    };
+
+    is_valid_luhn = function (number) {
+        var digit, i, len, n, ref, sum;
+        sum = 0;
+        ref = number.split("").reverse();
+        for (n = i = 0, len = ref.length; i < len; n = ++i) {
+            digit = ref[n];
+            digit = +digit;
+            if (n % 2) {
+                digit *= 2;
+                if (digit < 10) {
+                    sum += digit;
+                } else {
+                    sum += digit - 9;
+                }
+            } else {
+                sum += digit;
+            }
+        }
+        return sum % 10 === 0;
+    };
+
+    is_valid_length = function (number, card_type) {
+        var ref;
+        return (
+            (ref = number.length), indexOf.call(card_type.valid_length, ref) >= 0
+        );
+    };
+
+    parseMonth = function (month) {
+        if (typeof month === "string" && month.match(/^[\d]{1,2}$/)) {
+            return parseInt(month);
+        } else {
+            return month;
+        }
+    };
+
+    parseYear = function (year) {
+        if (typeof year === "number" && year < 100) {
+            year += 2000;
+        }
+        if (typeof year === "string" && year.match(/^([\d]{2,2}|20[\d]{2,2})$/)) {
+            if (year.match(/^([\d]{2,2})$/)) {
+                year = "20" + year;
+            }
+            return parseInt(year);
+        } else {
+            return year;
+        }
+    };
+
+    ePayco.card = {};
+    ePayco.card.name = function (name) {
+        var eval = new RegExp();
+        return eval.test(name);
+    };
+
+    ePayco.card.email = function (email) {
+        var eval = new RegExp(
+            /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(\".+\"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
+        );
+        return eval.test(email);
+    };
+
+    ePayco.card.validateNumber = function (number) {
+        var card_type, length_valid, luhn_valid;
+        if (typeof number === "string") {
+            number = number.replace(/[ -]/g, "");
+        } else if (typeof number === "number") {
+            number = number.toString();
+        } else {
+            number = "";
+        }
+        card_type = get_card_type(number);
+        luhn_valid = false;
+        length_valid = false;
+        if (card_type != null) {
+            luhn_valid = is_valid_luhn(number);
+            length_valid = is_valid_length(number, card_type);
+        }
+        return luhn_valid && length_valid;
+    };
+
+    ePayco.card.validateCVC = function (cvc) {
+        return (
+            (typeof cvc === "number" && cvc >= 0 && cvc < 10000) ||
+            (typeof cvc === "string" && cvc.match(/^[\d]{3,4}$/) !== null)
+        );
+    };
+
+    ePayco.card.validateExpirationDate = function (exp_month, exp_year) {
+        var month, year;
+        month = parseMonth(exp_month);
+        year = parseYear(exp_year);
+        if (
+            typeof month === "number" &&
+            month > 0 &&
+            month < 13 &&
+            typeof year === "number" &&
+            year > 2020 &&
+            year < 2035
+        ) {
+            return (
+                new Date(year, month, new Date(year, month, 0).getDate()) > new Date()
+            );
+        } else {
+            return false;
+        }
+    };
+}.call(this));
+
+(function () {
+    ePayco.token = {};
+    ePayco.token.create = function (form, callback) {
+        var error = undefined,
+            result = undefined,
+            token = ePayco._utils.parseForm(form);
+
+        if (typeof token === "object") {
+            if (ePayco._utils.objectKeys(token).length > 0) {
+                if (token.card) {
+                    var name, email, number, cvc, exp_month, exp_year, paymentProcess;
+                    paymentProcess = {
+                        customer: [
+                            {
+                                type: "name",
+                                value: token.card.name,
+                                required: true,
+                                validate: ePayco.card.name(token.card.name),
+                            },
+                            {
+                                type: "email",
+                                value: token.card.email,
+                                required: true,
+                                validate: ePayco.card.email(token.card.email),
+                            },
+                            {
+                                type: "number",
+                                value: token.card.number.replace(/ /g, ""),
+                                required: true,
+                                validate: ePayco.card.validateNumber(
+                                    token.card.number.replace(/ /g, "")
+                                ),
+                            },
+                            {
+                                type: "cvc",
+                                value: token.card.cvc,
+                                required: true,
+                                validate: ePayco.card.validateCVC(token.card.cvc),
+                            },
+                            {
+                                type: "date_exp",
+                                value: token.card.exp_month + "/" + token.card.exp_year,
+                                required: true,
+                                validate: ePayco.card.validateExpirationDate(
+                                    token.card.exp_month,
+                                    token.card.exp_year
+                                ),
+                            },
+                        ],
+                    };
+
+                    var sessionId;
+                    if (localStorage.getItem("keyUserIndex") == undefined) {
+                        sessionId = localStorage.setItem(
+                            "keyUserIndex",
+                            ePayco._utils.createGuid()
+                        );
+                    } else {
+                        sessionId = localStorage.getItem("keyUserIndex");
+                    }
+
+                    for (var i = 0; i < paymentProcess.customer.length; i++) {
+                        var current = paymentProcess.customer[i];
+                        if (current.required) {
+                            if (!current.validate) {
+                                let geterror_ = getError(103, current.type, form);
+                                callback(geterror_.description, null);
+                                return false;
+                            }
+                        }
+                    }
+
+                    ePayco._utils.createTokenEncrypt(
+                        sessionId,
+                        paymentProcess,
+                        function (result, error) {
+                            if (result) {
+                                //
+                                alert(JSON.stringify(result));
+
+                                callback(error, result);
+                            } else {
+                                //
+
+                                callback(error, null);
+                            }
+                        }
+                    );
+                } else {
+                    getError(101);
+                }
+            }
+        }
+    };
+}.call(this));

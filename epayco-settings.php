@@ -164,12 +164,13 @@ class Epayco_Subscription_Config
         $gateways = WC()->payment_gateways->get_available_payment_gateways();
 
         if($gateways['epayco-subscription']->enabled === 'yes' && is_checkout()){
-            //wp_enqueue_script( 'subscription-epayco', $this->plugin_url . 'assets/js/card-js.min.js', array(), $this->version, true );
             wp_enqueue_script( 'crypto-epayco', 'https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.0.0/crypto-js.js', array(), $this->version, true );
-            wp_enqueue_script( 'tokenizar-epayco',$this->plugin_url . 'assets/js/epayco.js', array(), $this->version, true );
-            //wp_enqueue_script( 'tokenizar-epayco','https://multimedia-epayco-test.s3.amazonaws.com/validate.epayco.js', array(), $this->version, true );
-            //wp_enqueue_script( 'make-epayco',$this->plugin_url . 'assets/js/subscription-epayco.js', array(), $this->version, true );
             wp_enqueue_style('frontend-subscription-epayco', $this->plugin_url . 'assets/css/card-js.min.css', array(), $this->version, null);
+
+            /*wp_enqueue_style('style-subscription-epayco', $this->plugin_url . 'assets/css/style.css', array(), $this->version, null);
+            wp_enqueue_style('general-subscription-epayco', $this->plugin_url . 'assets/css/general.css', array(), $this->version, null);
+            wp_enqueue_style('cart-subscription-epayco', $this->plugin_url . 'assets/css/card-js.min.css', array(), $this->version, null);
+            wp_enqueue_style('animate-subscription-epayco', $this->plugin_url . 'assets/css/animate.min.css', array(), $this->version, null);*/
         }
     }
  

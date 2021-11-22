@@ -23,15 +23,15 @@ return array(
     'description' => array(
         'title' => __('Description'),
         'type' => 'textarea',
-        'description' => __('Corresponde al descripción de la tienda que los usuarios visualizan en el checkout'),
+        'description' => __('Corresponde al descripci贸n de la tienda que los usuarios visualizan en el checkout'),
         'default' => __('Subscription ePayco'),
         'desc_tip' => true,
     ),
     'environment' => array(
-        'title' => __('Environment'),
+        'title' => __('Modo'),
         'type'        => 'select',
         'class'       => 'wc-enhanced-select',
-        'description' => __('mode prueba/producción'),
+        'description' => __('mode prueba/producci贸n'),
         'desc_tip' => true,
         'default' => true,
         'options'     => array(
@@ -70,6 +70,18 @@ return array(
         'default' => '',
         'desc_tip' => true,
         'placeholder' => ''
-    )
+    ),
+    'epayco_endorder_state' => array(
+        'title' => __('Estado Final del Pedido'),
+        'type' => 'select',
+        'css' =>'line-height: inherit',
+        'description' => __('Seleccione el estado del pedido que se aplicar谩 a la hora de aceptar y confirmar el pago de la orden'),
+        'options' => array(
+            'epayco-processing'=>"ePayco Procesando Pago",
+            "epayco-completed"=>"ePayco Pago Completado",
+            'processing'=>"Procesando",
+            "completed"=>"Completado"
+        ),
+    ),
 );
 

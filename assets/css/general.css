@@ -192,6 +192,7 @@ body {
     float: right;
     margin-right: 10px;
     line-height: 30px;
+    margin-top: -24px;
   }
   
   .active {
@@ -389,7 +390,7 @@ body {
     position: absolute;
     width: 400px;
     max-width: 100%;
-    min-height: 90%;
+    min-height: 92%;
     border-radius: 5px;
     background: white;
     z-index: 9999;
@@ -491,7 +492,6 @@ body {
   }
   
   .flag {
-    margin-top: 6px;
     margin-left: 15px;
     margin-right: 10px;
     height: 15px;
@@ -687,7 +687,7 @@ body {
   }
   
   .onpage .input-form input {
-    width: 94%;
+    /*width: 94%;*/
     margin-left: 3%;
     margin-right: 3%;
   }
@@ -974,3 +974,17 @@ body {
     opacity: 1;
     pointer-events: all;
   }
+
+.dropdown dd, .dropdown, .dropdown ul { margin:0px; padding:0px; }
+.dropdown dd { position:relative; }
+.dropdown a, .dropdown a:visited { color:#000000; text-decoration:none; outline:none;}
+.dropdown a span {cursor:pointer; display:block; padding:5px;}
+.dropdown dd ul { background: #fdfdfd none repeat scroll 0 0;border: 1px solid #ccc; color: #ffffff; display: none;
+  left: 0px;padding: 5px 0px;position: inherit;top: 2px;min-width: 170px;list-style: none;height: 225px;
+  overflow-y: auto;z-index: 1;}
+.dropdown span.value { display:none;}
+.dropdown dd ul li a { padding:5px; display:block;}
+.dropdown dd ul li a:hover { background-color:#e9b8b8;}
+
+.dropdown img.flag { border:none; vertical-align:middle; margin-left:10px; }
+.flagvisibility { display:none;}
