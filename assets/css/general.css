@@ -650,22 +650,6 @@ body {
     transform: translate(-50%, 30%) scale(1);
   }
 
-
-  
-  @media all and (min-height: 680px) {
-    .centered {
-       transform: translate(-50%, -50%);
-/*      margin: 0;
-      height: auto;
-      width: 400px;
-      position: fixed;
-      top: 50%;
-      left: 50%;
-     
-      z-index: 0;*/
-    }
-  }
-  
   .onpage .centered {
     max-width: 100%;
   }

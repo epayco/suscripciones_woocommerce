@@ -163,6 +163,8 @@ jQuery( function( $ ) {
     const $checkout_form = $( '#token-credit' );
         $checkout_form.on('submit', function (event) {  
         event.preventDefault();
+        var contador = 0;
+        contador++;
         var key = $("#p_c").text();
         var key_p = $("#p_p").text();
         var lang = $("#lang_epayco").text();
@@ -172,16 +174,17 @@ jQuery( function( $ ) {
                 ePayco.setLanguage(lang);
                 var $form = $(this);
                 function getPosts() {
-                    return new Promise(function(resolve, reject) {
-                        
+                   
+                    return  new Promise(function(resolve, reject) {
+                    
                         ePayco.token.create($form, function(error, token) {
                             
                             if(!error) {
                                 console.log(token)
                                 resolve(token)
                                 } else {
+                                    
                                     if(!error) {
-                                        console.log(token)
                                         resolve(token)
                                         } else {
                                         if(lang=="en"){
@@ -193,7 +196,19 @@ jQuery( function( $ ) {
                                             }
                                             
                                         }else{
-                                            reject('No se pudo realizar el pago, por favor reintente neuvamente')
+                                            try {
+                                                 if(contador<2)
+                                                    { 
+                                                        reject('No se pudo realizar el pago, por favor reintente neuvamente')
+                                                    }else {
+                                                        loadoverlay_.style.display='none';
+                                                        alert('No se pudo realizar el pago, por favor reintente neuvamente')
+                                                    }
+                                                  
+                                                } catch(e) {
+                                                    loadoverlay_.style.display='none';
+                                                    alert('No se pudo realizar el pago, por favor reintente neuvamente')
+                                                }
                                         }
                                     
                                     }
@@ -230,7 +245,6 @@ jQuery( function( $ ) {
             const content = document.getElementById('web-checkout-content')
             loadoverlay_.style.display='block';
             getPosts().then(r =>{
-            
                 console.log('ready!',r);
                 $checkout_form.find('input[name=my-custom-form-field__card-number]').remove();
                     $checkout_form.find('input[name=cvc]').remove();
@@ -248,13 +262,20 @@ jQuery( function( $ ) {
                 form.appendChild(hiddenInput);
                 form.submit();
             }).catch((e) => {
-                
-                console.log('Algo salió mal!');
-                loadoverlay_.style.display='none';
-                alert(e)
+                if(contador<2)
+                {
+                    contador++;
+                    getPosts()
+                    
+                }else
+                {
+                  console.log('Algo saliò mal!');
+                  loadoverlay_.style.display='none';
+                  alert(e)
+                }
             });
         }       
             
-        });
+    });
 
 });

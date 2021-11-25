@@ -27,11 +27,11 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         $order = new WC_Order($order_id);
         $subscriptions = $this->getWooCommerceSubscriptionFromOrderId($order_id);
         $token = $params['epaycoToken'];
-        $customerData = $this->paramsBilling($subscriptions, $order);
+        $customerData = $this->paramsBilling($subscriptions, $order, $params['card-number']);
         $customerData['token_card'] = $token;
         $sql_ = 'SELECT * FROM '.$table_name_setings.' WHERE id_payco = '.$this->custIdCliente;
         $customerGetData = $wpdb->get_results($sql_, OBJECT);
-
+      
         if (count($customerGetData) == 0){
             $customer = $this->customerCreate($customerData);
             if ($customer->data->status == 'error'){
@@ -66,7 +66,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 $count_customers += 1;
                 }
 		    }
-
+               
             if($count_customers == 0){
                 $customer = $this->customerCreate($customerData);
                     if ($customer->data->status == 'error'){
@@ -111,7 +111,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         $confirm_url = $this->getUrlNotify($order_id);
         $plans = $this->getPlansBySubscription($subscriptions);
         $getPlans = $this->getPlans($plans);
-
+        
         if (!$getPlans)
         {   
            $validatePlan_ = $this->validatePlan(true,$order_id,$plans,$subscriptions,$customerData,$confirm_url,$order,false,false,null);
@@ -248,7 +248,6 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         //validar que el id del plan del carrito concuerda con el plan creado
         if($plan_id_cart == $plan_id_epayco)
             {
-
                 //validar que el valor del carrito de compras concuerda con el del plan creado
                 if(intval($plan_amount_cart) == $plan_amount_epayco)
                 {
@@ -446,14 +445,14 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
     }
 
 
-    public function paramsBilling($subscriptions,  $order)
+    public function paramsBilling($subscriptions,  $order, $customer_name)
     {
         $data = [];
 
         $subscription = end($subscriptions);
         if($subscription)
         {
-        $data['name'] = $subscription->get_billing_first_name().' '.$subscription->get_billing_last_name();
+        $data['name'] = $customer_name;
         $data['email'] = $subscription->get_billing_email();
         $data['phone'] = $subscription->get_billing_phone();
         $data['country'] = $subscription->get_shipping_country() ? $subscription->get_shipping_country() : $subscription->get_billing_country();
@@ -655,7 +654,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                
                 $isTestTransaction = $sub->data->enpruebas == 1 ? "yes" : "no";
                 update_option('epayco_order_status', $isTestTransaction);
-                $isTestMode = get_option('epayco_order_status') == "yes" ? "true" : "false";
+                $isTestMode = get_option('epayco_order_status') == "yes" ? "true" : "false";     
                 if (isset($sub->data->cod_respuesta) && $sub->data->cod_respuesta === 2 || $sub->data->cod_respuesta === 4){
                     $messageStatus['message'] = array_merge($messageStatus['message'], [ "estado: {$sub->data->respuesta}" ]);
                     if($isTestMode=="true"){
@@ -765,10 +764,9 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                             'ref_payco' => $sub->data->ref_payco
                         ]
                     );
-                    $messageStatus['ref_payco'] = array_merge($messageStatus['ref_payco'], [ $sub->data->ref_payco ]);
                 }
             }
-
+            $messageStatus['ref_payco'] = array_merge($messageStatus['ref_payco'], [ $sub->data->ref_payco ]);
             $count++;
 
             if ($count === $quantitySubscriptions && count($messageStatus['message']) >= $count)
@@ -845,7 +843,6 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         $subsCreated = $this->subscriptionCreate($plans, $customerData, $confirm_url);
         if ($subsCreated->status){
             $subs = $this->subscriptionCharge($plans, $customerData, $confirm_url);
-           
             foreach ($subs as $sub){
             
                 if($sub->status || $sub->success){
@@ -865,7 +862,6 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     ];
                 }
             }
-
             return $response_status;
         }
     }
