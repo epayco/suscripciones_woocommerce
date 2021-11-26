@@ -392,34 +392,17 @@
             if($_REQUEST["confirmation"]){
                 $subscription->subscription_epayco_confirm($_REQUEST);
                 die();
-                }else{
+            }else{
                 $data = $subscription->subscription_epayco($_REQUEST);
-                }
+            }
                
-            if($data['status']){
-               // wc_reduce_stock_levels($order_id);
                 WC()->cart->empty_cart();
                 $arguments=array();
                 $arguments['ref_payco']=$data['ref_payco'];
                 $redirect_url = $data['url'];
                 $redirect_url = add_query_arg($arguments , $redirect_url );
                 wp_redirect($redirect_url);
-            }else{
-                $order = new WC_Order($order_id);
-                if (version_compare( WOOCOMMERCE_VERSION, '2.1', '>=')) {
-                    $redirect = array(
-                        'result'    => 'success',
-                        'redirect'  => add_query_arg('order-pay', $order->id, add_query_arg('key', $order->order_key,get_permalink(woocommerce_get_page_id('pay' ))))
-                    );
-                } else {
-                    $redirect = array(
-                        'result'    => 'success',
-                        'redirect'  => add_query_arg('order', $order->id, add_query_arg('key', $order->order_key,get_permalink(woocommerce_get_page_id('pay' ))))
-                    );
-                }
-                wc_add_notice(implode(PHP_EOL, $data['message']), 'error' );
-                wp_redirect($redirect["redirect"]);
-            }
+            
         }
 
         public function string_sanitize($string, $force_lowercase = true, $anal = false) {
