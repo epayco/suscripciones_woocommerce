@@ -842,7 +842,7 @@ _:future,
     width: 100%;
     border-top: solid 1px #e7e7e7;
     margin-top: 20px;
-    padding-top: 10px;
+    padding-top: 22px;
   }
 
   .left15 {
@@ -906,7 +906,7 @@ _:future,
   .binding-input[id="month-value"],
   .binding-input[id="year-value"]{
     width: 100%!important; 
-    height: 35px;
+    height: 37px;
   }
 
 

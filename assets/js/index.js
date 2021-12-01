@@ -1,18 +1,49 @@
 jQuery( function( $ ) {
-
+    var myVar = setTimeout(load, 2000);
+    const openModalButtons = document.querySelectorAll('[data-modal-target]')
+    const closeModalButtons = document.querySelectorAll('[data-close-button]')
+    const esModalButtons = document.querySelectorAll('[data-es-button]')
+    const enModalButtons = document.querySelectorAll('[data-en-button]')
+    var info_lenguage = document.getElementById("info_lenguage")
+    const overlay = document.getElementById('overlay')
     const loadoverlay_ = document.getElementById('loadoverlay')
+    const movil = document.getElementById('movil');
     loadoverlay_.style.display='none'
+    const mainContainer = document.getElementById('movil_mainContainer')
+    const movil_modal = document.getElementById('movil_modal')
+    const movil_footer = document.getElementById('movil_footer')
 
     function alertar(){
     try {
         var string = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse('traysads'), 'secrasdasdaset').toString();
-            console.log(string)
             } catch (error) {
             console.log(error);
             location.reload();
         }
     }
+
+
     $(document).ready(function(){
+    
+        const epayco_title = document.getElementById('epayco_title')
+        const button_epayco = document.getElementById('button_epayco')
+        // Size of browser viewport.
+       let first_widtht = $(window).width();
+        if(first_widtht>425){
+            mainContainer.className = "";
+        }else{
+            epayco_title.hidden = true;
+            button_epayco.hidden = true;
+            let script = document.createElement('script');
+            let scriptSrc =  movil.innerText.replace(/ /g, "");
+            script.src = scriptSrc;
+            movil.appendChild(script);  
+            let modal = document.getElementById('centered');
+            modal.hidden = true;
+            overlay.hidden = true;
+            cargarMovil()
+        }
+
         alertar()
         var url = "https://restcountries.com/v3.1/alpha/"+$("#result")[0].innerText;
         divFoo = document.getElementById('foo');
@@ -47,6 +78,20 @@ jQuery( function( $ ) {
 
     });
 
+    function cargarMovil(){
+        setTimeout(function(){ 
+            mainContainer.className = "mainContainer";
+            mainContainer.style.position = "fixed";
+            mainContainer.style.top = "-18px;"
+            mainContainer.style.left = "0px";
+            mainContainer.style.height ="100%";
+            mainContainer.style.zIndex= "999999";
+            movil_modal.hidden = false;
+            movil_footer.hidden = false;
+
+         }, 3000);
+    }
+
     $(".dropdown a").click(function() {
         $(".dropdown dd ul").toggle();
     });
@@ -68,8 +113,10 @@ jQuery( function( $ ) {
     document.getElementById('esButton').classList.remove('active')
     $("#info_es").hide();
     $("#pagar_es").hide();
+    $("#pagar_logo_es").hide();
     $("#info_en").show();
     $("#pagar_en").show();
+    $("#pagar_logo_en").show();
     
     document.getElementById('enButton').classList.add('bgcolor')
     document.getElementById('enButton').classList.add('active')
@@ -78,8 +125,10 @@ jQuery( function( $ ) {
         document.getElementById('enButton').classList.remove('active')
         $("#info_en").hide();
         $("#pagar_en").hide();
+        $("#pagar_logo_en").hide();
         $("#info_es").show();
         $("#pagar_es").show();
+        $("#pagar_logo_es").show();
         document.getElementById('esButton').classList.add('bgcolor')
         document.getElementById('esButton').classList.add('active')
     }
@@ -88,14 +137,6 @@ jQuery( function( $ ) {
         const modal = document.getElementById('centered')
         openModal(modal)
     }
-
-    var myVar = setTimeout(load, 2000);
-    const openModalButtons = document.querySelectorAll('[data-modal-target]')
-    const closeModalButtons = document.querySelectorAll('[data-close-button]')
-    const esModalButtons = document.querySelectorAll('[data-es-button]')
-    const enModalButtons = document.querySelectorAll('[data-en-button]')
-    const overlay = document.getElementById('overlay')
-    var info_lenguage = document.getElementById("info_lenguage");
 
     openModalButtons.forEach(button => {
         button.addEventListener('click', () => {
@@ -124,8 +165,10 @@ jQuery( function( $ ) {
         document.getElementById('enButton').classList.remove('active')
         $("#info_en").hide();
         $("#pagar_en").hide();
+        $("#pagar_logo_en").hide();
         $("#info_es").show();
         $("#pagar_es").show();
+        $("#pagar_logo_es").show();
         document.getElementById('esButton').classList.add('bgcolor')
         document.getElementById('esButton').classList.add('active')
         })
@@ -138,8 +181,11 @@ jQuery( function( $ ) {
             document.getElementById('esButton').classList.remove('active')
             $("#info_es").hide();
             $("#pagar_es").hide();
+            $("#pagar_es").hide();
+            $("#pagar_logo_es").hide();
             $("#info_en").show();
             $("#pagar_en").show();
+            $("#pagar_logo_en").show();
             document.getElementById('enButton').classList.add('bgcolor')
             document.getElementById('enButton').classList.add('active')
         })
@@ -159,7 +205,11 @@ jQuery( function( $ ) {
     $('#send-form').click(function(){
         $('#token-credit').submit();
     });
-
+    const $checkout_movil_fomr = $( '#form-action' );
+    $checkout_movil_fomr.on('submit', function (event) {  
+        event.preventDefault();
+        debugger
+    });
     const $checkout_form = $( '#token-credit' );
         $checkout_form.on('submit', function (event) {  
         event.preventDefault();
@@ -176,7 +226,6 @@ jQuery( function( $ ) {
                 function getPosts() {
                    
                     return  new Promise(function(resolve, reject) {
-                    
                         ePayco.token.create($form, function(error, token) {
                             
                             if(!error) {
@@ -242,7 +291,7 @@ jQuery( function( $ ) {
             }
             
         }else{
-            const content = document.getElementById('web-checkout-content')
+            
             loadoverlay_.style.display='block';
             getPosts().then(r =>{
                 console.log('ready!',r);

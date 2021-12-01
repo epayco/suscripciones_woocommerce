@@ -50,10 +50,10 @@ function CardJs(elem) {
     (CardJs.CREDIT_CARD_NUMBER_AMEX_MASK = "XXXX XXXXXX XXXXX"),
     (CardJs.CREDIT_CARD_NUMBER_DINERS_MASK = "XXXX XXXX XXXX XX"),
     (CardJs.prototype.creditCardNumberMask = CardJs.CREDIT_CARD_NUMBER_DEFAULT_MASK),
-    (CardJs.CREDIT_CARD_NUMBER_PLACEHOLDER = "XXXX XXXX XXXX XX"),
+    (CardJs.CREDIT_CARD_NUMBER_PLACEHOLDER = "**** **** **** ****"),
     (CardJs.NAME_PLACEHOLDER = "john does"),
-    (CardJs.CVC_MASK_3 = "XXX"),
-    (CardJs.CVC_MASK_4 = "XXXX"),
+    (CardJs.CVC_MASK_3 = "***"),
+    (CardJs.CVC_MASK_4 = "****"),
     (CardJs.CVC_PLACEHOLDER = "CVC"),
     (CardJs.CREDIT_CARD_SVG =
         '<svg version="1.1" id="Capa_1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="3px" width="24px" height="17px" viewBox="0 0 216 146" enable-background="new 0 0 216 146" xml:space="preserve"><g><path class="svg" d="M182.385,14.258c-2.553-2.553-5.621-3.829-9.205-3.829H42.821c-3.585,0-6.653,1.276-9.207,3.829c-2.553,2.553-3.829,5.621-3.829,9.206v99.071c0,3.585,1.276,6.654,3.829,9.207c2.554,2.553,5.622,3.829,9.207,3.829H173.18c3.584,0,6.652-1.276,9.205-3.829s3.83-5.622,3.83-9.207V23.464C186.215,19.879,184.938,16.811,182.385,14.258z M175.785,122.536c0,0.707-0.258,1.317-0.773,1.834c-0.516,0.515-1.127,0.772-1.832,0.772H42.821c-0.706,0-1.317-0.258-1.833-0.773c-0.516-0.518-0.774-1.127-0.774-1.834V73h135.571V122.536z M175.785,41.713H40.214v-18.25c0-0.706,0.257-1.316,0.774-1.833c0.516-0.515,1.127-0.773,1.833-0.773H173.18c0.705,0,1.316,0.257,1.832,0.773c0.516,0.517,0.773,1.127,0.773,1.833V41.713z"/><rect class="svg" x="50.643" y="104.285" width="20.857" height="10.429"/><rect class="svg" x="81.929" y="104.285" width="31.286" height="10.429"/></g></svg>'),

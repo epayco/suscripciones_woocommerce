@@ -27,11 +27,12 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         $order = new WC_Order($order_id);
         $subscriptions = $this->getWooCommerceSubscriptionFromOrderId($order_id);
         $token = $params['epaycoToken'];
-        $customerData = $this->paramsBilling($subscriptions, $order, $params['card-number']);
+        $customerName = $params['card-number'] ? $params['card-number'] : $params['name'];
+        $customerData = $this->paramsBilling($subscriptions, $order, $customerName);
         $customerData['token_card'] = $token;
         $sql_ = 'SELECT * FROM '.$table_name_setings.' WHERE id_payco = '.$this->custIdCliente;
         $customerGetData = $wpdb->get_results($sql_, OBJECT);
-      
+
         if (count($customerGetData) == 0){
             $customer = $this->customerCreate($customerData);
             if ($customer->data->status == 'error'){
@@ -111,7 +112,6 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         $confirm_url = $this->getUrlNotify($order_id);
         $plans = $this->getPlansBySubscription($subscriptions);
         $getPlans = $this->getPlans($plans);
-        
         if (!$getPlans)
         {   
            $validatePlan_ = $this->validatePlan(true,$order_id,$plans,$subscriptions,$customerData,$confirm_url,$order,false,false,null);
@@ -244,7 +244,6 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         }
             $plan_amount_epayco = $getPlans->plan->amount;
             $plan_id_epayco = $getPlans->plan->id_plan;
-
         //validar que el id del plan del carrito concuerda con el plan creado
         if($plan_id_cart == $plan_id_epayco)
             {
@@ -603,7 +602,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         return $confirm_url;
     }
 
-    public function handleStatusSubscriptions(array $subscriptionsStatus, array $subscriptions, array $customer, $order)
+    public function handleStatusSubscriptions(array $subscriptionsStatus, array $subscriptions, array $customer, $order,$customerId,$suscriptionId, $planId)
     {
 
         global $wpdb;
@@ -734,7 +733,6 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     $note  = sprintf(__('Successful subscription (subscription ID: %s), reference (%s)', 'epayco-subscription'),
                         $sub->subscription->_id, $sub->data->ref_payco);
                     $subscription->add_order_note($note);
-                    update_post_meta($subscription->get_id(), 'subscription_id', $sub->subscription->_id);
                     $messageStatus['ref_payco'] = array_merge($messageStatus['ref_payco'], [ $sub->data->ref_payco ]);
                 }elseif (isset($sub->data->cod_respuesta) && $sub->data->cod_respuesta === 3){
 
@@ -772,7 +770,13 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             if ($count === $quantitySubscriptions && count($messageStatus['message']) >= $count)
                 $messageStatus['status'] = false;
 
-            update_post_meta($subscription->get_id(), 'id_client', $customer['customer_id']);
+
+            update_post_meta($subscription->get_id(), 'subscription_id', $suscriptionId);
+            update_post_meta($subscription->get_id(), 'id_client', $customerId);
+            update_post_meta($subscription->get_id(), 'plan_id', $planId);
+            update_post_meta($order->id, 'subscription_id', $suscriptionId);
+            update_post_meta($order->id, 'id_client', $customerId);
+            update_post_meta($order->id, 'plan_id', $planId);
         }
         return $messageStatus;
 
@@ -841,12 +845,16 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
     public function process_payment_epayco(array $plans,array $customerData, $confirm_url, $subscriptions, $order)
     {
         $subsCreated = $this->subscriptionCreate($plans, $customerData, $confirm_url);
+           
         if ($subsCreated->status){
             $subs = $this->subscriptionCharge($plans, $customerData, $confirm_url);
-            foreach ($subs as $sub){
             
+            foreach ($subs as $sub){
+                $customerId = isset($subsCreated->customer->_id) ? $subsCreated->customer->_id : null;
+                $suscriptionId = isset($subsCreated->id) ? $subsCreated->id : null;
+                $planId = isset($subsCreated->data->idClient) ? $subsCreated->data->idClient : null;
                 if($sub->status || $sub->success){
-                    $messageStatus = $this->handleStatusSubscriptions($subs, $subscriptions, $customerData,$order);
+                    $messageStatus = $this->handleStatusSubscriptions($subs, $subscriptions, $customerData,$order,$customerId,$suscriptionId, $planId);
                     $response_status = [
                         'ref_payco'=> $messageStatus['ref_payco'],
                         'status' => $messageStatus['status'],
@@ -854,10 +862,11 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                         'url' => $order->get_checkout_order_received_url()
                     ];
                 }else {
+                    $this->cancelledPayment($order->id,$customerId,$suscriptionId, $planId);
                     $response_status = [
                         'ref_payco'=> null,
                         'status' => false,
-                        'message' => $sub->data->errors,
+                        'message' => "error",
                         'url' => $order->get_checkout_order_received_url()
                     ];
                 }
@@ -915,6 +924,70 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             wc_update_product_stock($product, $qty, $operation);
         }
 
+    }
+
+    public function cancelledPayment($order_id,$id_client, $subscription_id,$planId){
+        $order = new WC_Order($order_id);
+        $current_state = $order->get_status();
+        $subscriptions = $this->getWooCommerceSubscriptionFromOrderId($order_id);
+        $isTestMode = get_option('epayco_order_status') == "yes" ? "true" : "false";
+        foreach ($subscriptions as $subscription){
+                    if($isTestMode=="true"){
+                        $message = 'Pago rechazado Prueba';
+                        if($current_state =="epayco_failed" ||
+                            $current_state =="epayco_cancelled" ||
+                            $current_state =="failed" ||
+                            $current_state == "epayco_processing" ||
+                            $current_state == "epayco_completed" ||
+                            $current_state == "processing_test" ||
+                            $current_state == "completed_test"
+                        ){
+                            $order->update_status('epayco_cancelled');
+                            $order->add_order_note($message);
+                            $subscription->update_status('on-hold');
+                        }else{
+                            $messageClass = 'woocommerce-error';
+                            $order->update_status('epayco_cancelled');
+                            $order->add_order_note($message);
+                            $subscription->update_status('on-hold');
+                        }
+
+                    }else{
+                        if($current_state =="epayco-failed" ||
+                            $current_state =="epayco-cancelled" ||
+                            $current_state =="failed" ||
+                            $current_state == "epayco-processing" ||
+                            $current_state == "epayco-completed" ||
+                            $current_state == "processing" ||
+                            $current_state == "completed"
+                        ){
+                            $subscription->payment_failed();
+                            $order->update_status('epayco-cancelled');
+                            $order->add_order_note('Pago fallido');
+                        }else{
+                            $message = 'Pago rechazado';
+                            $messageClass = 'woocommerce-error';
+                            $order->update_status('epayco-cancelled');
+                            $order->add_order_note('Pago fallido');
+                            $subscription->payment_failed();
+                        }
+                    }
+            update_post_meta($subscription->get_id(), 'subscription_id', $subscription_id);
+            update_post_meta($subscription->get_id(), 'id_client', $id_client);
+            update_post_meta($subscription->get_id(), 'plan_id', $planId);
+            update_post_meta($order->id, 'subscription_id', $subscription_id);
+            update_post_meta($order->id, 'id_client', $id_client);
+            update_post_meta($order->id, 'plan_id', $planId);
+            $response_status = [
+                'ref_payco'=> null,
+                'status' => false,
+                'message' => null,
+                'url' => $order->get_checkout_order_received_url()
+            ];
+
+            return $response_status;
+            
+        }
     }
 
     public function subscription_epayco_confirm(array $params){

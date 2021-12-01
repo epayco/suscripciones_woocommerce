@@ -24,6 +24,7 @@ add_action( 'plugins_loaded','epayco_subscription_init',0);
 add_action( 'plugins_loaded', 'register_epayco_order_status' );
 add_filter( 'wc_order_statuses', 'add_epayco_to_order_statuses' );
 add_action( 'admin_head', 'styling_admin_order_list' );
+add_action( 'woocommerce_checkout_update_order_meta', 'some_custom_checkout_field_update_order_meta' );
 
 function epayco_subscription_init(){
     if (!class_exists('WC_Payment_Gateway')) {
@@ -288,7 +289,7 @@ function styling_admin_order_list() {
     <?php
 }
 
-function activate_subscription_epayco_se(){
+function activate_subscription_epayco(){
     global $wpdb;
 
     $table_subscription_epayco = $wpdb->prefix . 'epayco_subscription';
@@ -332,5 +333,16 @@ function activate_subscription_epayco_se(){
 
     add_option( 'subscription_epayco_se_redirect', true );
 }
+function some_custom_checkout_field_update_order_meta( $order_id ) {
 
-register_activation_hook( __FILE__, 'activate_subscription_epayco_se' );
+
+    if ( ! empty( $_POST['recipient_address'] ) ) {
+    add_post_meta( $order_id, 'recipient_address', sanitize_text_field( $_POST['recipient_address'] ) );
+    }
+    if (!empty($_POST['recipient_phone_number'])) {
+            update_post_meta($order_id, 'recipient phone number', sanitize_text_field($_POST['recipient_phone_number']));
+        }
+    
+    }
+
+register_activation_hook( __FILE__, 'activate_subscription_epayco' );
