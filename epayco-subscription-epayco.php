@@ -670,13 +670,31 @@
                 $data = $subscription->subscription_epayco($_REQUEST);
               }
             }
+            if(!$data['status']){
+                wc_add_notice( $data['message'], 'error' ); 
+                $order = new WC_Order($order_id);
+                if (version_compare( WOOCOMMERCE_VERSION, '2.1', '>=')) {
+                    $redirect = array(
+                        'result'    => 'success',
+                        'redirect'  => add_query_arg('order-pay', $order->id, add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay' ))))
+                    );
+                } else {
+                    $redirect = array(
+                        'result'    => 'success',
+                        'redirect'  => add_query_arg('order', $order->id, add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay' ))))
+                    );
+                }
+                wp_redirect($redirect["redirect"]);  
 
+            }else{
                 WC()->cart->empty_cart();
                 $arguments=array();
                 $arguments['ref_payco']=$data['ref_payco'];
                 $redirect_url = $data['url'];
                 $redirect_url = add_query_arg($arguments , $redirect_url );
                 wp_redirect($redirect_url);
+            }
+
             
         }
 
@@ -690,6 +708,5 @@
      
 
     }
-
 
 

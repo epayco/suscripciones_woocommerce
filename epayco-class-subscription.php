@@ -67,7 +67,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 $count_customers += 1;
                 }
 		    }
-               
+
             if($count_customers == 0){
                 $customer = $this->customerCreate($customerData);
                     if ($customer->data->status == 'error'){
@@ -109,9 +109,11 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             }
             
         }
+
         $confirm_url = $this->getUrlNotify($order_id);
         $plans = $this->getPlansBySubscription($subscriptions);
         $getPlans = $this->getPlans($plans);
+
         if (!$getPlans)
         {   
            $validatePlan_ = $this->validatePlan(true,$order_id,$plans,$subscriptions,$customerData,$confirm_url,$order,false,false,null);
@@ -241,113 +243,118 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         foreach ($plans as $plan){
             $plan_amount_cart=$plan['amount'];
             $plan_id_cart=$plan['id_plan'];
+            $plan_currency_cart=$plan['currency'];
         }
             $plan_amount_epayco = $getPlans->plan->amount;
             $plan_id_epayco = $getPlans->plan->id_plan;
+            $plan_currency_epayco = $getPlans->plan->currency;
         //validar que el id del plan del carrito concuerda con el plan creado
         if($plan_id_cart == $plan_id_epayco)
             {
                 //validar que el valor del carrito de compras concuerda con el del plan creado
-                if(intval($plan_amount_cart) == $plan_amount_epayco)
-                {
-                    return  $this->process_payment_epayco($plans, $customer, $confirm_url,$subscriptions,$order);
-                }
-                else
-                {
-                try{    
-                        /*valida la actualizacion del precio del plan*/
-                    foreach ($subscriptions as $key => $subscription){
-                                $products = $subscription->get_items();
-                                $product_plan = $this->getPlan($products);
-                                $product_id_ = $product_plan['id'];
-                                $porciones = explode("-", $product_id_);
-                                $product_id = $porciones[0];
+                try{ 
+                    if(intval($plan_amount_cart) == $plan_amount_epayco)
+                    {
+                        return  $this->process_payment_epayco($plans, $customer, $confirm_url,$subscriptions,$order);
                     }
-
-                        $sql = 'SELECT * FROM '.$wc_order_product_lookup.' WHERE order_id ='.intval($order_id);
-                        $results = $wpdb->get_results($sql, OBJECT);
-                        $product_id = $results[0]->product_id ? $results[0]->product_id : $product_id;
-
-                        $query = 'SELECT * FROM '.$table_name.' WHERE order_id ='.intval($order_id);
-                        $orderData = $wpdb->get_results($query, OBJECT);
-                                                
-                        if (count($orderData) == 0){
-                            
-                            $savePlanId_ = $this->savePlanId($order_id,$plans,$subscriptions,null,$product_id);
-
-                            if($savePlanId_)
-                            {
-                            $orderData = $wpdb->get_results($query, OBJECT);
-                            
-                            if (count($orderData) == 0){
-                                return false;
-                            }else{
-                             foreach ($plans as $plan){
-                                     $plan_currency_cart = $plan['currency'];
-                                     $plan_interval_cart = $plan['interval'];
-                                     $plan_interval_count_cart = $plan['interval_count'];
-                                     $plan_trial_days_cart = $plan['trial_days'];
-                                 }
-
-                                $newPlanToCreated[0] =  [
-                                    "id_plan" => (string)$orderData[0]->plan_id,
-                                    "name" => (string)$orderData[0]->plan_id,
-                                    "description" => (string)$orderData[0]->plan_id,
-                                    "currency" => $plan_currency_cart,
-                                    "trial_days" => intval($plan_trial_days_cart),
-                                    "amount" =>   $orderData[0]->amount,
-                                    "interval" => $plan_interval_cart,
-                                    "interval_count" => $plan_interval_count_cart,
-                                    
-                                ];
-                                
-                                //crear nuevo plan con precio actualizado
-                                $newPLan = $this->plansCreate($newPlanToCreated);
-                                    if($newPLan->status){   
-                                        $getPlans_ = $this->getPlans($newPlanToCreated);
-                                        
-                                        if ($getPlans_)
-                                        {
-                                            return $this->process_payment_epayco($newPlanToCreated, $customer, $confirm_url,$subscriptions,$order);
-                                        }
-                                    }
-                                }
-
-                            }else{
-                            return false;
-                            }
-
-                        }else{
-                            
-                            $plan_id_s = $orderData[0]->plan_id;
-                            $getPlanById_ = $this->getPlanById($plan_id_s);
-
-                            if($getPlanById_->status){
-                                $newPlanToCreated_[0] =  [
-                                    "id_plan" => $getPlanById_->plan->id_plan,
-                                    "name" => $getPlanById_->plan->name,
-                                    "description" => $getPlanById_->plan->description,
-                                    "amount" =>   $getPlanById_->plan->amount,
-                                    "currency" => $getPlanById_->plan->currency,
-                                    "interval_count" => $getPlanById_->plan->interval_count,
-                                    "interval" => $getPlanById_->plan->interval,
-                                    "trial_days" => $getPlanById_->plan->id_plan,
-                                ];
- 
-                                return $this->process_payment_epayco($newPlanToCreated_, $customer, $confirm_url,$subscriptions,$order);
-                            }
-                        }
-                    }catch (Exception $exception){
-                            var_dump($exception->getMessage());
-                    }
-                return false;
+                    else
+                    {
+                        return $this->validateNewPlanData($subscriptions,$order_id,true ,false); 
+                    } 
+                }catch (Exception $exception){
+                    echo $exception->getMessage();
+                    return false;
                 }
+               
+                
             }else{
                 echo 'el id del plan creado no concuerda!';
                 die();
             }
     }
+    
+    public function validateNewPlanData($subscriptions,$order_id,$value ,$currency){
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'epayco_plans';
+        $wc_order_product_lookup = $wpdb->prefix . "wc_order_product_lookup";
+        /*valida la actualizacion del precio del plan*/
+            foreach ($subscriptions as $key => $subscription){
+                $products = $subscription->get_items();
+                $product_plan = $this->getPlan($products);
+                $product_id_ = $product_plan['id'];
+                $porciones = explode("-", $product_id_);
+                $product_id = $porciones[0];
+        }
+        $sql = 'SELECT * FROM '.$wc_order_product_lookup.' WHERE order_id ='.intval($order_id);
+        $results = $wpdb->get_results($sql, OBJECT);
+        $product_id = $results[0]->product_id ? $results[0]->product_id : $product_id;
+        $query = 'SELECT * FROM '.$table_name.' WHERE order_id ='.intval($order_id);
+        $orderData = $wpdb->get_results($query, OBJECT);
+        if (count($orderData) == 0){
+            if($value){
+                $savePlanId_ = $this->savePlanId($order_id,$plans,$subscriptions,null,$product_id);
+                if($savePlanId_)
+                {
+                    $orderData = $wpdb->get_results($query, OBJECT);
+                    if (count($orderData) == 0){
+                        return false;
+                    }else{
+                        foreach ($plans as $plan){
+                            $plan_currency_cart = $plan['currency'];
+                            $plan_interval_cart = $plan['interval'];
+                            $plan_interval_count_cart = $plan['interval_count'];
+                            $plan_trial_days_cart = $plan['trial_days'];
+                        }
 
+                        $newPlanToCreated[0] = [
+                            "id_plan" => (string)$orderData[0]->plan_id,
+                            "name" => (string)$orderData[0]->plan_id,
+                            "description" => (string)$orderData[0]->plan_id,
+                            "currency" => $plan_currency_cart,
+                            "trial_days" => intval($plan_trial_days_cart),
+                            "amount" =>   $orderData[0]->amount,
+                            "interval" => $plan_interval_cart,
+                            "interval_count" => $plan_interval_count_cart,
+                        ];
+                                
+                    //crear nuevo plan con precio actualizado
+                        $newPLan = $this->plansCreate($newPlanToCreated);
+                        if($newPLan->status){   
+                            $getPlans_ = $this->getPlans($newPlanToCreated);
+                            if ($getPlans_)
+                            {
+                                return $this->process_payment_epayco($newPlanToCreated, $customer, $confirm_url,$subscriptions,$order);
+                            }
+                        }
+                    }
+
+                }else{
+                    return false;
+                }
+
+            }
+        }else{
+                            
+            $plan_id_s = $orderData[0]->plan_id;
+            $getPlanById_ = $this->getPlanById($plan_id_s);
+            if($getPlanById_->status){
+                $newPlanToCreated_[0] =  [
+                    "id_plan" => $getPlanById_->plan->id_plan,
+                    "name" => $getPlanById_->plan->name,
+                    "description" => $getPlanById_->plan->description,
+                    "amount" =>   $getPlanById_->plan->amount,
+                    "currency" => $getPlanById_->plan->currency,
+                    "interval_count" => $getPlanById_->plan->interval_count,
+                    "interval" => $getPlanById_->plan->interval,
+                    "trial_days" => $getPlanById_->plan->id_plan,
+                ];
+ 
+                return $this->process_payment_epayco($newPlanToCreated_, $customer, $confirm_url,$subscriptions,$order);
+            }
+        }
+    }
+    
+    
     public function plansCreate(array $plans)
     {
 
@@ -845,10 +852,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
     public function process_payment_epayco(array $plans,array $customerData, $confirm_url, $subscriptions, $order)
     {
         $subsCreated = $this->subscriptionCreate($plans, $customerData, $confirm_url);
-           
         if ($subsCreated->status){
-            $subs = $this->subscriptionCharge($plans, $customerData, $confirm_url);
-            
+           $subs = $this->subscriptionCharge($plans, $customerData, $confirm_url);
             foreach ($subs as $sub){
                 $customerId = isset($subsCreated->customer->_id) ? $subsCreated->customer->_id : null;
                 $suscriptionId = isset($subsCreated->id) ? $subsCreated->id : null;
@@ -862,11 +867,15 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                         'url' => $order->get_checkout_order_received_url()
                     ];
                 }else {
-                    $this->cancelledPayment($order->id,$customerId,$suscriptionId, $planId);
+                    if(count($sub->data->errors)>1){
+                        $errorMessage = $sub->data->errors[0]->errorMessage;
+                    }else{
+                        $errorMessage = $sub->data->errors;
+                    }
                     $response_status = [
                         'ref_payco'=> null,
                         'status' => false,
-                        'message' => "error",
+                        'message' => $errorMessage,
                         'url' => $order->get_checkout_order_received_url()
                     ];
                 }
