@@ -195,8 +195,8 @@
                 <head>
                   <link rel="stylesheet" type="text/css"  href="'.$style.'">
                   <link rel="stylesheet" type="text/css"  href="'.$general.'">
-                  <link  rel="stylesheet" type="text/css" href="'.$card_style.'" />
-                  <link  rel="stylesheet" type="text/css" href="'.$stylemin.'" />
+                  <link  rel="stylesheet" id="cardjsmincss" type="text/css" href="'.$card_style.'" />
+                  
                   <link  rel="stylesheet" type="text/css" href="'.$animate.'" /> 
                   <link  rel="stylesheet" type="text/css" href="'.$cardsjscss.'" />
                   
@@ -293,7 +293,8 @@
                      </div>
                    </div>
                  </header>
-                 <section class="content animated zoomIn ">
+                 <section class="content animated zoomIn " style="
+                 background-color: white;">
                    <div id="content-errors"></div>
                    <form id="form-action" method="post" novalidate=""  action="'.$redirect_url.'" >
                      
@@ -402,7 +403,7 @@
              
              </footer>
  
-             <div class="cancelT-modal dn">
+             <div class="cancelT-modal dn" id="cancelT_modal" style="display:none">
                <div class="ventana dn">
                  <div class="icono">
                    <svg class="svg-inline--fa fa-exclamation-circle fa-w-16" aria-hidden="true" data-prefix="fa" data-icon="exclamation-circle" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg=""><path fill="currentColor" d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"></path></svg>
@@ -416,7 +417,7 @@
              </div>
               
  
-             <div class="modal-expiration-time dn" id="mdlInactivityTime">
+             <div class="modal-expiration-time dn" id="mdlInactivityTime"  style="display:none">
              <div class="ventana dn" id="mdlInactivityTimeBody">
                <div class="mdl-expiration-time">
        
@@ -438,7 +439,7 @@
              </div>
            </div>
  
-           <div class="modal-expiration-time  dn" id="mdlTimeExpired">
+           <div class="modal-expiration-time  dn" id="mdlTimeExpired"  style="display:none">
              <div class="ventana dn" id="mdlTimeExpiredBody">
                <div class="mdl-expiration-time">
                  <div class="text-center">
@@ -550,7 +551,7 @@
                                       <input class="card-number my-custom-class" data-epayco="card[number]" required id="the-card-number-element" name="card_number">
                                     </div>
 
-                                    <div class="input-form">
+                                    <div class="input-form" hidden>
                                         <span class="icon-credit-card color icon-input"><i class="fas fa-envelope"></i></span>
                                         <input type="tel" class="binding-input inspectletIgnore"  name="card_email"  autocomplete="off" hidden="true" data-epayco="card[email]" value="'.$email_billing.'">
                                     </div>
@@ -586,7 +587,7 @@
                                         <i class="fa color fa-question-circle pointer" aria-hidden="true" style="right: 5px; padding: 0; top: 0;" id="look-cvv"></i>
                                     </div>
                                     <br>
-                                    <div class="clearfix"></div><br>
+                                    <div class="clearfix"></div>
 
                                     <div class="call_action bgcolor white_font pointer load hidden-print" id="send-form">
                                       <h2 style="color: white;" id="pagar_es">Pagar</h2>
@@ -617,7 +618,8 @@
                                 <div id="overlay"></div>
                           </div>
     
-                
+                          <div id="style_min" hidden>'.$stylemin.'
+                          </div>
                 
                 
                           </body>
@@ -626,7 +628,7 @@
                       <script src="'.$epaycojs.'"></script>
                   <script src="'.$indexjs.'"></script>
                   <div id="movil" hidden>'.$appjs.'
-                 </div>
+                  </div>
                  <script src="'.$cardsjs.'"></script>
                 </html>';
               }

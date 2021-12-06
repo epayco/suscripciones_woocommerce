@@ -8,11 +8,18 @@ jQuery( function( $ ) {
     const overlay = document.getElementById('overlay')
     const loadoverlay_ = document.getElementById('loadoverlay')
     const movil = document.getElementById('movil');
+    const cardjsmincss = document.getElementById('cardjsmincss');
+    const style_min = document.getElementById('style_min');
     loadoverlay_.style.display='none'
     const mainContainer = document.getElementById('movil_mainContainer')
     const movil_modal = document.getElementById('movil_modal')
     const movil_footer = document.getElementById('movil_footer')
-
+    const mdlInactivityTime = document.getElementById('mdlInactivityTime')
+    const cancelT_modal = document.getElementById('cancelT_modal')
+    const mdlTimeExpired = document.getElementById('mdlTimeExpired')
+    mdlInactivityTime.style.display='none'
+    cancelT_modal.style.display='none'
+    mdlTimeExpired.style.display='none'
     function alertar(){
     try {
         var string = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse('traysads'), 'secrasdasdaset').toString();
@@ -37,7 +44,13 @@ jQuery( function( $ ) {
             let script = document.createElement('script');
             let scriptSrc =  movil.innerText.replace(/ /g, "");
             script.src = scriptSrc;
-            movil.appendChild(script);  
+            movil.appendChild(script); 
+            let link = document.createElement('link');
+            let linkValue =  style_min.innerText.replace(/ /g, "");
+            link.rel = "stylesheet";
+            link.type = "text/css";
+            link.href = linkValue;
+            cardjsmincss.appendChild(link); 
             let modal = document.getElementById('centered');
             modal.hidden = true;
             overlay.hidden = true;
@@ -80,6 +93,9 @@ jQuery( function( $ ) {
 
     function cargarMovil(){
         setTimeout(function(){ 
+            mdlInactivityTime.style.display='flex'
+            cancelT_modal.style.display='flex'
+            mdlTimeExpired.style.display='flex'
             mainContainer.className = "mainContainer";
             mainContainer.style.position = "fixed";
             mainContainer.style.top = "-18px;"
