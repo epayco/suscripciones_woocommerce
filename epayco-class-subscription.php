@@ -989,7 +989,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             update_post_meta($order->id, 'plan_id', $planId);
             $response_status = [
                 'ref_payco'=> null,
-                'status' => false,
+                'status' => true,
                 'message' => null,
                 'url' => $order->get_checkout_order_received_url()
             ];
