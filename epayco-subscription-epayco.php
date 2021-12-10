@@ -193,7 +193,7 @@
             echo '
               <!DOCTYPE html>
                 <head>
-                  <link rel="stylesheet" type="text/css"  href="'.$style.'">
+                  <link rel="stylesheet" type="text/css" id="movil_header"  href="'.$style.'">
                   <link rel="stylesheet" type="text/css"  href="'.$general.'">
                   <link  rel="stylesheet" id="cardjsmincss" type="text/css" href="'.$card_style.'" />
                   

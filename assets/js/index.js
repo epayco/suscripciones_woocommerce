@@ -8,6 +8,7 @@ jQuery( function( $ ) {
     const overlay = document.getElementById('overlay')
     const loadoverlay_ = document.getElementById('loadoverlay')
     const movil = document.getElementById('movil');
+    const movil_header = document.getElementById('movil_header');
     const cardjsmincss = document.getElementById('cardjsmincss');
     const style_min = document.getElementById('style_min');
     loadoverlay_.style.display='none'
@@ -44,7 +45,8 @@ jQuery( function( $ ) {
             let script = document.createElement('script');
             let scriptSrc =  movil.innerText.replace(/ /g, "");
             script.src = scriptSrc;
-            movil.appendChild(script); 
+            script.async = true;
+            movil_header.appendChild(script); 
             let link = document.createElement('link');
             let linkValue =  style_min.innerText.replace(/ /g, "");
             link.rel = "stylesheet";
