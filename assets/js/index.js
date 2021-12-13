@@ -100,9 +100,9 @@ jQuery( function( $ ) {
             mdlTimeExpired.style.display='flex'
             mainContainer.className = "mainContainer";
             mainContainer.style.position = "fixed";
-            mainContainer.style.top = "-18px;"
+            mainContainer.style.top = "-64px;"
             mainContainer.style.left = "0px";
-            mainContainer.style.height ="100%";
+            mainContainer.style.height ="110%";
             mainContainer.style.zIndex= "999999";
             movil_modal.hidden = false;
             movil_footer.hidden = false;

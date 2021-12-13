@@ -516,19 +516,7 @@ _:future,
 	height: auto;
 }
 
-@media screen and (min-color-index: 0) and(-webkit-min-device-pixel-ratio:0) {
-	@media {
-		.row {
-			display: block;
-		}
-		.fix-top-safari {
-			margin-top: -10px;
-		}
-		.image-safari {
-			padding-top: 35%;
-		}
-	}
-}
+
 
   .select-pais a.disabled {
     background: #fff !important;
@@ -1565,19 +1553,6 @@ _:future,
     height: auto;
   }
 
-  @media screen and (min-color-index:0) and(-webkit-min-device-pixel-ratio:0) {
-    @media {
-      .row {
-        display: block;
-      }
-      .fix-top-safari {
-        margin-top: -10px;
-      }
-      .image-safari {
-        padding-top: 35%;
-      }
-    }
-  }
 
   /*Internet explorer*/
 

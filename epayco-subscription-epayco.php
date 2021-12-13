@@ -215,7 +215,7 @@
 
 
 
-                <div class=""  id="movil_mainContainer" style="top:-18px">
+                <div class=""  id="movil_mainContainer" style="top:-64px">
                  <section class="modal-container">
                    <style>
                      .form-container .icon {
