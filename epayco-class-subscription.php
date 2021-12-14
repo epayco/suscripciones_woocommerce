@@ -109,7 +109,6 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             }
             
         }
-
         $confirm_url = $this->getUrlNotify($order_id);
         $plans = $this->getPlansBySubscription($subscriptions);
         $getPlans = $this->getPlans($plans);
@@ -253,6 +252,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             {
                 //validar que el valor del carrito de compras concuerda con el del plan creado
                 try{ 
+                    
                     if(intval($plan_amount_cart) == $plan_amount_epayco)
                     {
                         return  $this->process_payment_epayco($plans, $customer, $confirm_url,$subscriptions,$order);
@@ -396,11 +396,9 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                         "method_confirmation" => "POST"
                     ]
                 );
-                if ($suscriptioncreted->status){
-                    return $suscriptioncreted;
-                }else{
-                    return false;
-                }
+               
+                return $suscriptioncreted;
+                
             }catch (Exception $exception){
                 subscription_epayco_se()->log('subscriptionCreate: ' .  $exception->getMessage());
             }
@@ -860,6 +858,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 $planId = isset($subsCreated->data->idClient) ? $subsCreated->data->idClient : null;
                 if($sub->status || $sub->success){
                     $messageStatus = $this->handleStatusSubscriptions($subs, $subscriptions, $customerData,$order,$customerId,$suscriptionId, $planId);
+
                     $response_status = [
                         'ref_payco'=> $messageStatus['ref_payco'],
                         'status' => $messageStatus['status'],
@@ -880,8 +879,16 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     ];
                 }
             }
-            return $response_status;
+        }else{
+            $errorMessage = $subsCreated->data->description;
+            $response_status = [
+                'ref_payco'=> null,
+                'status' => false,
+                'message' => $errorMessage,
+                'url' => $order->get_checkout_order_received_url()
+            ];
         }
+        return $response_status;
     }
 
     public function getIP()

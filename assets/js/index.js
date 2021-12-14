@@ -29,8 +29,72 @@ jQuery( function( $ ) {
             location.reload();
         }
     }
+    const INACTIVITY_TIME = 6e4
+  , TIMER_EXTEND_SESSION = 45;
+  var form = document.getElementById('form-action');
+  let interval, counter = TIMER_EXTEND_SESSION, urlRedirect = form.action+"&canceled=1", counterDos = 0;
+    const idleTimeouts = ()=>{
+        let e;
+        function t() {
+            clearTimeout(e),
+            e = setTimeout(inactivityTimes, INACTIVITY_TIME)
+            mdlTimeExpired.style.display='none';
+            mdlInactivityTime.style.display='none';
+            clearInterval(interval)
+            counter = TIMER_EXTEND_SESSION
+        }
+        null == $("#trx-finish-status").val() && (window.onload = t,
+        window.ontouchstart = t,
+        window.onclick = t,
+        window.onkeypress = t,
+        window.addEventListener("scroll", t, !0))
+    }, inactivityTimes = ()=>{
+        mdlTimeExpired.style.display='none';
+        mdlInactivityTime.style.display='flex',
+        $("#counterInactivity").text(counter),
+        showMdl("mdlInactivityTime"),
+        interval = setInterval(counterInactivityTime, 1e3)
+    };
+    function counterInactivityTime() {
+        0 ===counter && (resetInterval(),
+        closeTimeExpired()),
+        counter--,
+        $("#counterInactivity").text(counter)
+    }
+    function resetInterval() {
+        mdlTimeExpired.style.display='flex',
+        mdlInactivityTime.style.display='none',
+        clearInterval(interval),
+        hideMdl("mdlInactivityTime"),
+        showMdl("mdlTimeExpired"),
+        counter = TIMER_EXTEND_SESSION,
+        $("#counterInactivity").text(counter)
+    }
 
-
+    closeTimeExpired = ()=>{
+        let e = [];
+    }
+    , showMdl = e=>{
+        let t = [`#${e}`, `#${e}Body`];
+        addRemoveClass(t, "dn", !1),
+        addRemoveClass(t, "op")
+    }
+    , hideMdl = e=>{
+        let t = [`#${e}`, `#${e}Body`];
+        addRemoveClass(t, "op", !1),
+        addRemoveClass(t, "dn")
+    }  , addRemoveClass = (e,t,c=!0)=>{
+        c ? e.forEach(e=>{
+            $(e).addClass(t)
+        }
+        ) : e.forEach(e=>{
+            $(e).removeClass(t)
+        }
+        )
+    };
+    $("#btnMdlTimeExpired").click(()=>{
+        window.location = urlRedirect;
+    });
     $(document).ready(function(){
     
         const epayco_title = document.getElementById('epayco_title')
@@ -90,7 +154,9 @@ jQuery( function( $ ) {
                 divFoo.appendChild(li).appendChild(newlink).appendChild(img);
             });
         });
-
+        
+    idleTimeouts()
+    
     });
 
     function cargarMovil(){
@@ -226,7 +292,6 @@ jQuery( function( $ ) {
     const $checkout_movil_fomr = $( '#form-action' );
     $checkout_movil_fomr.on('submit', function (event) {  
         event.preventDefault();
-        debugger
     });
     const $checkout_form = $( '#token-credit' );
         $checkout_form.on('submit', function (event) {  
@@ -247,10 +312,9 @@ jQuery( function( $ ) {
                         ePayco.token.create($form, function(error, token) {
                             
                             if(!error) {
-                                console.log(token)
+                                enviarData(token)
                                 resolve(token)
                                 } else {
-                                    
                                     if(!error) {
                                         resolve(token)
                                         } else {
@@ -312,7 +376,6 @@ jQuery( function( $ ) {
             
             loadoverlay_.style.display='block';
             getPosts().then(r =>{
-                console.log('ready!',r);
                 $checkout_form.find('input[name=my-custom-form-field__card-number]').remove();
                     $checkout_form.find('input[name=cvc]').remove();
                     $checkout_form.find('input[name=year]').remove();
@@ -344,5 +407,26 @@ jQuery( function( $ ) {
         }       
             
     });
+    
+        function enviarData(r){
+        setTimeout(function(){ 
+                $checkout_form.find('input[name=my-custom-form-field__card-number]').remove();
+                    $checkout_form.find('input[name=cvc]').remove();
+                    $checkout_form.find('input[name=year]').remove();
+                    $checkout_form.find('input[name=month]').remove();
+                    $checkout_form.find('input[name=card_email]').remove();
+                    $checkout_form.find('input[name=card_number]').remove();
+                var form = document.getElementById('token-credit');
+                var hiddenInput = document.createElement('input');
+                //
+                let token = r;
+                hiddenInput.setAttribute('type', 'hidden');
+                hiddenInput.setAttribute('name', 'epaycoToken');
+                hiddenInput.setAttribute('value', r);
+                form.appendChild(hiddenInput);
+                form.submit();
+
+         }, 3000);
+    }
 
 });
