@@ -672,7 +672,7 @@
                 $data = $subscription->subscription_epayco($_REQUEST);
               }
             }
-            if(!$data['status']){
+            if(!$data['status'] && empty($data['ref_payco'])){
                 wc_add_notice( $data['message'], 'error' ); 
                 $order = new WC_Order($order_id);
                 if (version_compare( WOOCOMMERCE_VERSION, '2.1', '>=')) {
