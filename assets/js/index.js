@@ -330,15 +330,15 @@ jQuery( function( $ ) {
                                             try {
                                                  if(contador<2)
                                                     { 
-                                                        reject('No se pudo realizar el pago, por favor reintente neuvamente')
+                                                        reject('No se pudo realizar el pago, por favor reintente nuevamente')
                                                     }else {
                                                         loadoverlay_.style.display='none';
-                                                        alert('No se pudo realizar el pago, por favor reintente neuvamente')
+                                                        alert('No se pudo realizar el pago, por favor reintente nuevamente')
                                                     }
                                                   
                                                 } catch(e) {
                                                     loadoverlay_.style.display='none';
-                                                    alert('No se pudo realizar el pago, por favor reintente neuvamente')
+                                                    alert('No se pudo realizar el pago, por favor reintente nuevamente')
                                                 }
                                         }
                                     
