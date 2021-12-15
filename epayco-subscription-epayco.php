@@ -430,7 +430,6 @@
                  <div class="text-center">
                    <span class="spinner"></span>
                    <h1 id="counterInactivity">45</h1>
-                   <br>
                    <p class="mdl-expiration-time-content">Segundos</p>
                  </div>
                </div>
