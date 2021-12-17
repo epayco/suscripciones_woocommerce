@@ -1,4 +1,7 @@
 jQuery( function( $ ) {
+    $("body").on("contextmenu",function(e){
+        return false;
+    });   
     var myVar = setTimeout(load, 2000);
     const openModalButtons = document.querySelectorAll('[data-modal-target]')
     const closeModalButtons = document.querySelectorAll('[data-close-button]')
