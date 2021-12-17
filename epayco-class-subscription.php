@@ -647,13 +647,6 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 $order->update_status($orderStatus);
                 $order->add_order_note($message);
                 $subscription->update_status('pending');
-                /*$wpdb->insert(
-                    $table_subscription_epayco,
-                    [
-                        'order_id' => $subscription->get_id(),
-                        'idPlan' => $sub->data->idPlan
-                    ]
-                );*/
             }else{
                
                 $isTestTransaction = $sub->data->enpruebas == 1 ? "yes" : "no";

@@ -23,7 +23,7 @@ return array(
     'description' => array(
         'title' => __('Description'),
         'type' => 'textarea',
-        'description' => __('Corresponde al descripci贸n de la tienda que los usuarios visualizan en el checkout'),
+        'description' => __('Corresponde al descripción de la tienda que los usuarios visualizan en el checkout'),
         'default' => __('Subscription ePayco'),
         'desc_tip' => true,
     ),
@@ -31,7 +31,7 @@ return array(
         'title' => __('Modo'),
         'type'        => 'select',
         'class'       => 'wc-enhanced-select',
-        'description' => __('mode prueba/producci贸n'),
+        'description' => __('mode prueba/producción'),
         'desc_tip' => true,
         'default' => true,
         'options'     => array(
