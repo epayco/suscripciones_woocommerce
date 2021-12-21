@@ -516,19 +516,7 @@ _:future,
 	height: auto;
 }
 
-@media screen and (min-color-index: 0) and(-webkit-min-device-pixel-ratio:0) {
-	@media {
-		.row {
-			display: block;
-		}
-		.fix-top-safari {
-			margin-top: -10px;
-		}
-		.image-safari {
-			padding-top: 35%;
-		}
-	}
-}
+
 
   .select-pais a.disabled {
     background: #fff !important;
@@ -842,7 +830,7 @@ _:future,
     width: 100%;
     border-top: solid 1px #e7e7e7;
     margin-top: 20px;
-    padding-top: 10px;
+    padding-top: 22px;
   }
 
   .left15 {
@@ -906,7 +894,7 @@ _:future,
   .binding-input[id="month-value"],
   .binding-input[id="year-value"]{
     width: 100%!important; 
-    height: 35px;
+    height: 37px;
   }
 
 
@@ -1565,19 +1553,6 @@ _:future,
     height: auto;
   }
 
-  @media screen and (min-color-index:0) and(-webkit-min-device-pixel-ratio:0) {
-    @media {
-      .row {
-        display: block;
-      }
-      .fix-top-safari {
-        margin-top: -10px;
-      }
-      .image-safari {
-        padding-top: 35%;
-      }
-    }
-  }
 
   /*Internet explorer*/
 
