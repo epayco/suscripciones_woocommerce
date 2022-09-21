@@ -32,10 +32,9 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         $customerData['token_card'] = $token;
         $sql_ = 'SELECT * FROM '.$table_name_setings.' WHERE id_payco = '.$this->custIdCliente;
         $customerGetData = $wpdb->get_results($sql_, OBJECT);
-
         if (count($customerGetData) == 0){
             $customer = $this->customerCreate($customerData);
-            if ($customer->data->status == 'error'){
+            if ($customer->data->status == 'error' || !$customer->status){
                 $response_status = [
                     'status' => false,
                     'message' => __($customer->message, 'epayco-subscription')
@@ -61,7 +60,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             $customerData['customer_id'] = $customer->data->customerId;
         }else{
 
-	       $count_customers= 0;
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                	       $count_customers= 0;
        		for ($i = 0; $i < count($customerGetData); $i++) {
                 if($customerGetData[$i]->email == $customerData['email']){
                 $count_customers += 1;
@@ -1044,13 +1043,13 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                         }
 
                         if(!($current_state == "epayco_on_hold")){
-                            $this->restore_order_stock($order->id,"+");
+                            $this->restore_order_stock($order->get_id(),"+");
                         }
                     }else{
                         $message = 'Pago exitoso';
                         $orderStatus = $this->epayco_endorder_state;
                         if(!($current_state == "epayco-on-hold")){
-                            $this->restore_order_stock($order->id,"+");
+                            $this->restore_order_stock($order->get_id(),"+");
                         }
                     }
 
@@ -1092,7 +1091,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                                 $current_state="epayco-on-hold" ||
                                 $current_state="epayco-on-hold"
                             ){
-                                $this->restore_order_stock($order->id);
+                                $this->restore_order_stock($order->get_id());
                             }
 
                         }
@@ -1119,7 +1118,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                                 $current_state="epayco-on-hold" ||
                                 $current_state="epayco-on-hold"
                             ){
-                                $this->restore_order_stock($order->id);
+                                $this->restore_order_stock($order->get_id());
                             }
 
                         }
@@ -1132,13 +1131,13 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                         $message = 'Pago pendiente de aprobación Prueba';
                         $orderStatus = "epayco_on_hold";
                         if(!($current_state == "epayco_on_hold")){
-                            $this->restore_order_stock($order->id,"+");
+                            $this->restore_order_stock($order->get_id(),"+");
                         }
                     }else{
                         $message = 'Pago pendiente de aprobación';
                         $orderStatus = "epayco-on-hold";
                         if(!($current_state == "epayco-on-hold")){
-                            $this->restore_order_stock($order->id,"+");
+                            $this->restore_order_stock($order->get_id(),"+");
                         }
                     }
 
