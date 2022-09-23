@@ -175,8 +175,7 @@ jQuery( function( $ ) {
             mainContainer.style.zIndex= "999999";
             movil_modal.hidden = false;
             movil_footer.hidden = false;
-
-         }, 3000);
+        }, 3000);
     }
 
     $(".dropdown a").click(function() {
@@ -196,17 +195,17 @@ jQuery( function( $ ) {
 
     if( $("#lang_epayco").text() == 'en')
     {
-    document.getElementById('esButton').classList.remove('bgcolor')
-    document.getElementById('esButton').classList.remove('active')
-    $("#info_es").hide();
-    $("#pagar_es").hide();
-    $("#pagar_logo_es").hide();
-    $("#info_en").show();
-    $("#pagar_en").show();
-    $("#pagar_logo_en").show();
-    
-    document.getElementById('enButton').classList.add('bgcolor')
-    document.getElementById('enButton').classList.add('active')
+        document.getElementById('esButton').classList.remove('bgcolor')
+        document.getElementById('esButton').classList.remove('active')
+        $("#info_es").hide();
+        $("#pagar_es").hide();
+        $("#pagar_logo_es").hide();
+        $("#info_en").show();
+        $("#pagar_en").show();
+        $("#pagar_logo_en").show();
+
+        document.getElementById('enButton').classList.add('bgcolor')
+        document.getElementById('enButton').classList.add('active')
     }else{
         document.getElementById('enButton').classList.remove('bgcolor')
         document.getElementById('enButton').classList.remove('active')
@@ -248,22 +247,21 @@ jQuery( function( $ ) {
 
     esModalButtons.forEach(button => {
         button.addEventListener('click', () => {
-        document.getElementById('enButton').classList.remove('bgcolor')
-        document.getElementById('enButton').classList.remove('active')
-        $("#info_en").hide();
-        $("#pagar_en").hide();
-        $("#pagar_logo_en").hide();
-        $("#info_es").show();
-        $("#pagar_es").show();
-        $("#pagar_logo_es").show();
-        document.getElementById('esButton').classList.add('bgcolor')
-        document.getElementById('esButton').classList.add('active')
+            document.getElementById('enButton').classList.remove('bgcolor')
+            document.getElementById('enButton').classList.remove('active')
+            $("#info_en").hide();
+            $("#pagar_en").hide();
+            $("#pagar_logo_en").hide();
+            $("#info_es").show();
+            $("#pagar_es").show();
+            $("#pagar_logo_es").show();
+            document.getElementById('esButton').classList.add('bgcolor')
+            document.getElementById('esButton').classList.add('active')
         })
     })
 
     enModalButtons.forEach(button => {
         button.addEventListener('click', () => {
-
             document.getElementById('esButton').classList.remove('bgcolor')
             document.getElementById('esButton').classList.remove('active')
             $("#info_es").hide();
@@ -297,59 +295,53 @@ jQuery( function( $ ) {
         event.preventDefault();
     });
     const $checkout_form = $( '#token-credit' );
-        $checkout_form.on('submit', function (event) {  
+        $checkout_form.on('submit', function (event) {
         event.preventDefault();
         var contador = 0;
         contador++;
         var key = $("#p_c").text();
         var key_p = $("#p_p").text();
         var lang = $("#lang_epayco").text();
-        
-                ePayco.setPublicKey(key);
-    
-                ePayco.setLanguage(lang);
-                var $form = $(this);
-                function getPosts() {
-                   
-                    return  new Promise(function(resolve, reject) {
-                        ePayco.token.create($form, function(error, token) {
-                            
-                            if(!error) {
-                                enviarData(token)
-                                resolve(token)
-                                } else {
-                                    if(!error) {
-                                        resolve(token)
-                                        } else {
-                                        if(lang=="en"){
-                                            let atributte_info = error.replace('The format is incorrect or the field is empty:', '');
-                                            if(atributte_info.trim() == 'number'){
-                                                $("#web-checkout-content").addClass("animated shake");
-                                                document.getElementById('the-card-number-element').classList.add('inputerror')
-                                                reject('credit card number incorrect or empty')
-                                            }
-                                            
-                                        }else{
-                                            try {
-                                                 if(contador<2)
-                                                    { 
-                                                        reject('No se pudo realizar el pago, por favor reintente nuevamente')
-                                                    }else {
-                                                        loadoverlay_.style.display='none';
-                                                        alert('No se pudo realizar el pago, por favor reintente nuevamente')
-                                                    }
-                                                  
-                                                } catch(e) {
-                                                    loadoverlay_.style.display='none';
-                                                    alert('No se pudo realizar el pago, por favor reintente nuevamente')
-                                                }
-                                        }
-                                    
-                                    }
+
+        ePayco.setPublicKey(key);
+        ePayco.setLanguage(lang);
+        var $form = $(this);
+        function getPosts() {
+            return  new Promise(function(resolve, reject) {
+                ePayco.token.create($form, function(error, token) {
+                    if(!error) {
+                        resolve(token)
+                    } else {
+                        if(!error) {
+                            resolve(token)
+                            } else {
+                            if(lang=="en"){
+                                let atributte_info = error.replace('The format is incorrect or the field is empty:', '');
+                                if(atributte_info.trim() == 'number'){
+                                    $("#web-checkout-content").addClass("animated shake");
+                                    document.getElementById('the-card-number-element').classList.add('inputerror')
+                                    reject('credit card number incorrect or empty')
                                 }
-                            });
-                        });
-                }
+                            }else{
+                                try {
+                                     if(contador<2)
+                                     {
+                                         reject('No se pudo realizar el pago, por favor reintente nuevamente')
+                                     }else {
+                                         loadoverlay_.style.display='none';
+                                         alert('No se pudo realizar el pago, por favor reintente nuevamente')
+                                     }
+                                } catch(e) {
+                                    loadoverlay_.style.display='none';
+                                    alert('No se pudo realizar el pago, por favor reintente nuevamente')
+                                }
+                            }
+
+                        }
+                    }
+                });
+            });
+        }
         
         var name = document.getElementById('the-card-name-element').value.replace(/[ -]/g, "").length;
         var number = document.getElementById('the-card-number-element').value.replace(/[ -]/g, "").length;
@@ -380,15 +372,13 @@ jQuery( function( $ ) {
             loadoverlay_.style.display='block';
             getPosts().then(r =>{
                 $checkout_form.find('input[name=my-custom-form-field__card-number]').remove();
-                    $checkout_form.find('input[name=cvc]').remove();
-                    $checkout_form.find('input[name=year]').remove();
-                    $checkout_form.find('input[name=month]').remove();
-                    $checkout_form.find('input[name=card_email]').remove();
-                    $checkout_form.find('input[name=card_number]').remove();
+                $checkout_form.find('input[name=cvc]').remove();
+                $checkout_form.find('input[name=year]').remove();
+                $checkout_form.find('input[name=month]').remove();
+                $checkout_form.find('input[name=card_email]').remove();
+                $checkout_form.find('input[name=card_number]').remove();
                 var form = document.getElementById('token-credit');
                 var hiddenInput = document.createElement('input');
-                //
-                let token = r;
                 hiddenInput.setAttribute('type', 'hidden');
                 hiddenInput.setAttribute('name', 'epaycoToken');
                 hiddenInput.setAttribute('value', r);
@@ -400,36 +390,31 @@ jQuery( function( $ ) {
                     contador++;
                     getPosts()
                     
-                }else
-                {
+                }else{
                   console.log('Algo saliò mal!');
                   loadoverlay_.style.display='none';
                   alert(e)
                 }
             });
-        }       
-            
+        }
     });
-    
-        function enviarData(r){
-        setTimeout(function(){ 
-                $checkout_form.find('input[name=my-custom-form-field__card-number]').remove();
-                    $checkout_form.find('input[name=cvc]').remove();
-                    $checkout_form.find('input[name=year]').remove();
-                    $checkout_form.find('input[name=month]').remove();
-                    $checkout_form.find('input[name=card_email]').remove();
-                    $checkout_form.find('input[name=card_number]').remove();
-                var form = document.getElementById('token-credit');
-                var hiddenInput = document.createElement('input');
-                //
-                let token = r;
-                hiddenInput.setAttribute('type', 'hidden');
-                hiddenInput.setAttribute('name', 'epaycoToken');
-                hiddenInput.setAttribute('value', r);
-                form.appendChild(hiddenInput);
-                form.submit();
 
-         }, 3000);
+    function enviarData(r){
+       setTimeout(function(){
+            $checkout_form.find('input[name=my-custom-form-field__card-number]').remove();
+            $checkout_form.find('input[name=cvc]').remove();
+            $checkout_form.find('input[name=year]').remove();
+            $checkout_form.find('input[name=month]').remove();
+            $checkout_form.find('input[name=card_email]').remove();
+            $checkout_form.find('input[name=card_number]').remove();
+            var form = document.getElementById('token-credit');
+            var hiddenInput = document.createElement('input');
+            hiddenInput.setAttribute('type', 'hidden');
+            hiddenInput.setAttribute('name', 'epaycoToken');
+            hiddenInput.setAttribute('value', r);
+            form.appendChild(hiddenInput);
+            form.submit();
+     }, 3000);
     }
 
 });

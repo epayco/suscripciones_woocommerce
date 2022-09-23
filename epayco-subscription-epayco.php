@@ -486,7 +486,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
                   <div class="header-modal-text">
                     <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0rem  -0.5rem !important;color: black;">'.$product_name_.'</h1>
                     <h2 style="font-size: 12px;margin-bottom:3px;color: #848484;margin: 0rem 1.5rem !important;">'.$this->shop_name.'</h2>
-                       '.$amout_value.'
+                       
                   </div>
                   
                 </div>
@@ -636,15 +636,14 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
             $subscription->subscription_epayco_confirm($_REQUEST);
             die();
         }else{
-            if(isset($_REQUEST["canceled"]) && $_REQUEST["canceled"] == "1")
-            {
+            if(isset($_REQUEST["canceled"]) && $_REQUEST["canceled"] == "1") {
                 $data = $subscription->cancelledPayment($order_id,null,null,null);
             }else{
                 $data = $subscription->subscription_epayco($_REQUEST);
             }
         }
         if(!$data['status']){
-            wc_add_notice( $data['message'], 'error' );
+            wc_add_notice( $data['message'][0], 'error' );
             $order = new WC_Order($order_id);
             if (version_compare( WOOCOMMERCE_VERSION, '2.1', '>=')) {
                 $redirect = array(
@@ -667,8 +666,6 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
           $redirect_url = add_query_arg($arguments , $redirect_url );
           wp_redirect($redirect_url);
         }
-
-
     }
 
     public function string_sanitize($string, $force_lowercase = true, $anal = false) {
