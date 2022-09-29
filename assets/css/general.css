@@ -23,6 +23,9 @@ a:link {
   height: 100px;
   border-radius: 5px 5px 0 0;
   padding-top: 10px;
+  flex-direction: column;
+  flex-wrap: wrap;
+  align-content: flex-start;
 }
 
 .onpage {
@@ -41,25 +44,34 @@ a:link {
   flex-flow: row nowrap;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
+  align-content: flex-start;
 }
 
 
 .footer-modal p {
-  display: inline-block;
   vertical-align: middle;
   margin: 0.5em auto 15px;
   flex: 0 0 auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .footer-modal p img {
-  height: 18px;
+  height: 20px;
   width: auto;
+  margin-left: 5px;
 }
 
 .footer-modal i {
   margin-right: 5px;
   margin-bottom: 5px;
 }
+.modal-container {
+  padding-top: 0rem !important;
+}
+
 
 .nombre-comercio {
   margin-left: 15px;
@@ -87,6 +99,18 @@ a:link {
   height: 80px;
   border-radius: 5px;
   border: 1px #e0e0e0 solid;
+  flex: 0 1 50px;
+}
+
+.header-modal-text{
+  position: absolute;
+  margin: 4px 100px 0px 130px;
+  margin-bottom: 3px;
+  flex: 0 1 50px;
+  border: solid 1px;
+  border-radius: 6px;
+  text-align: center;
+  font-weight: bold;
 }
 
 .icon-cancel {
