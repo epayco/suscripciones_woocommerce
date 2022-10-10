@@ -310,17 +310,22 @@ jQuery( function( $ ) {
             return  new Promise(function(resolve, reject) {
                 ePayco.token.create($form, function(error, token) {
                     if(!error) {
-                        resolve(token)
+                        enviarData(token)
                     } else {
                         if(!error) {
                             resolve(token)
                             } else {
                             if(lang=="en"){
-                                let atributte_info = error.replace('The format is incorrect or the field is empty:', '');
-                                if(atributte_info.trim() == 'number'){
-                                    $("#web-checkout-content").addClass("animated shake");
-                                    document.getElementById('the-card-number-element').classList.add('inputerror')
-                                    reject('credit card number incorrect or empty')
+                                if(error.data.description == "Error general contacte con soporte. No se encontro el token de sesion"){
+                                    reject( "repetir" )
+                                }else{
+                                    let atributte_info = error.replace('The format is incorrect or the field is empty:', '');
+                                    if(atributte_info.trim() == 'number'){
+                                        $("#web-checkout-content").addClass("animated shake");
+                                        document.getElementById('the-card-number-element').classList.add('inputerror')
+                                        reject('credit card number incorrect or empty')
+                                }
+
                                 }
                             }else{
                                 try {
@@ -371,6 +376,7 @@ jQuery( function( $ ) {
             
             loadoverlay_.style.display='block';
             getPosts().then(r =>{
+                debugger
                 $checkout_form.find('input[name=my-custom-form-field__card-number]').remove();
                 $checkout_form.find('input[name=cvc]').remove();
                 $checkout_form.find('input[name=year]').remove();
