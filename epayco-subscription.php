@@ -9,7 +9,7 @@
  * Version:           5.1.0
  * Author:            ePayco
  * Author URI:
- *Lice
+ * Licence
  * Domain Path:       /languages
  */
 
