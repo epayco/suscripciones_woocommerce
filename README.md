@@ -12,9 +12,9 @@
 ## Requisitos
 
 * Tener una cuenta activa en [ePayco](https://pagaycobra.com).
-* Tener instalado WordPress versión 5.3.x
-* WooCommerce versión 3.9.x.
-* WooCommerce Suscripcion versión 2.6.x.
+* Tener instalado WordPress versión 6.x
+* WooCommerce versión 4.x.
+* WooCommerce Suscripcion versión 2.x.
 * Acceso a las carpetas donde se encuetra instalado WordPress y WooCommerce.
 * Acceso al admin de WordPress.
 
