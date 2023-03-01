@@ -643,7 +643,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
             }
         }
         if(!$data['status']){
-            wc_add_notice( $data['message'][0], 'error' );
+            wc_add_notice( $data['message'], 'error' );
             $order = new WC_Order($order_id);
             if (version_compare( WOOCOMMERCE_VERSION, '2.1', '>=')) {
                 $redirect = array(

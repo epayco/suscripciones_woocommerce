@@ -204,7 +204,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
     }
 
 
-    public function validatePlan($create=null,$order_id,array $plans,$subscriptions,$customer,$confirm_url,$order ,$confirm = null,$update = null,$getPlans = null){
+    public function validatePlan($create,$order_id,array $plans,$subscriptions,$customer,$confirm_url,$order ,$confirm = null,$update = null,$getPlans = null){
 
        if($create)
         {   
@@ -831,7 +831,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 $customerId = isset($subsCreated->customer->_id) ? $subsCreated->customer->_id : null;
                 $suscriptionId = isset($subsCreated->id) ? $subsCreated->id : null;
                 $planId = isset($subsCreated->data->idClient) ? $subsCreated->data->idClient : null;
-                if($sub->status || $sub->success){
+                $validation = !is_null($sub->status)?$sub->status:$sub->success;
+                if($validation){
                     $messageStatus = $this->handleStatusSubscriptions($subs, $subscriptions, $customerData,$order,$customerId,$suscriptionId, $planId);
 
                     $response_status = [
@@ -841,12 +842,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                         'url' => $order->get_checkout_order_received_url()
                     ];
                 }else {
-                    
-                    if(count($sub->data->errors)>1){
-                        $errorMessage = $sub->data->errors[0]->errorMessage;
-                    }else{
-                        $errorMessage = $sub->data->errors;
-                    }
+                   
+                    $errorMessage = $sub->data->errors;
                     $response_status = [
                         'ref_payco'=> null,
                         'status' => false,
