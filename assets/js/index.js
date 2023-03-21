@@ -324,7 +324,9 @@ jQuery( function( $ ) {
                                         $("#web-checkout-content").addClass("animated shake");
                                         document.getElementById('the-card-number-element').classList.add('inputerror')
                                         reject('credit card number incorrect or empty')
+
                                     }
+
                                 }
                             }else{
                                 try {
@@ -374,6 +376,7 @@ jQuery( function( $ ) {
         }else{
             
             loadoverlay_.style.display='block';
+
             getPosts().then(r =>{         
                 $checkout_form.find('input[name=my-custom-form-field__card-number]').remove();
                 $checkout_form.find('input[name=cvc]').remove();
