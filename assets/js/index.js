@@ -308,7 +308,7 @@ jQuery( function( $ ) {
         var $form = $(this);
         function getPosts() {
             return  new Promise(function(resolve, reject) {
-                ePayco.token.create($form, function(error, token) {
+                ePayco.token.create($form, function(error, token) {                  
                     if(!error) {
                         enviarData(token)
                     } else {
@@ -324,7 +324,8 @@ jQuery( function( $ ) {
                                         $("#web-checkout-content").addClass("animated shake");
                                         document.getElementById('the-card-number-element').classList.add('inputerror')
                                         reject('credit card number incorrect or empty')
-                                }
+
+                                    }
 
                                 }
                             }else{
@@ -375,8 +376,8 @@ jQuery( function( $ ) {
         }else{
             
             loadoverlay_.style.display='block';
-            getPosts().then(r =>{
-                debugger
+
+            getPosts().then(r =>{         
                 $checkout_form.find('input[name=my-custom-form-field__card-number]').remove();
                 $checkout_form.find('input[name=cvc]').remove();
                 $checkout_form.find('input[name=year]').remove();

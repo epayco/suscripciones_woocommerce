@@ -115,7 +115,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
         $order = wc_get_order( $order_id );
         $order_data = $order->get_data(); // The Order data
         $name_billing=$subscription->get_billing_first_name().' '.$subscription->get_billing_last_name();
-        $email_billing=$subscription->billing_email;
+        $email_billing=$subscription->get_billing_email();
         $redirect_url =get_site_url() . "/";
         $redirect_url = add_query_arg( 'wc-api', get_class( $this ), $redirect_url );
         $redirect_url = add_query_arg('order_id',$order_id,$redirect_url);
@@ -632,7 +632,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
         $subscription = new Subscription_Epayco_SE();
         $order_id= $_REQUEST["order_id"];
 
-        if($_REQUEST["confirmation"]){
+        if( isset($_REQUEST["confirmation"]) ){
             $subscription->subscription_epayco_confirm($_REQUEST);
             die();
         }else{
@@ -643,7 +643,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
             }
         }
         if(!$data['status']){
-            wc_add_notice( $data['message'][0], 'error' );
+            wc_add_notice( $data['message'], 'error' );
             $order = new WC_Order($order_id);
             if (version_compare( WOOCOMMERCE_VERSION, '2.1', '>=')) {
                 $redirect = array(

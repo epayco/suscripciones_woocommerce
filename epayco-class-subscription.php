@@ -31,7 +31,13 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         $customerData = $this->paramsBilling($subscriptions, $order, $customerName);
         $customerData['token_card'] = $token;
         $sql_ = 'SELECT * FROM '.$table_name_setings.' WHERE id_payco = '.$this->custIdCliente.' AND email = '.$customerData['email'];
-        $customerGetData = $wpdb->get_results($sql_, OBJECT);
+        $customerGetData = $wpdb->get_results(
+            $wpdb->prepare(
+                "SELECT * FROM $table_name_setings WHERE id_payco = %d AND email = %s",
+                $this->custIdCliente,
+                $customerData['email']
+            )
+        );
         if (count($customerGetData) == 0){
             $customer = $this->customerCreate($customerData);
             if ($customer->data->status == 'error' || !$customer->status){
@@ -198,7 +204,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
     }
 
 
-    public function validatePlan($create=null,$order_id,array $plans,$subscriptions,$customer,$confirm_url,$order ,$confirm = null,$update = null,$getPlans = null){
+    public function validatePlan($create,$order_id,array $plans,$subscriptions,$customer,$confirm_url,$order ,$confirm = null,$update = null,$getPlans = null){
 
        if($create)
         {   
@@ -825,7 +831,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 $customerId = isset($subsCreated->customer->_id) ? $subsCreated->customer->_id : null;
                 $suscriptionId = isset($subsCreated->id) ? $subsCreated->id : null;
                 $planId = isset($subsCreated->data->idClient) ? $subsCreated->data->idClient : null;
-                if($sub->status || $sub->success){
+                $validation = !is_null($sub->status)?$sub->status:$sub->success;
+                if($validation){
                     $messageStatus = $this->handleStatusSubscriptions($subs, $subscriptions, $customerData,$order,$customerId,$suscriptionId, $planId);
 
                     $response_status = [
@@ -835,11 +842,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                         'url' => $order->get_checkout_order_received_url()
                     ];
                 }else {
-                    if(count($sub->data->errors)>1){
-                        $errorMessage = $sub->data->errors[0]->errorMessage;
-                    }else{
-                        $errorMessage = $sub->data->errors;
-                    }
+                   
+                    $errorMessage = $sub->data->errors;
                     $response_status = [
                         'ref_payco'=> null,
                         'status' => false,
