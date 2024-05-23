@@ -492,23 +492,23 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
                 </div>
                       
                 <div class="body-modal fix-top-safari">
-
                   <div class="bar-option hidden-print">
                     <div class="dropdown select-pais pointer" id="sample">
-                      <a class="dropdown-toggle blockd" type="button" data-toggle="dropdown">
-                      <div class="flag flag-icon-background flag-icon-co" data-toggle="dropdown" id="flag"></div>
-                      <div id="countryName">Colombia</div>
-                      <i class="fa fa-caret-down caret-languaje" aria-hidden="true" ></i>
-                      </a>
-                      <dd>
+                    <dd>
                         <ul id="foo"></ul>
                       </dd>
+                        <p style="position: absolute !important;">
+                          <a class="dropdown-toggle blockd" type="button" data-toggle="dropdown">
+                          <div class="flag flag-icon-background flag-icon-co" data-toggle="dropdown" id="flag"></div><div id="countryName">Colombia</div><i class="fa fa-caret-down caret-languaje" aria-hidden="true" ></i>
+                          </a>
+                        </p> 
                       <ul class="dropdown-menu" id="dropdown-countries"></ul>
                     </div>
-                              
-                    <span id="result" hidden>'.$str_countryCode.'</span>       
+                    <p style="display: flex; margin: 0px">
+                      <span id="result" hidden>'.$str_countryCode.'</span>       
                       <a id="esButton" class="languaje pointer" data-es-button data-language="es">ES</a>
                       <a id="enButton" class="languaje pointer" data-en-button data-language="en">EN</a>
+                    </p> 
                   </div>
                         
                   <div class="wc scroll-content">
@@ -535,10 +535,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
 
                       <div class="select-option bordergray vencimiento" style="float:left" id="expiration">
                         <div class="input-form full-width noborder monthcredit nomargin">         
-                          <span class="icon-date_range color icon-select">
-                            <i class="far fa-calendar-alt"></i>
-                          </span>
-                          <input class="binding-input inspectletIgnore" id="month-value" name="month" placeholder="MM" maxlength="2" autocomplete="off" data-epayco="card[exp_month]"  required>
+                          <span class="icon-date_range color icon-select"><i class="far fa-calendar-alt"></i></span><input class="binding-input inspectletIgnore" id="month-value" name="month" placeholder="MM" maxlength="2" autocomplete="off" data-epayco="card[exp_month]"  required>
                         </div>
                         <div class="" style="
                           float:left;
@@ -548,9 +545,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
                           line-height: 40px;
                           height: 37px;
                           background-color: white;
-                          color:#a3a3a3;">
-                          /
-                        </div>
+                          color:#a3a3a3;">/</div>
                         <div class="input-form full-width normalinput noborder yearcredit nomargin">                  
                           <input class="binding-input inspectletIgnore" name="year" id="year-value" placeholder="YYYY" maxlength="4" autocomplete="off" data-epayco="card[exp_year]"  required >
                         </div>
@@ -562,10 +557,10 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
                       </div>
                       <br>
                       <div class="clearfix"></div>
-                        <div class="call_action bgcolor white_font pointer load hidden-print" id="send-form">
+                        <button class="call_action bgcolor white_font pointer load hidden-print" id="send-form">
                           <h2 style="color: white;" id="pagar_es">Pagar</h2>
                           <h2 style="color: white;" id="pagar_en">Pay</h2>
-                        </div>
+                        </button>
                     </form>
                   </div>
 
@@ -575,14 +570,12 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
 
             <div class="footer-modal hidden-print" id="footer-animated">
               <p id="pagar_logo_es">
-                <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>
-                  Pago seguro por 
-                  <img src="https://secure.epayco.co/img/new_epayco_white.png" height="20" style="display: inline;">
+                <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>Pago seguro por<img src="https://secure.epayco.co/img/new_epayco_white.png" height="20" style="display: inline;">
               </p>
               <p id="pagar_logo_en">
                 <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>
                       Secure payment by
-                <img src="https://secure.epayco.co/img/new_epayco_white.png" height="20" style="display: inline;">
+                <img src="https://secure.epayco.co/img/new_epayco_white.png" height="20" style="display: inline; margin-top: 5px">
               </p>
             </div>
 
