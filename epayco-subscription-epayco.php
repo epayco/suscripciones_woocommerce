@@ -5,11 +5,11 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
     public function __construct()
     {
         $this->id = 'epayco-subscription';
-        $this->icon =  plugin_dir_url(__FILE__).'assets/images/logo.png';
+        $this->icon =  plugin_dir_url(__FILE__).'assets/images/paymentLogo.svg';
         $this->method_title = __('ePayco Subscription');
         $this->method_description = __('Subscription ePayco recurring payments');
         $this->description  = $this->get_option( 'description' );
-        $this->order_button_text = __('Pay', 'epayco-subscription');
+        //$this->order_button_text = __('Pay', 'epayco-subscription');
         $this->has_fields = true;
         $this->supports = [
             'subscriptions',
@@ -156,7 +156,8 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
         $indexjs=plugin_dir_url(__FILE__).'assets/js/index.js';
         $appjs= trim(plugin_dir_url(__FILE__).'assets/js/app.min.js');
         $cardsjs= trim(plugin_dir_url(__FILE__).'assets/js/cardsjs.js');
-        $epaycojs ="https://checkout.epayco.co/epayco.min.js";
+        //$epaycojs ="https://checkout.epayco.co/epayco.min.js";
+        $epaycojs = trim(plugin_dir_url(__FILE__).'assets/js/epayco.js');
         $lang =  get_locale();
         $lang = explode('_', $lang);
         $lang = $lang[0];
@@ -468,7 +469,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
             <div class="centered" id="centered">
               <div class="loadoverlay" id="loadoverlay">
                 <div class="loader loadimg"></div>
-                <i class="fa fa-lock fa-lg loadshield2" style="color: gray" aria-hidden="true"></i>
+                <i class="fa fa-lock fa-lg loadshield2" style="color:gray;position:fixed;" aria-hidden="true"></i>
                 <span class="loadtext">Procesando Pago</span>
               </div>
 
@@ -547,7 +548,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
                           background-color: white;
                           color:#a3a3a3;">/</div>
                         <div class="input-form full-width normalinput noborder yearcredit nomargin">                  
-                          <input class="binding-input inspectletIgnore" name="year" id="year-value" placeholder="YYYY" maxlength="4" autocomplete="off" data-epayco="card[exp_year]"  required >
+                          <input name="year" id="year-value" placeholder="YYYY" maxlength="4" autocomplete="off" data-epayco="card[exp_year]"  required >
                         </div>
                       </div>
 
