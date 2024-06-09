@@ -293,7 +293,7 @@
                 },
 
                 createTokenEncrypt: function (id, payment, callback) {
-                    debugger;
+                    //debugger;
                     var error = undefined,
                         result = undefined;
                     var key;
@@ -308,7 +308,7 @@
                         },
                     })
                         .done(function (token) {
-                            debugger;
+                            //debugger;
                             if (debug) {
                                 dump(token);
                             }
@@ -642,7 +642,6 @@
         var error = undefined,
             result = undefined,
             token = ePayco._utils.parseForm(form);
-
         if (typeof token === "object") {
             if (ePayco._utils.objectKeys(token).length > 0) {
                 if (token.card) {

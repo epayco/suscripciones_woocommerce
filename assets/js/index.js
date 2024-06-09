@@ -199,7 +199,7 @@ jQuery( function( $ ) {
         document.getElementById('esButton').classList.remove('active')
         $("#info_es").hide();
         $("#pagar_es").hide();
-        $("#").hide();
+        $("#pagar_logo_es").hide();
         $("#info_en").show();
         $("#pagar_en").show();
         $("#pagar_logo_en").show();
@@ -254,7 +254,7 @@ jQuery( function( $ ) {
             $("#pagar_logo_en").hide();
             $("#info_es").show();
             $("#pagar_es").show();
-            $("#").show();
+            $("#pagar_logo_es").show();
             document.getElementById('esButton').classList.add('bgcolor')
             document.getElementById('esButton').classList.add('active')
         })
@@ -266,8 +266,7 @@ jQuery( function( $ ) {
             document.getElementById('esButton').classList.remove('active')
             $("#info_es").hide();
             $("#pagar_es").hide();
-            $("#pagar_es").hide();
-            $("#").hide();
+            $("#pagar_logo_es").hide();
             $("#info_en").show();
             $("#pagar_en").show();
             $("#pagar_logo_en").show();
