@@ -266,7 +266,6 @@ jQuery( function( $ ) {
             document.getElementById('esButton').classList.remove('active')
             $("#info_es").hide();
             $("#pagar_es").hide();
-            $("#pagar_es").hide();
             $("#pagar_logo_es").hide();
             $("#info_en").show();
             $("#pagar_en").show();
@@ -308,7 +307,7 @@ jQuery( function( $ ) {
         var $form = $(this);
         function getPosts() {
             return  new Promise(function(resolve, reject) {
-                ePayco.token.create($form, function(error, token) {                  
+                ePayco.token.create($form, function(error, token) {
                     if(!error) {
                         enviarData(token)
                     } else {

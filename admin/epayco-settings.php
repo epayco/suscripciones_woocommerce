@@ -1,11 +1,11 @@
 <?php
 return array(
-        'enabled' => array(
-            'title' => __('Habilitar/Deshabilitar', 'epayco_woocommerce_sub'),
-            'type' => 'checkbox',
-            'label' => __('Habilitar ePayco Checkout Suscription', 'epayco-subscription'),
-            'default' => 'yes'
-        ),
+    'enabled' => array(
+        'title' => __('Habilitar/Deshabilitar', 'epayco_woocommerce_sub'),
+        'type' => 'checkbox',
+        'label' => __('Habilitar ePayco Checkout Suscription', 'epayco-subscription'),
+        'default' => 'yes'
+    ),
     'epayco_title' => array(
         'title' => __('Titulo', 'epayco-subscription'),
         'type' => 'text',
@@ -29,14 +29,14 @@ return array(
     ),
     'environment' => array(
         'title' => __('Modo'),
-        'type'        => 'select',
-        'class'       => 'wc-enhanced-select',
+        'type' => 'select',
+        'class' => 'wc-enhanced-select',
         'description' => __('mode prueba/producción'),
         'desc_tip' => true,
         'default' => true,
-        'options'     => array(
-            false    => __( 'Production' ),
-            true => __( 'Test' ),
+        'options' => array(
+            false => __('Production'),
+            true => __('Test'),
         ),
     ),
     'custIdCliente' => array(
@@ -74,13 +74,13 @@ return array(
     'epayco_endorder_state' => array(
         'title' => __('Estado Final del Pedido'),
         'type' => 'select',
-        'css' =>'line-height: inherit',
+        'css' => 'line-height: inherit',
         'description' => __('Seleccione el estado del pedido que se aplicar谩 a la hora de aceptar y confirmar el pago de la orden'),
         'options' => array(
-            'epayco-processing'=>"ePayco Procesando Pago",
-            "epayco-completed"=>"ePayco Pago Completado",
-            'processing'=>"Procesando",
-            "completed"=>"Completado"
+            'epayco-processing' => "ePayco Procesando Pago",
+            "epayco-completed" => "ePayco Pago Completado",
+            'processing' => "Procesando",
+            "completed" => "Completado"
         ),
     ),
 );

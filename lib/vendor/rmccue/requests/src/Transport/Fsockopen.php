@@ -51,6 +51,11 @@ final class Fsockopen implements Transport {
 	 */
 	private $max_bytes = false;
 
+	/**
+	 * Cache for received connection errors.
+	 *
+	 * @var string
+	 */
 	private $connect_error = '';
 
 	/**
@@ -96,6 +101,7 @@ final class Fsockopen implements Transport {
 		if (empty($url_parts)) {
 			throw new Exception('Invalid URL.', 'invalidurl', $url);
 		}
+
 		$host                     = $url_parts['host'];
 		$context                  = stream_context_create();
 		$verifyname               = false;
@@ -128,8 +134,7 @@ final class Fsockopen implements Transport {
 					$context_options['verify_peer']      = false;
 					$context_options['verify_peer_name'] = false;
 					$verifyname                          = false;
-				}
-				elseif (is_string($options['verify'])) {
+				} elseif (is_string($options['verify'])) {
 					$context_options['cafile'] = $options['verify'];
 				}
 			}
@@ -139,9 +144,16 @@ final class Fsockopen implements Transport {
 				$verifyname                          = false;
 			}
 
-			stream_context_set_option($context, ['ssl' => $context_options]);
-		}
-		else {
+			// Handle the PHP 8.4 deprecation (PHP 9.0 removal) of the function signature we use for stream_context_set_option().
+			// Ref: https://wiki.php.net/rfc/deprecate_functions_with_overloaded_signatures#stream_context_set_option
+			if (function_exists('stream_context_set_options')) {
+				// PHP 8.3+.
+				stream_context_set_options($context, ['ssl' => $context_options]);
+			} else {
+				// PHP < 8.3.
+				stream_context_set_option($context, ['ssl' => $context_options]);
+			}
+		} else {
 			$remote_socket = 'tcp://' . $host;
 		}
 
@@ -150,6 +162,7 @@ final class Fsockopen implements Transport {
 		if (!isset($url_parts['port'])) {
 			$url_parts['port'] = Port::HTTP;
 		}
+
 		$remote_socket .= ':' . $url_parts['port'];
 
 		// phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_set_error_handler
@@ -179,8 +192,7 @@ final class Fsockopen implements Transport {
 		if ($data_format === 'query') {
 			$path = self::format_get($url_parts, $data);
 			$data = '';
-		}
-		else {
+		} else {
 			$path = self::format_get($url_parts, []);
 		}
 
@@ -192,8 +204,7 @@ final class Fsockopen implements Transport {
 		if ($options['type'] !== Requests::TRACE) {
 			if (is_array($data)) {
 				$request_body = http_build_query($data, '', '&');
-			}
-			else {
+			} else {
 				$request_body = $data;
 			}
 
@@ -217,6 +228,7 @@ final class Fsockopen implements Transport {
 			if (($scheme_lower === 'http' && $url_parts['port'] !== Port::HTTP) || ($scheme_lower === 'https' && $url_parts['port'] !== Port::HTTPS)) {
 				$out .= ':' . $url_parts['port'];
 			}
+
 			$out .= "\r\n";
 		}
 
@@ -262,10 +274,10 @@ final class Fsockopen implements Transport {
 		$timeout_sec = (int) floor($options['timeout']);
 		if ($timeout_sec === $options['timeout']) {
 			$timeout_msec = 0;
-		}
-		else {
+		} else {
 			$timeout_msec = self::SECOND_IN_MICROSECONDS * $options['timeout'] % self::SECOND_IN_MICROSECONDS;
 		}
+
 		stream_set_timeout($socket, $timeout_sec, $timeout_msec);
 
 		$response   = '';
@@ -308,6 +320,7 @@ final class Fsockopen implements Transport {
 					if ($size === $this->max_bytes) {
 						continue;
 					}
+
 					if (($size + $data_length) > $this->max_bytes) {
 						// Limit the length
 						$limited_length = ($this->max_bytes - $size);
@@ -318,20 +331,20 @@ final class Fsockopen implements Transport {
 				$size += strlen($block);
 				if ($download) {
 					fwrite($download, $block);
-				}
-				else {
+				} else {
 					$body .= $block;
 				}
 			}
 		}
+
 		$this->headers = $headers;
 
 		if ($download) {
 			fclose($download);
-		}
-		else {
+		} else {
 			$this->headers .= "\r\n\r\n" . $body;
 		}
+
 		fclose($socket);
 
 		$options['hooks']->dispatch('fsockopen.after_request', [&$this->headers, &$this->info]);
@@ -370,8 +383,7 @@ final class Fsockopen implements Transport {
 				$responses[$id] = $handler->request($request['url'], $request['headers'], $request['data'], $request['options']);
 
 				$request['options']['hooks']->dispatch('transport.internal.parse_response', [&$responses[$id], $request]);
-			}
-			catch (Exception $e) {
+			} catch (Exception $e) {
 				$responses[$id] = $e;
 			}
 
@@ -406,7 +418,7 @@ final class Fsockopen implements Transport {
 	/**
 	 * Format a URL given GET data
 	 *
-	 * @param array $url_parts
+	 * @param array        $url_parts Array of URL parts as received from {@link https://www.php.net/parse_url}
 	 * @param array|object $data Data to build query using, see {@link https://www.php.net/http_build_query}
 	 * @return string URL with data
 	 */
@@ -419,17 +431,17 @@ final class Fsockopen implements Transport {
 			$url_parts['query'] .= '&' . http_build_query($data, '', '&');
 			$url_parts['query']  = trim($url_parts['query'], '&');
 		}
+
 		if (isset($url_parts['path'])) {
 			if (isset($url_parts['query'])) {
 				$get = $url_parts['path'] . '?' . $url_parts['query'];
-			}
-			else {
+			} else {
 				$get = $url_parts['path'];
 			}
-		}
-		else {
+		} else {
 			$get = '/';
 		}
+
 		return $get;
 	}
 

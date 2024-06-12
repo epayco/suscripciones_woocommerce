@@ -124,8 +124,7 @@ class Response {
 			if ($allow_redirects !== true) {
 				throw new Exception('Redirection not allowed', 'response.no_redirects', $this);
 			}
-		}
-		elseif (!$this->success) {
+		} elseif (!$this->success) {
 			$exception = Http::get_class($this->status_code);
 			throw new $exception(null, $this);
 		}
@@ -138,16 +137,16 @@ class Response {
 	 *
 	 * @link https://php.net/json-decode
 	 *
-	 * @param ?bool $associative Optional. When `true`, JSON objects will be returned as associative arrays;
-	 *                           When `false`, JSON objects will be returned as objects.
-	 *                           When `null`, JSON objects will be returned as associative arrays
-	 *                           or objects depending on whether `JSON_OBJECT_AS_ARRAY` is set in the flags.
-	 *                           Defaults to `true` (in contrast to the PHP native default of `null`).
-	 * @param int   $depth       Optional. Maximum nesting depth of the structure being decoded.
-	 *                           Defaults to `512`.
-	 * @param int   $options     Optional. Bitmask of JSON_BIGINT_AS_STRING, JSON_INVALID_UTF8_IGNORE,
-	 *                           JSON_INVALID_UTF8_SUBSTITUTE, JSON_OBJECT_AS_ARRAY, JSON_THROW_ON_ERROR.
-	 *                           Defaults to `0` (no options set).
+	 * @param bool|null $associative Optional. When `true`, JSON objects will be returned as associative arrays;
+	 *                               When `false`, JSON objects will be returned as objects.
+	 *                               When `null`, JSON objects will be returned as associative arrays
+	 *                               or objects depending on whether `JSON_OBJECT_AS_ARRAY` is set in the flags.
+	 *                               Defaults to `true` (in contrast to the PHP native default of `null`).
+	 * @param int       $depth       Optional. Maximum nesting depth of the structure being decoded.
+	 *                               Defaults to `512`.
+	 * @param int       $options     Optional. Bitmask of JSON_BIGINT_AS_STRING, JSON_INVALID_UTF8_IGNORE,
+	 *                               JSON_INVALID_UTF8_SUBSTITUTE, JSON_OBJECT_AS_ARRAY, JSON_THROW_ON_ERROR.
+	 *                               Defaults to `0` (no options set).
 	 *
 	 * @return array
 	 *
