@@ -214,7 +214,7 @@ jQuery( function( $ ) {
         $("#pagar_logo_en").hide();
         $("#info_es").show();
         $("#pagar_es").show();
-        $("#").show();
+        $("#pagar_logo_es").show();
         document.getElementById('esButton').classList.add('bgcolor')
         document.getElementById('esButton').classList.add('active')
     }
