@@ -36,8 +36,8 @@ class Cookie {
 	/**
 	 * Cookie attributes
 	 *
-	 * Valid keys are (currently) path, domain, expires, max-age, secure and
-	 * httponly.
+	 * Valid keys are `'path'`, `'domain'`, `'expires'`, `'max-age'`, `'secure'` and
+	 * `'httponly'`.
 	 *
 	 * @var \WpOrg\Requests\Utility\CaseInsensitiveDictionary|array Array-like object
 	 */
@@ -46,8 +46,7 @@ class Cookie {
 	/**
 	 * Cookie flags
 	 *
-	 * Valid keys are (currently) creation, last-access, persistent and
-	 * host-only.
+	 * Valid keys are `'creation'`, `'last-access'`, `'persistent'` and `'host-only'`.
 	 *
 	 * @var array
 	 */
@@ -66,11 +65,13 @@ class Cookie {
 	/**
 	 * Create a new cookie object
 	 *
-	 * @param string $name
-	 * @param string $value
+	 * @param string                                                  $name           The name of the cookie.
+	 * @param string                                                  $value          The value for the cookie.
 	 * @param array|\WpOrg\Requests\Utility\CaseInsensitiveDictionary $attributes Associative array of attribute data
-	 * @param array $flags
-	 * @param int|null $reference_time
+	 * @param array                                                   $flags          The flags for the cookie.
+	 *                                                                                Valid keys are `'creation'`, `'last-access'`,
+	 *                                                                                `'persistent'` and `'host-only'`.
+	 * @param int|null                                                $reference_time Reference time for relative calculations.
 	 *
 	 * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $name argument is not a string.
 	 * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $value argument is not a string.
@@ -279,7 +280,11 @@ class Cookie {
 	public function normalize() {
 		foreach ($this->attributes as $key => $value) {
 			$orig_value = $value;
-			$value      = $this->normalize_attribute($key, $value);
+
+			if (is_string($key)) {
+				$value = $this->normalize_attribute($key, $value);
+			}
+
 			if ($value === null) {
 				unset($this->attributes[$key]);
 				continue;
@@ -299,7 +304,7 @@ class Cookie {
 	 * Handles parsing individual attributes from the cookie values.
 	 *
 	 * @param string $name Attribute name
-	 * @param string|boolean $value Attribute value (string value, or true if empty/flag)
+	 * @param string|int|bool $value Attribute value (string/integer value, or true if empty/flag)
 	 * @return mixed Value if available, or null if the attribute value is invalid (and should be skipped)
 	 */
 	protected function normalize_attribute($name, $value) {
@@ -331,8 +336,7 @@ class Cookie {
 				$delta_seconds = (int) $value;
 				if ($delta_seconds <= 0) {
 					$expiry_time = 0;
-				}
-				else {
+				} else {
 					$expiry_time = $this->reference_time + $delta_seconds;
 				}
 
@@ -383,14 +387,14 @@ class Cookie {
 				// Ignore non-associative attributes
 				if (is_numeric($key)) {
 					$parts[] = $value;
-				}
-				else {
+				} else {
 					$parts[] = sprintf('%s=%s', $key, $value);
 				}
 			}
 
 			$header_value .= '; ' . implode('; ', $parts);
 		}
+
 		return $header_value;
 	}
 
@@ -423,8 +427,7 @@ class Cookie {
 
 		if (!empty($name)) {
 			$value = $cookie_header;
-		}
-		elseif (strpos($kvparts, '=') === false) {
+		} elseif (strpos($kvparts, '=') === false) {
 			// Some sites might only have a value without the equals separator.
 			// Deviate from RFC 6265 and pretend it was actually a blank name
 			// (`=foo`)
@@ -432,10 +435,10 @@ class Cookie {
 			// https://bugzilla.mozilla.org/show_bug.cgi?id=169091
 			$name  = '';
 			$value = $kvparts;
-		}
-		else {
+		} else {
 			list($name, $value) = explode('=', $kvparts, 2);
 		}
+
 		$name  = trim($name);
 		$value = trim($value);
 
@@ -447,8 +450,7 @@ class Cookie {
 				if (strpos($part, '=') === false) {
 					$part_key   = $part;
 					$part_value = true;
-				}
-				else {
+				} else {
 					list($part_key, $part_value) = explode('=', $part, 2);
 					$part_value                  = trim($part_value);
 				}
@@ -468,11 +470,17 @@ class Cookie {
 	 * @param \WpOrg\Requests\Iri|null $origin URI for comparing cookie origins
 	 * @param int|null $time Reference time for expiration calculation
 	 * @return array
+	 *
+	 * @throws \WpOrg\Requests\Exception\InvalidArgument When the passed $origin argument is not null or an instance of the Iri class.
 	 */
-	public static function parse_from_headers(Headers $headers, Iri $origin = null, $time = null) {
+	public static function parse_from_headers(Headers $headers, $origin = null, $time = null) {
 		$cookie_headers = $headers->getValues('Set-Cookie');
 		if (empty($cookie_headers)) {
 			return [];
+		}
+
+		if ($origin !== null && !($origin instanceof Iri)) {
+			throw InvalidArgument::create(2, '$origin', Iri::class . ' or null', gettype($origin));
 		}
 
 		$cookies = [];
@@ -483,8 +491,7 @@ class Cookie {
 			if (empty($parsed->attributes['domain']) && !empty($origin)) {
 				$parsed->attributes['domain'] = $origin->host;
 				$parsed->flags['host-only']   = true;
-			}
-			else {
+			} else {
 				$parsed->flags['host-only'] = false;
 			}
 
@@ -498,19 +505,18 @@ class Cookie {
 					// the uri-path is not a %x2F ("/") character, output
 					// %x2F ("/") and skip the remaining steps.
 					$path = '/';
-				}
-				elseif (substr_count($path, '/') === 1) {
+				} elseif (substr_count($path, '/') === 1) {
 					// If the uri-path contains no more than one %x2F ("/")
 					// character, output %x2F ("/") and skip the remaining
 					// step.
 					$path = '/';
-				}
-				else {
+				} else {
 					// Output the characters of the uri-path from the first
 					// character up to, but not including, the right-most
 					// %x2F ("/").
 					$path = substr($path, 0, strrpos($path, '/'));
 				}
+
 				$parsed->attributes['path'] = $path;
 			}
 

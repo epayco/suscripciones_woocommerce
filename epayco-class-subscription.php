@@ -1,11 +1,13 @@
 <?php
+
 class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 {
     public $epayco;
+
     public function __construct()
     {
         parent::__construct();
-        $lang =  get_locale();
+        $lang = get_locale();
         $lang = explode('_', $lang);
         $lang = $lang[0];
         $this->epayco = new Epayco\Epayco(
@@ -30,7 +32,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         $customerName = $params['card-number'] ? $params['card-number'] : $params['name'];
         $customerData = $this->paramsBilling($subscriptions, $order, $customerName);
         $customerData['token_card'] = $token;
-        $sql_ = 'SELECT * FROM '.$table_name_setings.' WHERE id_payco = '.$this->custIdCliente.' AND email = '.$customerData['email'];
+        $sql_ = 'SELECT * FROM ' . $table_name_setings . ' WHERE id_payco = ' . $this->custIdCliente . ' AND email = ' . $customerData['email'];
         $customerGetData = $wpdb->get_results(
             $wpdb->prepare(
                 "SELECT * FROM $table_name_setings WHERE id_payco = %d AND email = %s",
@@ -38,16 +40,16 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 $customerData['email']
             )
         );
-        if (count($customerGetData) == 0){
+        if (count($customerGetData) == 0) {
             $customer = $this->customerCreate($customerData);
-            if ($customer->data->status == 'error' || !$customer->status){
+            if ($customer->data->status == 'error' || !$customer->status) {
                 $response_status = [
                     'status' => false,
                     'message' => __($customer->message, 'epayco-subscription')
                 ];
                 return $response_status;
             }
-            $inserCustomer =$wpdb->insert(
+            $inserCustomer = $wpdb->insert(
                 $table_name_setings,
                 [
                     'id_payco' => $this->custIdCliente,
@@ -56,7 +58,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     'email' => $customerData['email']
                 ]
             );
-            if(!$inserCustomer){
+            if (!$inserCustomer) {
                 $response_status = [
                     'status' => false,
                     'message' => __('internar error, tray again', 'epayco-subscription')
@@ -64,63 +66,64 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 return $response_status;
             }
             $customerData['customer_id'] = $customer->data->customerId;
-        }else{                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     	       $count_customers= 0;
-       		for ($i = 0; $i < count($customerGetData); $i++) {
-                if($customerGetData[$i]->email == $customerData['email']){
-                $count_customers += 1;
+        } else {
+            $count_customers = 0;
+            for ($i = 0; $i < count($customerGetData); $i++) {
+                if ($customerGetData[$i]->email == $customerData['email']) {
+                    $count_customers += 1;
                 }
-		    }
-            if($count_customers == 0){
+            }
+            if ($count_customers == 0) {
                 $customer = $this->customerCreate($customerData);
-                    if ($customer->data->status == 'error'){
-                        $response_status = [
-                            'status' => false,
-                            'message' => __($customer->message, 'epayco-subscription')
-                        ];
-                        return $response_status;
-                    }
-                    $inserCustomer =$wpdb->insert(
-                        $table_name_setings,
-                        [
-                            'id_payco' => $this->custIdCliente,
-                            'customer_id' => $customer->data->customerId,
-                            'token_id' => $customerData['token_card'],
-                            'email' => $customerData['email']
-                        ]
-                    );
-                    if(!$inserCustomer){
-                        $response_status = [
-                            'status' => false,
-                            'message' => __('internar error, tray again', 'epayco-subscription')
-                        ];
-                        return $response_status;
-                    }
-                    $customerData['customer_id'] = $customer->data->customerId;
-            }else{
+                if ($customer->data->status == 'error') {
+                    $response_status = [
+                        'status' => false,
+                        'message' => __($customer->message, 'epayco-subscription')
+                    ];
+                    return $response_status;
+                }
+                $inserCustomer = $wpdb->insert(
+                    $table_name_setings,
+                    [
+                        'id_payco' => $this->custIdCliente,
+                        'customer_id' => $customer->data->customerId,
+                        'token_id' => $customerData['token_card'],
+                        'email' => $customerData['email']
+                    ]
+                );
+                if (!$inserCustomer) {
+                    $response_status = [
+                        'status' => false,
+                        'message' => __('internar error, tray again', 'epayco-subscription')
+                    ];
+                    return $response_status;
+                }
+                $customerData['customer_id'] = $customer->data->customerId;
+            } else {
                 for ($i = 0; $i < count($customerGetData); $i++) {
-                    if($customerGetData[$i]->email == $customerData['email'] && $customerGetData[$i]->token_id != $token){
+                    if ($customerGetData[$i]->email == $customerData['email'] && $customerGetData[$i]->token_id != $token) {
                         $customerAddtoken = $this->customerAddToken($customerGetData[$i]->customer_id, $customerData['token_card']);
                     }
                     $customerData['customer_id'] = $customerGetData[$i]->customer_id;
-                }  
+                }
             }
         }
         $confirm_url = $this->getUrlNotify($order_id);
         $plans = $this->getPlansBySubscription($subscriptions);
         $getPlans = $this->getPlans($plans);
 
-        if (!$getPlans)
-        {   
-           $validatePlan_ = $this->validatePlan(true,$order_id,$plans,$subscriptions,$customerData,$confirm_url,$order,false,false,null);
-        }else{
-           $validatePlan_ = $this->validatePlan(false,$order_id,$plans,$subscriptions,$customerData,$confirm_url,$order ,true, false, $getPlans);
+        if (!$getPlans) {
+            $validatePlan_ = $this->validatePlan(true, $order_id, $plans, $subscriptions, $customerData, $confirm_url, $order, false, false, null);
+        } else {
+            $validatePlan_ = $this->validatePlan(false, $order_id, $plans, $subscriptions, $customerData, $confirm_url, $order, true, false, $getPlans);
         }
 
-        if($validatePlan_)
-        {
-            try{
-                 return $validatePlan_;                
-            }catch (Exception $exception){
+        if ($validatePlan_) {
+            try {
+                return $validatePlan_;
+            } catch (Exception $exception) {
+                var_dump($exception->getMessage());
+                die();
                 subscription_epayco_se()->log('getPlans: ' . $exception->getMessage());
             }
         }
@@ -130,7 +133,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
     public function customerCreate(array $data)
     {
         $customer = false;
-        try{
+        try {
             $customer = $this->epayco->customer->create(
                 [
                     "token_card" => $data['token_card'],
@@ -138,15 +141,15 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     "email" => $data['email'],
                     "phone" => $data['phone'],
                     "cell_phone" => $data['phone'],
-                    "country" =>  $data['country'],
+                    "country" => $data['country'],
                     "city" => $data['city'],
                     "address" => $data['address'],
                     "default" => true
                 ]
             );
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
             echo 'create client: ' . $exception->getMessage();
-           die();
+            die();
         }
 
         return $customer;
@@ -155,16 +158,16 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
     public function customerAddToken($customer_id, $token_card)
     {
         $customer = false;
-        try{
+        try {
             $customer = $this->epayco->customer->addNewToken(
                 [
                     "token_card" => $token_card,
                     "customer_id" => $customer_id
                 ]
             );
-        }catch (Exception $exception){
-           echo 'add token: ' . $exception->getMessage();
-           die();
+        } catch (Exception $exception) {
+            echo 'add token: ' . $exception->getMessage();
+            die();
         }
 
         return $customer;
@@ -172,17 +175,19 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
     public function getPlans(array $plans)
     {
-        foreach ($plans as $key => $plan){
-            try{
+        foreach ($plans as $key => $plan) {
+            try {
                 $plan = $this->epayco->plan->get($plans[$key]['id_plan']);
-                if ($plan->status){
+                if ($plan->status) {
                     unset($plans[$key]);
                     return $plan;
-                }else{
+                } else {
                     return false;
                 }
 
-            }catch (Exception $exception){
+            } catch (Exception $exception) {
+                var_dump($exception->getMessage());
+                die();
                 subscription_epayco_se()->log('getPlans: ' . $exception->getMessage());
             }
         }
@@ -190,110 +195,110 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
     public function getPlanById($plan_id)
     {
-        try{
+        try {
             $plan = $this->epayco->plan->get($plan_id);
-            if ($plan->status){
+            if ($plan->status) {
                 return $plan;
-            }else{
+            } else {
                 return false;
             }
 
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
+            var_dump($exception->getMessage());
+                die();
             subscription_epayco_se()->log('getPlans ' . $exception->getMessage());
         }
     }
 
 
-    public function validatePlan($create,$order_id,array $plans,$subscriptions,$customer,$confirm_url,$order ,$confirm = null,$update = null,$getPlans = null){
+    public function validatePlan($create, $order_id, array $plans, $subscriptions, $customer, $confirm_url, $order, $confirm = null, $update = null, $getPlans = null)
+    {
 
-       if($create)
-        {   
+        if ($create) {
             $newPLan = $this->plansCreate($plans);
-            if($newPLan->status){    
+            if ($newPLan->status) {
                 $getPlans_ = $this->getPlans($plans);
-                if ($getPlans_){
-                   $eXistPLan = $this->validatePlanData($plans, $getPlans_, $order_id, $subscriptions,$customer,$confirm_url,$order);
-                }else{
-                   $this->validatePlan(true,$order_id,$plans,$subscriptions,$customer,$confirm_url,$order,false,false,null);
+                if ($getPlans_) {
+                    $eXistPLan = $this->validatePlanData($plans, $getPlans_, $order_id, $subscriptions, $customer, $confirm_url, $order);
+                } else {
+                    $this->validatePlan(true, $order_id, $plans, $subscriptions, $customer, $confirm_url, $order, false, false, null);
                 }
-            }else{
+            } else {
                 $response_status = [
                     'status' => false,
                     'message' => __($newPLan->message, 'epayco-subscription')
                 ];
                 return $response_status;
             }
-        }else{
-            if($confirm){
-               $eXistPLan = $this->validatePlanData($plans, $getPlans, $order_id, $subscriptions,$customer,$confirm_url,$order);
+        } else {
+            if ($confirm) {
+                $eXistPLan = $this->validatePlanData($plans, $getPlans, $order_id, $subscriptions, $customer, $confirm_url, $order);
             }
         }
         return $eXistPLan;
     }
 
-    public function validatePlanData($plans, $getPlans, $order_id, $subscriptions, $customer,$confirm_url,$order)
+    public function validatePlanData($plans, $getPlans, $order_id, $subscriptions, $customer, $confirm_url, $order)
     {
         global $wpdb;
         $table_name = $wpdb->prefix . 'epayco_plans';
         $wc_order_product_lookup = $wpdb->prefix . "wc_order_product_lookup";
-        foreach ($plans as $plan){
-            $plan_amount_cart=$plan['amount'];
-            $plan_id_cart=$plan['id_plan'];
-            $plan_currency_cart=$plan['currency'];
+        foreach ($plans as $plan) {
+            $plan_amount_cart = $plan['amount'];
+            $plan_id_cart = $plan['id_plan'];
+            $plan_currency_cart = $plan['currency'];
         }
         $plan_amount_epayco = $getPlans->plan->amount;
         $plan_id_epayco = $getPlans->plan->id_plan;
         $plan_currency_epayco = $getPlans->plan->currency;
         //validar que el id del plan del carrito concuerda con el plan creado
-        if($plan_id_cart == $plan_id_epayco)
-        {
+        if ($plan_id_cart == $plan_id_epayco) {
             //validar que el valor del carrito de compras concuerda con el del plan creado
-            try{
-                if(intval($plan_amount_cart) == $plan_amount_epayco)
-                {
-                    return  $this->process_payment_epayco($plans, $customer, $confirm_url,$subscriptions,$order);
+            try {
+                if (intval($plan_amount_cart) == $plan_amount_epayco) {
+                    return $this->process_payment_epayco($plans, $customer, $confirm_url, $subscriptions, $order);
+                } else {
+                    return $this->validateNewPlanData($subscriptions, $order_id, true, false);
                 }
-                else
-                {
-                    return $this->validateNewPlanData($subscriptions,$order_id,true ,false);
-                }
-            }catch (Exception $exception){
+            } catch (Exception $exception) {
                 echo $exception->getMessage();
+                var_dump($exception->getMessage());
+                die();
                 return false;
             }
-        }else{
+        } else {
             echo 'el id del plan creado no concuerda!';
             die();
         }
     }
-    
-    public function validateNewPlanData($subscriptions,$order_id,$value ,$currency){
+
+    public function validateNewPlanData($subscriptions, $order_id, $value, $currency)
+    {
         global $wpdb;
         $table_name = $wpdb->prefix . 'epayco_plans';
         $wc_order_product_lookup = $wpdb->prefix . "wc_order_product_lookup";
         /*valida la actualizacion del precio del plan*/
-            foreach ($subscriptions as $key => $subscription){
-                $products = $subscription->get_items();
-                $product_plan = $this->getPlan($products);
-                $product_id_ = $product_plan['id'];
-                $porciones = explode("-", $product_id_);
-                $product_id = $porciones[0];
+        foreach ($subscriptions as $key => $subscription) {
+            $products = $subscription->get_items();
+            $product_plan = $this->getPlan($products);
+            $product_id_ = $product_plan['id'];
+            $porciones = explode("-", $product_id_);
+            $product_id = $porciones[0];
         }
-        $sql = 'SELECT * FROM '.$wc_order_product_lookup.' WHERE order_id ='.intval($order_id);
+        $sql = 'SELECT * FROM ' . $wc_order_product_lookup . ' WHERE order_id =' . intval($order_id);
         $results = $wpdb->get_results($sql, OBJECT);
         $product_id = $results[0]->product_id ? $results[0]->product_id : $product_id;
-        $query = 'SELECT * FROM '.$table_name.' WHERE order_id ='.intval($order_id);
+        $query = 'SELECT * FROM ' . $table_name . ' WHERE order_id =' . intval($order_id);
         $orderData = $wpdb->get_results($query, OBJECT);
-        if (count($orderData) == 0){
-            if($value){
-                $savePlanId_ = $this->savePlanId($order_id,$plans,$subscriptions,null,$product_id);
-                if($savePlanId_)
-                {
+        if (count($orderData) == 0) {
+            if ($value) {
+                $savePlanId_ = $this->savePlanId($order_id, $plans, $subscriptions, null, $product_id);
+                if ($savePlanId_) {
                     $orderData = $wpdb->get_results($query, OBJECT);
-                    if (count($orderData) == 0){
+                    if (count($orderData) == 0) {
                         return false;
-                    }else{
-                        foreach ($plans as $plan){
+                    } else {
+                        foreach ($plans as $plan) {
                             $plan_currency_cart = $plan['currency'];
                             $plan_interval_cart = $plan['interval'];
                             $plan_interval_count_cart = $plan['interval_count'];
@@ -306,55 +311,54 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                             "description" => (string)$orderData[0]->plan_id,
                             "currency" => $plan_currency_cart,
                             "trial_days" => intval($plan_trial_days_cart),
-                            "amount" =>   $orderData[0]->amount,
+                            "amount" => $orderData[0]->amount,
                             "interval" => $plan_interval_cart,
                             "interval_count" => $plan_interval_count_cart,
                         ];
-                                
-                    //crear nuevo plan con precio actualizado
+
+                        //crear nuevo plan con precio actualizado
                         $newPLan = $this->plansCreate($newPlanToCreated);
-                        if($newPLan->status){   
+                        if ($newPLan->status) {
                             $getPlans_ = $this->getPlans($newPlanToCreated);
-                            if ($getPlans_)
-                            {
-                                return $this->process_payment_epayco($newPlanToCreated, $customer, $confirm_url,$subscriptions,$order);
+                            if ($getPlans_) {
+                                return $this->process_payment_epayco($newPlanToCreated, $customer, $confirm_url, $subscriptions, $order);
                             }
                         }
                     }
 
-                }else{
+                } else {
                     return false;
                 }
 
             }
-        }else{
-                            
+        } else {
+
             $plan_id_s = $orderData[0]->plan_id;
             $getPlanById_ = $this->getPlanById($plan_id_s);
-            if($getPlanById_->status){
-                $newPlanToCreated_[0] =  [
+            if ($getPlanById_->status) {
+                $newPlanToCreated_[0] = [
                     "id_plan" => $getPlanById_->plan->id_plan,
                     "name" => $getPlanById_->plan->name,
                     "description" => $getPlanById_->plan->description,
-                    "amount" =>   $getPlanById_->plan->amount,
+                    "amount" => $getPlanById_->plan->amount,
                     "currency" => $getPlanById_->plan->currency,
                     "interval_count" => $getPlanById_->plan->interval_count,
                     "interval" => $getPlanById_->plan->interval,
                     "trial_days" => $getPlanById_->plan->id_plan,
                 ];
- 
-                return $this->process_payment_epayco($newPlanToCreated_, $customer, $confirm_url,$subscriptions,$order);
+
+                return $this->process_payment_epayco($newPlanToCreated_, $customer, $confirm_url, $subscriptions, $order);
             }
         }
     }
-    
-    
+
+
     public function plansCreate(array $plans)
     {
 
-        foreach ($plans as $plan){
-            try{
-                   $plan_ = $this->epayco->plan->create(
+        foreach ($plans as $plan) {
+            try {
+                $plan_ = $this->epayco->plan->create(
                     [
                         "id_plan" => (string)$plan['id_plan'],
                         "name" => (string)$plan['name'],
@@ -366,19 +370,21 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                         "trial_days" => $plan['trial_days']
                     ]
                 );
-              
-                   return $plan_;
-            }catch (Exception $exception){
+
+                return $plan_;
+            } catch (Exception $exception) {
+                var_dump($exception->getMessage());
+                die();
                 subscription_epayco_se()->log('create plan: ' . $exception->getMessage());
             }
         }
     }
 
-    public function subscriptionCreate(array $plans, array  $customer, $confirm_url)
+    public function subscriptionCreate(array $plans, array $customer, $confirm_url)
 
     {
-        foreach ($plans as $plan){
-            try{
+        foreach ($plans as $plan) {
+            try {
                 $suscriptioncreted = $this->epayco->subscriptions->create(
                     [
                         "id_plan" => $plan['id_plan'],
@@ -390,11 +396,13 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                         "method_confirmation" => "POST"
                     ]
                 );
-               
+
                 return $suscriptioncreted;
-                
-            }catch (Exception $exception){
-                subscription_epayco_se()->log('subscriptionCreate: ' .  $exception->getMessage());
+
+            } catch (Exception $exception) {
+                var_dump($exception->getMessage());
+                die();
+                subscription_epayco_se()->log('subscriptionCreate: ' . $exception->getMessage());
             }
         }
     }
@@ -403,8 +411,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
     {
         $subs = [];
 
-        foreach ($plans as $plan){
-            try{
+        foreach ($plans as $plan) {
+            try {
                 $subs[] = $this->epayco->subscriptions->charge(
                     [
                         "id_plan" => $plan['id_plan'],
@@ -418,7 +426,9 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     ]
                 );
 
-            }catch (Exception $exception){
+            } catch (Exception $exception) {
+                var_dump($exception->getMessage());
+                die();
                 subscription_epayco_se()->log('subscriptionCharge: ' . $exception->getMessage());
             }
         }
@@ -428,9 +438,11 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
     public function cancelSubscription($subscription_id)
     {
-        try{
+        try {
             $this->epayco->subscriptions->cancel($subscription_id);
-        }catch (Exception $exception){
+        } catch (Exception $exception) {
+            var_dump($exception->getMessage());
+                die();
             subscription_epayco_se()->log('cancelSubscription: ' . $exception->getMessage());
         }
     }
@@ -443,29 +455,29 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
     }
 
 
-    public function paramsBilling($subscriptions,  $order, $customer_name)
+    public function paramsBilling($subscriptions, $order, $customer_name)
     {
         $data = [];
-
         $subscription = end($subscriptions);
-        if($subscription)
-        {
+        if ($subscription) {
+            $doc_number = get_post_meta($subscription->get_id(), '_billing_dni', true) != null?get_post_meta($subscription->get_id(), '_billing_dni', true):$order->get_meta('_billing_dni');
+            $type_document = get_post_meta($subscription->get_id(), '_billing_type_document', true)!=null?get_post_meta($subscription->get_id(), '_billing_type_document', true):$order->get_meta('_billing_type_document');
             $data['name'] = $customer_name;
             $data['email'] = $subscription->get_billing_email();
             $data['phone'] = $subscription->get_billing_phone();
             $data['country'] = $subscription->get_shipping_country() ? $subscription->get_shipping_country() : $subscription->get_billing_country();
             $data['city'] = $subscription->get_shipping_city() ? $subscription->get_shipping_city() : $subscription->get_billing_city();
             $data['address'] = $subscription->get_shipping_address_1() ? $subscription->get_shipping_address_1() . " " . $subscription->get_shipping_address_2() : $subscription->get_billing_address_1() . " " . $subscription->get_billing_address_2();
-            $data['doc_number'] = get_post_meta( $subscription->get_id(), '_billing_dni', true );
-            $data['type_document'] = get_post_meta( $subscription->get_id(), '_billing_type_document', true );
+            $data['doc_number'] = $doc_number;
+            $data['type_document'] = $type_document;
 
             return $data;
-        }else{
-             $redirect = array(
-                'result'    => 'success',
-                'redirect'  => add_query_arg('order-pay', $order->id, add_query_arg('key', $order->order_key,get_permalink(woocommerce_get_page_id('pay' ))))
+        } else {
+            $redirect = array(
+                'result' => 'success',
+                'redirect' => add_query_arg('order-pay', $order->id, add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
             );
-            wc_add_notice('EL producto que intenta pagar no es permitido', 'error' );
+            wc_add_notice('EL producto que intenta pagar no es permitido', 'error');
             wp_redirect($redirect["redirect"]);
             die();
         }
@@ -475,12 +487,12 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
     public function getPlansBySubscription(array $subscriptions)
     {
         $plans = [];
-        foreach ($subscriptions as $key => $subscription){
+        foreach ($subscriptions as $key => $subscription) {
             $total_discount = $subscription->get_total_discount();
             $order_currency = $subscription->get_currency();
             $products = $subscription->get_items();
             $product_plan = $this->getPlan($products);
-            $quantity =  $product_plan['quantity'];
+            $quantity = $product_plan['quantity'];
             $product_name = $product_plan['name'];
             $product_id = $product_plan['id'];
             $trial_days = $this->getTrialDays($subscription);
@@ -510,12 +522,12 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
     {
         $ran = rand(1, 999);
         $plans = [];
-        foreach ($subscriptions as $key => $subscription){
+        foreach ($subscriptions as $key => $subscription) {
             $total_discount = $subscription->get_total_discount();
             $order_currency = $subscription->get_currency();
             $products = $subscription->get_items();
             $product_plan = $this->getPlan($products);
-            $quantity =  $product_plan['quantity'];
+            $quantity = $product_plan['quantity'];
             $product_name = $product_plan['name'];
             $product_id = $product_plan['id'];
             $trial_days = $this->getTrialDays($subscription);
@@ -527,7 +539,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             $plan_code = rtrim($plan_code, "-");
             $plans[] = array_merge(
                 [
-                    "id_plan" => $plan_code.'-'.$ran,
+                    "id_plan" => $plan_code . '-' . $ran,
                     "name" => "Plan $plan_code-$ran",
                     "description" => "Plan $plan_code-$ran",
                     "currency" => $order_currency,
@@ -549,10 +561,10 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         $product_plan['id'] = 0;
         $product_plan['quantity'] = 0;
 
-        foreach ($products as $product){
+        foreach ($products as $product) {
             $product_plan['name'] .= "{$product['name']}-";
             $product_plan['id'] .= "{$product['product_id']}-";
-            $product_plan['quantity'] .=  $product['quantity'];
+            $product_plan['quantity'] .= $product['quantity'];
         }
 
         $product_plan['name'] = $this->cleanCharacters($product_plan['name']);
@@ -562,7 +574,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
     public function intervalAmount(WC_Subscription $subscription)
     {
-        return  [
+        return [
             "interval" => $subscription->get_billing_period(),
             "amount" => $subscription->get_total(),
             "interval_count" => $subscription->get_billing_interval()
@@ -575,7 +587,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         $trial_start = $subscription->get_date('start');
         $trial_end = $subscription->get_date('trial_end');
 
-        if ($trial_end > 0 )
+        if ($trial_end > 0)
             $trial_days = (string)(strtotime($trial_end) - strtotime($trial_start)) / (60 * 60 * 24);
 
         return $trial_days;
@@ -590,14 +602,14 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
     public function getUrlNotify($order_id)
     {
-        $confirm_url=get_site_url() . "/";
-        $confirm_url = add_query_arg( 'wc-api','WC_Payment_Epayco_Subscription', $confirm_url );
-        $confirm_url = add_query_arg( 'order_id', $order_id, $confirm_url );
-        $confirm_url = $confirm_url.'&confirmation=1';
+        $confirm_url = get_site_url() . "/";
+        $confirm_url = add_query_arg('wc-api', 'WC_Payment_Epayco_Subscription', $confirm_url);
+        $confirm_url = add_query_arg('order_id', $order_id, $confirm_url);
+        $confirm_url = $confirm_url . '&confirmation=1';
         return $confirm_url;
     }
 
-    public function handleStatusSubscriptions(array $subscriptionsStatus, array $subscriptions, array $customer, $order,$customerId,$suscriptionId, $planId)
+    public function handleStatusSubscriptions(array $subscriptionsStatus, array $subscriptions, array $customer, $order, $customerId, $suscriptionId, $planId)
     {
 
         global $wpdb;
@@ -610,74 +622,74 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         $messageStatus['ref_payco'] = [];
         $quantitySubscriptions = count($subscriptionsStatus);
         $current_state = $order->get_status();
-        foreach ($subscriptions as $subscription){
+        foreach ($subscriptions as $subscription) {
 
             $sub = $subscriptionsStatus[$count];
-            $data = count( get_object_vars($sub->data) );
-            if($data < 10){
+            $data = count(get_object_vars($sub->data));
+            if ($data < 10) {
                 $isTestTransaction = $this->isTest == true ? "yes" : "no";
                 update_option('epayco_order_status', $isTestTransaction);
                 $isTestMode = get_option('epayco_order_status') == "yes" ? "true" : "false";
 
-                if($isTestMode=="true"){
+                if ($isTestMode == "true") {
                     $message = 'Pago pendiente de aprobación Prueba';
                     $orderStatus = "epayco_on_hold";
-                    if($current_state !="epayco_on_hold" ||
-                        $current_state =="pending"){
+                    if ($current_state != "epayco_on_hold" ||
+                        $current_state == "pending") {
                         $this->restore_order_stock($order->id, '+');
                     }
-                }else{
+                } else {
                     $message = 'Pago pendiente de aprobación';
                     $orderStatus = "epayco-on-hold";
-                    if($current_state !="epayco-on-hold" ||
-                        $current_state =="pending"){
+                    if ($current_state != "epayco-on-hold" ||
+                        $current_state == "pending") {
                         $this->restore_order_stock($order->id, '+');
                     }
                 }
                 $order->update_status($orderStatus);
                 $order->add_order_note($message);
                 $subscription->update_status('on-hold');
-            }else{
-               
+            } else {
+
                 $isTestTransaction = $sub->data->enpruebas == 1 ? "yes" : "no";
                 update_option('epayco_order_status', $isTestTransaction);
-                $isTestMode = get_option('epayco_order_status') == "yes" ? "true" : "false";     
-                if (isset($sub->data->cod_respuesta) && $sub->data->cod_respuesta === 2 || $sub->data->cod_respuesta === 4){
-                    $messageStatus['message'] = array_merge($messageStatus['message'], [ "estado: {$sub->data->respuesta}" ]);
-                    if($isTestMode=="true"){
-                        $message = 'Pago rechazado Prueba: ' .$sub->data->ref_payco;
-                        if($current_state =="epayco_failed" ||
-                            $current_state =="epayco_cancelled" ||
-                            $current_state =="failed" ||
+                $isTestMode = get_option('epayco_order_status') == "yes" ? "true" : "false";
+                if (isset($sub->data->cod_respuesta) && $sub->data->cod_respuesta === 2 || $sub->data->cod_respuesta === 4) {
+                    $messageStatus['message'] = array_merge($messageStatus['message'], ["estado: {$sub->data->respuesta}"]);
+                    if ($isTestMode == "true") {
+                        $message = 'Pago rechazado Prueba: ' . $sub->data->ref_payco;
+                        if ($current_state == "epayco_failed" ||
+                            $current_state == "epayco_cancelled" ||
+                            $current_state == "failed" ||
                             $current_state == "epayco_processing" ||
                             $current_state == "epayco_completed" ||
                             $current_state == "processing_test" ||
                             $current_state == "completed_test"
-                        ){
+                        ) {
                             $order->update_status('epayco_cancelled');
                             $order->add_order_note($message);
                             $subscription->update_status('cancelled');
-                        }else{
+                        } else {
                             $messageClass = 'woocommerce-error';
                             $order->update_status('epayco_cancelled');
                             $order->add_order_note($message);
                             $subscription->update_status('cancelled');
                         }
 
-                    }else{
-                        if($current_state =="epayco-failed" ||
-                            $current_state =="epayco-cancelled" ||
-                            $current_state =="failed" ||
+                    } else {
+                        if ($current_state == "epayco-failed" ||
+                            $current_state == "epayco-cancelled" ||
+                            $current_state == "failed" ||
                             $current_state == "epayco-processing" ||
                             $current_state == "epayco-completed" ||
                             $current_state == "processing" ||
                             $current_state == "completed"
-                        ){
+                        ) {
                             $subscription->payment_failed();
                             $order->update_status('epayco-cancelled');
                             $order->add_order_note('Pago fallido');
-                        }else{
-                            $message = 'Pago rechazado' .$sub->data->ref_payco;
+                        } else {
+                            $message = 'Pago rechazado' . $sub->data->ref_payco;
                             $messageClass = 'woocommerce-error';
                             $order->update_status('epayco-cancelled');
                             $order->add_order_note('Pago fallido');
@@ -686,48 +698,56 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     }
                 }
 
-                if (isset($sub->data->cod_respuesta) && $sub->data->cod_respuesta === 1){
-                    if($isTestMode=="true"){
+                if (isset($sub->data->cod_respuesta) && $sub->data->cod_respuesta === 1) {
+                    if ($isTestMode == "true") {
                         $message = 'Pago exitoso Prueba';
-                        switch ($this->epayco_endorder_state ){
-                            case 'epayco-processing':{
-                                $orderStatus ='epayco_processing';
-                            }break;
-                            case 'epayco-completed':{
-                                $orderStatus ='epayco_completed';
-                            }break;
-                            case 'processing':{
-                                $orderStatus ='processing_test';
-                            }break;
-                            case 'completed':{
-                                $orderStatus ='completed_test';
-                            }break;
+                        switch ($this->epayco_endorder_state) {
+                            case 'epayco-processing':
+                                {
+                                    $orderStatus = 'epayco_processing';
+                                }
+                                break;
+                            case 'epayco-completed':
+                                {
+                                    $orderStatus = 'epayco_completed';
+                                }
+                                break;
+                            case 'processing':
+                                {
+                                    $orderStatus = 'processing_test';
+                                }
+                                break;
+                            case 'completed':
+                                {
+                                    $orderStatus = 'completed_test';
+                                }
+                                break;
                         }
-                    }else{
+                    } else {
                         $message = 'Pago exitoso';
                         $orderStatus = $this->epayco_endorder_state;
                     }
 
                     $order->update_status($orderStatus);
                     $order->add_order_note($message);
-                    $note  = sprintf(__('Successful subscription (subscription ID: %s), reference (%s)', 'epayco-subscription'),
+                    $note = sprintf(__('Successful subscription (subscription ID: %s), reference (%s)', 'epayco-subscription'),
                         $sub->subscription->_id, $sub->data->ref_payco);
                     $subscription->add_order_note($note);
-                    $messageStatus['ref_payco'] = array_merge($messageStatus['ref_payco'], [ $sub->data->ref_payco ]);
+                    $messageStatus['ref_payco'] = array_merge($messageStatus['ref_payco'], [$sub->data->ref_payco]);
                     $subscription->payment_complete();
-                    $this->restore_order_stock($order->get_id(),"+");  
-                }elseif (isset($sub->data->cod_respuesta) && $sub->data->cod_respuesta === 3){
-                    if($isTestMode=="true"){
+                    $this->restore_order_stock($order->get_id(), "+");
+                } elseif (isset($sub->data->cod_respuesta) && $sub->data->cod_respuesta === 3) {
+                    if ($isTestMode == "true") {
                         $message = 'Pago pendiente de aprobación Prueba';
                         $orderStatus = "epayco_on_hold";
-                        if($current_state !="epayco_on_hold"){
-                           $this->restore_order_stock($order->get_id(),"+");
+                        if ($current_state != "epayco_on_hold") {
+                            $this->restore_order_stock($order->get_id(), "+");
                         }
-                    }else{
+                    } else {
                         $message = 'Pago pendiente de aprobación';
                         $orderStatus = "epayco-on-hold";
-                        if($current_state !="epayco_on_hold"){
-                            $this->restore_order_stock($order->get_id(),"+");
+                        if ($current_state != "epayco_on_hold") {
+                            $this->restore_order_stock($order->get_id(), "+");
                         }
                     }
 
@@ -744,7 +764,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     );
                 }
             }
-            $messageStatus['ref_payco'] = array_merge($messageStatus['ref_payco'], [ $sub->data->ref_payco ]);
+            $messageStatus['ref_payco'] = array_merge($messageStatus['ref_payco'], [$sub->data->ref_payco]);
             $count++;
 
             if ($count === $quantitySubscriptions && count($messageStatus['message']) >= $count)
@@ -762,21 +782,22 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
     }
 
-    public function savePlanId($order_id,array $plans, array $subscriptions, $update=null, $product_id = null){
+    public function savePlanId($order_id, array $plans, array $subscriptions, $update = null, $product_id = null)
+    {
         $ran = rand(1, 9999);
 
-         global $wpdb;
-         $table_subscription_epayco = $wpdb->prefix . 'epayco_plans';
-              
-        if($update){
+        global $wpdb;
+        $table_subscription_epayco = $wpdb->prefix . 'epayco_plans';
 
-            foreach ($plans as $plan){
-                try{
+        if ($update) {
+
+            foreach ($plans as $plan) {
+                try {
                     $plan_id_ = (string)$plan['id_plan'];
-                    $plan_amount =floatval($plan['amount']);
+                    $plan_amount = floatval($plan['amount']);
                     $plan_currency = (string)$plan['currency'];
                     $result = $wpdb->update(
-                    $table_subscription_epayco,
+                        $table_subscription_epayco,
                         [
                             'order_id' => intval($order_id),
                             'plan_id' => $plan_id_,
@@ -784,20 +805,22 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                             'product_id' => $product_id,
                             'currency' => $plan_currency,
                         ], [
-                            'order_id'=>intval($order_id),
+                            'order_id' => intval($order_id),
                             'product_id' => $product_id,
                         ]
                     );
-                }catch (Exception $exception){
+                } catch (Exception $exception) {
+                    var_dump($exception->getMessage());
+                die();
                     subscription_epayco_se()->log('save plan: ' . $exception->getMessage());
                 }
             }
-        }else{
-            
-            try{
-                 foreach ($plans as $plan){
-                    $plan_id_ = (string)$plan['id_plan']."-".$ran;
-                    $plan_amount =floatval($plan['amount']);
+        } else {
+
+            try {
+                foreach ($plans as $plan) {
+                    $plan_id_ = (string)$plan['id_plan'] . "-" . $ran;
+                    $plan_amount = floatval($plan['amount']);
                     $plan_currency = (string)$plan['currency'];
                 }
 
@@ -815,47 +838,49 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 );
                 $result = 1;
 
-            }catch (Exception $exception){
+            } catch (Exception $exception) {
+                var_dump($exception->getMessage());
+                die();
                 subscription_epayco_se()->log('save plan: ' . $exception->getMessage());
             }
         }
         return $result;
     }
 
-    public function process_payment_epayco(array $plans,array $customerData, $confirm_url, $subscriptions, $order)
+    public function process_payment_epayco(array $plans, array $customerData, $confirm_url, $subscriptions, $order)
     {
         $subsCreated = $this->subscriptionCreate($plans, $customerData, $confirm_url);
-        if ($subsCreated->status){
-           $subs = $this->subscriptionCharge($plans, $customerData, $confirm_url);
-            foreach ($subs as $sub){
+        if ($subsCreated->status) {
+            $subs = $this->subscriptionCharge($plans, $customerData, $confirm_url);
+            foreach ($subs as $sub) {
                 $customerId = isset($subsCreated->customer->_id) ? $subsCreated->customer->_id : null;
                 $suscriptionId = isset($subsCreated->id) ? $subsCreated->id : null;
                 $planId = isset($subsCreated->data->idClient) ? $subsCreated->data->idClient : null;
-                $validation = !is_null($sub->status)?$sub->status:$sub->success;
-                if($validation){
-                    $messageStatus = $this->handleStatusSubscriptions($subs, $subscriptions, $customerData,$order,$customerId,$suscriptionId, $planId);
+                $validation = !is_null($sub->status) ? $sub->status : $sub->success;
+                if ($validation) {
+                    $messageStatus = $this->handleStatusSubscriptions($subs, $subscriptions, $customerData, $order, $customerId, $suscriptionId, $planId);
 
                     $response_status = [
-                        'ref_payco'=> $messageStatus['ref_payco'][0],
+                        'ref_payco' => $messageStatus['ref_payco'][0],
                         'status' => $messageStatus['status'],
                         'message' => $messageStatus['message'],
                         'url' => $order->get_checkout_order_received_url()
                     ];
-                }else {
-                   
+                } else {
+
                     $errorMessage = $sub->data->errors;
                     $response_status = [
-                        'ref_payco'=> null,
+                        'ref_payco' => null,
                         'status' => false,
                         'message' => $errorMessage,
                         'url' => $order->get_checkout_order_received_url()
                     ];
                 }
             }
-        }else{
+        } else {
             $errorMessage = $subsCreated->data->description;
             $response_status = [
-                'ref_payco'=> null,
+                'ref_payco' => null,
                 'status' => false,
                 'message' => $errorMessage,
                 'url' => $order->get_checkout_order_received_url()
@@ -868,15 +893,15 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
     {
         if (getenv('HTTP_CLIENT_IP'))
             $ipaddress = getenv('HTTP_CLIENT_IP');
-        else if(getenv('HTTP_X_FORWARDED_FOR'))
+        else if (getenv('HTTP_X_FORWARDED_FOR'))
             $ipaddress = getenv('HTTP_X_FORWARDED_FOR');
-        else if(getenv('HTTP_X_FORWARDED'))
+        else if (getenv('HTTP_X_FORWARDED'))
             $ipaddress = getenv('HTTP_X_FORWARDED');
-        else if(getenv('HTTP_FORWARDED_FOR'))
+        else if (getenv('HTTP_FORWARDED_FOR'))
             $ipaddress = getenv('HTTP_FORWARDED_FOR');
-        else if(getenv('HTTP_FORWARDED'))
+        else if (getenv('HTTP_FORWARDED'))
             $ipaddress = getenv('HTTP_FORWARDED');
-        else if(getenv('REMOTE_ADDR'))
+        else if (getenv('REMOTE_ADDR'))
             $ipaddress = getenv('REMOTE_ADDR');
         else
             $ipaddress = '127.0.0.1';
@@ -884,14 +909,15 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         return $ipaddress;
     }
 
-    public function authSignature($x_ref_payco,$x_transaction_id,$x_amount, $x_currency_code){
+    public function authSignature($x_ref_payco, $x_transaction_id, $x_amount, $x_currency_code)
+    {
         $signature = hash('sha256',
-            trim($this->custIdCliente).'^'
-            .trim($this->pKey).'^'
-            .$x_ref_payco.'^'
-            .$x_transaction_id.'^'
-            .$x_amount.'^'
-            .$x_currency_code
+            trim($this->custIdCliente) . '^'
+            . trim($this->pKey) . '^'
+            . $x_ref_payco . '^'
+            . $x_transaction_id . '^'
+            . $x_amount . '^'
+            . $x_currency_code
         );
         return $signature;
     }
@@ -899,7 +925,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
     /**
      * @param $order_id
      */
-    public function restore_order_stock($order_id,$operation = 'increase')
+    public function restore_order_stock($order_id, $operation = 'increase')
     {
         $order = wc_get_order($order_id);
         if (!get_option('woocommerce_manage_stock') == 'yes' && !sizeof($order->get_items()) > 0) {
@@ -914,45 +940,46 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         }
     }
 
-    public function cancelledPayment($order_id,$id_client, $subscription_id,$planId){
+    public function cancelledPayment($order_id, $id_client, $subscription_id, $planId)
+    {
         $order = new WC_Order($order_id);
         $current_state = $order->get_status();
         $subscriptions = $this->getWooCommerceSubscriptionFromOrderId($order_id);
         $isTestMode = get_option('epayco_order_status') == "yes" ? "true" : "false";
-        foreach ($subscriptions as $subscription){
-            if($isTestMode=="true"){
+        foreach ($subscriptions as $subscription) {
+            if ($isTestMode == "true") {
                 $message = 'Pago rechazado Prueba';
-                if($current_state =="epayco_failed" ||
-                    $current_state =="epayco_cancelled" ||
-                    $current_state =="failed" ||
+                if ($current_state == "epayco_failed" ||
+                    $current_state == "epayco_cancelled" ||
+                    $current_state == "failed" ||
                     $current_state == "epayco_processing" ||
                     $current_state == "epayco_completed" ||
                     $current_state == "processing_test" ||
                     $current_state == "completed_test"
-                ){
+                ) {
                     $order->update_status('epayco_cancelled');
                     $order->add_order_note($message);
                     $subscription->update_status('on-hold');
-                }else{
+                } else {
                     $messageClass = 'woocommerce-error';
                     $order->update_status('epayco_cancelled');
                     $order->add_order_note($message);
                     $subscription->update_status('on-hold');
                 }
 
-            }else{
-                if($current_state =="epayco-failed" ||
-                    $current_state =="epayco-cancelled" ||
-                    $current_state =="failed" ||
+            } else {
+                if ($current_state == "epayco-failed" ||
+                    $current_state == "epayco-cancelled" ||
+                    $current_state == "failed" ||
                     $current_state == "epayco-processing" ||
                     $current_state == "epayco-completed" ||
                     $current_state == "processing" ||
                     $current_state == "completed"
-                ){
+                ) {
                     $subscription->payment_failed();
                     $order->update_status('epayco-cancelled');
                     $order->add_order_note('Pago fallido');
-                }else{
+                } else {
                     $message = 'Pago rechazado';
                     $messageClass = 'woocommerce-error';
                     $order->update_status('epayco-cancelled');
@@ -967,157 +994,166 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             update_post_meta($order->get_id(), 'id_client', $id_client);
             update_post_meta($order->get_id(), 'plan_id', $planId);
             $response_status = [
-                'ref_payco'=> null,
+                'ref_payco' => null,
                 'status' => true,
                 'message' => null,
                 'url' => $order->get_checkout_order_received_url()
             ];
 
             return $response_status;
-            
+
         }
     }
 
-    public function subscription_epayco_confirm(array $params){
+    public function subscription_epayco_confirm(array $params)
+    {
 
         $order_id = trim(sanitize_text_field($params['order_id']));
         $order = new WC_Order($order_id);
         $current_state = $order->get_status();
-        if(isset($params['x_signature']) ){
+        if (isset($params['x_signature'])) {
 
             $x_ref_payco = trim(sanitize_text_field($_REQUEST['x_ref_payco']));
             $x_transaction_id = trim(sanitize_text_field($_REQUEST['x_transaction_id']));
             $x_amount = trim(sanitize_text_field($_REQUEST['x_amount']));
             $x_currency_code = trim(sanitize_text_field($_REQUEST['x_currency_code']));
             $x_signature = trim(sanitize_text_field($_REQUEST['x_signature']));
-            $x_cod_transaction_state=(int)trim(sanitize_text_field($_REQUEST['x_cod_transaction_state']));
-            if ($order_id!="" && $x_ref_payco!="") {
-                $authSignature=$this->authSignature($x_ref_payco,$x_transaction_id,$x_amount, $x_currency_code);
-                }
+            $x_cod_transaction_state = (int)trim(sanitize_text_field($_REQUEST['x_cod_transaction_state']));
+            if ($order_id != "" && $x_ref_payco != "") {
+                $authSignature = $this->authSignature($x_ref_payco, $x_transaction_id, $x_amount, $x_currency_code);
             }
+        }
 
-            $current_state = $order->get_status();
-            if($authSignature == $x_signature){
+        $current_state = $order->get_status();
+        if ($authSignature == $x_signature) {
             $subscriptions = $this->getWooCommerceSubscriptionFromOrderId($order_id);
             $x_test_request = trim(sanitize_text_field($_REQUEST['x_test_request']));
             $isTestTransaction = $x_test_request == "TRUE" ? "yes" : "no";
             update_option('epayco_order_status', $isTestTransaction);
             $isTestMode = get_option('epayco_order_status') == "yes" ? "true" : "false";
-            foreach ($subscriptions as $subscription){
-                if($x_cod_transaction_state == 1){
-                    if($isTestMode=="true"){
+            foreach ($subscriptions as $subscription) {
+                if ($x_cod_transaction_state == 1) {
+                    if ($isTestMode == "true") {
                         $message = 'Pago exitoso Prueba';
-                        switch ($this->epayco_endorder_state ){
-                            case 'epayco-processing':{
-                                $orderStatus ='epayco_processing';
-                            }break;
-                            case 'epayco-completed':{
-                                $orderStatus ='epayco_completed';
-                            }break;
-                            case 'processing':{
-                                $orderStatus ='processing_test';
-                            }break;
-                            case 'completed':{
-                                $orderStatus ='completed_test';
-                            }break;
+                        switch ($this->epayco_endorder_state) {
+                            case 'epayco-processing':
+                                {
+                                    $orderStatus = 'epayco_processing';
+                                }
+                                break;
+                            case 'epayco-completed':
+                                {
+                                    $orderStatus = 'epayco_completed';
+                                }
+                                break;
+                            case 'processing':
+                                {
+                                    $orderStatus = 'processing_test';
+                                }
+                                break;
+                            case 'completed':
+                                {
+                                    $orderStatus = 'completed_test';
+                                }
+                                break;
                         }
 
-                        if(!($current_state == "epayco_on_hold")){
-                            $this->restore_order_stock($order->get_id(),"+");
+                        if (!($current_state == "epayco_on_hold")) {
+                            $this->restore_order_stock($order->get_id(), "+");
                         }
-                    }else{
+                    } else {
                         $message = 'Pago exitoso';
                         $orderStatus = $this->epayco_endorder_state;
-                        if(!($current_state == "epayco-on-hold")){
-                            $this->restore_order_stock($order->get_id(),"+");
+                        if (!($current_state == "epayco-on-hold")) {
+                            $this->restore_order_stock($order->get_id(), "+");
                         }
                     }
 
                     $subscription->payment_complete();
                     $order->update_status($orderStatus);
                     $order->add_order_note($message);
-                    $note  = sprintf(__('Successful subscription (subscription ID: %s), reference (%s)', 'epayco-subscription'),
+                    $note = sprintf(__('Successful subscription (subscription ID: %s), reference (%s)', 'epayco-subscription'),
                         $subscription->get_data()['id'], $x_ref_payco);
                     $subscription->add_order_note($note);
 
                     echo "1";
                 }
 
-                if($x_cod_transaction_state == 2 ||
+                if ($x_cod_transaction_state == 2 ||
                     $x_cod_transaction_state == 4 ||
                     $x_cod_transaction_state == 6 ||
                     $x_cod_transaction_state == 9 ||
                     $x_cod_transaction_state == 10 ||
                     $x_cod_transaction_state == 11
-                ){
-                    if($isTestMode=="true"){
-                        $message = 'Pago rechazado Prueba: ' .$x_ref_payco;
-                        if($current_state =="epayco_failed" ||
-                            $current_state =="epayco_cancelled" ||
-                            $current_state =="failed" ||
+                ) {
+                    if ($isTestMode == "true") {
+                        $message = 'Pago rechazado Prueba: ' . $x_ref_payco;
+                        if ($current_state == "epayco_failed" ||
+                            $current_state == "epayco_cancelled" ||
+                            $current_state == "failed" ||
                             $current_state == "epayco_processing" ||
                             $current_state == "epayco_completed" ||
                             $current_state == "processing_test" ||
                             $current_state == "completed_test"
-                        ){
+                        ) {
                             $order->update_status('epayco_cancelled');
                             $order->add_order_note($message);
                             $subscription->update_status('on-hold');
-                        }else{
+                        } else {
                             $order->update_status('epayco_cancelled');
                             $order->add_order_note($message);
                             $subscription->update_status('on-hold');
-                            if(
-                                $current_state="epayco-on-hold" ||
-                                $current_state="epayco-on-hold"
-                            ){
+                            if (
+                                $current_state = "epayco-on-hold" ||
+                                    $current_state = "epayco-on-hold"
+                            ) {
                                 $this->restore_order_stock($order->get_id());
                             }
 
                         }
 
-                    }else{
-                        $message = 'Pago rechazado: ' .$x_ref_payco;
-                        if($current_state =="epayco-failed" ||
-                            $current_state =="epayco-cancelled" ||
-                            $current_state =="failed" ||
+                    } else {
+                        $message = 'Pago rechazado: ' . $x_ref_payco;
+                        if ($current_state == "epayco-failed" ||
+                            $current_state == "epayco-cancelled" ||
+                            $current_state == "failed" ||
                             $current_state == "epayco-processing" ||
                             $current_state == "epayco-completed" ||
                             $current_state == "processing" ||
                             $current_state == "completed"
-                        ){
+                        ) {
                             $order->update_status('epayco-cancelled');
                             $order->add_order_note($message);
                             $subscription->update_status('on-hold');
 
-                        }else{
+                        } else {
                             $order->update_status('epayco-cancelled');
                             $order->add_order_note($message);
                             $subscription->update_status('on-hold');
-                            if(
-                                $current_state="epayco-on-hold" ||
-                                $current_state="epayco-on-hold"
-                            ){
+                            if (
+                                $current_state = "epayco-on-hold" ||
+                                    $current_state = "epayco-on-hold"
+                            ) {
                                 $this->restore_order_stock($order->get_id());
                             }
 
                         }
                     }
                     echo $x_cod_transaction_state;
-                  }
+                }
 
-                if($x_cod_transaction_state == 3){
-                    if($isTestMode=="true"){
+                if ($x_cod_transaction_state == 3) {
+                    if ($isTestMode == "true") {
                         $message = 'Pago pendiente de aprobación Prueba';
                         $orderStatus = "epayco_on_hold";
-                        if(!($current_state == "epayco_on_hold")){
-                            $this->restore_order_stock($order->get_id(),"+");
+                        if (!($current_state == "epayco_on_hold")) {
+                            $this->restore_order_stock($order->get_id(), "+");
                         }
-                    }else{
+                    } else {
                         $message = 'Pago pendiente de aprobación';
                         $orderStatus = "epayco-on-hold";
-                        if(!($current_state == "epayco-on-hold")){
-                            $this->restore_order_stock($order->get_id(),"+");
+                        if (!($current_state == "epayco-on-hold")) {
+                            $this->restore_order_stock($order->get_id(), "+");
                         }
                     }
 
@@ -1129,9 +1165,9 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 }
             }
 
-            }else{
+        } else {
             $message = 'Firma no valida';
-            echo $message;     
-            }
+            echo $message;
+        }
     }
 }
