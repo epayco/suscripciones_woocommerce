@@ -2,7 +2,14 @@
 
 class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
 {
-
+    public $isTest;
+    public $currency;
+    public $custIdCliente;
+    public $pKey;
+    public $apiKey;
+    public $privateKey;
+    public $shop_name;
+    public $epayco_endorder_state;
     public function __construct()
     {
         $this->id = 'epayco-subscription';
