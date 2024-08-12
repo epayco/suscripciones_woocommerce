@@ -6,7 +6,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
     public function __construct()
     {
         $this->id = 'epayco-subscription';
-        $this->icon = plugin_dir_url(__FILE__) . 'assets/images/paymentLogo.svg';
+        $this->icon = plugin_dir_url(__FILE__) . 'assets/images/paymentCards.svg';
         $this->method_title = __('ePayco Subscription');
         $this->method_description = __('Subscription ePayco recurring payments');
         $this->description = $this->get_option('description');
