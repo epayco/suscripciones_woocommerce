@@ -2,18 +2,11 @@
 
 class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
 {
-    public $isTest;
-    public $currency;
-    public $custIdCliente;
-    public $pKey;
-    public $apiKey;
-    public $privateKey;
-    public $shop_name;
-    public $epayco_endorder_state;
+
     public function __construct()
     {
         $this->id = 'epayco-subscription';
-        $this->icon = plugin_dir_url(__FILE__) . 'assets/images/paymentLogo.svg';
+        $this->icon = plugin_dir_url(__FILE__) . 'assets/images/paymentCards.svg';
         $this->method_title = __('ePayco Subscription');
         $this->method_description = __('Subscription ePayco recurring payments');
         $this->description = $this->get_option('description');
@@ -92,7 +85,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
         </style>
         <div class="container-fluid">
             <div class="panel panel-default" style="">
-                <img src="<?php echo plugin_dir_url(__FILE__) . 'assets/images/logo.png' ?>">
+                <img src="<?php echo plugin_dir_url(__FILE__) . 'assets/images/logo.svg' ?>">
                 <h3><?php echo $this->title; ?></h3>
                 <div style="color: #31708f; background-color: #d9edf7; border-color: #bce8f1;padding: 10px;border-radius: 5px;">
                     <b>Este modulo le permite aceptar pagos seguros por la plataforma de pagos ePayco</b>

@@ -15,12 +15,6 @@ class Epayco_Subscription_Config
      */
     public $version;
     /**
-     * Plugin version.
-     *
-     * @var string
-     */
-    public $name;
-    /**
      * Absolute plugin path.
      *
      * @var string
@@ -38,12 +32,6 @@ class Epayco_Subscription_Config
      * @var string
      */
     public $includes_path;
-    /**
-     * Absolute path to plugin includes dir.
-     *
-     * @var string
-     */
-    public $lib_path;
     /**
      * @var WC_Logger
      */
