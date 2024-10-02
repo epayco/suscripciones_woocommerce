@@ -13,6 +13,9 @@
  * Domain Path:       /languages
  */
 
+use Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry;
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
+
 if (!defined('ABSPATH')) exit;
 
 if (!defined('EPAYCO_SUBSCRIPTION_SE_VERSION')) {
@@ -21,16 +24,27 @@ if (!defined('EPAYCO_SUBSCRIPTION_SE_VERSION')) {
 
 
 add_action('plugins_loaded', 'epayco_subscription_init', 0);
-add_action('plugins_loaded', 'register_epayco_order_status');
-add_filter('wc_order_statuses', 'add_epayco_to_order_statuses');
-add_action('admin_head', 'styling_admin_order_list');
+add_action('plugins_loaded', 'register_epayco_suscription_order_status');
+add_filter('wc_order_statuses', 'add_epayco_suscription_to_order_statuses');
+add_action('admin_head', 'styling_admin_suscription_order_list');
 add_action('woocommerce_checkout_update_order_meta', 'some_custom_checkout_field_update_order_meta');
+
+add_action('before_woocommerce_init', function () {
+    if (class_exists(FeaturesUtil::class)) {
+        FeaturesUtil::declare_compatibility('custom_order_tables', __FILE__);
+    }
+
+    if (class_exists(FeaturesUtil::class)) {
+        FeaturesUtil::declare_compatibility('cart_checkout_blocks', __FILE__);
+    }
+});
 
 function epayco_subscription_init()
 {
     if (!class_exists('WC_Payment_Gateway')) {
         return;
     }
+    registerBlocks();
     require_once(dirname(__FILE__) . '/epayco-settings.php');
     $plugin = new Epayco_Subscription_Config(__FILE__, EPAYCO_SUBSCRIPTION_SE_VERSION, 'epayco-subscription');
     $plugin->run_epayco();
@@ -40,7 +54,25 @@ function epayco_subscription_init()
     }
 }
 
-function register_epayco_order_status()
+/**
+     * Register woocommerce blocks support
+     *
+     * @return void
+     */
+    function registerBlocks(): void
+    {
+        if (class_exists('Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType')) {
+            require_once 'lib/blocks/epayco-block.php';
+            add_action(
+                'woocommerce_blocks_payment_method_type_registration',
+                function (PaymentMethodRegistry $payment_method_registry) {
+                    $payment_method_registry->register(new CustomBlock());
+                }
+            );
+        }
+    }
+
+function register_epayco_suscription_order_status()
 {
     register_post_status('wc-epayco-failed', array(
         'label' => 'ePayco Pago Fallido',
@@ -169,7 +201,7 @@ function register_epayco_order_status()
     ));
 }
 
-function add_epayco_to_order_statuses($order_statuses)
+function add_epayco_suscription_to_order_statuses($order_statuses)
 {
     $new_order_statuses = array();
     $epayco_order = get_option('epayco_order_status');
@@ -231,7 +263,7 @@ function add_epayco_to_order_statuses($order_statuses)
     return $new_order_statuses;
 }
 
-function styling_admin_order_list()
+function styling_admin_suscription_order_list()
 {
     global $pagenow, $post;
     if ($pagenow != 'edit.php') return; // Exit
