@@ -502,11 +502,13 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             $plan_code = $quantity > 1 ? "$plan_code-$quantity" : $plan_code;
             $plan_code = $total_discount > 0 ? "$plan_code-$total_discount" : $plan_code;
             $plan_code = rtrim($plan_code, "-");
+            $plan_id = str_replace(array("-", "--"), array("_", ""), $plan_code);
+            $plan_name = trim(str_replace("-", " ", $product_name));
             $plans[] = array_merge(
                 [
-                    "id_plan" => $plan_code,
-                    "name" => "Plan $plan_code",
-                    "description" => "Plan $plan_code",
+                    "id_plan" => str_replace("__", "_", $plan_id),
+                    "name" => "Plan $plan_name",
+                    "description" => "Plan $plan_name",
                     "currency" => $order_currency,
                 ],
                 [

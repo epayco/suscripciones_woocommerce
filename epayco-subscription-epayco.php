@@ -164,7 +164,8 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
         $indexjs = plugin_dir_url(__FILE__) . 'assets/js/index.js';
         $appjs = trim(plugin_dir_url(__FILE__) . 'assets/js/app.min.js');
         $cardsjs = trim(plugin_dir_url(__FILE__) . 'assets/js/cardsjs.js');
-        $epaycojs ="https://checkout.epayco.co/epayco.min.js";
+        //$epaycojs ="https://checkout.epayco.co/epayco.min.js";
+        $epaycojs = trim(plugin_dir_url(__FILE__) . 'assets/js/epayco.js');
         $lang = get_locale();
         $lang = explode('_', $lang);
         $lang = $lang[0];

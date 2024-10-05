@@ -215,3 +215,9 @@
 .card-js.stripe .icon .svg {
     fill: #559A28
 }
+
+.custom-field-class select {
+    height: 3.5rem;
+    font-size: var(--wp--preset--font-size--small);
+    padding: 0.9rem 1.1rem;
+}
