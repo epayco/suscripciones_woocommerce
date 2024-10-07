@@ -1,7 +1,7 @@
 jQuery( function( $ ) {
     $("body").on("contextmenu",function(e){
         return false;
-    });   
+    });
     var myVar = setTimeout(load, 2000);
     const openModalButtons = document.querySelectorAll('[data-modal-target]')
     const closeModalButtons = document.querySelectorAll('[data-close-button]')
@@ -24,86 +24,87 @@ jQuery( function( $ ) {
     mdlInactivityTime.style.display='none'
     cancelT_modal.style.display='none'
     mdlTimeExpired.style.display='none'
+    var contador = 0;
     function alertar(){
-    try {
-        var string = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse('traysads'), 'secrasdasdaset').toString();
-            } catch (error) {
+        try {
+            var string = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse('traysads'), 'secrasdasdaset').toString();
+        } catch (error) {
             console.log(error);
             location.reload();
         }
     }
     const INACTIVITY_TIME = 6e4
-  , TIMER_EXTEND_SESSION = 45;
-  var form = document.getElementById('form-action');
-  let interval, counter = TIMER_EXTEND_SESSION, urlRedirect = form.action+"&canceled=1", counterDos = 0;
+        , TIMER_EXTEND_SESSION = 45;
+    var form = document.getElementById('form-action');
+    let interval, counter = TIMER_EXTEND_SESSION, urlRedirect = form.action+"&canceled=1", counterDos = 0;
     const idleTimeouts = ()=>{
         let e;
         function t() {
             clearTimeout(e),
-            e = setTimeout(inactivityTimes, INACTIVITY_TIME)
+                e = setTimeout(inactivityTimes, INACTIVITY_TIME)
             mdlTimeExpired.style.display='none';
             mdlInactivityTime.style.display='none';
             clearInterval(interval)
             counter = TIMER_EXTEND_SESSION
         }
         null == $("#trx-finish-status").val() && (window.onload = t,
-        window.ontouchstart = t,
-        window.onclick = t,
-        window.onkeypress = t,
-        window.addEventListener("scroll", t, !0))
+            window.ontouchstart = t,
+            window.onclick = t,
+            window.onkeypress = t,
+            window.addEventListener("scroll", t, !0))
     }, inactivityTimes = ()=>{
         mdlTimeExpired.style.display='none';
         mdlInactivityTime.style.display='flex',
-        $("#counterInactivity").text(counter),
-        showMdl("mdlInactivityTime"),
-        interval = setInterval(counterInactivityTime, 1e3)
+            $("#counterInactivity").text(counter),
+            showMdl("mdlInactivityTime"),
+            interval = setInterval(counterInactivityTime, 1e3)
     };
     function counterInactivityTime() {
         0 ===counter && (resetInterval(),
-        closeTimeExpired()),
-        counter--,
-        $("#counterInactivity").text(counter)
+            closeTimeExpired()),
+            counter--,
+            $("#counterInactivity").text(counter)
     }
     function resetInterval() {
         mdlTimeExpired.style.display='flex',
-        mdlInactivityTime.style.display='none',
-        clearInterval(interval),
-        hideMdl("mdlInactivityTime"),
-        showMdl("mdlTimeExpired"),
-        counter = TIMER_EXTEND_SESSION,
-        $("#counterInactivity").text(counter)
+            mdlInactivityTime.style.display='none',
+            clearInterval(interval),
+            hideMdl("mdlInactivityTime"),
+            showMdl("mdlTimeExpired"),
+            counter = TIMER_EXTEND_SESSION,
+            $("#counterInactivity").text(counter)
     }
 
     closeTimeExpired = ()=>{
         let e = [];
     }
-    , showMdl = e=>{
+        , showMdl = e=>{
         let t = [`#${e}`, `#${e}Body`];
         addRemoveClass(t, "dn", !1),
-        addRemoveClass(t, "op")
+            addRemoveClass(t, "op")
     }
-    , hideMdl = e=>{
+        , hideMdl = e=>{
         let t = [`#${e}`, `#${e}Body`];
         addRemoveClass(t, "op", !1),
-        addRemoveClass(t, "dn")
+            addRemoveClass(t, "dn")
     }  , addRemoveClass = (e,t,c=!0)=>{
         c ? e.forEach(e=>{
-            $(e).addClass(t)
-        }
+                $(e).addClass(t)
+            }
         ) : e.forEach(e=>{
-            $(e).removeClass(t)
-        }
+                $(e).removeClass(t)
+            }
         )
     };
     $("#btnMdlTimeExpired").click(()=>{
         window.location = urlRedirect;
     });
     $(document).ready(function(){
-    
+
         const epayco_title = document.getElementById('epayco_title')
         const button_epayco = document.getElementById('button_epayco')
         // Size of browser viewport.
-       let first_widtht = $(window).width();
+        let first_widtht = $(window).width();
         if(first_widtht>425){
             mainContainer.className = "";
         }else{
@@ -113,13 +114,13 @@ jQuery( function( $ ) {
             let scriptSrc =  movil.innerText.replace(/ /g, "");
             script.src = scriptSrc;
             script.async = true;
-            movil_header.appendChild(script); 
+            movil_header.appendChild(script);
             let link = document.createElement('link');
             let linkValue =  style_min.innerText.replace(/ /g, "");
             link.rel = "stylesheet";
             link.type = "text/css";
             link.href = linkValue;
-            cardjsmincss.appendChild(link); 
+            cardjsmincss.appendChild(link);
             let modal = document.getElementById('centered');
             modal.hidden = true;
             overlay.hidden = true;
@@ -157,13 +158,13 @@ jQuery( function( $ ) {
                 divFoo.appendChild(li).appendChild(newlink).appendChild(img);
             });
         });
-        
-    idleTimeouts()
-    
+
+        idleTimeouts()
+
     });
 
     function cargarMovil(){
-        setTimeout(function(){ 
+        setTimeout(function(){
             mdlInactivityTime.style.display='flex'
             cancelT_modal.style.display='flex'
             mdlTimeExpired.style.display='flex'
@@ -290,30 +291,27 @@ jQuery( function( $ ) {
         $('#token-credit').submit();
     });
     const $checkout_movil_fomr = $( '#form-action' );
-    $checkout_movil_fomr.on('submit', function (event) {  
+    $checkout_movil_fomr.on('submit', function (event) {
         event.preventDefault();
     });
     const $checkout_form = $( '#token-credit' );
-        $checkout_form.on('submit', function (event) {
+    $checkout_form.on('submit', function (event) {
         event.preventDefault();
-        var contador = 0;
-        contador++;
         var key = $("#p_c").text();
         var key_p = $("#p_p").text();
         var lang = $("#lang_epayco").text();
-
         ePayco.setPublicKey(key);
         ePayco.setLanguage(lang);
         var $form = $(this);
-        function getPosts() {
-            return  new Promise(function(resolve, reject) {
+        async function getPosts() {
+            return await  new Promise(function(resolve, reject) {
                 ePayco.token.create($form, function(error, token) {
                     if(!error) {
                         enviarData(token)
                     } else {
                         if(!error) {
                             resolve(token)
-                            } else {
+                        } else {
                             if(lang=="en"){
                                 if(error.data.description == "Error general contacte con soporte. No se encontro el token de sesion"){
                                     reject( "repetir" )
@@ -323,31 +321,27 @@ jQuery( function( $ ) {
                                         $("#web-checkout-content").addClass("animated shake");
                                         document.getElementById('the-card-number-element').classList.add('inputerror')
                                         reject('credit card number incorrect or empty')
-
                                     }
-
                                 }
                             }else{
                                 try {
-                                     if(contador<2)
-                                     {
-                                         reject('No se pudo realizar el pago, por favor reintente nuevamente')
-                                     }else {
-                                         loadoverlay_.style.display='none';
-                                         alert('No se pudo realizar el pago, por favor reintente nuevamente')
-                                     }
+                                    if(contador<2)
+                                    {
+                                        reject('No se pudo realizar el pago, por favor reintente nuevamente')
+                                    }else {
+                                        loadoverlay_.style.display='none';
+                                        alert('No se pudo realizar el pago, por favor reintente nuevamente')
+                                    }
                                 } catch(e) {
                                     loadoverlay_.style.display='none';
                                     alert('No se pudo realizar el pago, por favor reintente nuevamente')
                                 }
                             }
-
                         }
                     }
                 });
             });
         }
-        
         var name = document.getElementById('the-card-name-element').value.replace(/[ -]/g, "").length;
         var number = document.getElementById('the-card-number-element').value.replace(/[ -]/g, "").length;
         var month = document.getElementById('month-value').value.replace(/[ -]/g, "").length;
@@ -371,42 +365,42 @@ jQuery( function( $ ) {
             if( cvc < 3 ){
                 document.getElementById('cvc_').classList.add('inputerror')
             }
-            
         }else{
-            
             loadoverlay_.style.display='block';
-
-            getPosts().then(r =>{         
-                $checkout_form.find('input[name=my-custom-form-field__card-number]').remove();
-                $checkout_form.find('input[name=cvc]').remove();
-                $checkout_form.find('input[name=year]').remove();
-                $checkout_form.find('input[name=month]').remove();
-                $checkout_form.find('input[name=card_email]').remove();
-                $checkout_form.find('input[name=card_number]').remove();
-                var form = document.getElementById('token-credit');
-                var hiddenInput = document.createElement('input');
-                hiddenInput.setAttribute('type', 'hidden');
-                hiddenInput.setAttribute('name', 'epaycoToken');
-                hiddenInput.setAttribute('value', r);
-                form.appendChild(hiddenInput);
-                form.submit();
-            }).catch((e) => {
-                if(contador<2)
-                {
-                    contador++;
-                    getPosts()
-                    
-                }else{
-                  console.log('Algo saliò mal!');
-                  loadoverlay_.style.display='none';
-                  alert(e)
-                }
-            });
+            if(contador==0){
+                contador++;
+                getPosts().then(r =>{
+                    contador=0;
+                    $checkout_form.find('input[name=my-custom-form-field__card-number]').remove();
+                    $checkout_form.find('input[name=cvc]').remove();
+                    $checkout_form.find('input[name=year]').remove();
+                    $checkout_form.find('input[name=month]').remove();
+                    $checkout_form.find('input[name=card_email]').remove();
+                    $checkout_form.find('input[name=card_number]').remove();
+                    var form = document.getElementById('token-credit');
+                    var hiddenInput = document.createElement('input');
+                    hiddenInput.setAttribute('type', 'hidden');
+                    hiddenInput.setAttribute('name', 'epaycoToken');
+                    hiddenInput.setAttribute('value', r);
+                    form.appendChild(hiddenInput);
+                    form.submit();
+                }).catch((e) => {
+                    if(contador<2)
+                    {
+                        contador++;
+                        getPosts()
+                    }else{
+                        console.log('Algo saliò mal!');
+                        loadoverlay_.style.display='none';
+                        alert(e)
+                    }
+                });
+            }
         }
     });
 
-    function enviarData(r){
-       setTimeout(function(){
+    async function enviarData(r){
+        setTimeout(function(){
             $checkout_form.find('input[name=my-custom-form-field__card-number]').remove();
             $checkout_form.find('input[name=cvc]').remove();
             $checkout_form.find('input[name=year]').remove();
@@ -420,7 +414,7 @@ jQuery( function( $ ) {
             hiddenInput.setAttribute('value', r);
             form.appendChild(hiddenInput);
             form.submit();
-     }, 3000);
+        }, 3000);
     }
 
 });

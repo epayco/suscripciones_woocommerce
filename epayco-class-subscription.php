@@ -111,6 +111,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         $confirm_url = $this->getUrlNotify($order_id);
         $plans = $this->getPlansBySubscription($subscriptions);
         $getPlans = $this->getPlans($plans);
+        //$getPlansList = $this->getPlansList();
 
         if (!$getPlans) {
             $validatePlan_ = $this->validatePlan(true, $order_id, $plans, $subscriptions, $customerData, $confirm_url, $order, false, false, null);
@@ -193,6 +194,24 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         }
     }
 
+    public function getPlansList()
+    {
+        try {
+            $plan = $this->epayco->plan->getList();
+            if ($plan->status) {
+                return $plan;
+            } else {
+                return false;
+            }
+
+        } catch (Exception $exception) {
+            var_dump($exception->getMessage());
+            die();
+            subscription_epayco_se()->log('getPlansList: ' . $exception->getMessage());
+        }
+
+    }
+
     public function getPlanById($plan_id)
     {
         try {
@@ -258,7 +277,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 if (intval($plan_amount_cart) == $plan_amount_epayco) {
                     return $this->process_payment_epayco($plans, $customer, $confirm_url, $subscriptions, $order);
                 } else {
-                    return $this->validateNewPlanData($subscriptions, $order_id, true, false);
+                    return $this->validateNewPlanData($subscriptions, $order_id, true, false,$plans,$customer, $confirm_url, $order);
                 }
             } catch (Exception $exception) {
                 echo $exception->getMessage();
@@ -272,7 +291,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         }
     }
 
-    public function validateNewPlanData($subscriptions, $order_id, $value, $currency)
+    public function validateNewPlanData($subscriptions, $order_id, $value, $currency, $plans, $customer, $confirm_url, $order)
     {
         global $wpdb;
         $table_name = $wpdb->prefix . 'epayco_plans';
@@ -303,12 +322,14 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                             $plan_interval_cart = $plan['interval'];
                             $plan_interval_count_cart = $plan['interval_count'];
                             $plan_trial_days_cart = $plan['trial_days'];
+                            $plan_name = $plan['name'];
+                            $plan_description = $plan['description'];
                         }
 
                         $newPlanToCreated[0] = [
                             "id_plan" => (string)$orderData[0]->plan_id,
-                            "name" => (string)$orderData[0]->plan_id,
-                            "description" => (string)$orderData[0]->plan_id,
+                            "name" => $plan_name,
+                            "description" => $plan_description,
                             "currency" => $plan_currency_cart,
                             "trial_days" => intval($plan_trial_days_cart),
                             "amount" => $orderData[0]->amount,
@@ -821,7 +842,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
             try {
                 foreach ($plans as $plan) {
-                    $plan_id_ = (string)$plan['id_plan'] . "-" . $ran;
+                    $plan_id_ = (string)$plan['id_plan'] . "_" . $ran;
                     $plan_amount = floatval($plan['amount']);
                     $plan_currency = (string)$plan['currency'];
                 }
