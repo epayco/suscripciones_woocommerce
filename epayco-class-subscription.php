@@ -178,7 +178,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
     {
         foreach ($plans as $key => $plan) {
             try {
-                $plan = $this->epayco->plan->get($plans[$key]['id_plan']);
+                $plan = $this->epayco->plan->get(strtolower($plans[$key]['id_plan']));
                 if ($plan->status) {
                     unset($plans[$key]);
                     return $plan;
@@ -215,7 +215,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
     public function getPlanById($plan_id)
     {
         try {
-            $plan = $this->epayco->plan->get($plan_id);
+            $plan = $this->epayco->plan->get(strtolower($plan_id));
             if ($plan->status) {
                 return $plan;
             } else {
@@ -381,7 +381,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             try {
                 $plan_ = $this->epayco->plan->create(
                     [
-                        "id_plan" => (string)$plan['id_plan'],
+                        "id_plan" => (string)strtolower($plan['id_plan']),
                         "name" => (string)$plan['name'],
                         "description" => (string)$plan['description'],
                         "amount" => $plan['amount'],
@@ -527,7 +527,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             $plan_name = trim(str_replace("-", " ", $product_name));
             $plans[] = array_merge(
                 [
-                    "id_plan" => str_replace("__", "_", $plan_id),
+                    "id_plan" => strtolower(str_replace("__", "_", $plan_id)),
                     "name" => "Plan $plan_name",
                     "description" => "Plan $plan_name",
                     "currency" => $order_currency,
@@ -816,7 +816,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
             foreach ($plans as $plan) {
                 try {
-                    $plan_id_ = (string)$plan['id_plan'];
+                    $plan_id_ = strtolower((string)$plan['id_plan']);
                     $plan_amount = floatval($plan['amount']);
                     $plan_currency = (string)$plan['currency'];
                     $result = $wpdb->update(
@@ -849,7 +849,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
                 $dataToSave = [
                     'order_id' => intval($order_id),
-                    'plan_id' => $plan_id_,
+                    'plan_id' => strtolower($plan_id_),
                     'amount' => $plan_amount,
                     'product_id' => $product_id,
                     'currency' => $plan_currency,
