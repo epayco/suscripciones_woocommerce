@@ -9,7 +9,7 @@
     position: absolute;
     display: block;
     right: 15px;
-    top: 7px;
+    top: 3px;
     background: url(https://cardjs.co.uk/img/cards.png) 0 23px no-repeat;
     pointer-events: none;
     opacity: 0;
@@ -214,4 +214,10 @@
 
 .card-js.stripe .icon .svg {
     fill: #559A28
+}
+
+.custom-field-class select {
+    height: 3.5rem;
+    font-size: var(--wp--preset--font-size--small);
+    padding: 0.9rem 1.1rem;
 }

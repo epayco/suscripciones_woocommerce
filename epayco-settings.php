@@ -105,7 +105,7 @@ class Epayco_Subscription_Config
             'required' => true,
             'clear' => false,
             'type' => 'select',
-            'class' => array('my-css'),
+            'class'       => array( 'custom-field-class'),
             'default' => 'CC',
             'options' => array(
                 'CC' => __('Cédula de ciudadanía'),
@@ -125,7 +125,7 @@ class Epayco_Subscription_Config
             'required' => true,
             'clear' => false,
             'type' => 'number',
-            'class' => array('my-css')
+            'class'       => array( 'custom-field-class'),
         );
 
 
@@ -135,7 +135,7 @@ class Epayco_Subscription_Config
             'required' => true,
             'clear' => false,
             'type' => 'select',
-            'class' => array('my-css'),
+            'class'       => array('custom-field-class'),
             'default' => 'CC',
             'options' => array(
                 'CC' => __('Cédula de ciudadanía'),
@@ -155,7 +155,7 @@ class Epayco_Subscription_Config
             'required' => true,
             'clear' => false,
             'type' => 'number',
-            'class' => array('my-css')
+            'class'       => array( 'custom-field-class'),
         );
 
         return $fields;

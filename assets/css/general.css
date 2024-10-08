@@ -416,7 +416,7 @@ img.home-icons {
   position: absolute;
   width: 400px;
   max-width: 100%;
-  min-height: 90%;
+  min-height: 91%;
   border-radius: 5px;
   background: white;
   z-index: 9999;
@@ -1099,7 +1099,7 @@ overflow-y: auto;z-index: 1;}
     width: 84px;
     height: 84px;
     position: fixed;
-    top: 48%;
+    top: 51%;
     left: 50%;
     margin-top: -37px;
     margin-left: -42px;
