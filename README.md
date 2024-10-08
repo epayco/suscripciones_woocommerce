@@ -13,7 +13,7 @@
 
 * Tener una cuenta activa en [ePayco](https://pagaycobra.com).
 * Tener instalado WordPress versión 5.3.x
-* WooCommerce versión 3.9.x.
+* WooCommerce versión 7.7.0 =<.
 * WooCommerce Suscripcion versión 2.6.x.
 * Acceso a las carpetas donde se encuetra instalado WordPress y WooCommerce.
 * Acceso al admin de WordPress.
@@ -52,4 +52,4 @@
 * [ePayco plugin WooCommerce v5.0](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v5.0)
 * [ePayco plugin WooCommerce v5.1](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v5.1)
 * [ePayco plugin WooCommerce v5.2](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v5.2)
-
+* [ePayco plugin WooCommerce v6.0](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v6.0)
