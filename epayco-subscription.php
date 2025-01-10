@@ -6,7 +6,7 @@
  * @wordpress-plugin
  * Plugin Name:       ePayco WooCommerce Suscripction
  * Description:       Plugin ePayco WooCommerce.
- * Version:           5.1.0
+ * Version:           6.1.0
  * Author:            ePayco
  * Author URI:
  * Licence

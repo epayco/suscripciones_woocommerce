@@ -3,203 +3,211 @@
 class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
 {
 
-    public function __construct()
-    {
-        $this->id = 'epayco-subscription';
-        $this->icon = plugin_dir_url(__FILE__) . 'assets/images/paymentCards.svg';
-        $this->method_title = __('ePayco Subscription');
-        $this->method_description = __('Subscription ePayco recurring payments');
-        $this->description = $this->get_option('description');
-        //$this->order_button_text = __('Pay', 'epayco-subscription');
-        $this->has_fields = true;
-        $this->supports = [
-            'subscriptions',
-            'subscription_suspension',
-            'subscription_reactivation',
-            'subscription_cancellation'
-        ];
-        $this->init_form_fields();
-        $this->init_settings();
-        $this->title = $this->get_option('epayco_title');
-        $this->isTest = (bool)$this->get_option('environment');
-        update_option('epayco_order_status', $this->isTest);
-        $this->currency = get_option('woocommerce_currency');
-        $this->custIdCliente = $this->get_option('custIdCliente');
-        $this->pKey = $this->get_option('pKey');
-        $this->apiKey = $this->get_option('apiKey');
-        $this->privateKey = $this->get_option('privateKey');
-        $this->shop_name = $this->get_option('shop_name');
-        $this->epayco_endorder_state = $this->get_option('epayco_endorder_state');
-        add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
-        add_action('woocommerce_api_' . strtolower(get_class($this)), array($this, 'confirmation_ipn'));
-        add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
-        add_action('ePaycosub_init', array($this, 'ePaycoSub_successful_request'));
-
+  public function __construct()
+  {
+    $this->id = 'epayco-subscription';
+    $this->method_title = __('ePayco Subscription');
+    $this->method_description = __('Subscription ePayco recurring payments');
+    $this->description = $this->get_option('description');
+    //$this->order_button_text = __('Pay', 'epayco-subscription');
+    if (! defined('EPAYCO_MULTIMEDIA_URL')) {
+      define('EPAYCO_MULTIMEDIA_URL', 'https://multimedia.epayco.co');
     }
+    $this->icon = EPAYCO_MULTIMEDIA_URL . '/plugins-sdks/PaymentsCreditCards.svg';
 
-    public function init_form_fields()
-    {
-        $this->form_fields = require(dirname(__FILE__) . '/admin/epayco-settings.php');
-    }
+    $this->has_fields = true;
+    $this->supports = [
+      'subscriptions',
+      'subscription_suspension',
+      'subscription_reactivation',
+      'subscription_cancellation'
+    ];
+    $this->init_form_fields();
+    $this->init_settings();
+    $this->title = $this->get_option('epayco_title');
+    $this->isTest = (bool)$this->get_option('environment');
+    update_option('epayco_order_status', $this->isTest);
+    $this->currency = get_option('woocommerce_currency');
+    $this->custIdCliente = $this->get_option('custIdCliente');
+    $this->pKey = $this->get_option('pKey');
+    $this->apiKey = $this->get_option('apiKey');
+    $this->privateKey = $this->get_option('privateKey');
+    $this->shop_name = $this->get_option('shop_name');
+    $this->epayco_endorder_state = $this->get_option('epayco_endorder_state');
+    add_action('woocommerce_update_options_payment_gateways_' . $this->id, array($this, 'process_admin_options'));
+    add_action('woocommerce_api_' . strtolower(get_class($this)), array($this, 'confirmation_ipn'));
+    add_action('woocommerce_receipt_' . $this->id, array($this, 'receipt_page'));
+    add_action('ePaycosub_init', array($this, 'ePaycoSub_successful_request'));
+  }
 
-    public function admin_options()
-    {
-        ?>
-        <style>
-            tbody {
-            }
+  public function init_form_fields()
+  {
+    $this->form_fields = require(dirname(__FILE__) . '/admin/epayco-settings.php');
+  }
 
-            .epayco-table tr:not(:first-child) {
-                border-top: 1px solid #ededed;
-            }
+  public function admin_options()
+  {
+?>
+    <style>
+      tbody {}
 
-            .epayco-table tr th {
-                padding-left: 15px;
-                text-align: -webkit-right;
-            }
+      .epayco-table tr:not(:first-child) {
+        border-top: 1px solid #ededed;
+      }
 
-            .epayco-table input[type="text"] {
-                padding: 8px 13px !important;
-                border-radius: 3px;
-                width: 100% !important;
-            }
+      .epayco-table tr th {
+        padding-left: 15px;
+        text-align: -webkit-right;
+      }
 
-            .epayco-table .description {
-                color: #afaeae;
-            }
+      .epayco-table input[type="text"] {
+        padding: 8px 13px !important;
+        border-radius: 3px;
+        width: 100% !important;
+      }
 
-            .epayco-table select {
-                padding: 8px 13px !important;
-                border-radius: 3px;
-                width: 100% !important;
-                height: 37px !important;
-            }
+      .epayco-table .description {
+        color: #afaeae;
+      }
 
-            .epayco-required::before {
-                content: '* ';
-                font-size: 16px;
-                color: #F00;
-                font-weight: bold;
-            }
+      .epayco-table select {
+        padding: 8px 13px !important;
+        border-radius: 3px;
+        width: 100% !important;
+        height: 37px !important;
+      }
 
-        </style>
-        <div class="container-fluid">
-            <div class="panel panel-default" style="">
-                <img src="<?php echo plugin_dir_url(__FILE__) . 'assets/images/logo.svg' ?>">
-                <h3><?php echo $this->title; ?></h3>
-                <div style="color: #31708f; background-color: #d9edf7; border-color: #bce8f1;padding: 10px;border-radius: 5px;">
-                    <b>Este modulo le permite aceptar pagos seguros por la plataforma de pagos ePayco</b>
-                    <br>Si el cliente decide pagar por ePayco, el estado del pedido cambiara a ePayco Esperando Pago
-                    <br>Cuando el pago sea Aceptado o Rechazado ePayco envia una configuracion a la tienda para cambiar
-                    el estado del pedido.
-                </div>
-                <div class="panel-body"
-                     style="padding: 15px 0;background: #fff;margin-top: 15px;border-radius: 5px;border: 1px solid #dcdcdc;border-top: 1px solid #dcdcdc;">
-
-                    <table class="form-table epayco-table">
-                        <?php
-                        $this->generate_settings_html();
-                        ?>
-                    </table>
-                </div>
-            </div>
-        </div>
+      .epayco-required::before {
+        content: '* ';
+        font-size: 16px;
+        color: #F00;
+        font-weight: bold;
+      }
+    </style>
+    <div class="container-fluid">
+      <div class="panel panel-default" style="">
         <?php
+        $image_url = EPAYCO_MULTIMEDIA_URL . '/plugins-sdks/logo.png';
+        ?>
+        <div>
+          <!-- HTML -->
+          <img src="<?php echo esc_url($image_url); ?>" alt="Logo">
+          <h3>
+            <?php echo $this->title; ?>
+          </h3>
+          <div style="color: #31708f; background-color: #d9edf7; border-color: #bce8f1;padding: 10px;border-radius: 5px;">
+            <b>Este modulo le permite aceptar pagos seguros por la plataforma de pagos ePayco</b>
+            <br>Si el cliente decide pagar por ePayco, el estado del pedido cambiara a ePayco Esperando Pago
+            <br>Cuando el pago sea Aceptado o Rechazado ePayco envia una configuracion a la tienda para cambiar
+            el estado del pedido.
+          </div>
+          <div class="panel-body"
+            style="padding: 15px 0;background: #fff;margin-top: 15px;border-radius: 5px;border: 1px solid #dcdcdc;border-top: 1px solid #dcdcdc;">
+
+            <table class="form-table epayco-table">
+              <?php
+              $this->generate_settings_html();
+              ?>
+            </table>
+          </div>
+        </div>
+      </div>
+  <?php
+  }
+
+  public function confirmation_ipn()
+  {
+    @ob_clean();
+    if (!empty($_REQUEST)) {
+      header('HTTP/1.1 200 OK');
+      do_action("ePaycosub_init", $_REQUEST);
+    } else {
+      wp_die(__("ePayco Request Failure", 'epayco-subscription'));
+    }
+  }
+
+  public function receipt_page($order_id)
+  {
+    global $woocommerce;
+    global $wpdb;
+    $subscription = new WC_Subscription($order_id);
+    $order = wc_get_order($order_id);
+    $order_data = $order->get_data(); // The Order data
+    $name_billing = $subscription->get_billing_first_name() . ' ' . $subscription->get_billing_last_name();
+    $email_billing = $subscription->get_billing_email();
+    $redirect_url = get_site_url() . "/";
+    $redirect_url = add_query_arg('wc-api', get_class($this), $redirect_url);
+    $redirect_url = add_query_arg('order_id', $order_id, $redirect_url);
+    $amount = $subscription->get_total();
+    $mountFloat = floatval($amount);
+    $currency = get_woocommerce_currency();
+    $descripcionParts = array();
+    foreach ($subscription->get_items() as $product) {
+      $clearData = str_replace('_', ' ', $this->string_sanitize($product['name']));
+      $descripcionParts[] = $clearData;
     }
 
-    public function confirmation_ipn()
-    {
-        @ob_clean();
-        if (!empty($_REQUEST)) {
-            header('HTTP/1.1 200 OK');
-            do_action("ePaycosub_init", $_REQUEST);
-        } else {
-            wp_die(__("ePayco Request Failure", 'epayco-subscription'));
-        }
+    $descripcion = implode(' - ', $descripcionParts);
+    if (substr_count($descripcion, ' - ') >= 1) {
+      $product_name = $descripcionParts[0];
+      $porciones = explode(" - ", $product_name);
+      $product_name = $porciones[0] . "...";
+    } else {
+      $product_name = $descripcion;
+    }
+    if (strlen($product_name) < 20) {
+      $product_name_ = $descripcion;
+    } else {
+      $resultado = substr($product_name, 0, 19);
+      $product_name_ = $resultado . "...";
     }
 
-    public function receipt_page($order_id)
-    {
-        global $woocommerce;
-        global $wpdb;
-        $subscription = new WC_Subscription($order_id);
-        $order = wc_get_order($order_id);
-        $order_data = $order->get_data(); // The Order data
-        $name_billing = $subscription->get_billing_first_name() . ' ' . $subscription->get_billing_last_name();
-        $email_billing = $subscription->get_billing_email();
-        $redirect_url = get_site_url() . "/";
-        $redirect_url = add_query_arg('wc-api', get_class($this), $redirect_url);
-        $redirect_url = add_query_arg('order_id', $order_id, $redirect_url);
-        $amount = $subscription->get_total();
-        $mountFloat = floatval($amount);
-        $currency = get_woocommerce_currency();
-        $descripcionParts = array();
-        foreach ($subscription->get_items() as $product) {
-            $clearData = str_replace('_', ' ', $this->string_sanitize($product['name']));
-            $descripcionParts[] = $clearData;
-        }
+    $logo_comercio = plugin_dir_url(__FILE__) . 'assets/images/comercio.png';
+    $style = plugin_dir_url(__FILE__) . 'assets/css/style.css';
+    $stylemin = plugin_dir_url(__FILE__) . 'assets/css/style.min.css';
+    $general = plugin_dir_url(__FILE__) . 'assets/css/general.css';
+    $card_style = plugin_dir_url(__FILE__) . 'assets/css/card-js.min.css';
+    $cardsjscss = trim(plugin_dir_url(__FILE__) . 'assets/css/cardsjs.css');
+    $card_unmin = plugin_dir_url(__FILE__) . 'assets/js/card-js-unmin.js';
+    $indexjs = plugin_dir_url(__FILE__) . 'assets/js/index.js';
+    $appjs = trim(plugin_dir_url(__FILE__) . 'assets/js/app.min.js');
+    $cardsjs = trim(plugin_dir_url(__FILE__) . 'assets/js/cardsjs.js');
+    //$epaycojs ="https://checkout.epayco.co/epayco.min.js";
+    $epaycojs = trim(plugin_dir_url(__FILE__) . 'assets/js/epayco.js');
+    $lang = get_locale();
+    $lang = explode('_', $lang);
+    $lang = $lang[0];
 
-        $descripcion = implode(' - ', $descripcionParts);
-        if (substr_count($descripcion, ' - ') >= 1) {
-            $product_name = $descripcionParts[0];
-            $porciones = explode(" - ", $product_name);
-            $product_name = $porciones[0] . "...";
-        } else {
-            $product_name = $descripcion;
-        }
-        if (strlen($product_name) < 20) {
-            $product_name_ = $descripcion;
-        } else {
-            $resultado = substr($product_name, 0, 19);
-            $product_name_ = $resultado . "...";
-        }
+    if (ini_get('allow_url_fopen')) {
+      $str_arr_ipdat = @json_decode(file_get_contents("http://www.geoplugin.net/json.gp?ip=" . $_SERVER['REMOTE_ADDR']));
+    } else {
+      $c = curl_init();
+      curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+      curl_setopt($c, CURLOPT_URL, "http://www.geoplugin.net/json.gp?ip=" . $_SERVER['REMOTE_ADDR']);
+      $contents = curl_exec($c);
+      curl_close($c);
+      $str_arr_ipdat = @json_decode($contents);
+    }
 
-        $logo_comercio = plugin_dir_url(__FILE__) . 'assets/images/comercio.png';
-        $style = plugin_dir_url(__FILE__) . 'assets/css/style.css';
-        $stylemin = plugin_dir_url(__FILE__) . 'assets/css/style.min.css';
-        $general = plugin_dir_url(__FILE__) . 'assets/css/general.css';
-        $card_style = plugin_dir_url(__FILE__) . 'assets/css/card-js.min.css';
-        $cardsjscss = trim(plugin_dir_url(__FILE__) . 'assets/css/cardsjs.css');
-        $card_unmin = plugin_dir_url(__FILE__) . 'assets/js/card-js-unmin.js';
-        $indexjs = plugin_dir_url(__FILE__) . 'assets/js/index.js';
-        $appjs = trim(plugin_dir_url(__FILE__) . 'assets/js/app.min.js');
-        $cardsjs = trim(plugin_dir_url(__FILE__) . 'assets/js/cardsjs.js');
-        //$epaycojs ="https://checkout.epayco.co/epayco.min.js";
-        $epaycojs = trim(plugin_dir_url(__FILE__) . 'assets/js/epayco.js');
-        $lang = get_locale();
-        $lang = explode('_', $lang);
-        $lang = $lang[0];
+    if (!empty($str_arr_ipdat) and $str_arr_ipdat->geoplugin_status != 404) {
+      $str_countryCode = $str_arr_ipdat->geoplugin_countryCode;
+    } else {
+      $str_countryCode = "CO";
+    }
 
-        if (ini_get('allow_url_fopen')) {
-            $str_arr_ipdat = @json_decode(file_get_contents("http://www.geoplugin.net/json.gp?ip=" . $_SERVER['REMOTE_ADDR']));
-        } else {
-            $c = curl_init();
-            curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-            curl_setopt($c, CURLOPT_URL, "http://www.geoplugin.net/json.gp?ip=" . $_SERVER['REMOTE_ADDR']);
-            $contents = curl_exec($c);
-            curl_close($c);
-            $str_arr_ipdat = @json_decode($contents);
-        }
-
-        if (!empty($str_arr_ipdat) and $str_arr_ipdat->geoplugin_status != 404) {
-            $str_countryCode = $str_arr_ipdat->geoplugin_countryCode;
-        } else {
-            $str_countryCode = "CO";
-        }
-
-        if ($mountFloat > 0) {
-            $amout_value = '<h2 class="color" style="font-size: 16px;margin: 2rem 6.5rem !important;position: absolute;color: #3582b7;">
+    if ($mountFloat > 0) {
+      $amout_value = '<h2 class="color" style="font-size: 16px;margin: 2rem 6.5rem !important;position: absolute;color: #3582b7;">
                       <strong>$' . $amount . '</strong>
                       <span style="font-size: 12px">' . $currency . '</span>
                     </h2>';
-        } else {
-            $amout_value = '<h2 class="color" style="font-size: 16px;margin: 2rem 6.5rem !important;position: absolute;color: #3582b7;">
+    } else {
+      $amout_value = '<h2 class="color" style="font-size: 16px;margin: 2rem 6.5rem !important;position: absolute;color: #3582b7;">
                       <strong></strong>
                       <span style="font-size: 12px"></span>
                     </h2>';
-        }
+    }
 
-        echo '
+    echo '
       <!DOCTYPE html>
         <head>
           <link rel="stylesheet" type="text/css" id="movil_header"  href="' . $style . '">
@@ -430,7 +438,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
         </p> 
           <center>
             <button data-modal-target="#centered" id="button_epayco" style="
-              background-image: url(https://multimedia.epayco.co/epayco-landing/btns/Boton-epayco-linea.png );
+              background-image: url(https://multimedia.epayco.co/plugins-sdks/Boton-color-espanol.png);
               background-repeat:no-repeat;
               height:39px;
               width:144px;
@@ -458,7 +466,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
                     <h2 style="font-size: 12px;margin-bottom:3px;color: #848484;margin: 0.2rem 1.5rem !important;">' . $this->shop_name . '</h2>
                     <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: #3582b7;font-weight: 900;">$' . $amount . ' ' . $currency . '</h1>
                   </div>
-                  <div class="color hidden-print closeIcon" id="closeModal"><div data-close-button class="icon-cancel">&times;</div>
+                  <div class="color-exit hidden-print closeIcon" id="closeModal"><div data-close-button class="icon-cancel">&times;</div>
                   </div>  
                 </div>    
                 <div class="body-modal fix-top-safari">
@@ -468,13 +476,15 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
                         <ul id="foo"></ul>
                       </dd>
                         <p style="position: absolute !important;">
-                          <a class="dropdown-toggle blockd" type="button" data-toggle="dropdown">
-                          <div class="flag flag-icon-background flag-icon-co" data-toggle="dropdown" id="flag"></div><div id="countryName">Colombia</div><i class="fa fa-caret-down caret-languaje" aria-hidden="true" ></i>
+                          <a class="dropdown-toggle blockd" style="background: none; border: none;" type="button" data-toggle="dropdown">
+                          <div class="flag flag-icon-background flag-icon-co" data-toggle="dropdown"  id="flag"></div>
+                          <div style="text-align: left !important;!i;!;margin-top: 0.5% !important;!i;"  id="countryName">Colombia</div>
+                          <i  class="fa fa-caret-down caret-languaje" style="width=200px;margin-top: -7%;" aria-hidden="true" ></i>
                           </a>
                         </p> 
                       <ul class="dropdown-menu" id="dropdown-countries"></ul>
                     </div>
-                    <p style="display: flex; margin: 0px"><span id="result" hidden>'.$str_countryCode.'</span><a id="esButton" class="languaje pointer" data-es-button data-language="es">ES</a><a id="enButton" class="languaje pointer" data-en-button data-language="en">EN</a></p> 
+                    <p style="display: flex; margin: 0px"><span id="result" hidden>' . $str_countryCode . '</span><a id="esButton" class="languaje pointer" data-es-button data-language="es">ES</a><a id="enButton" class="languaje pointer" data-en-button data-language="en">EN</a></p> 
                   </div>
                   <div class="wc scroll-content">
                     <div class="separate">                  
@@ -514,7 +524,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
                       </div>
                       <div class="input-form normalinput cvv_style" id="cvc_">
                         <input type="password" placeholder="CVC" class="nomargin binding-input" name="cvc" id="card_cvc" autocomplete="off" maxlength="4" data-epayco="card[cvc]">
-                          <i class="fa color fa-question-circle pointer" aria-hidden="true" style="right: 5px; padding: 0; top: 0;" id="look-cvv"></i>
+                          <i class="fa color fa-question-circle pointer" aria-hidden="true" style="right: 10px;padding: 0;top: -5px;font-size: 21px !important;!i;!;!;"></i>
                       </div>
                       <br>
                       <div class="clearfix"></div>
@@ -549,81 +559,77 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
         </div>
         <script src="' . $cardsjs . '"></script>
         </html>';
+  }
+
+
+  public function process_payment($order_id)
+  {
+    $params = $_POST;
+    $params['id_order'] = $order_id;
+    $order = new WC_Order($order_id);
+    if (version_compare(WOOCOMMERCE_VERSION, '2.1', '>=')) {
+      return array(
+        'result' => 'success',
+        'redirect' => add_query_arg('order-pay', $order->get_id(), add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
+      );
+    } else {
+      return array(
+        'result' => 'success',
+        'redirect' => add_query_arg('order', $order->get_id(), add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
+      );
     }
+  }
 
+  /**
+   * @param $validationData
+   */
+  function ePaycoSub_successful_request($validationData)
+  {
+    global $woocommerce;
+    $subscription = new Subscription_Epayco_SE();
+    $order_id = $_REQUEST["order_id"];
 
-    public function process_payment($order_id)
-    {
-        $params = $_POST;
-        $params['id_order'] = $order_id;
-        $order = new WC_Order($order_id);
-        if (version_compare(WOOCOMMERCE_VERSION, '2.1', '>=')) {
-            return array(
-                'result' => 'success',
-                'redirect' => add_query_arg('order-pay', $order->get_id(), add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
-            );
-        } else {
-            return array(
-                'result' => 'success',
-                'redirect' => add_query_arg('order', $order->get_id(), add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
-            );
-        }
+    if (isset($_REQUEST["confirmation"])) {
+      $subscription->subscription_epayco_confirm($_REQUEST);
+      die();
+    } else {
+      if (isset($_REQUEST["canceled"]) && $_REQUEST["canceled"] == "1") {
+        $data = $subscription->cancelledPayment($order_id, null, null, null);
+      } else {
+        $data = $subscription->subscription_epayco($_REQUEST);
+      }
     }
-
-    /**
-     * @param $validationData
-     */
-    function ePaycoSub_successful_request($validationData)
-    {
-        global $woocommerce;
-        $subscription = new Subscription_Epayco_SE();
-        $order_id = $_REQUEST["order_id"];
-
-        if (isset($_REQUEST["confirmation"])) {
-            $subscription->subscription_epayco_confirm($_REQUEST);
-            die();
-        } else {
-            if (isset($_REQUEST["canceled"]) && $_REQUEST["canceled"] == "1") {
-                $data = $subscription->cancelledPayment($order_id, null, null, null);
-            } else {
-                $data = $subscription->subscription_epayco($_REQUEST);
-            }
-        }
-        if (!$data['status']) {
-            wc_add_notice($data['message'], 'error');
-            $order = new WC_Order($order_id);
-            if (version_compare(WOOCOMMERCE_VERSION, '2.1', '>=')) {
-                $redirect = array(
-                    'result' => 'success',
-                    'redirect' => add_query_arg('order-pay', $order->get_id(), add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
-                );
-            } else {
-                $redirect = array(
-                    'result' => 'success',
-                    'redirect' => add_query_arg('order', $order->get_id(), add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
-                );
-            }
-            wp_redirect($redirect["redirect"]);
-
-        } else {
-            WC()->cart->empty_cart();
-            $arguments = array();
-            $arguments['ref_payco'] = $data['ref_payco'];
-            $redirect_url = $data['url'];
-            $redirect_url = add_query_arg($arguments, $redirect_url);
-            wp_redirect($redirect_url);
-        }
+    if (!$data['status']) {
+      wc_add_notice($data['message'], 'error');
+      $order = new WC_Order($order_id);
+      if (version_compare(WOOCOMMERCE_VERSION, '2.1', '>=')) {
+        $redirect = array(
+          'result' => 'success',
+          'redirect' => add_query_arg('order-pay', $order->get_id(), add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
+        );
+      } else {
+        $redirect = array(
+          'result' => 'success',
+          'redirect' => add_query_arg('order', $order->get_id(), add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
+        );
+      }
+      wp_redirect($redirect["redirect"]);
+    } else {
+      WC()->cart->empty_cart();
+      $arguments = array();
+      $arguments['ref_payco'] = $data['ref_payco'];
+      $redirect_url = $data['url'];
+      $redirect_url = add_query_arg($arguments, $redirect_url);
+      wp_redirect($redirect_url);
     }
+  }
 
-    public function string_sanitize($string, $force_lowercase = true, $anal = false)
-    {
-        $strip = array("~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "[", "{", "]", "}", "\\", "|", ";", ":", "\"", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;", "â€”", "â€“", ",", "<", ".", ">", "/", "?");
-        $clean = trim(str_replace($strip, "", strip_tags($string)));
-        $clean = preg_replace('/\s+/', "_", $clean);
-        $clean = ($anal) ? preg_replace("/[^a-zA-Z0-9]/", "", $clean) : $clean;
-        return $clean;
-    }
-
-
+  public function string_sanitize($string, $force_lowercase = true, $anal = false)
+  {
+    $strip = array("~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "[", "{", "]", "}", "\\", "|", ";", ":", "\"", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;", "â€”", "â€“", ",", "<", ".", ">", "/", "?");
+    $clean = trim(str_replace($strip, "", strip_tags($string)));
+    $clean = preg_replace('/\s+/', "_", $clean);
+    $clean = ($anal) ? preg_replace("/[^a-zA-Z0-9]/", "", $clean) : $clean;
+    return $clean;
+  }
 }
-
