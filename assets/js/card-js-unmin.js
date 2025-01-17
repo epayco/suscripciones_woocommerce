@@ -51,7 +51,7 @@ function CardJs(elem) {
     (CardJs.CREDIT_CARD_NUMBER_DINERS_MASK = "XXXX XXXX XXXX XX"),
     (CardJs.prototype.creditCardNumberMask = CardJs.CREDIT_CARD_NUMBER_DEFAULT_MASK),
     (CardJs.CREDIT_CARD_NUMBER_PLACEHOLDER = "**** **** **** ****"),
-    (CardJs.NAME_PLACEHOLDER = "john does"),
+    (CardJs.NAME_PLACEHOLDER = "John Doe"),
     (CardJs.CVC_MASK_3 = "***"),
     (CardJs.CVC_MASK_4 = "****"),
     (CardJs.CVC_PLACEHOLDER = "CVC"),

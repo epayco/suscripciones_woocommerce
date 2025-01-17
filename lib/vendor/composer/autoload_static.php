@@ -4,7 +4,7 @@
 
 namespace Composer\Autoload;
 
-class ComposerStaticInite36e141f78c9753cf3ad2d9df4e1f734
+class ComposerStaticInit9cd25ab7ae28b4cc0ec64c719939a64e
 {
     public static $files = array (
         '941748b3c8cae4466c827dfb5ca9602a' => __DIR__ . '/..' . '/rmccue/requests/library/Deprecated.php',
@@ -40,9 +40,9 @@ class ComposerStaticInite36e141f78c9753cf3ad2d9df4e1f734
     public static function getInitializer(ClassLoader $loader)
     {
         return \Closure::bind(function () use ($loader) {
-            $loader->prefixLengthsPsr4 = ComposerStaticInite36e141f78c9753cf3ad2d9df4e1f734::$prefixLengthsPsr4;
-            $loader->prefixDirsPsr4 = ComposerStaticInite36e141f78c9753cf3ad2d9df4e1f734::$prefixDirsPsr4;
-            $loader->classMap = ComposerStaticInite36e141f78c9753cf3ad2d9df4e1f734::$classMap;
+            $loader->prefixLengthsPsr4 = ComposerStaticInit9cd25ab7ae28b4cc0ec64c719939a64e::$prefixLengthsPsr4;
+            $loader->prefixDirsPsr4 = ComposerStaticInit9cd25ab7ae28b4cc0ec64c719939a64e::$prefixDirsPsr4;
+            $loader->classMap = ComposerStaticInit9cd25ab7ae28b4cc0ec64c719939a64e::$classMap;
 
         }, null, ClassLoader::class);
     }
