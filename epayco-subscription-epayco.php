@@ -478,8 +478,10 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
                         <p style="position: absolute !important;">
                           <a class="dropdown-toggle blockd" style="background: none; border: none;" type="button" data-toggle="dropdown">
                           <div class="flag flag-icon-background flag-icon-co" data-toggle="dropdown"  id="flag"></div>
-                          <div style="text-align: left !important;!i;!;margin-top: 0.5% !important;!i;"  id="countryName">Colombia</div>
-                          <i  class="fa fa-caret-down caret-languaje" style="width=200px;margin-top: -7%;" aria-hidden="true" ></i>
+
+                          <div class="estilosContryName" id="countryName">Colombia</div>
+                          <i  class="fa fa-caret-down caret-languaje" id="icon-flecha" aria-hidden="true" ></i>
+
                           </a>
                         </p> 
                       <ul class="dropdown-menu" id="dropdown-countries"></ul>
@@ -632,4 +634,6 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
     $clean = ($anal) ? preg_replace("/[^a-zA-Z0-9]/", "", $clean) : $clean;
     return $clean;
   }
+
 }
+

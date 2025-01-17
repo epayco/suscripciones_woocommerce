@@ -12,9 +12,9 @@
 ## Requisitos
 
 * Tener una cuenta activa en [ePayco](https://pagaycobra.com).
-* Tener instalado WordPress versión 5.3.x
-* WooCommerce versión 7.7.0 =<.
-* WooCommerce Suscripcion versión 2.6.x.
+* Tener instalado WordPress versión 5.3.x o superior.
+* WooCommerce versión 7.7.0 =>.
+* WooCommerce Suscripcion versión 2.6.x o superior.
 * Acceso a las carpetas donde se encuetra instalado WordPress y WooCommerce.
 * Acceso al admin de WordPress.
 
@@ -26,7 +26,7 @@
 4. Busca el plugin descargado en tu equipo y súbelo como cualquier otro archivo.
 5. Después de instalar el .zip lo puedes ver en la lista de plugins instalados , puedes activarlo o desactivarlo.
 6. Para configurar el plugin debes ir a: WooCommerce / Ajustes / Pagos y Ubica la pestaña ePayco.
-7. Configura el plugin ingresando el **P_CUST_ID_CLIENTE**,**PRIVATE_KEY**,**PUBLIC_KEY** y el **P_KEY**, los puedes ver en tu [panel de clientes](https://secure.payco.co/clientes/).
+7. Configura el plugin ingresando el **P_CUST_ID_CLIENTE**,**P_KEY**, **PRIVATE_KEY**,**PUBLIC_KEY** , los puedes ver en tu [panel de clientes](https://secure.payco.co/clientes/).
 8. Selecciona o crea una página de respuesta donde el usuario será devuelto después de finalizar la compra (por defecto el sistema redirecciona a la pagina de gracias de Woocommerce).
 9. Configurar los productos en el panel de Wordpress:  WooCommerce / Productos
  con los respectivos valores para la suscripcion
@@ -53,3 +53,4 @@
 * [ePayco plugin WooCommerce v5.1](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v5.1)
 * [ePayco plugin WooCommerce v5.2](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v5.2)
 * [ePayco plugin WooCommerce v6.0](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v6.0)
+* [ePayco plugin WooCommerce v6.1](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v6.1)
