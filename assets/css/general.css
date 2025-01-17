@@ -5,7 +5,9 @@ body {
   height: 100% !important;
   width: 100% !important;
   position: absolute !important;
+
   box-sizing: inherit !important;
+
 }
 
 
@@ -143,6 +145,7 @@ a:link {
   color: #3582b7 !important;
   margin-left: 7% !important;
   margin-top: -3% !important;
+
 }
 
 .color {
@@ -207,6 +210,7 @@ a:link {
 
 .languaje {
  display: block;
+
  height: 37px;
  line-height: 35px;
  text-decoration: none !important;
@@ -556,6 +560,7 @@ img.home-icons {
   font-size: 31px !important;
   margin-left: 17px !important;
   margin-top: 0.9% !important;
+
 }
 
 #web-checkout-content  #icon-flecha{
@@ -563,6 +568,7 @@ img.home-icons {
     /* font-family: "Open Sans", sans-serif !important; */
     /* top: -50px !important; */
     margin-right: 14px;
+
 }
 
 
@@ -743,10 +749,12 @@ input[type="checkbox"]:checked+label:before {
 }
 
 .onpage .input-form input {
+
   width: 96% !important;
   margin-left: 0% !important;
   margin-right: 3% !important;
   background-color: white !important;
+
 }
 
 .onpage .nombre-comercio {
@@ -1084,7 +1092,9 @@ input[type="checkbox"]:checked+label:before {
   outline: none;
   width: 100% !important;
   height: 100% !important;
+
   padding: unset !important;
+
   border: none !important;
 }
 
@@ -1115,6 +1125,7 @@ input[type="checkbox"]:checked+label:before {
 }
 
 #web-checkout-content .dropdown dd ul li a {
+
   padding: 5px !important;
   display: block  !important;
 }
@@ -1166,6 +1177,7 @@ input[type="checkbox"]:checked+label:before {
   max-width: 90%;
   width: 400px;
 }
+
 
 .modal-expiration-time .ventana p {
   margin: 1.5em 0;
