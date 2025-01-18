@@ -278,4 +278,20 @@ class Gateway
     {
         add_action('woocommerce_thankyou_' . $id, $callback);
     }
+
+    /**
+     * Register available payment gateways
+     *
+     * @return void
+     */
+    public function registerAvailablePaymentGateway(): void
+    {
+        add_filter('woocommerce_available_payment_gateways', function ($methods) {
+            $enable = \WC_Subscriptions_Cart::cart_contains_subscription();
+            if (!$enable && isset($methods['woo-epaycosubscription'])){
+                unset($methods['woo-epaycosubscription']);
+            }
+            return $methods;
+        });
+    }
 }
