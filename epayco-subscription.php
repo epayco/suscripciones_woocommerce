@@ -8,26 +8,35 @@
  * Description:       Plugin ePayco WooCommerce.
  * Version:           6.1.0
  * Author:            ePayco
+ * Text Domain: epayco-subscription
  * Author URI:
  * Licence
  * Domain Path:       /languages
+ *
+ * @package EpaycoSubscription
  */
 
-use Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry;
-use Automattic\WooCommerce\Utilities\FeaturesUtil;
-
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 if (!defined('EPAYCO_SUBSCRIPTION_SE_VERSION')) {
     define('EPAYCO_SUBSCRIPTION_SE_VERSION', '3.0.1');
 }
 
+defined('EPS_PLUGIN_FILE') || define('EPS_PLUGIN_FILE', __FILE__);
+//require_once dirname(__FILE__) . '/vendor/autoload.php';
+require_once dirname(__FILE__) . '/src/Startup.php';
 
-add_action('plugins_loaded', 'epayco_subscription_init', 0);
-add_action('plugins_loaded', 'register_epayco_suscription_order_status');
-add_filter('wc_order_statuses', 'add_epayco_suscription_to_order_statuses');
-add_action('admin_head', 'styling_admin_suscription_order_list');
-add_action('woocommerce_checkout_update_order_meta', 'some_custom_checkout_field_update_order_meta');
+if (!EpaycoSubscription\Woocommerce\Startup::available()) {
+    return false;
+}
+
+use Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry;
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use EpaycoSubscription\Woocommerce\WoocommerceEpaycoSubscription;
+
+require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 add_action('before_woocommerce_init', function () {
     if (class_exists(FeaturesUtil::class)) {
@@ -38,6 +47,38 @@ add_action('before_woocommerce_init', function () {
         FeaturesUtil::declare_compatibility('cart_checkout_blocks', __FILE__);
     }
 });
+if (!class_exists('WoocommerceEpaycoSubscription')) {
+    $GLOBALS['epaycosuscription'] = new WoocommerceEpaycoSubscription();
+}
+
+
+register_activation_hook(__FILE__, 'eps_register_activate');
+register_deactivation_hook(__FILE__, 'eps_disable_plugin');
+add_filter('upgrader_post_install', function (bool $response, array $hookExtra): bool {
+    if (($hookExtra['plugin'] ?? '') !== plugin_basename(__FILE__)) {
+        return $response;
+    }
+    update_option('_eps_execute_after_update', 1);
+    return $response;
+}, 10, 2);
+
+function eps_register_activate()
+{
+    update_option('_eps_execute_activate', 1);
+}
+
+function eps_disable_plugin(): void
+{
+    //$GLOBALS['epaycosuscription']->disablePlugin();
+}
+
+//add_action('plugins_loaded', 'epayco_subscription_init', 0);
+//add_action('plugins_loaded', 'register_epayco_suscription_order_status');
+//add_filter('wc_order_statuses', 'add_epayco_suscription_to_order_statuses');
+//add_action('admin_head', 'styling_admin_suscription_order_list');
+//add_action('woocommerce_checkout_update_order_meta', 'some_custom_checkout_field_update_order_meta');
+
+
 
 function epayco_subscription_init()
 {
@@ -54,7 +95,8 @@ function epayco_subscription_init()
     }
 }
 
-/**
+
+    /**
      * Register woocommerce blocks support
      *
      * @return void
