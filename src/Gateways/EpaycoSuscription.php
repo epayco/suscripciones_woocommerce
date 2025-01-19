@@ -298,6 +298,7 @@ class EpaycoSuscription extends AbstractGateway
         $redirect_url = get_site_url() . "/";
         $redirect_url = add_query_arg('wc-api', self::WEBHOOK_API_NAME, $redirect_url);
         $redirect_url = add_query_arg('order_id', $order_id, $redirect_url);
+
         $amount = $subscription->get_total();
         $mountFloat = floatval($amount);
         $currency = get_woocommerce_currency();
@@ -1078,7 +1079,7 @@ class EpaycoSuscription extends AbstractGateway
     public function getUrlNotify($order_id)
     {
         $confirm_url = get_site_url() . "/";
-        $confirm_url = add_query_arg('wc-api', 'WC_Payment_Epayco_Subscription', $confirm_url);
+        $confirm_url = add_query_arg('wc-api', self::WEBHOOK_API_NAME, $confirm_url);
         $confirm_url = add_query_arg('order_id', $order_id, $confirm_url);
         $confirm_url = $confirm_url . '&confirmation=1';
         return $confirm_url;
