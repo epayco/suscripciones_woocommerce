@@ -11,8 +11,16 @@ class ComposerStaticInit29e4698e2f640ef461d5ff51b7c3
         array (
             'EpaycoSubscription\\Woocommerce\\' => 24,
             'EpaycoSdk\\Sdk\\' => 19,
-            'MercadoPago\\PP\\Sdk\\' => 18,
+            'Epayco\\' => 18,
         ),
+        'W' =>
+            array (
+                'WpOrg\\Requests\\' => 15,
+            ),
+        'E' =>
+            array (
+                'Epayco\\' => 7,
+            ),
     );
 
     public static $prefixDirsPsr4 = array (
@@ -28,10 +36,10 @@ class ComposerStaticInit29e4698e2f640ef461d5ff51b7c3
             array (
                 0 => __DIR__ . '/../..' . '/packages/epayco/sdk/src',
         ),
-        'MercadoPago\\PP\\Sdk\\' => 
-        array (
-            0 => __DIR__ . '/..' . '/mp-plugins/php-sdk/src',
-        ),
+        'Epayco\\' =>
+            array (
+                0 => __DIR__ . '/..' . '/epayco/epayco-php/src',
+            ),
     );
 
     public static $classMap = array (
@@ -64,7 +72,10 @@ class ComposerStaticInit29e4698e2f640ef461d5ff51b7c3
         'EpaycoSubscription\\Woocommerce\\Interfaces\\EpaycoSubscriptionGatewayInterface' => __DIR__ . '/../..' . '/src/Interfaces/EpaycoSubscriptionGatewayInterface.php',
         'EpaycoSubscription\\Woocommerce\\Interfaces\\EpaycoSubscriptionPaymentBlockInterface' => __DIR__ . '/../..' . '/src/Interfaces/EpaycoSubscriptionPaymentBlockInterface.php',
         'EpaycoSubscription\\Woocommerce\\Funnel\\Funnel' => __DIR__ . '/../..' . '/src/Funnel/Funnel.php',
+        'EpaycoSubscription\\Woocommerce\\Transactions\\SubscriptionTransaction' => __DIR__ . '/../..' . '/src/Transactions/SubscriptionTransaction.php',
         'EpaycoSubscription\\Woocommerce\\WoocommerceEpaycoSubscription' => __DIR__ . '/../..' . '/src/WoocommerceEpaycoSubscription.php',
+        'Requests' => __DIR__ . '/..' . '/rmccue/requests/library/Requests.php',
+        'Epayco' => __DIR__ . '/..' . '/epayco/epayco-php/src/Epayco.php',
     );
 
     public static function getInitializer(ClassLoader $loader)

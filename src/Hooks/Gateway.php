@@ -166,6 +166,7 @@ class Gateway
         add_action('woocommerce_receipt_' . $id, $callback);
     }
 
+
     /**
      * Handles custom components for better integration with native hooks
      *

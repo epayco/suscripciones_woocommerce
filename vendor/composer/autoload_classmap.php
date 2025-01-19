@@ -7,6 +7,8 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'Composer\\InstalledVersions' => $vendorDir . '/composer/InstalledVersions.php',
+    'Requests' => $vendorDir . '/rmccue/requests/library/Requests.php',
+    'Epayco' => $vendorDir . '/epayco/epayco-php/src/Epayco.php',
     'EpaycoSubscription\\Woocommerce\\Startup' => $baseDir . '/src/Startup.php',
     'EpaycoSubscription\\Woocommerce\\Configs\\Store' => $baseDir . '/src/Configs/Store.php',
     'EpaycoSubscription\\Woocommerce\\Blocks\\AbstractBlock' => $baseDir . '/src/Blocks/AbstractBlock.php',
@@ -34,5 +36,6 @@ return array(
     'EpaycoSubscription\\Woocommerce\\Interfaces\\EpaycoSubscriptionGatewayInterface' => $baseDir . '/src/Interfaces/EpaycoSubscriptionGatewayInterface.php',
     'EpaycoSubscription\\Woocommerce\\Interfaces\\EpaycoSubscriptionPaymentBlockInterface' => $baseDir . '/src/Interfaces/EpaycoSubscriptionPaymentBlockInterface.php',
     'EpaycoSubscription\\Woocommerce\\Funnel\\Funnel' => $baseDir . '/src/Funnel/Funnel.php',
+    'EpaycoSubscription\\Woocommerce\\Transactions\\SubscriptionTransaction' => $baseDir . '/src/Transactions/SubscriptionTransaction.php',
     'EpaycoSubscription\\Woocommerce\\WoocommerceEpaycoSubscription' => $baseDir . '/src/WoocommerceEpaycoSubscription.php',
 );

@@ -16,6 +16,9 @@
  * @var string $redirect_url
  * @var string $str_countryCode
  * @var string $stylemin
+ * @var string $apiKey
+ * @var string $privateKey
+ * @var string $lang
  * @var string $card_unmin
  * @var string $epaycojs
  * @var string $indexjs
@@ -241,6 +244,9 @@ if (!defined('ABSPATH')) {
                 </div>
             </div>
         </div>
+        <div id="p_c" hidden="true"><?php echo esc_html($apiKey ); ?></div>
+        <div id="p_p" hidden="true"><?php echo esc_html($privateKey); ?></div>
+        <div id="lang_epayco" hidden="true"><?php echo esc_html($lang ); ?></div>
         <div class="loader-container">
             <div class="loading"></div>
         </div>

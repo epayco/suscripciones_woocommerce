@@ -7,5 +7,6 @@ $baseDir = dirname($vendorDir);
 
 return array(
     'EpaycoSubscription\\Woocommerce\\' => array($baseDir . '/src'),
+    'WpOrg\\Requests\\' => array($vendorDir . '/rmccue/requests/src'),
     'Epayco\\' => array($vendorDir . '/epayco/epayco-php/src'),
 );
