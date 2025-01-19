@@ -295,54 +295,46 @@ class EpaycoSuscription extends AbstractGateway
             $resultado = substr($product_name, 0, 19);
             $product_name_ = $resultado . "...";
         }
+        $logo_comercio = plugins_url('assets/images/comercio.png', EPS_PLUGIN_FILE);
+        $style = plugins_url('assets/css/style.css', EPS_PLUGIN_FILE);
+        $general = plugins_url('assets/css/general.css', EPS_PLUGIN_FILE);
+        $card_style = plugins_url('assets/css/card-js.min.css', EPS_PLUGIN_FILE);
+        $stylemin = plugins_url('assets/css/style.min.css', EPS_PLUGIN_FILE);
+        $cardsjscss = plugins_url('assets/css/cardsjs.css', EPS_PLUGIN_FILE);
+        $card_unmin = plugins_url('assets/js/card-js-unmin.js', EPS_PLUGIN_FILE);
+        $indexjs = plugins_url('assets/js/index.js', EPS_PLUGIN_FILE);
+        $appjs = plugins_url('assets/js/app.min.js', EPS_PLUGIN_FILE);
+        $cardsjs = plugins_url('assets/js/cardsjs.js', EPS_PLUGIN_FILE);
+        $epaycojs = plugins_url('assets/js/epayco.js', EPS_PLUGIN_FILE);
+        //$epaycojs ="https://checkout.epayco.co/epayco.min.js";
 
-        $logo_comercio = plugin_dir_url(__FILE__) . 'assets/images/comercio.png';
-        echo ' <div class="loader-container">
-                    <div class="loading"></div>
-                </div>
-                <p style="text-align: center;" class="epayco-title">
-                    <span class="animated-points">Cargando métodos de pago</span>
-                    <br><small class="epayco-subtitle"></small>
-                </p>';
-        $idioma = substr(get_locale(), 0, 2);
-        if ($idioma === "en") {
-            $epaycoButtonImage = 'https://multimedia.epayco.co/epayco-landing/btns/Boton-epayco-color-Ingles.png';
-        }else{
-            $epaycoButtonImage = 'https://multimedia.epayco.co/epayco-landing/btns/Boton-epayco-color1.png';
+        $lang = get_locale();
+        $lang = explode('_', $lang);
+        $lang = $lang[0];
+
+        if (ini_get('allow_url_fopen')) {
+            $str_arr_ipdat = @json_decode(file_get_contents("http://www.geoplugin.net/json.gp?ip=" . $_SERVER['REMOTE_ADDR']));
+        } else {
+            $c = curl_init();
+            curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
+            curl_setopt($c, CURLOPT_URL, "http://www.geoplugin.net/json.gp?ip=" . $_SERVER['REMOTE_ADDR']);
+            $contents = curl_exec($c);
+            curl_close($c);
+            $str_arr_ipdat = @json_decode($contents);
         }
-        echo '<p>       
-                 <center>
-                    <a id="btn_epayco" href="#">
-                       <img src="'.$epaycoButtonImage.'">
-                    </a>
-                 </center> 
-               </p>';
-          $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+
+        if (!empty($str_arr_ipdat) and $str_arr_ipdat->geoplugin_status != 404) {
+            $str_countryCode = $str_arr_ipdat->geoplugin_countryCode;
+        } else {
+            $str_countryCode = "CO";
+        }
+
+        $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
               'wc_epaycosuscription_checkout',
               $this->epaycosuscription->helpers->url->getJsAsset('checkouts/suscription/ep-suscription-checkout'),
               [
-                  'site_id' => 'richi',
+                  'site_id' => 'epayco',
               ]
-          );
-
-        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-            'wc_epaycosubscription_animate',
-            $this->epaycosuscription->helpers->url->getCssAsset('animate')
-        );
-
-        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-            'wc_epaycosubscription_card-js',
-            $this->epaycosuscription->helpers->url->getCssAsset('card-js')
-        );
-
-        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-            'wc_epaycosubscription_cardsjs',
-            $this->epaycosuscription->helpers->url->getCssAsset('cardsjs')
-        );
-
-        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-            'wc_epaycosubscription_general',
-            $this->epaycosuscription->helpers->url->getCssAsset('general')
         );
 
         $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
@@ -351,13 +343,86 @@ class EpaycoSuscription extends AbstractGateway
         );
 
         $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-            'wc_epaycosubscription_subscription-epayco',
-            $this->epaycosuscription->helpers->url->getCssAsset('subscription-epayco')
+            'wc_epaycosubscription_general',
+            $this->epaycosuscription->helpers->url->getCssAsset('general')
         );
+
+        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
+            'wc_epaycosubscription_card-js',
+            $this->epaycosuscription->helpers->url->getCssAsset('card-js')
+        );
+
+        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
+            'wc_epaycosubscription_cloudflare',
+            "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+        );
+
+        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
+            'wc_epaycosubscription_cardsjs',
+            $this->epaycosuscription->helpers->url->getCssAsset('cardsjs')
+        );
+
+        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
+            'wc_epaycosubscription_fontawesome',
+            "https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+        );
+
+        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
+            'wc_epaycosubscription_cloudflare',
+            "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.4.2/css/bootstrap-slider.min.css"
+        );
+        /*
+                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+                    'jquery',
+                    "https://code.jquery.com/jquery-1.11.3.min.js"
+                );
+
+                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+                    'app',
+                    $this->epaycosuscription->helpers->url->getJsAsset('app')
+                );
+                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+                    'cardsjs',
+                    $this->epaycosuscription->helpers->url->getJsAsset('cardsjs')
+                );
+                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+                    'card-js-unmin',
+                    $this->epaycosuscription->helpers->url->getJsAsset('card-js-unmin')
+                );
+
+                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+                    'index',
+                    $this->epaycosuscription->helpers->url->getJsAsset('index')
+                );*/
+
+        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
+            'wc_epaycosubscription_animate',
+            $this->epaycosuscription->helpers->url->getCssAsset('animate')
+        );
+
         $this->epaycosuscription->hooks->template->getWoocommerceTemplate(
             'public/checkout/subscription.php',
             [
-                'epayco'  => 'epayco subscription'
+                'logo_comercio' => $logo_comercio,
+                'amount' => $amount,
+                'epayco'  => 'epayco subscription',
+                'shop_name' => 'shop_name',
+                'product_name_' => $product_name_,
+                'currency' => $currency,
+                'email_billing' => $email_billing,
+                'redirect_url' => $redirect_url,
+                'name_billing' => $name_billing,
+                'str_countryCode' => $str_countryCode,
+                'style' => $style,
+                'general' => $general,
+                'card_style' => $card_style,
+                'cardsjscss' => $cardsjscss,
+                'indexjs' => $indexjs,
+                'stylemin' => $stylemin,
+                'card_unmin' => $card_unmin,
+                'appjs' => $appjs,
+                'cardsjs' => $cardsjs,
+                'epaycojs' => $epaycojs
             ]
         );
 
