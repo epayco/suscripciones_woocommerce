@@ -98,10 +98,10 @@ abstract class AbstractBlock extends AbstractPaymentMethodType implements Epayco
         $asset      = file_exists($assetPath) ? require $assetPath : [];
 
         $this->gateway->registerCheckoutScripts();
-        $this->epaycosuscription->hooks->scripts->registerPaymentBlockStyle(
+        /*$this->epaycosuscription->hooks->scripts->registerPaymentBlockStyle(
             'wc_epaycosubscription_checkout_components',
             $this->epaycosuscription->helpers->url->getCssAsset('checkouts/ep-plugins-components')
-        );
+        );*/
         $this->epaycosuscription->hooks->scripts->registerPaymentBlockScript($scriptName, $scriptPath, $asset['version'] ?? '', $asset['dependencies'] ?? []);
         return [$scriptName];
     }

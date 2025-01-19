@@ -165,9 +165,9 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
     $logo_comercio = plugin_dir_url(__FILE__) . 'assets/images/comercio.png';
     $style = plugin_dir_url(__FILE__) . 'assets/css/style.css';
     $stylemin = plugin_dir_url(__FILE__) . 'assets/css/style.min.css';
-    $general = plugin_dir_url(__FILE__) . 'assets/css/general.css';
+    $general = plugin_dir_url(__FILE__) . 'assets/css/general.min.css';
     $card_style = plugin_dir_url(__FILE__) . 'assets/css/card-js.min.css';
-    $cardsjscss = trim(plugin_dir_url(__FILE__) . 'assets/css/cardsjs.css');
+    $cardsjscss = trim(plugin_dir_url(__FILE__) . 'assets/css/cardsjs.min.css');
     $card_unmin = plugin_dir_url(__FILE__) . 'assets/js/card-js-unmin.js';
     $indexjs = plugin_dir_url(__FILE__) . 'assets/js/index.js';
     $appjs = trim(plugin_dir_url(__FILE__) . 'assets/js/app.min.js');

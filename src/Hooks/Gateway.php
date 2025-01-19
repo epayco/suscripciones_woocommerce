@@ -138,67 +138,32 @@ class Gateway
      *
      * @return void
      */
-    public function registerCustomBillingFieldOptions(AbstractGateway $gateway): void
+    public function registerCustomBillingFieldOptions(): void
     {
-        add_filter('woocommerce_checkout_fields', function () use ($gateway) {
-            $fields['billing']['billing_type_document'] = array(
-                'label'       => __('Tipo de documento', 'subscription-epayco'),
-                'placeholder' => _x('', 'placeholder', 'subscription-epayco'),
+        add_filter( 'woocommerce_checkout_fields', function( $fields ) {
+            $fields['billing']['billing_custom_field'] = array(
+                'type'        => 'text',
+                'label'       => 'Campo Personalizado',
+                'placeholder' => 'Escribe algo...',
                 'required'    => true,
-                'clear'       => false,
-                'type'        => 'select',
-                'default' => 'CC',
-                'options'     => array(
-                    'CC' => __('Cédula de ciudadanía' ),
-                    'CE' => __('Cédula de extranjería'),
-                    'PPN' => __('Pasaporte'),
-                    'SSN' => __('Número de seguridad social'),
-                    'LIC' => __('Licencia de conducción'),
-                    'NIT' => __('(NIT) Número de indentificación tributaria'),
-                    'TI' => __('Tarjeta de identidad'),
-                    'DNI' => __('Documento nacional de identificación')
-                )
+                'class'       => array( 'form-row-wide' ),
+                'clear'       => true,
             );
 
-            $fields['billing']['billing_dni'] = array(
-                'label' => __('DNI', 'subscription-epayco'),
-                'placeholder' => _x('Your DNI here....', 'placeholder', 'subscription-epayco'),
-                'required' => true,
-                'clear' => false,
-                'type' => 'number',
-                'class' => array('my-css')
-            );
-
-
-            $fields['shipping']['shipping_type_document'] = array(
-                'label'       => __('Tipo de documento', 'subscription-epayco'),
-                'placeholder' => _x('', 'placeholder', 'subscription-epayco'),
-                'required'    => true,
-                'clear'       => false,
-                'type'        => 'select',
-                'default' => 'CC',
-                'options'     => array(
-                    'CC' => __('Cédula de ciudadanía' ),
-                    'CE' => __('Cédula de extranjería'),
-                    'PPN' => __('Pasaporte'),
-                    'SSN' => __('Número de seguridad social'),
-                    'LIC' => __('Licencia de conducción'),
-                    'NIT' => __('(NIT) Número de indentificación tributaria'),
-                    'TI' => __('Tarjeta de identidad'),
-                    'DNI' => __('Documento nacional de identificación')
-                )
-            );
-
-            $fields['shipping']['shipping_dni'] = array(
-                'label' => __('DNI', 'subscription-epayco'),
-                'placeholder' => _x('Your DNI here....', 'placeholder', 'subscription-epayco'),
-                'required' => true,
-                'clear' => false,
-                'type' => 'number',
-                'class' => array('my-css')
-            );
             return $fields;
         });
+    }
+
+    /**
+     * Register gateway receipt
+     *
+     * @param string $id
+     * @param mixed $callback
+     * @return void
+     */
+    public function registerGatewayReceiptPage(string $id, $callback): void
+    {
+        add_action('woocommerce_receipt_' . $id, $callback);
     }
 
     /**

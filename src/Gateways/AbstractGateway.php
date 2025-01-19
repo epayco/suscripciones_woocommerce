@@ -78,6 +78,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway implements EpaycoSubsc
      */
     public function registerCheckoutScripts(): void
     {
+        /*
         $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
             'wc_epaycosubscription_checkout_components',
             $this->epaycosuscription->helpers->url->getJsAsset('checkouts/ep-plugins-components'),
@@ -85,13 +86,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway implements EpaycoSubsc
                 'ep_json_url' => EPS_PLUGIN_URL,
                 'lang' => substr(get_locale(), 0, 2)
             ]
-        );
-
-        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-            'wc_epaycosubscription_checkout_components',
-            $this->epaycosuscription->helpers->url->getCssAsset('checkouts/ep-plugins-components')
-        );
-
+        );*/
     }
 
     /**

@@ -9,6 +9,7 @@ use EpaycoSubscription\Woocommerce\Hooks\Checkout;
 use EpaycoSubscription\Woocommerce\Hooks\Endpoints;
 use EpaycoSubscription\Woocommerce\Hooks\Scripts;
 use EpaycoSubscription\Woocommerce\Hooks\Gateway;
+use EpaycoSubscription\Woocommerce\Hooks\Template;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -30,6 +31,8 @@ class Hooks
 
     public Scripts $scripts;
 
+    public Template $template;
+
     public function __construct(
         Admin $admin,
         Blocks $blocks,
@@ -38,6 +41,7 @@ class Hooks
         Gateway $gateway,
         Plugin $plugin,
         Scripts $scripts,
+        Template $template
     ){
         $this->admin     = $admin;
         $this->blocks    = $blocks;
@@ -46,6 +50,7 @@ class Hooks
         $this->gateway   = $gateway;
         $this->plugin    = $plugin;
         $this->scripts   = $scripts;
+        $this->template  = $template;
     }
 
 

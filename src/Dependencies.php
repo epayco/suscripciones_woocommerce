@@ -13,6 +13,7 @@ use EpaycoSubscription\Woocommerce\Hooks\Gateway;
 use EpaycoSubscription\Woocommerce\Hooks\Options;
 use EpaycoSubscription\Woocommerce\Helpers\Session;
 use EpaycoSubscription\Woocommerce\Helpers\Strings;
+use EpaycoSubscription\Woocommerce\Hooks\Template;
 use EpaycoSubscription\Woocommerce\Helpers\Gateways;
 use EpaycoSubscription\Woocommerce\Helpers\Url;
 use EpaycoSubscription\Woocommerce\Funnel\Funnel;
@@ -25,11 +26,12 @@ class Dependencies
     public Checkout $checkoutHook;
     public Endpoints $endpointsHook;
 
+    public Store $storeConfig;
     public Session $sessionHelper;
     public Strings $stringsHelper;
     public Scripts $scriptsHook;
+    public Template $templateHook;
     public Gateway $gatewayHook;
-
     public Plugin $pluginHook;
 
     public Url $urlHelper;
@@ -56,6 +58,7 @@ class Dependencies
         $this->blocksHook              = new Blocks();
         $this->endpointsHook           = new Endpoints();
         $this->optionsHook             = new Options();
+        $this->templateHook            = new Template();
         $this->pluginHook              = new Plugin();
         $this->sessionHelper           = new Session();
         $this->stringsHelper           = new Strings();
@@ -83,6 +86,7 @@ class Dependencies
             $this->gatewayHook,
             $this->pluginHook,
             $this->scriptsHook,
+            $this->templateHook
         );
     }
 
