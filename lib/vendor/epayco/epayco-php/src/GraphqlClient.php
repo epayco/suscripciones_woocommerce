@@ -92,7 +92,7 @@ class GraphqlClient
     {
         $headers = [
             "Content-Type: application/json",
-            "Accept" => "application/json",
+            "Accept" => "application/json", 
             "type" => "sdk",
             "authorization" => "Basic " . base64_encode($api_key)
         ];
@@ -102,13 +102,7 @@ class GraphqlClient
                 'query' => $query
             ];
 
-            $options = array(
-                'timeout' => 180,
-                'connect_timeout' => 180,
-            );
-
-
-            $response = Requests::post($this->getEpaycoBaseUrl(Client::BASE_URL) . '/graphql', $headers, $body, $options);
+            $response = Requests::post(Client::BASE_URL . '/graphql', $headers, $body);
 
         } catch (\Throwable $th) {
             return $th->getMessage();
@@ -389,12 +383,5 @@ class GraphqlClient
         return $response;
     }
 
-    protected function getEpaycoBaseUrl($default)
-    {
-        $epaycoEnv = getenv('EPAYCO_PHP_SDK_ENV');
-        if($epaycoEnv){
-            return $epaycoEnv;
-        }
-        return $default;
-    }
+    
 }

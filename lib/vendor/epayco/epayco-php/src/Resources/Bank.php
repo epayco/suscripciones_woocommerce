@@ -15,9 +15,9 @@ class Bank extends Resource
      */
     public function pseBank($testMode = null)
     {
-        $url = "/pse/bancos.json?public_key=" . $this->epayco->api_key;
+        $url = "/restpagos/pse/bancos.json?public_key=" . $this->epayco->api_key;
         if(isset($testMode) && gettype($testMode) === "boolean"){
-            $test = $testMode  ? "TRUE" : "FALSE";     
+            $test = $testMode  ? "1" : "2";     
             $url = $url."&test=".$test;
         }
         return $this->request(
@@ -41,7 +41,7 @@ class Bank extends Resource
     {
         return $this->request(
                "POST",
-               "/pagos/debitos.json",
+               "/restpagos/pagos/debitos.json",
                $api_key = $this->epayco->api_key,
                $options,
                $private_key = $this->epayco->private_key,
@@ -60,7 +60,7 @@ class Bank extends Resource
     {
         return $this->request(
                 "GET",
-                "/pse/transactioninfomation.json?transactionID=" . $uid . "&&public_key=" . $this->epayco->api_key,
+                "/restpagos/pse/transactioninfomation.json?transactionID=" . $uid . "&&public_key=" . $this->epayco->api_key,
                 $api_key = $this->epayco->api_key,
                 $uid,
                 $private_key = $this->epayco->private_key,

@@ -18,11 +18,11 @@ class OpensslEncrypt
 
     public function encrypt($data){
         $ciphertext = openssl_encrypt(
-            $data
-            , $this->cipher
-            , $this->key
-            , OPENSSL_RAW_DATA
-            , $this->iv);
+                $data
+              , $this->cipher
+              , $this->key
+              , OPENSSL_RAW_DATA
+              , $this->iv);
         return \base64_encode($ciphertext);
     }
 
@@ -50,11 +50,7 @@ class OpensslEncrypt
     public function encryptArray($arrdata){
         $aux = array();
         foreach ($arrdata as $key => $value) {
-            if (is_array($value)) {
-                $aux[$key] = $this->encryptArray($value);
-            } else {
-                $aux[$key] = $this->encrypt($value);
-            }
+            $aux[$key] = $this->encrypt($value);
         }
         return $aux;
     }
