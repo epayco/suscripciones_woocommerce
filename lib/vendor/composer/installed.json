@@ -54,17 +54,17 @@
         },
         {
             "name": "rmccue/requests",
-            "version": "v2.0.11",
-            "version_normalized": "2.0.11.0",
+            "version": "v2.0.15",
+            "version_normalized": "2.0.15.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WordPress/Requests.git",
-                "reference": "31435a468e2357e68df743f2527bda32556a0818"
+                "reference": "877cd66169755899682f1595e057334b40d9d149"
             },
             "dist": {
                 "type": "zip",
-                "url": "https://api.github.com/repos/WordPress/Requests/zipball/31435a468e2357e68df743f2527bda32556a0818",
-                "reference": "31435a468e2357e68df743f2527bda32556a0818",
+                "url": "https://api.github.com/repos/WordPress/Requests/zipball/877cd66169755899682f1595e057334b40d9d149",
+                "reference": "877cd66169755899682f1595e057334b40d9d149",
                 "shasum": ""
             },
             "require": {
@@ -88,7 +88,7 @@
                 "ext-openssl": "For secure transport support",
                 "ext-zlib": "For improved performance when decompressing encoded streams"
             },
-            "time": "2024-03-25T10:48:46+00:00",
+            "time": "2025-01-21T10:13:31+00:00",
             "type": "library",
             "installation-source": "dist",
             "autoload": {

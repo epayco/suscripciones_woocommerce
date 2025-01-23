@@ -26,7 +26,7 @@
 
 .card-js .card-number-wrapper .card-type-icon.visa {
     background-position: 0 0;
-    margin-top: -5px;
+    margin-top: 0%;
 }
 
 .card-js .card-number-wrapper .card-type-icon.master-card {
@@ -205,11 +205,14 @@
 }
 
 .card-js input.card-number, .card-js input.cvc, .card-js input.name {
-    padding-left: 40px;
-    width: 95%;
-    margin-left: 3%;
-    margin-right: 3%;
-    margin-top: -5px
+
+    padding-left: 40px !important;
+    width: 95% !important;
+    margin-left: 3% !important;
+    margin-right: 3% !important;
+    margin-top: -3px;
+    background-color: white !important;;
+
 }
 
 .card-js.stripe .icon .svg {

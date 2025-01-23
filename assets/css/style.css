@@ -173,12 +173,12 @@ h2 {
 }
 
 
-footer {
+/* footer {
 	width: 100%;
 	border-top: solid 1px #e7e7e7;
 	margin-top: 20px;
 	padding-top: 10px;
-}
+} */
 
 .left15 {
 	margin-left: 20px;
@@ -826,12 +826,12 @@ _:future,
   }
 
 
-  footer {
+  /* footer {
     width: 100%;
     border-top: solid 1px #e7e7e7;
     margin-top: 20px;
     padding-top: 22px;
-  }
+  } */
 
   .left15 {
     margin-left: 20px;
