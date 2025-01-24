@@ -327,7 +327,7 @@ class EpaycoSuscription extends AbstractGateway
         $general = plugins_url('assets/css/general.min.css', EPS_PLUGIN_FILE);
         $card_style = plugins_url('assets/css/card-js.min.css', EPS_PLUGIN_FILE);
         $stylemin = plugins_url('assets/css/style.min.css', EPS_PLUGIN_FILE);
-        $cardsjscss = plugins_url('assets/css/cardsjs.css', EPS_PLUGIN_FILE);
+        $cardsjscss = plugins_url('assets/css/cardsjs.min.css', EPS_PLUGIN_FILE);
         $card_unmin = plugins_url('assets/js/card-js-unmin.js', EPS_PLUGIN_FILE);
         $indexjs = plugins_url('assets/js/index.js', EPS_PLUGIN_FILE);
         $appjs = plugins_url('assets/js/app.min.js', EPS_PLUGIN_FILE);

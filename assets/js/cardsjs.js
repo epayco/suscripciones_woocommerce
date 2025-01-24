@@ -15,19 +15,19 @@ function CardJs2(elem) {
 !(function ($) {
     var methods = {
         init: function () {
-            return this.data("cardjss", new CardJs2(this)), this;
+            return this.data("cardsjs", new CardJs2(this)), this;
         },
         cardNumber: function () {
-            return this.data("cardjss").getCardNumber();
+            return this.data("cardsjs").getCardNumber();
         },
         cardType: function () {
-            return this.data("cardjss").getCardType();
+            return this.data("cardsjs").getCardType();
         },
         name: function () {
-            return this.data("cardjss").getName();
+            return this.data("cardsjs").getName();
         },
     };
-    $.fn.CardJs2 = function (methodOrOptions) {
+    $.fn.CardJs = function (methodOrOptions) {
         return methods[methodOrOptions]
             ? methods[methodOrOptions].apply(this, Array.prototype.slice.call(arguments, 1))
             : "object" != typeof methodOrOptions && methodOrOptions
@@ -36,7 +36,7 @@ function CardJs2(elem) {
     };
 })(jQuery),
     $(function () {
-        $(".card-jss").each(function (i, obj) {
+        $(".cards-js").each(function (i, obj) {
             $(obj).CardJs2();
         });
     }),

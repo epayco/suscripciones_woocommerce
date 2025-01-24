@@ -2,7 +2,7 @@
     padding-right: 48px
 }
 
-.card-js .card-number-wrapper .card-type-icon {
+#web-checkout-content .card-js .card-number-wrapper .card-type-icon {
     transform: scale(1.2);
     height: 23px;
     width: 32px;
@@ -205,12 +205,12 @@
 }
 
 .card-js input.card-number, .card-js input.cvc, .card-js input.name {
-    padding-left: 40px !important;
-    width: 95% !important;
+    padding-left: 46px  !important;
+    width: 94% !important;
     margin-left: 3% !important;
-    margin-right: 3% !important;
-    margin-top: -3px !important;
-    margin-bottom: 10px !important;
+    margin-right: 16% !important;
+    /* margin-top: -6px; */
+    margin-bottom: 2% !important;
 }
 
 .card-js.stripe .icon .svg {
