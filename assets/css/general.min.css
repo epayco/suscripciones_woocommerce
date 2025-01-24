@@ -5,7 +5,9 @@ body {
   height: 100% !important;
   width: 100% !important;
   position: absolute !important;
-  box-sizing: border-box !important;
+
+  box-sizing: inherit !important;
+
 }
 
 
@@ -119,29 +121,31 @@ a:link {
 }
 
 .icon-cancel {
-  text-decoration: none;
-  font-size: 30px;
-  position: static;
-  margin-top: -5px;
-  margin-right: 5px;
-  float: right;
-  width: 22px;
-  height: 22px;
-  cursor: pointer;
+  text-decoration: none !important;
+  font-size: 30px !important;
+  position: static !important; 
+  margin-top: -70px !important;
+  margin-left: 336px !important;
+  float: right !important;
+  width: 22px !important;
+  height: 22px !important;
+  cursor: pointer !important;
 }
 
 .icon-cancel:hover {
-  content: "\e5cd";
-  -webkit-transition: all 0.2s ease-in-out;
-  -moz-transition: all 0.2s ease-in-out;
-  -o-transition: all 0.2s ease-in-out;
-  transition: all 0.2s ease-in-out;
+  content: "\e5cd" !important;
+  -webkit-transition: all 0.2s ease-in-out !important;
+  -moz-transition: all 0.2s ease-in-out !important;
+  -o-transition: all 0.2s ease-in-out !important;
+  transition: all 0.2s ease-in-out !important;
   color: gray !important;
 }
 
 .color-exit {
   color: #3582b7 !important;
-  margin-left: 5% !important;
+  margin-left: 7% !important;
+  margin-top: -3% !important;
+
 }
 
 .color {
@@ -206,7 +210,8 @@ a:link {
 
 .languaje {
  display: block;
- height: 36px;
+
+ height: 37px;
  line-height: 35px;
  text-decoration: none !important;
  /* width: 8%; */
@@ -222,11 +227,15 @@ a:link {
   margin-left: 15px;
 }
 
-.caret-languaje {
-  float: right;
-  /* margin-right: 10px; */
-  line-height: 30px;
-  margin-top: -24px;
+#web-checkout-content .caret-languaje {
+  margin-right: 10px; 
+  /* line-height: 30px; */
+  /* margin-top: -206px !important; */
+  /* top: 18px !important; */
+  position: absolute;
+  display: flex;
+  margin-left: 77%; 
+
 }
 
 .active {
@@ -507,8 +516,8 @@ img.home-icons {
 .loadshield2 {
   font-size: 40px;
   position: absolute;
-  top: 49%;
-  left: 50%;
+  top: 47%;
+  left: 48%;
   width: 20px;
   height: 40px;
   margin-top: -20px;
@@ -549,12 +558,21 @@ img.home-icons {
 
 #web-checkout-content .flag {
   margin-left: 15px !important;
-  margin-right: 10px;
-  height: 15px;
-  float: left;
-  font-size: 31px !important;
+  margin-right: 10px !important; 
+  height: 15px !important;
+  float: left !important;
+  font-size: 32px !important;
   margin-left: 17px !important;
-  margin-top: 0.9% !important;
+  margin-top: 10.9% !important;
+
+}
+
+#web-checkout-content  #icon-flecha{
+  margin-top: -20px !important;
+    /* font-family: "Open Sans", sans-serif !important; */
+    /* top: -50px !important; */
+    margin-right: 14px !important;
+
 }
 
 
@@ -735,9 +753,13 @@ input[type="checkbox"]:checked+label:before {
 }
 
 .onpage .input-form input {
- width: 100% !important;
+
+  width: 99% !important;
   margin-left: 0% !important;
   margin-right: 3% !important;
+  background-color: white !important;
+  
+
 }
 
 .onpage .nombre-comercio {
@@ -804,6 +826,20 @@ input[type="checkbox"]:checked+label:before {
   right: 18px;
   /* float: left; */
   position: absolute;
+}
+
+/* #web-checkout-content .estilosContryName{
+  text-align: left !important;
+  font-size: 18px !important;
+  margin-top: 2% !important;
+} */
+
+#web-checkout-content .estilosContryName {
+  text-align: left !important;
+  font-size: 15px !important;
+  margin-top: 12% !important;
+  margin-left: 50px !important;
+  padding: unset !important;
 }
 
 
@@ -1059,9 +1095,11 @@ input[type="checkbox"]:checked+label:before {
   color: #000000;
   text-decoration: none;
   outline: none;
-  width: 100% !important;
-  height: 100% !important;
-  padding: none !important;
+  /* width: 100% !important;
+  height: 100% !important; */
+
+  padding: unset !important;
+
   border: none !important;
 }
 
@@ -1092,8 +1130,9 @@ input[type="checkbox"]:checked+label:before {
 }
 
 #web-checkout-content .dropdown dd ul li a {
-  padding: 5px;
-  display: block;
+
+  padding: 5px !important;
+  display: block  !important;
 }
 
 #web-checkout-content .dropdown dd ul li a:hover {
@@ -1143,6 +1182,7 @@ input[type="checkbox"]:checked+label:before {
   max-width: 90%;
   width: 400px;
 }
+
 
 .modal-expiration-time .ventana p {
   margin: 1.5em 0;

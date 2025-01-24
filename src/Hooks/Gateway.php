@@ -143,7 +143,7 @@ class Gateway
         add_filter( 'woocommerce_checkout_fields', function( $fields ) {
             $fields['billing']['billing_custom_field'] = array(
                 'type'        => 'text',
-                'label'       => 'Campo Personalizado',
+                'label'       => 'Numero de documento',
                 'placeholder' => 'Escribe algo...',
                 'required'    => true,
                 'class'       => array( 'form-row-wide' ),

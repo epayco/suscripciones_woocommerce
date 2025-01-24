@@ -324,7 +324,7 @@ class EpaycoSuscription extends AbstractGateway
         }
         $logo_comercio = plugins_url('assets/images/comercio.png', EPS_PLUGIN_FILE);
         $style = plugins_url('assets/css/style.css', EPS_PLUGIN_FILE);
-        $general = plugins_url('assets/css/general.css', EPS_PLUGIN_FILE);
+        $general = plugins_url('assets/css/general.min.css', EPS_PLUGIN_FILE);
         $card_style = plugins_url('assets/css/card-js.min.css', EPS_PLUGIN_FILE);
         $stylemin = plugins_url('assets/css/style.min.css', EPS_PLUGIN_FILE);
         $cardsjscss = plugins_url('assets/css/cardsjs.css', EPS_PLUGIN_FILE);
@@ -398,7 +398,7 @@ class EpaycoSuscription extends AbstractGateway
             'wc_epaycosubscription_cloudflare',
             "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.4.2/css/bootstrap-slider.min.css"
         );
-        /*
+        
                 $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
                     'jquery',
                     "https://code.jquery.com/jquery-1.11.3.min.js"
@@ -420,7 +420,7 @@ class EpaycoSuscription extends AbstractGateway
                 $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
                     'index',
                     $this->epaycosuscription->helpers->url->getJsAsset('index')
-                );*/
+                );
 
         $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
             'wc_epaycosubscription_animate',

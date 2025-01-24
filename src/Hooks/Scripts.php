@@ -1,11 +1,13 @@
 <?php
 
 namespace EpaycoSubscription\Woocommerce\Hooks;
+
 use EpaycoSubscription\Woocommerce\Helpers\Url;
 
 if (!defined('ABSPATH')) {
     exit;
 }
+
 class Scripts
 {
     private const SUFFIX = '_params';
@@ -17,9 +19,9 @@ class Scripts
      *
      * @param Url $url
      */
-    public function __construct(Url $url,)
+    public function __construct(Url $url)
     {
-        $this->url    = $url;
+        $this->url = $url;
     }
 
     /**
@@ -108,6 +110,4 @@ class Scripts
             wp_localize_script($name, $name . self::SUFFIX, $variables);
         }
     }
-
-
 }
