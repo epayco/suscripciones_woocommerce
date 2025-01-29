@@ -225,13 +225,13 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
           <section class="modal-container">
             <style>
              .form-container .icon {
-               color: #ED9733 !important;
+               color:  #3582b7 !important;
              }
              .button-container .pay-type {
-               border: 1px solid #ED9733;
+               border: 1px solid  #3582b7;
              }
              .button-container .pay-type .icon {
-               color: #ED9733;
+               color:  #3582b7;
              }
              .cont-btn {
                padding: 8px;
@@ -249,11 +249,11 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
             </div>
           </div>
         <section class="modal" hidden id="movil_modal" style="padding-top: 0rem !important;">
-          <header class="animated fadeInDown" style="background-color: #ED9733 !important">
+          <header class="animated fadeInDown" style="background-color:  #3582b7 !important">
             <div class="title-container  ">
               <div class="logo-commerce">
                 <div class="logo-container" style="">
-                  <img width="90%" src="' . $logo_comercio . '">
+                    <img width="90%" src="<?php echo esc_html($logo_comercio); ?>">
                 </div>
               </div>
             <div class="col title">

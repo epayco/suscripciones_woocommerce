@@ -279,7 +279,7 @@ class WoocommerceEpaycoSubscription
                 $isInstalled = false;
                 $currentUserCanInstallPlugins = current_user_can('install_plugins');
 
-                $minilogo     = sprintf('%s%s', plugin_dir_url(__FILE__), '../assets/images/minilogo.png');
+                $minilogo     = sprintf('%s%s', plugin_dir_url(__FILE__), '../assets/images/comercio.png');
                 $translations = [
                     'activate_woocommerce' => __('Activate WooCommerce', 'epayco-subscription'),
                     'install_woocommerce'  => __('Install WooCommerce', 'epayco-subscription'),
