@@ -542,10 +542,10 @@ img.home-icons {
 
 .icon-select {
   position: absolute;
-  font-size: 18px;
+  font-size: 22px;
   padding-left: 8px;
   padding-right: 0;
-  line-height: 40px;
+  line-height: 35px;
 }
 
 .margin32 {
@@ -1252,7 +1252,7 @@ input[type="checkbox"]:checked+label:before {
  width: 84px;
  height: 84px;
  position: fixed;
- top: 50.5%;
+ top: 48.5%;
  left: 50.5%;
  margin-top: -35px;
  margin-left: -42px;

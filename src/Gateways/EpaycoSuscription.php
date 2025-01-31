@@ -334,6 +334,7 @@ class EpaycoSuscription extends AbstractGateway
         $cardsjs = plugins_url('assets/js/cardsjs.js', EPS_PLUGIN_FILE);
         $epaycojs = plugins_url('assets/js/epayco.js', EPS_PLUGIN_FILE);
         //$epaycojs ="https://checkout.epayco.co/epayco.min.js";
+        $epaycocheckout =  plugins_url('assets/js/epaycocheckout.js', EPS_PLUGIN_FILE);
 
         $lang = get_locale();
         $lang = explode('_', $lang);
@@ -413,6 +414,10 @@ class EpaycoSuscription extends AbstractGateway
                     $this->epaycosuscription->helpers->url->getJsAsset('cardsjs')
                 );
                 $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+                    'epaycocheckout',
+                    $this->epaycosuscription->helpers->url->getJsAsset('epaycocheckout')
+                );
+                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
                     'card-js-unmin',
                     $this->epaycosuscription->helpers->url->getJsAsset('card-js-unmin')
                 );
@@ -452,7 +457,9 @@ class EpaycoSuscription extends AbstractGateway
                 'epaycojs' => $epaycojs,
                 'apiKey' => $this->get_option('apiKey'),
                 'privateKey' => $this->get_option('privateKey'),
-                'lang' => $lang
+                'lang' => $lang,
+                'epaycocheckout' => $epaycocheckout,
+        
             ]
         );
 
