@@ -354,13 +354,13 @@ if (!defined('ABSPATH')) {
                                     <div class="card-js" data-icon-colour="#158CBA">
                                         <div class="input-form">
                                             <span class="icon-user color icon-input"><i class="fas fa-user" style="margin-left: -2px;"></i></span>
-                                            <input class="name" id="the-card-name-element" data-epayco="card[name]" required value="<?php echo esc_html($name_billing) ?>">
+                                            <input class="name" id="the-card-name-element" data-epayco="card[name]" name="name" required value="<?php echo esc_html($name_billing) ?>">
                                         </div>
                                     </div>
                                     <div class="card-js" data-icon-colour="#158CBA">
                                         <div class="input-form" style="position: relative;">
                                             <span class="icon-credit-card color icon-input"><i class="far fa-credit-card" style="margin-left: -5px;"></i></span>
-                                            <input class="card-number my-custom-class" data-epayco="card[number]" required id="the-card-number-element" name="card_number" placeholder="**** **** **** ****" type="tel" maxlength="19" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" style="padding-right: 40px;">
+                                            <input class="card-number my-custom-class" data-epayco="card[number]" required id="the-card-number-element" name="card-number2" placeholder="**** **** **** ****" type="tel" maxlength="19" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" style="padding-right: 40px;">
                                             <img class="img-card" src="https://msecure.epayco.co/img/credit-cards/disable.png" id="logo_franchise_2" style="display: block;position: absolute;right: 12px;top: 41.5%;transform: translateY(-50%);width: 40px;">
                                         </div>
                                     </div>

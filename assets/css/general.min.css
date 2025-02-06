@@ -182,7 +182,7 @@ a:link {
 .call_action h2 {
   font-size: 18px;
   text-align: center;
-  line-height: 35px;
+  line-height: 25px;
   margin: 0;
 }
 
@@ -776,7 +776,8 @@ input[type="checkbox"]:checked+label:before {
 }
 
 .onpage .call_action {
-  width: 100%;
+  width: 100% !important;
+  height: 50px !important;
 }
 
 .onpage .vencimiento {

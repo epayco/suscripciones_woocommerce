@@ -467,6 +467,7 @@ class EpaycoSuscription extends AbstractGateway
 
     public function webhook(): void
     {
+       
         global $woocommerce;
         global $wpdb;
         $params = $_REQUEST;
@@ -478,8 +479,9 @@ class EpaycoSuscription extends AbstractGateway
         $order = new \WC_Order($order_id);
         $subscriptions = $this->getWooCommerceSubscriptionFromOrderId($order_id);
         $token = $params['epaycoToken'];
-        $customerName = $params['card-number'] ? $params['card-number'] : $params['name'];
-        $customerData = $this->paramsBilling($subscriptions, $order, $customerName);
+        $customerName =  $params['name'];
+        $customerCard = $params['card-number2'];
+        $customerData = $this->paramsBilling($subscriptions, $order, $customerCard, $customerName);
         $customerData['token_card'] = $token;
         $sql_ = 'SELECT * FROM ' . $table_name_setings . ' WHERE id_payco = ' . $this->get_option('custIdCliente') . ' AND email = ' . $customerData['email'];
         $customerGetData = $wpdb->get_results(
@@ -503,7 +505,8 @@ class EpaycoSuscription extends AbstractGateway
                     'id_payco' => $this->get_option('custIdCliente'),
                     'customer_id' => $customer->data->customerId,
                     'token_id' => $customerData['token_card'],
-                    'email' => $customerData['email']
+                    'email' => $customerData['email'],
+                    'name' => $customerData['name']
                 ]
             );
             if (!$inserCustomer) {
@@ -534,7 +537,8 @@ class EpaycoSuscription extends AbstractGateway
                         'id_payco' => $this->get_option('custIdCliente'),
                         'customer_id' => $customer->data->customerId,
                         'token_id' => $customerData['token_card'],
-                        'email' => $customerData['email']
+                        'email' => $customerData['email'],
+                        'name' => $customerData['name']
                     ]
                 );
                 if (!$inserCustomer) {
@@ -615,6 +619,8 @@ class EpaycoSuscription extends AbstractGateway
                     "default" => true
                 ]
             );
+           
+           
         } catch (Exception $exception) {
             echo 'create client: ' . $exception->getMessage();
             die();
@@ -855,6 +861,8 @@ class EpaycoSuscription extends AbstractGateway
                         "trial_days" => $plan['trial_days']
                     ]
                 );
+               
+               
 
                 return $plan_;
             } catch (Exception $exception) {
@@ -868,6 +876,7 @@ class EpaycoSuscription extends AbstractGateway
 
     {
         foreach ($plans as $plan) {
+            
             try {
                 $suscriptioncreted = $this->epaycoSdk->subscriptions->create(
                     [
@@ -880,7 +889,7 @@ class EpaycoSuscription extends AbstractGateway
                         "method_confirmation" => "POST"
                     ]
                 );
-
+               
                 return $suscriptioncreted;
 
             } catch (Exception $exception) {
@@ -936,14 +945,14 @@ class EpaycoSuscription extends AbstractGateway
     }
 
 
-    public function paramsBilling($subscriptions, $order, $customer_name)
+    public function paramsBilling($subscriptions, $order, $customerCard, $customerName)
     {
         $data = [];
         $subscription = end($subscriptions);
         if ($subscription) {
             $doc_number = get_post_meta($subscription->get_id(), '_billing_dni', true) != null?get_post_meta($subscription->get_id(), '_billing_dni', true):$order->get_meta('_billing_dni');
             $type_document = get_post_meta($subscription->get_id(), '_billing_type_document', true)!=null?get_post_meta($subscription->get_id(), '_billing_type_document', true):$order->get_meta('_billing_type_document');
-            $data['name'] = $customer_name;
+            $data['name'] = $customerName;
             $data['email'] = $subscription->get_billing_email();
             $data['phone'] = $subscription->get_billing_phone();
             $data['country'] = $subscription->get_shipping_country() ? $subscription->get_shipping_country() : $subscription->get_billing_country();
