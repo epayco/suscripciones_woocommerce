@@ -374,7 +374,7 @@ if (!defined('ABSPATH')) {
                                             <span class="icon-date_range color icon-select"><i class="far fa-calendar-alt"></i></span>
                                             <input class="binding-input inspectletIgnore" id="month-value" name="month" placeholder="MM" maxlength="2" autocomplete="off" data-epayco="card[exp_month]" required>
                                         </div>
-                                        <div class="" style="float:left; width:12%; margin:0; text-align:center; line-height: 40px; height: 37px; background-color: white; color:#a3a3a3;">/</div>
+                                        <div class="" style="float:left; width:12%; margin:0; text-align:center; line-height: 40px; height: 38.5px; background-color: white; color:#574f4f;">/</div>
                                         <div class="input-form full-width normalinput noborder yearcredit nomargin">
                                             <input name="year" id="year-value" placeholder="YYYY" maxlength="4" autocomplete="off" data-epayco="card[exp_year]" required>
                                         </div>
