@@ -4,6 +4,7 @@ namespace EpaycoSubscription\Woocommerce\Gateways;
 
 use Exception;
 use Epayco as EpaycoSdk;
+
 if (!defined('ABSPATH')) {
     exit;
 }
@@ -32,10 +33,10 @@ class EpaycoSuscription extends AbstractGateway
 
     protected EpaycoSdk\Epayco $epaycoSdk;
 
-     /**
-      * BasicGateway constructor
-      * @throws Exception
-      */
+    /**
+     * BasicGateway constructor
+     * @throws Exception
+     */
     public function __construct()
     {
         parent::__construct();
@@ -55,7 +56,7 @@ class EpaycoSuscription extends AbstractGateway
         $this->method_description = 'crea productos de suscripciones para tus clientes';
         $this->epaycosuscription->hooks->gateway->registerUpdateOptions($this);
         $this->epaycosuscription->hooks->gateway->registerGatewayTitle($this);
-        $this->epaycosuscription->hooks->gateway->registerThankyouPage($this->id, [$this, 'saveOrderPaymentsId']);
+      //  $this->epaycosuscription->hooks->gateway->registerThankyouPage($this->id, [$this, 'saveOrderPaymentsId']);
         $this->epaycosuscription->hooks->gateway->registerAvailablePaymentGateway();
         $this->epaycosuscription->hooks->gateway->registerCustomBillingFieldOptions();
         $this->epaycosuscription->hooks->gateway->registerGatewayReceiptPage($this->id, [$this, 'receiptPage']);
@@ -72,8 +73,6 @@ class EpaycoSuscription extends AbstractGateway
                 "test" => (bool)$this->get_option('environment')
             ]
         );
-
-
     }
 
 
@@ -190,7 +189,7 @@ class EpaycoSuscription extends AbstractGateway
      */
     public function admin_options()
     {
-        ?>
+?>
         <div style="color: #31708f; background-color: #d9edf7; border-color: #bce8f1;padding: 10px;border-radius: 5px;">
             <b>Este modulo le permite aceptar pagos seguros por la plataforma de pagos ePayco</b>
             <br>Si el cliente decide pagar por ePayco, el estado del pedido cambiara a ePayco Esperando Pago
@@ -199,12 +198,12 @@ class EpaycoSuscription extends AbstractGateway
         </div>
         <table class="form-table">
             <tbody>
-            <?php
-            $this->generate_settings_html();
-            ?>
+                <?php
+                $this->generate_settings_html();
+                ?>
             </tbody>
         </table>
-        <?php
+<?php
     }
 
     /**
@@ -241,9 +240,7 @@ class EpaycoSuscription extends AbstractGateway
      *
      * @return void
      */
-    public function payment_fields(): void
-    {
-    }
+    public function payment_fields(): void {}
     /**
      * Get Payment Fields params
      *
@@ -266,13 +263,12 @@ class EpaycoSuscription extends AbstractGateway
     {
         $order = wc_get_order($order_id);
         try {
-            $urlReceived =  $order->get_checkout_payment_url( true );
+            $urlReceived =  $order->get_checkout_payment_url(true);
             return [
                 'result'   => 'success',
                 'redirect' => $urlReceived,
             ];
-
-        }catch (Exception $e) {
+        } catch (Exception $e) {
             return [
                 'result'   => 'false',
                 'message' =>  $e->getMessage(),
@@ -358,11 +354,11 @@ class EpaycoSuscription extends AbstractGateway
         }
 
         $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-              'wc_epaycosuscription_checkout',
-              $this->epaycosuscription->helpers->url->getJsAsset('checkouts/suscription/ep-suscription-checkout'),
-              [
-                  'site_id' => 'epayco',
-              ]
+            'wc_epaycosuscription_checkout',
+            $this->epaycosuscription->helpers->url->getJsAsset('checkouts/suscription/ep-suscription-checkout'),
+            [
+                'site_id' => 'epayco',
+            ]
         );
 
         $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
@@ -399,33 +395,33 @@ class EpaycoSuscription extends AbstractGateway
             'wc_epaycosubscription_cloudflare',
             "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.4.2/css/bootstrap-slider.min.css"
         );
-        
-                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-                    'jquery',
-                    "https://code.jquery.com/jquery-1.11.3.min.js"
-                );
 
-                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-                    'app',
-                    $this->epaycosuscription->helpers->url->getJsAsset('app')
-                );
-                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-                    'cardsjs',
-                    $this->epaycosuscription->helpers->url->getJsAsset('cardsjs')
-                );
-                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-                    'epaycocheckout',
-                    $this->epaycosuscription->helpers->url->getJsAsset('epaycocheckout')
-                );
-                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-                    'card-js-unmin',
-                    $this->epaycosuscription->helpers->url->getJsAsset('card-js-unmin')
-                );
+        $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+            'jquery',
+            "https://code.jquery.com/jquery-1.11.3.min.js"
+        );
 
-                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-                    'index',
-                    $this->epaycosuscription->helpers->url->getJsAsset('index')
-                );
+        $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+            'app',
+            $this->epaycosuscription->helpers->url->getJsAsset('app')
+        );
+        $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+            'cardsjs',
+            $this->epaycosuscription->helpers->url->getJsAsset('cardsjs')
+        );
+        $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+            'epaycocheckout',
+            $this->epaycosuscription->helpers->url->getJsAsset('epaycocheckout')
+        );
+        $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+            'card-js-unmin',
+            $this->epaycosuscription->helpers->url->getJsAsset('card-js-unmin')
+        );
+
+        $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+            'index',
+            $this->epaycosuscription->helpers->url->getJsAsset('index')
+        );
 
         $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
             'wc_epaycosubscription_animate',
@@ -459,15 +455,14 @@ class EpaycoSuscription extends AbstractGateway
                 'privateKey' => $this->get_option('privateKey'),
                 'lang' => $lang,
                 'epaycocheckout' => $epaycocheckout,
-        
+
             ]
         );
-
     }
 
     public function webhook(): void
     {
-       
+
         global $woocommerce;
         global $wpdb;
         $params = $_REQUEST;
@@ -599,7 +594,6 @@ class EpaycoSuscription extends AbstractGateway
             $redirect_url = add_query_arg($arguments, $redirect_url);
             wp_redirect($redirect_url);
         }
-
     }
 
     public function customerCreate(array $data)
@@ -619,8 +613,6 @@ class EpaycoSuscription extends AbstractGateway
                     "default" => true
                 ]
             );
-           
-           
         } catch (Exception $exception) {
             echo 'create client: ' . $exception->getMessage();
             die();
@@ -658,7 +650,6 @@ class EpaycoSuscription extends AbstractGateway
                 } else {
                     return false;
                 }
-
             } catch (Exception $exception) {
                 var_dump($exception->getMessage());
                 die();
@@ -675,12 +666,10 @@ class EpaycoSuscription extends AbstractGateway
             } else {
                 return false;
             }
-
         } catch (Exception $exception) {
             var_dump($exception->getMessage());
             die();
         }
-
     }
 
     public function getPlanById($plan_id)
@@ -692,7 +681,6 @@ class EpaycoSuscription extends AbstractGateway
             } else {
                 return false;
             }
-
         } catch (Exception $exception) {
             var_dump($exception->getMessage());
             die();
@@ -747,7 +735,7 @@ class EpaycoSuscription extends AbstractGateway
                 if (intval($plan_amount_cart) == $plan_amount_epayco) {
                     return $this->process_payment_epayco($plans, $customer, $confirm_url, $subscriptions, $order);
                 } else {
-                    return $this->validateNewPlanData($subscriptions, $order_id, true, false,$plans,$customer, $confirm_url, $order);
+                    return $this->validateNewPlanData($subscriptions, $order_id, true, false, $plans, $customer, $confirm_url, $order);
                 }
             } catch (Exception $exception) {
                 echo $exception->getMessage();
@@ -816,11 +804,9 @@ class EpaycoSuscription extends AbstractGateway
                             }
                         }
                     }
-
                 } else {
                     return false;
                 }
-
             }
         } else {
 
@@ -861,8 +847,8 @@ class EpaycoSuscription extends AbstractGateway
                         "trial_days" => $plan['trial_days']
                     ]
                 );
-               
-               
+
+
 
                 return $plan_;
             } catch (Exception $exception) {
@@ -876,7 +862,7 @@ class EpaycoSuscription extends AbstractGateway
 
     {
         foreach ($plans as $plan) {
-            
+
             try {
                 $suscriptioncreted = $this->epaycoSdk->subscriptions->create(
                     [
@@ -889,9 +875,8 @@ class EpaycoSuscription extends AbstractGateway
                         "method_confirmation" => "POST"
                     ]
                 );
-               
-                return $suscriptioncreted;
 
+                return $suscriptioncreted;
             } catch (Exception $exception) {
                 var_dump($exception->getMessage());
                 die();
@@ -917,7 +902,6 @@ class EpaycoSuscription extends AbstractGateway
                         "method_confirmation" => "POST"
                     ]
                 );
-
             } catch (Exception $exception) {
                 var_dump($exception->getMessage());
                 die();
@@ -950,8 +934,14 @@ class EpaycoSuscription extends AbstractGateway
         $data = [];
         $subscription = end($subscriptions);
         if ($subscription) {
-            $doc_number = get_post_meta($subscription->get_id(), '_billing_dni', true) != null?get_post_meta($subscription->get_id(), '_billing_dni', true):$order->get_meta('_billing_dni');
-            $type_document = get_post_meta($subscription->get_id(), '_billing_type_document', true)!=null?get_post_meta($subscription->get_id(), '_billing_type_document', true):$order->get_meta('_billing_type_document');
+
+
+            // Recuperar campos adicionales en el archivo EpaycoSuscription.php
+            $doc_number = get_post_meta($subscription->get_id(), '_epayco_billing_dni', true) != null ? get_post_meta($subscription->get_id(), '_epayco_billing_dni', true) : $order->get_meta('_epayco_billing_dni');
+            $type_document = get_post_meta($subscription->get_id(), '_epayco_billing_type_document', true) != null ? get_post_meta($subscription->get_id(), '_epayco_billing_type_document', true) : $order->get_meta('_epayco_billing_type_document');
+
+            
+
             $data['name'] = $customerName;
             $data['email'] = $subscription->get_billing_email();
             $data['phone'] = $subscription->get_billing_phone();
@@ -971,7 +961,6 @@ class EpaycoSuscription extends AbstractGateway
             wp_redirect($redirect["redirect"]);
             die();
         }
-
     }
 
     public function getPlansBySubscription(array $subscriptions)
@@ -1126,15 +1115,19 @@ class EpaycoSuscription extends AbstractGateway
                 if ($isTestMode == "true") {
                     $message = 'Pago pendiente de aprobación Prueba';
                     $orderStatus = "epayco_on_hold";
-                    if ($current_state != "epayco_on_hold" ||
-                        $current_state == "pending") {
+                    if (
+                        $current_state != "epayco_on_hold" ||
+                        $current_state == "pending"
+                    ) {
                         $this->restore_order_stock($order->id, '+');
                     }
                 } else {
                     $message = 'Pago pendiente de aprobación';
                     $orderStatus = "epayco-on-hold";
-                    if ($current_state != "epayco-on-hold" ||
-                        $current_state == "pending") {
+                    if (
+                        $current_state != "epayco-on-hold" ||
+                        $current_state == "pending"
+                    ) {
                         $this->restore_order_stock($order->id, '+');
                     }
                 }
@@ -1150,7 +1143,8 @@ class EpaycoSuscription extends AbstractGateway
                     $messageStatus['message'] = array_merge($messageStatus['message'], ["estado: {$sub->data->respuesta}"]);
                     if ($isTestMode == "true") {
                         $message = 'Pago rechazado Prueba: ' . $sub->data->ref_payco;
-                        if ($current_state == "epayco_failed" ||
+                        if (
+                            $current_state == "epayco_failed" ||
                             $current_state == "epayco_cancelled" ||
                             $current_state == "failed" ||
                             $current_state == "epayco_processing" ||
@@ -1167,9 +1161,9 @@ class EpaycoSuscription extends AbstractGateway
                             $order->add_order_note($message);
                             $subscription->update_status('cancelled');
                         }
-
                     } else {
-                        if ($current_state == "epayco-failed" ||
+                        if (
+                            $current_state == "epayco-failed" ||
                             $current_state == "epayco-cancelled" ||
                             $current_state == "failed" ||
                             $current_state == "epayco-processing" ||
@@ -1194,23 +1188,19 @@ class EpaycoSuscription extends AbstractGateway
                     if ($isTestMode == "true") {
                         $message = 'Pago exitoso Prueba';
                         switch ($this->get_option('epayco_endorder_state')) {
-                            case 'epayco-processing':
-                                {
+                            case 'epayco-processing': {
                                     $orderStatus = 'epayco_processing';
                                 }
                                 break;
-                            case 'epayco-completed':
-                                {
+                            case 'epayco-completed': {
                                     $orderStatus = 'epayco_completed';
                                 }
                                 break;
-                            case 'processing':
-                                {
+                            case 'processing': {
                                     $orderStatus = 'processing_test';
                                 }
                                 break;
-                            case 'completed':
-                                {
+                            case 'completed': {
                                     $orderStatus = 'completed_test';
                                 }
                                 break;
@@ -1222,8 +1212,11 @@ class EpaycoSuscription extends AbstractGateway
 
                     $order->update_status($orderStatus);
                     $order->add_order_note($message);
-                    $note = sprintf(__('Successful subscription (subscription ID: %s), reference (%s)', 'epayco-subscription'),
-                        $sub->subscription->_id, $sub->data->ref_payco);
+                    $note = sprintf(
+                        __('Successful subscription (subscription ID: %s), reference (%s)', 'epayco-subscription'),
+                        $sub->subscription->_id,
+                        $sub->data->ref_payco
+                    );
                     $subscription->add_order_note($note);
                     $messageStatus['ref_payco'] = array_merge($messageStatus['ref_payco'], [$sub->data->ref_payco]);
                     $subscription->payment_complete();
@@ -1271,7 +1264,6 @@ class EpaycoSuscription extends AbstractGateway
             update_post_meta($order->get_id(), 'plan_id', $planId);
         }
         return $messageStatus;
-
     }
 
     public function savePlanId($order_id, array $plans, array $subscriptions, $update = null, $product_id = null)
@@ -1296,7 +1288,8 @@ class EpaycoSuscription extends AbstractGateway
                             'amount' => $plan_amount,
                             'product_id' => $product_id,
                             'currency' => $plan_currency,
-                        ], [
+                        ],
+                        [
                             'order_id' => intval($order_id),
                             'product_id' => $product_id,
                         ]
@@ -1328,7 +1321,6 @@ class EpaycoSuscription extends AbstractGateway
                     $dataToSave
                 );
                 $result = 1;
-
             } catch (Exception $exception) {
                 var_dump($exception->getMessage());
                 die();
@@ -1401,13 +1393,14 @@ class EpaycoSuscription extends AbstractGateway
 
     public function authSignature($x_ref_payco, $x_transaction_id, $x_amount, $x_currency_code)
     {
-        $signature = hash('sha256',
+        $signature = hash(
+            'sha256',
             trim($this->get_option('custIdCliente')) . '^'
-            . trim($this->get_option('pKey')) . '^'
-            . $x_ref_payco . '^'
-            . $x_transaction_id . '^'
-            . $x_amount . '^'
-            . $x_currency_code
+                . trim($this->get_option('pKey')) . '^'
+                . $x_ref_payco . '^'
+                . $x_transaction_id . '^'
+                . $x_amount . '^'
+                . $x_currency_code
         );
         return $signature;
     }
@@ -1439,7 +1432,8 @@ class EpaycoSuscription extends AbstractGateway
         foreach ($subscriptions as $subscription) {
             if ($isTestMode == "true") {
                 $message = 'Pago rechazado Prueba';
-                if ($current_state == "epayco_failed" ||
+                if (
+                    $current_state == "epayco_failed" ||
                     $current_state == "epayco_cancelled" ||
                     $current_state == "failed" ||
                     $current_state == "epayco_processing" ||
@@ -1456,9 +1450,9 @@ class EpaycoSuscription extends AbstractGateway
                     $order->add_order_note($message);
                     $subscription->update_status('on-hold');
                 }
-
             } else {
-                if ($current_state == "epayco-failed" ||
+                if (
+                    $current_state == "epayco-failed" ||
                     $current_state == "epayco-cancelled" ||
                     $current_state == "failed" ||
                     $current_state == "epayco-processing" ||
@@ -1491,7 +1485,6 @@ class EpaycoSuscription extends AbstractGateway
             ];
 
             return $response_status;
-
         }
     }
 
@@ -1526,23 +1519,19 @@ class EpaycoSuscription extends AbstractGateway
                     if ($isTestMode == "true") {
                         $message = 'Pago exitoso Prueba';
                         switch ($this->get_option('epayco_endorder_state')) {
-                            case 'epayco-processing':
-                                {
+                            case 'epayco-processing': {
                                     $orderStatus = 'epayco_processing';
                                 }
                                 break;
-                            case 'epayco-completed':
-                                {
+                            case 'epayco-completed': {
                                     $orderStatus = 'epayco_completed';
                                 }
                                 break;
-                            case 'processing':
-                                {
+                            case 'processing': {
                                     $orderStatus = 'processing_test';
                                 }
                                 break;
-                            case 'completed':
-                                {
+                            case 'completed': {
                                     $orderStatus = 'completed_test';
                                 }
                                 break;
@@ -1562,14 +1551,18 @@ class EpaycoSuscription extends AbstractGateway
                     $subscription->payment_complete();
                     $order->update_status($orderStatus);
                     $order->add_order_note($message);
-                    $note = sprintf(__('Successful subscription (subscription ID: %s), reference (%s)', 'epayco-subscription'),
-                        $subscription->get_data()['id'], $x_ref_payco);
+                    $note = sprintf(
+                        __('Successful subscription (subscription ID: %s), reference (%s)', 'epayco-subscription'),
+                        $subscription->get_data()['id'],
+                        $x_ref_payco
+                    );
                     $subscription->add_order_note($note);
 
                     echo "1";
                 }
 
-                if ($x_cod_transaction_state == 2 ||
+                if (
+                    $x_cod_transaction_state == 2 ||
                     $x_cod_transaction_state == 4 ||
                     $x_cod_transaction_state == 6 ||
                     $x_cod_transaction_state == 9 ||
@@ -1578,7 +1571,8 @@ class EpaycoSuscription extends AbstractGateway
                 ) {
                     if ($isTestMode == "true") {
                         $message = 'Pago rechazado Prueba: ' . $x_ref_payco;
-                        if ($current_state == "epayco_failed" ||
+                        if (
+                            $current_state == "epayco_failed" ||
                             $current_state == "epayco_cancelled" ||
                             $current_state == "failed" ||
                             $current_state == "epayco_processing" ||
@@ -1595,16 +1589,15 @@ class EpaycoSuscription extends AbstractGateway
                             $subscription->update_status('on-hold');
                             if (
                                 $current_state = "epayco-on-hold" ||
-                                    $current_state = "epayco-on-hold"
+                                $current_state = "epayco-on-hold"
                             ) {
                                 $this->restore_order_stock($order->get_id());
                             }
-
                         }
-
                     } else {
                         $message = 'Pago rechazado: ' . $x_ref_payco;
-                        if ($current_state == "epayco-failed" ||
+                        if (
+                            $current_state == "epayco-failed" ||
                             $current_state == "epayco-cancelled" ||
                             $current_state == "failed" ||
                             $current_state == "epayco-processing" ||
@@ -1615,18 +1608,16 @@ class EpaycoSuscription extends AbstractGateway
                             $order->update_status('epayco-cancelled');
                             $order->add_order_note($message);
                             $subscription->update_status('on-hold');
-
                         } else {
                             $order->update_status('epayco-cancelled');
                             $order->add_order_note($message);
                             $subscription->update_status('on-hold');
                             if (
                                 $current_state = "epayco-on-hold" ||
-                                    $current_state = "epayco-on-hold"
+                                $current_state = "epayco-on-hold"
                             ) {
                                 $this->restore_order_stock($order->get_id());
                             }
-
                         }
                     }
                     echo $x_cod_transaction_state;
@@ -1654,7 +1645,6 @@ class EpaycoSuscription extends AbstractGateway
                     die();
                 }
             }
-
         } else {
             $message = 'Firma no valida';
             echo $message;
@@ -1667,10 +1657,7 @@ class EpaycoSuscription extends AbstractGateway
      * @param $order_id
      * @throws Exception
      */
-    public function renderOrderForm($order_id): void
-    {
-
-    }
+    public function renderOrderForm($order_id): void {}
 
     public function string_sanitize($string, $force_lowercase = true, $anal = false)
     {
