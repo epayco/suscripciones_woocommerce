@@ -488,7 +488,7 @@ add_action('woocommerce_init', function () {
         array(
             'id'          => 'epayco/billing_dni',
             'label'       => __('Número de documento', 'epayco-subscription'),
-            'placeholder' => __('Número de documento...', 'epayco-subscription'),
+            'placeholder' => __('Ingrese documento...', 'epayco-subscription'),
             'location'    => 'contact',
             'type'        => 'text',
             'required'    => true,

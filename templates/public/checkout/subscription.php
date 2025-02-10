@@ -181,8 +181,8 @@ if (!defined('ABSPATH')) {
                                             <div class="label-cvv-container RO">
                                                 <label for="expiry" id="label_expiry_es" style="display:table-cell">Vence</label>
                                             </div>
-                                            <div class="input-cvv-container ">
-                                                <input name="expiry" type="tel" placeholder="MM/YY" id="expiry-input" class="">
+                                            <div class="input-expiry-container">
+                                                <input name="expiry" type="tel" placeholder="MM/YYYY" id="expiry-input" class="">
                                             </div>
                                         </div>
                                         <!-- End Expiry Date -->
@@ -195,7 +195,7 @@ if (!defined('ABSPATH')) {
                                                 <label for="cvc">CVV</label>
                                             </div>
                                             <div class="input-cvv-container">
-                                                <input type="tel" placeholder="***" maxlength="4" name="cvc" id="cvc-input" class="">
+                                                <input type="password" placeholder="***" maxlength="4" name="cvc" id="cvc-input" class="">
                                             </div>
                                         </div>
                                     </div>
@@ -374,7 +374,7 @@ if (!defined('ABSPATH')) {
                                             <span class="icon-date_range color icon-select"><i class="far fa-calendar-alt"></i></span>
                                             <input class="binding-input inspectletIgnore" id="month-value" name="month" placeholder="MM" maxlength="2" autocomplete="off" data-epayco="card[exp_month]" required>
                                         </div>
-                                        <div class="" style="float:left; width:12%; margin:0; text-align:center; line-height: 40px; height: 38.5px; background-color: white; color:#574f4f;">/</div>
+                                        <div class="" style="float:left; width:12%; margin:0; text-align:center; line-height: 40px; height: 37px; background-color: white; color:#a3a3a3;">/</div>
                                         <div class="input-form full-width normalinput noborder yearcredit nomargin">
                                             <input name="year" id="year-value" placeholder="YYYY" maxlength="4" autocomplete="off" data-epayco="card[exp_year]" required>
                                         </div>

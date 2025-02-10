@@ -123,7 +123,7 @@ a:link {
 .icon-cancel {
   text-decoration: none !important;
   font-size: 30px !important;
-  position: static !important;
+  position: static !important; 
   margin-top: -70px !important;
   margin-left: 336px !important;
   float: right !important;
@@ -209,17 +209,17 @@ a:link {
 }
 
 .languaje {
-  display: block;
+ display: block;
 
-  height: 37px;
-  line-height: 35px;
-  text-decoration: none !important;
-  /* width: 8%; */
-  float: left;
-  text-align: center;
-  background: #e0e0e0;
-  color: #383d43;
-  width: 32px !important;
+ height: 37px;
+ line-height: 35px;
+ text-decoration: none !important;
+ /* width: 8%; */
+ float: left;
+ text-align: center;
+ background: #e0e0e0;
+ color: #383d43;
+ width: 32px !important;
 }
 
 .marginsrl {
@@ -228,13 +228,13 @@ a:link {
 }
 
 #web-checkout-content .caret-languaje {
-  margin-right: 10px;
+  margin-right: 10px; 
   /* line-height: 30px; */
   /* margin-top: -206px !important; */
   /* top: 18px !important; */
   position: absolute;
   display: flex;
-  margin-left: 77%;
+  margin-left: 77%; 
 
 }
 
@@ -556,47 +556,22 @@ img.home-icons {
   margin-top: 1em;
 }
 
-/* #web-checkout-content .flag {
+#web-checkout-content .flag {
   margin-left: 15px !important;
   margin-right: 10px !important; 
   height: 15px !important;
   float: left !important;
   font-size: 32px !important;
-  margin-left: 13px !important;
-  margin-top: 39.9px !important;
-  position: absolute !important;
+  margin-left: 17px !important;
+  margin-top: 10.9% !important;
 
-} */
-
-/* Estilos generales */
-#web-checkout-content .flag {
-  margin-left: 15px !important;
-  margin-right: 10px !important;
-  height: 15px !important;
-  float: left !important;
-  font-size: 34px !important;
-  margin-left: 13px !important;
-  /* position: absolute !important; */
-  margin-top: 35.9px !important;
 }
 
-/* Estilos específicos para Firefox */
-@-moz-document url-prefix() {
-  #web-checkout-content .flag {
-    margin-top: 6px !important;
-    line-height: 19px !important;
-  }
-}
-
-
-
-
-
-#web-checkout-content #icon-flecha {
+#web-checkout-content  #icon-flecha{
   margin-top: -20px !important;
-  /* font-family: "Open Sans", sans-serif !important; */
-  /* top: -50px !important; */
-  margin-right: 14px !important;
+    /* font-family: "Open Sans", sans-serif !important; */
+    /* top: -50px !important; */
+    margin-right: 14px !important;
 
 }
 
@@ -628,7 +603,7 @@ img.home-icons {
 
 .input-form input {
   width: 94%;
-  height: 38.5px;
+  height: 37px;
   background: #fcfcfc;
   border: 1px solid #e0e0e0;
   text-indent: 38px;
@@ -783,7 +758,7 @@ input[type="checkbox"]:checked+label:before {
   margin-left: 0% !important;
   margin-right: 3% !important;
   background-color: white !important;
-
+  
 
 }
 
@@ -810,10 +785,7 @@ input[type="checkbox"]:checked+label:before {
 }
 
 .onpage .cvv_style {
-
-  width: 48.5% !important;
-  margin-left: -4px;
-  margin-top: 1px;
+  width: 47.5% !important;
 }
 
 .onpage .cuotas {
@@ -867,7 +839,7 @@ input[type="checkbox"]:checked+label:before {
   text-align: left !important;
   font-size: 15px !important;
   margin-top: 12% !important;
-  margin-left: 55px !important;
+  margin-left: 50px !important;
   padding: unset !important;
 }
 
@@ -1161,7 +1133,7 @@ input[type="checkbox"]:checked+label:before {
 #web-checkout-content .dropdown dd ul li a {
 
   padding: 5px !important;
-  display: block !important;
+  display: block  !important;
 }
 
 #web-checkout-content .dropdown dd ul li a:hover {
@@ -1238,11 +1210,11 @@ input[type="checkbox"]:checked+label:before {
 }
 
 .btn-block {
-  display: block;
-  width: 100%;
-  color: #ffffff !important;
-  background-color: #4d90fe !important;
-  border: none !important;
+      display: block;
+   width: 100%;
+   color: #ffffff !important;
+   background-color: #4d90fe !important;
+   border: none !important;
 }
 
 .spinner {
@@ -1278,16 +1250,16 @@ input[type="checkbox"]:checked+label:before {
 
 .spinner,
 .spinner:after {
-  width: 84px;
-  height: 84px;
-  position: fixed;
-  top: 50.5%;
-  left: 50.5%;
-  margin-top: -35px;
-  margin-left: -42px;
-  border-radius: 50%;
-  z-index: 2;
-  margin-bottom: 2px;
+ width: 84px;
+ height: 84px;
+ position: fixed;
+ top: 50.5%;
+ left: 50.5%;
+ margin-top: -35px;
+ margin-left: -42px;
+ border-radius: 50%;
+ z-index: 2;
+ margin-bottom: 2px;
 }
 
 .spinner {
