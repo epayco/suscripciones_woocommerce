@@ -1,14 +1,9 @@
 {
-    "_readme": [
-        "This file locks the dependencies of your project to a known state",
-        "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
-        "This file is @generated automatically"
-    ],
-    "content-hash": "6a619bb8050e9b1638fdb42f5100d09a",
     "packages": [
         {
             "name": "epayco/epayco-php",
             "version": "dev-develop",
+            "version_normalized": "dev-develop",
             "source": {
                 "type": "git",
                 "url": "https://github.com/epayco/epayco-php.git",
@@ -27,7 +22,9 @@
             "require-dev": {
                 "phpunit/phpunit": "^4.8.9"
             },
+            "time": "2023-11-17T21:22:52+00:00",
             "type": "sdk",
+            "installation-source": "dist",
             "autoload": {
                 "psr-4": {
                     "Epayco\\": "src/"
@@ -53,11 +50,12 @@
                 "issues": "https://github.com/epayco/epayco-php/issues",
                 "source": "https://github.com/epayco/epayco-php/tree/develop"
             },
-            "time": "2023-11-17T21:22:52+00:00"
+            "install-path": "../epayco/epayco-php"
         },
         {
             "name": "rmccue/requests",
             "version": "v2.0.14",
+            "version_normalized": "2.0.14.0",
             "source": {
                 "type": "git",
                 "url": "https://github.com/WordPress/Requests.git",
@@ -90,7 +88,9 @@
                 "ext-openssl": "For secure transport support",
                 "ext-zlib": "For improved performance when decompressing encoded streams"
             },
+            "time": "2024-12-11T09:46:32+00:00",
             "type": "library",
+            "installation-source": "dist",
             "autoload": {
                 "files": [
                     "library/Deprecated.php"
@@ -140,18 +140,9 @@
                 "issues": "https://github.com/WordPress/Requests/issues",
                 "source": "https://github.com/WordPress/Requests"
             },
-            "time": "2024-12-11T09:46:32+00:00"
+            "install-path": "../rmccue/requests"
         }
     ],
-    "packages-dev": [],
-    "aliases": [],
-    "minimum-stability": "stable",
-    "stability-flags": {
-        "epayco/epayco-php": 20
-    },
-    "prefer-stable": false,
-    "prefer-lowest": false,
-    "platform": [],
-    "platform-dev": [],
-    "plugin-api-version": "2.1.0"
+    "dev": true,
+    "dev-package-names": []
 }

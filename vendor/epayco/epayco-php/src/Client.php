@@ -14,9 +14,9 @@ use WpOrg\Requests\Requests;
 class Client extends GraphqlClient
 {
 
-    const BASE_URL = "https://api.secure.payco.co";
-    const BASE_URL_SECURE = "https://secure.payco.co";
-    const BASE_URL_APIFY = "https://apify.epayco.co";
+    const BASE_URL = "https://api.secure.epayco.io";
+    const BASE_URL_SECURE = "https://secure2.epayco.io/restpagos";
+    const BASE_URL_APIFY = "https://apify.epayco.io";
     const IV = "0000000000000000";
     const LENGUAGE = "php";
 
@@ -50,11 +50,14 @@ class Client extends GraphqlClient
          * Resources ip, traslate keys
          */
         $util = new Util();
-
+        if(!is_null($data) && is_array($data) && !isset($data['extras_epayco'])){
+            $data['extras_epayco']= array();
+            $data['extras_epayco'] = ["extra5" => "P42"];
+        }
         /**
          * Switch traslate keys array petition in secure
          */
-        if($apify){
+        if($apify && is_array($data)){
             $data = $util->setKeys_apify($data);
         }else if ($switch && is_array($data)) {
             $data = $util->setKeys($data);
@@ -63,8 +66,9 @@ class Client extends GraphqlClient
             /**
              * Set heaToken bearer
              */
-         
-        if(!isset($_COOKIE[$api_key])) {
+            
+        $cookie_name = $api_key . ($apify ? "_apify" : "");
+        if(!isset($_COOKIE[$cookie_name])) {
             //  echo "Cookie named '" . $cookie_name . "' is not set!";
               $dataAuth =$this->authentication($api_key,$private_key, $apify);
               $json = json_decode($dataAuth);
@@ -84,21 +88,19 @@ class Client extends GraphqlClient
                   }
                   throw new ErrorException($msj, 422);
               }
-              $cookie_name = $api_key;
               $cookie_value = $bearer_token;
               setcookie($cookie_name, $cookie_value, time() + (60 * 14), "/"); 
             //  echo "token con login".$bearer_token;
               }else{
-                $bearer_token = $_COOKIE[$api_key];
-             //   echo "token sin login".$bearer_token;
-              } 
+                $bearer_token = $_COOKIE[$cookie_name];
+            }
 
         } catch (\Exception $e) {
-            $data = [
+            $data = array(
                 "status" => false,
                 "message" => $e->getMessage(),
-                "data" => []
-            ];
+                "data" => array()
+            );
             $objectReturnError = (object)$data;
             return $objectReturnError;
         }
@@ -116,54 +118,75 @@ class Client extends GraphqlClient
             );
 
             if ($method == "GET") {
-                if ($switch) {
-                    $_url = Client::BASE_URL_SECURE . $url;
+                if($apify){
+                    $_url = $this->getEpaycoBaseApify( Client::BASE_URL_APIFY) . $url;
+                }elseif ($switch) {
+                    $_url = $this->getEpaycoSecureBaseUrl(Client::BASE_URL_SECURE) . $url;
                 } else {
-                    $_url = Client::BASE_URL . $url;
+                    $_url = $this->getEpaycoBaseUrl(Client::BASE_URL) . $url;
                 }
 
                 $response = Requests::get($_url, $headers, $options);
             } elseif ($method == "POST") {
                 if($apify){
-                    $response = Requests::post(Client::BASE_URL_APIFY . $url, $headers, json_encode($data), $options);
+                    $response = Requests::post($this->getEpaycoBaseApify(Client::BASE_URL_APIFY) . $url, $headers, json_encode($data), $options);
                 }
                 elseif ($switch) {
                     $data = $util->mergeSet($data, $test, $lang, $private_key, $api_key, $cash);
 
-                    $response = Requests::post(Client::BASE_URL_SECURE . $url, $headers, json_encode($data), $options);
+                    $response = Requests::post($this->getEpaycoSecureBaseUrl(Client::BASE_URL_SECURE) . $url, $headers, json_encode($data), $options);
                 } else {
 
                     if (!$card) {
                         $data["ip"] = isset($data["ip"]) ? $data["ip"] : getHostByName(getHostName());
                         $data["test"] = $test;
                     }
-                    $response = Requests::post(Client::BASE_URL . $url, $headers, json_encode($data), $options);
+                    $response = Requests::post($this->getEpaycoBaseUrl(Client::BASE_URL) . $url, $headers, json_encode($data), $options);
 
                 }
             } elseif ($method == "DELETE") {
-                $response = Requests::delete(Client::BASE_URL . $url, $headers, $options);
+                $response = Requests::delete($this->getEpaycoBaseUrl(Client::BASE_URL) . $url, $headers, $options);
             }
         } catch (\Exception $e) {
             throw new ErrorException($e->getMessage(), $e->getCode());
         }
         try {
             if ($response->status_code >= 200 && $response->status_code <= 206) {
+             
                 if ($method == "DELETE") {
                     return $response->status_code == 204 || $response->status_code == 200;
                 }
                 return json_decode($response->body);
             }
             if ($response->status_code == 400) {
-                $code = 0;
-                $message = "Bad request";
                 try {
-                    $error = (array)json_decode($response->body)->errors[0];
-                    $code = key($error);
-                    $message = current($error);
+                    // Verificar si el cuerpo de la respuesta existe y es un JSON válido
+                    $decodedBody = json_decode($response->body, true);
+                    
+                    if (json_last_error() !== JSON_ERROR_NONE) {
+                        throw new ErrorException('El cuerpo de la respuesta no es un JSON válido', 103);
+                    }
+            
+                    // Manejar caso en que el campo "errors" exista
+                    if (isset($decodedBody['errors']) && is_array($decodedBody['errors'])) {
+                        $error = $decodedBody['errors'][0] ?? 'Error desconocido';
+                        $message = is_array($error) ? current($error) : $error;
+                    } 
+                    // Manejar caso en que el campo "message" exista
+                    elseif (isset($decodedBody['message'])) {
+                        $message = $decodedBody['message'];
+                    } 
+                    // Caso en que no hay información detallada del error
+                    else {
+                        $message = 'Bad Request sin detalles adicionales proporcionados.';
+                    }
+            
+                    throw new ErrorException($message, 103);
                 } catch (\Exception $e) {
+                    // Registrar el error y volver a lanzar la excepción para depuración
+                    error_log('Error al procesar el código 400: ' . $e->getMessage());
                     throw new ErrorException($e->getMessage(), $e->getCode());
                 }
-                throw new ErrorException($message , 103);
             }
             if ($response->status_code == 401) {
                 throw new ErrorException('Unauthorized', 104);
@@ -237,10 +260,31 @@ class Client extends GraphqlClient
             $headers["Authorization"] = "Basic ".$token;
             $data = [];
         }
-        $url = $apify ? Client::BASE_URL_APIFY. "/login" : Client::BASE_URL."/v1/auth/login";
+        $url = $apify ? $this->getEpaycoBaseApify(Client::BASE_URL_APIFY). "/login" : $this->getEpaycoBaseUrl(Client::BASE_URL)."/v1/auth/login";
         $response = Requests::post($url, $headers, json_encode($data), $options);
 
         return isset($response->body) ? $response->body : false;
     }
-}
 
+    protected function getEpaycoSecureBaseUrl($default)
+    {
+        $epaycoEnv = getenv('EPAYCO_PHP_SDK_ENV_REST');
+
+        if (false === $epaycoEnv || 'prod' === $epaycoEnv) {
+            return $default;
+        } else if ($epaycoEnv) {
+            return getenv('EPAYCO_PHP_SDK_ENV_REST');
+        }
+
+        return $default;
+    }
+
+    protected function getEpaycoBaseApify($default)
+    {
+        $epaycoEnv = getenv('BASE_URL_APIFY');
+        if($epaycoEnv){
+            return $epaycoEnv;
+        }
+        return $default;
+    }
+}

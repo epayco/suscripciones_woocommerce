@@ -31,8 +31,8 @@ function CardJs2(elem) {
         return methods[methodOrOptions]
             ? methods[methodOrOptions].apply(this, Array.prototype.slice.call(arguments, 1))
             : "object" != typeof methodOrOptions && methodOrOptions
-            ? void $.error("Method " + methodOrOptions + " does not exist on jQuery.CardJs")
-            : methods.init.apply(this, arguments);
+                ? void $.error("Method " + methodOrOptions + " does not exist on jQuery.CardJs")
+                : methods.init.apply(this, arguments);
     };
 })(jQuery),
     $(function () {
@@ -198,23 +198,23 @@ function CardJs2(elem) {
             isBackspace = CardJs2.keyIsBackspace(e);
         if (isNumber || isDelete || isBackspace) {
             e.preventDefault();
-            
+
             var rawText = $(element).val(),
                 numbersOnly = CardJs2.numbersOnlyString(rawText),
                 digit = CardJs2.digitFromKeyCode(keyCode),
                 rangeHighlighted = normalisedEndCaretPosition > normalisedStartCaretPosition;
-                
+
             rangeHighlighted && (numbersOnly = numbersOnly.slice(0, normalisedStartCaretPosition) + numbersOnly.slice(normalisedEndCaretPosition)),
                 caretStart != mask.length &&
-                    (isNumber &&
-                        rawText.length <= mask.length &&
-                        ((numbersOnly = numbersOnly.slice(0, normalisedStartCaretPosition) + digit + numbersOnly.slice(normalisedStartCaretPosition)),
+                (isNumber &&
+                    rawText.length <= mask.length &&
+                    ((numbersOnly = numbersOnly.slice(0, normalisedStartCaretPosition) + digit + numbersOnly.slice(normalisedStartCaretPosition)),
                         (newCaretPosition = Math.max(CardJs2.denormaliseCaretPosition(mask, normalisedStartCaretPosition + 1), CardJs2.denormaliseCaretPosition(mask, normalisedStartCaretPosition + 2) - 1))),
                     isDelete && (numbersOnly = numbersOnly.slice(0, normalisedStartCaretPosition) + numbersOnly.slice(normalisedStartCaretPosition + 1))),
                 0 != caretStart &&
-                    isBackspace &&
-                    !rangeHighlighted &&
-                    ((numbersOnly = numbersOnly.slice(0, normalisedStartCaretPosition - 1) + numbersOnly.slice(normalisedStartCaretPosition)), (newCaretPosition = CardJs2.denormaliseCaretPosition(mask, normalisedStartCaretPosition - 1))),
+                isBackspace &&
+                !rangeHighlighted &&
+                ((numbersOnly = numbersOnly.slice(0, normalisedStartCaretPosition - 1) + numbersOnly.slice(normalisedStartCaretPosition)), (newCaretPosition = CardJs2.denormaliseCaretPosition(mask, normalisedStartCaretPosition - 1))),
                 $(element).val(CardJs2.applyFormatMask(numbersOnly, mask)),
                 CardJs2.setCaretPosition(element, newCaretPosition);
         }
@@ -222,7 +222,7 @@ function CardJs2(elem) {
     (CardJs2.handleCreditCardNumberKey = function (e, cardMask) {
         CardJs2.handleMaskedNumberInputKey(e, cardMask);
     }),
-    (CardJs2.handleCreditCardNumberChange = function (e) {}),
+    (CardJs2.handleCreditCardNumberChange = function (e) { }),
     (CardJs2.prototype.getCardNumber = function () {
         return this.cardNumberInput.val();
     }),
@@ -277,14 +277,13 @@ function CardJs2(elem) {
     }),
     (CardJs2.prototype.clearCardTypeIcon = function () {
         CardJs2.logo_franchise.hidden = false;
-        
+
         let logo = document.getElementById('franchise_logo');
         let input = document.getElementById('the-card-number2-element');
-       if(input.value<1)
-       {
-        logo.className = 'card-type-icon';
-       }
-       
+        if (input.value < 1) {
+            logo.className = 'card-type-icon';
+        }
+
         this.elem.find(".card-number2-wrapper .card-type-icon").removeClass("show");
     }),
     (CardJs2.prototype.setCardTypeIconAsVisa = function () {
@@ -374,5 +373,4 @@ function CardJs2(elem) {
     (CardJs2.detachOrCreateElement = function (parentElement, selector, html) {
         var element = parentElement.find(selector);
         return element[0] ? element.detach() : (element = $(html)), element;
-    })
-  ;
+    });

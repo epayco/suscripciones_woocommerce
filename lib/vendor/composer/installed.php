@@ -1,0 +1,41 @@
+<?php return array(
+    'root' => array(
+        'pretty_version' => 'dev-master',
+        'version' => 'dev-master',
+        'type' => 'library',
+        'install_path' => __DIR__ . '/../../',
+        'aliases' => array(),
+        'reference' => 'f6c9ae9373afb3d6fd234dd07cf1a19ab537af15',
+        'name' => '__root__',
+        'dev' => true,
+    ),
+    'versions' => array(
+        '__root__' => array(
+            'pretty_version' => 'dev-master',
+            'version' => 'dev-master',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../../',
+            'aliases' => array(),
+            'reference' => 'f6c9ae9373afb3d6fd234dd07cf1a19ab537af15',
+            'dev_requirement' => false,
+        ),
+        'epayco/epayco-php' => array(
+            'pretty_version' => 'dev-develop',
+            'version' => 'dev-develop',
+            'type' => 'sdk',
+            'install_path' => __DIR__ . '/../epayco/epayco-php',
+            'aliases' => array(),
+            'reference' => '340e7d89f3e62d30584229c11472bf26133135f1',
+            'dev_requirement' => false,
+        ),
+        'rmccue/requests' => array(
+            'pretty_version' => 'v2.0.14',
+            'version' => '2.0.14.0',
+            'type' => 'library',
+            'install_path' => __DIR__ . '/../rmccue/requests',
+            'aliases' => array(),
+            'reference' => '9b228eef149e1752b037bf79cef4ca73a7b1fea1',
+            'dev_requirement' => false,
+        ),
+    ),
+);
