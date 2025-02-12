@@ -894,7 +894,7 @@ _:future,
   .binding-input[id="month-value"],
   .binding-input[id="year-value"]{
     width: 100%!important; 
-    height: 37px;
+    height: 38.5px;
   }
 
 
@@ -1595,4 +1595,3 @@ _:future,
     flex-direction: column;
     margin-top: 50%;
 }
-
