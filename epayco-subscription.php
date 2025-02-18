@@ -464,7 +464,7 @@ add_action('woocommerce_init', function () {
         array(
             'id'          => 'epayco/billing_type_document',
             'label'       => __('Tipo de documento', 'epayco-subscription'),
-            'placeholder' => 'Seleccionar',
+            'placeholder' => 'Seleccionar tipo de documento',
             'location'    => 'contact',
             'type'        => 'select',
             'required'    => true,
@@ -487,8 +487,7 @@ add_action('woocommerce_init', function () {
     woocommerce_register_additional_checkout_field(
         array(
             'id'          => 'epayco/billing_dni',
-            'label'       => __('Número de documento', 'epayco-subscription'),
-            'placeholder' => __('Ingrese documento...', 'epayco-subscription'),
+            'label'       => __('Ingrese el número de documento', 'epayco-subscription'),
             'location'    => 'contact',
             'type'        => 'text',
             'required'    => true,
