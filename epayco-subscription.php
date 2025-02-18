@@ -444,18 +444,7 @@ add_action('woocommerce_set_additional_field_value', function ($key, $value, $gr
     }
 }, 10, 4);
 
-// Mostrar campos adicionales en la página de administración de pedidos
-add_action('woocommerce_admin_order_data_after_billing_address', function ($order) {
-    $type_document = get_post_meta($order->get_id(), '_epayco_billing_type_document', true);
-    $dni = get_post_meta($order->get_id(), '_epayco_billing_dni', true);
 
-    if ($type_document) {
-        echo '<p><strong>' . __('Tipo de documento', 'epayco-subscription') . ':</strong> ' . esc_html($type_document) . '</p>';
-    }
-    if ($dni) {
-        echo '<p><strong>' . __('Número de documento', 'epayco-subscription') . ':</strong> ' . esc_html($dni) . '</p>';
-    }
-});
 
 //Campos adicionales en el checkout woocommerce blocks
 add_action('woocommerce_init', function () {
@@ -506,15 +495,3 @@ add_action('woocommerce_checkout_update_order_meta', function ($order_id) {
     }
 });
 
-// Mostrar campos adicionales en la página de administración de pedidos
-add_action('woocommerce_admin_order_data_after_billing_address', function ($order) {
-    $type_document = get_post_meta($order->get_id(), '_epayco_billing_type_document', true);
-    $dni = get_post_meta($order->get_id(), '_epayco_billing_dni', true);
-
-    if ($type_document) {
-        echo '<p><strong>' . __('Tipo de documento', 'epayco-subscription') . ':</strong> ' . esc_html($type_document) . '</p>';
-    }
-    if ($dni) {
-        echo '<p><strong>' . __('Número de documento', 'epayco-subscription') . ':</strong> ' . esc_html($dni) . '</p>';
-    }
-});
