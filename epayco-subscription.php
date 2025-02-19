@@ -1,4 +1,5 @@
 <?php
+
 /**
  * @since             1.0.0
  * @package           epayco-subscription
@@ -8,26 +9,35 @@
  * Description:       Plugin ePayco WooCommerce.
  * Version:           6.1.0
  * Author:            ePayco
+ * Text Domain: epayco-subscription
  * Author URI:
  * Licence
  * Domain Path:       /languages
+ *
+ * @package EpaycoSubscription
  */
 
-use Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry;
-use Automattic\WooCommerce\Utilities\FeaturesUtil;
-
-if (!defined('ABSPATH')) exit;
+if (!defined('ABSPATH')) {
+    exit;
+}
 
 if (!defined('EPAYCO_SUBSCRIPTION_SE_VERSION')) {
     define('EPAYCO_SUBSCRIPTION_SE_VERSION', '3.0.1');
 }
 
+defined('EPS_PLUGIN_FILE') || define('EPS_PLUGIN_FILE', __FILE__);
+//require_once dirname(__FILE__) . '/vendor/autoload.php';
+require_once dirname(__FILE__) . '/src/Startup.php';
 
-add_action('plugins_loaded', 'epayco_subscription_init', 0);
-add_action('plugins_loaded', 'register_epayco_suscription_order_status');
-add_filter('wc_order_statuses', 'add_epayco_suscription_to_order_statuses');
-add_action('admin_head', 'styling_admin_suscription_order_list');
-add_action('woocommerce_checkout_update_order_meta', 'some_custom_checkout_field_update_order_meta');
+if (!EpaycoSubscription\Woocommerce\Startup::available()) {
+    return false;
+}
+
+use Automattic\WooCommerce\Blocks\Payments\PaymentMethodRegistry;
+use Automattic\WooCommerce\Utilities\FeaturesUtil;
+use EpaycoSubscription\Woocommerce\WoocommerceEpaycoSubscription;
+
+require_once dirname(__FILE__) . '/vendor/autoload.php';
 
 add_action('before_woocommerce_init', function () {
     if (class_exists(FeaturesUtil::class)) {
@@ -38,6 +48,38 @@ add_action('before_woocommerce_init', function () {
         FeaturesUtil::declare_compatibility('cart_checkout_blocks', __FILE__);
     }
 });
+if (!class_exists('WoocommerceEpaycoSubscription')) {
+    $GLOBALS['epaycosuscription'] = new WoocommerceEpaycoSubscription();
+}
+
+
+register_activation_hook(__FILE__, 'eps_register_activate');
+register_deactivation_hook(__FILE__, 'eps_disable_plugin');
+add_filter('upgrader_post_install', function (bool $response, array $hookExtra): bool {
+    if (($hookExtra['plugin'] ?? '') !== plugin_basename(__FILE__)) {
+        return $response;
+    }
+    update_option('_eps_execute_after_update', 1);
+    return $response;
+}, 10, 2);
+
+function eps_register_activate()
+{
+    update_option('_eps_execute_activate', 1);
+}
+
+function eps_disable_plugin(): void
+{
+    //$GLOBALS['epaycosuscription']->disablePlugin();
+}
+
+//add_action('plugins_loaded', 'epayco_subscription_init', 0);
+//add_action('plugins_loaded', 'register_epayco_suscription_order_status');
+//add_filter('wc_order_statuses', 'add_epayco_suscription_to_order_statuses');
+//add_action('admin_head', 'styling_admin_suscription_order_list');
+//add_action('woocommerce_checkout_update_order_meta', 'some_custom_checkout_field_update_order_meta');
+
+
 
 function epayco_subscription_init()
 {
@@ -54,23 +96,24 @@ function epayco_subscription_init()
     }
 }
 
+
 /**
-     * Register woocommerce blocks support
-     *
-     * @return void
-     */
-    function registerBlocks(): void
-    {
-        if (class_exists('Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType')) {
-            require_once 'lib/blocks/epayco-block.php';
-            add_action(
-                'woocommerce_blocks_payment_method_type_registration',
-                function (PaymentMethodRegistry $payment_method_registry) {
-                    $payment_method_registry->register(new CustomBlock());
-                }
-            );
-        }
+ * Register woocommerce blocks support
+ *
+ * @return void
+ */
+function registerBlocks(): void
+{
+    if (class_exists('Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType')) {
+        require_once 'lib/blocks/epayco-block.php';
+        add_action(
+            'woocommerce_blocks_payment_method_type_registration',
+            function (PaymentMethodRegistry $payment_method_registry) {
+                $payment_method_registry->register(new CustomBlock());
+            }
+        );
     }
+}
 
 function register_epayco_suscription_order_status()
 {
@@ -279,7 +322,6 @@ function styling_admin_suscription_order_list()
         $order_status_completed = 'epayco_completed';
         $order_status_cancelled = 'epayco_cancelled';
         $order_status_completed_ = 'completed_test';
-
     } else {
         $order_status_failed = 'epayco-failed';
         $order_status_on_hold = 'epayco-on-hold';
@@ -289,46 +331,46 @@ function styling_admin_suscription_order_list()
         $order_status_cancelled = 'epayco-cancelled';
         $order_status_completed_ = 'completed';
     }
-    ?>
+?>
 
     <style>
-        .order-status.status-<?php echo sanitize_title( $order_status_failed); ?> {
+        .order-status.status-<?php echo sanitize_title($order_status_failed); ?> {
             background: #eba3a3;
             color: #761919;
         }
 
-        .order-status.status-<?php echo sanitize_title( $order_status_on_hold); ?> {
+        .order-status.status-<?php echo sanitize_title($order_status_on_hold); ?> {
             background: #f8dda7;
             color: #94660c;
         }
 
-        .order-status.status-<?php echo sanitize_title( $order_status_processing ); ?> {
+        .order-status.status-<?php echo sanitize_title($order_status_processing); ?> {
             background: #c8d7e1;
             color: #2e4453;
         }
 
-        .order-status.status-<?php echo sanitize_title( $order_status_processing_ ); ?> {
+        .order-status.status-<?php echo sanitize_title($order_status_processing_); ?> {
             background: #c8d7e1;
             color: #2e4453;
         }
 
-        .order-status.status-<?php echo sanitize_title( $order_status_completed ); ?> {
+        .order-status.status-<?php echo sanitize_title($order_status_completed); ?> {
             background: #d7f8a7;
             color: #0c942b;
         }
 
-        .order-status.status-<?php echo sanitize_title( $order_status_completed_ ); ?> {
+        .order-status.status-<?php echo sanitize_title($order_status_completed_); ?> {
             background: #d7f8a7;
             color: #0c942b;
         }
 
-        .order-status.status-<?php echo sanitize_title( $order_status_cancelled); ?> {
+        .order-status.status-<?php echo sanitize_title($order_status_cancelled); ?> {
             background: #eba3a3;
             color: #761919;
         }
     </style>
 
-    <?php
+<?php
 }
 
 function activate_subscription_epayco()
@@ -387,7 +429,69 @@ function some_custom_checkout_field_update_order_meta($order_id)
     if (!empty($_POST['recipient_phone_number'])) {
         update_post_meta($order_id, 'recipient phone number', sanitize_text_field($_POST['recipient_phone_number']));
     }
-
 }
 
 register_activation_hook(__FILE__, 'activate_subscription_epayco');
+
+
+// Guardar campos adicionales en la orden
+add_action('woocommerce_set_additional_field_value', function ($key, $value, $group, $wc_object) {
+    if ('epayco/billing_type_document' === $key) {
+        $wc_object->update_meta_data('_epayco_billing_type_document', $value, true);
+    }
+    if ('epayco/billing_dni' === $key) {
+        $wc_object->update_meta_data('_epayco_billing_dni', $value, true);
+    }
+}, 10, 4);
+
+
+
+//Campos adicionales en el checkout woocommerce blocks
+add_action('woocommerce_init', function () {
+    // Registrar campo "Tipo de documento"
+    woocommerce_register_additional_checkout_field(
+        array(
+            'id'          => 'epayco/billing_type_document',
+            'label'       => __('Tipo de documento', 'epayco-subscription'),
+            'placeholder' => 'Seleccionar tipo de documento',
+            'location'    => 'contact',
+            'type'        => 'select',
+            'required'    => true,
+            'class'       => ['custom-field-class'],
+            'default'     => 'CC',
+            'options'     => [
+                ['value' => 'CC', 'label' => __('Cédula de ciudadanía')],
+                ['value' => 'CE', 'label' => __('Cédula de extranjería')],
+                ['value' => 'PPN', 'label' => __('Pasaporte')],
+                ['value' => 'SSN', 'label' => __('Número de seguridad social')],
+                ['value' => 'LIC', 'label' => __('Licencia de conducción')],
+                ['value' => 'NIT', 'label' => __('(NIT) Número de identificación tributaria')],
+                ['value' => 'TI', 'label' => __('Tarjeta de identidad')],
+                ['value' => 'DNI', 'label' => __('Documento nacional de identificación')]
+            ]
+        )
+    );
+
+    // Registrar campo "Número de documento"
+    woocommerce_register_additional_checkout_field(
+        array(
+            'id'          => 'epayco/billing_dni',
+            'label'       => __('Ingrese el número de documento', 'epayco-subscription'),
+            'location'    => 'contact',
+            'type'        => 'text',
+            'required'    => true,
+            'class'       => ['custom-field-class']
+        )
+    );
+});
+
+// Guardar campos adicionales en la orden
+add_action('woocommerce_checkout_update_order_meta', function ($order_id) {
+    if (!empty($_POST['epayco_billing_type_document'])) {
+        update_post_meta($order_id, '_epayco_billing_type_document', sanitize_text_field($_POST['epayco_billing_type_document']));
+    }
+    if (!empty($_POST['epayco_billing_dni'])) {
+        update_post_meta($order_id, '_epayco_billing_dni', sanitize_text_field($_POST['epayco_billing_dni']));
+    }
+});
+
