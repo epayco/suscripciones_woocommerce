@@ -165,9 +165,9 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
     $logo_comercio = plugin_dir_url(__FILE__) . 'assets/images/comercio.png';
     $style = plugin_dir_url(__FILE__) . 'assets/css/style.css';
     $stylemin = plugin_dir_url(__FILE__) . 'assets/css/style.min.css';
-    $general = plugin_dir_url(__FILE__) . 'assets/css/general.css';
+    $general = plugin_dir_url(__FILE__) . 'assets/css/general.min.css';
     $card_style = plugin_dir_url(__FILE__) . 'assets/css/card-js.min.css';
-    $cardsjscss = trim(plugin_dir_url(__FILE__) . 'assets/css/cardsjs.css');
+    $cardsjscss = trim(plugin_dir_url(__FILE__) . 'assets/css/cardsjs.min.css');
     $card_unmin = plugin_dir_url(__FILE__) . 'assets/js/card-js-unmin.js';
     $indexjs = plugin_dir_url(__FILE__) . 'assets/js/index.js';
     $appjs = trim(plugin_dir_url(__FILE__) . 'assets/js/app.min.js');
@@ -225,13 +225,13 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
           <section class="modal-container">
             <style>
              .form-container .icon {
-               color: #ED9733 !important;
+               color:  #3582b7 !important;
              }
              .button-container .pay-type {
-               border: 1px solid #ED9733;
+               border: 1px solid  #3582b7;
              }
              .button-container .pay-type .icon {
-               color: #ED9733;
+               color:  #3582b7;
              }
              .cont-btn {
                padding: 8px;
@@ -249,11 +249,11 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
             </div>
           </div>
         <section class="modal" hidden id="movil_modal" style="padding-top: 0rem !important;">
-          <header class="animated fadeInDown" style="background-color: #ED9733 !important">
+          <header class="animated fadeInDown" style="background-color:  #3582b7 !important">
             <div class="title-container  ">
               <div class="logo-commerce">
                 <div class="logo-container" style="">
-                  <img width="90%" src="' . $logo_comercio . '">
+                    <img width="90%" src="<?php echo esc_html($logo_comercio); ?>">
                 </div>
               </div>
             <div class="col title">
@@ -369,7 +369,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
          <button class="action-oneclick cancel-oneclick" style="background-color: #D8D8D8">Cancelar</button>
          <button class="action-oneclick save-oneclik">Guardar</button>
        </div>
-       <button id="continue-tdc" class="continue-container text-center btnpay" style="background-color: #28303d;" type="submit">
+       <button id="continue-tdc" class="continue-container text-center btnpay" style="background-color: #3582b7;" type="submit">
         Pagar
          <svg class="svg-inline--fa fa-angle-right fa-w-8" aria-hidden="true" data-prefix="fas" data-icon="angle-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg=""><path fill="currentColor" d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path></svg><!-- <i class="fas fa-angle-right"></i> -->
        </button>
