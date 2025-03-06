@@ -101,11 +101,11 @@ class Epayco_Subscription_Config
     {
         $fields['billing']['billing_type_document'] = array(
             'label' => __('Tipo de documento', 'epayco-subscription'),
-            'placeholder' => _x('', 'placeholder', 'epayco-subscription'),
+            'placeholder' => '',
             'required' => true,
             'clear' => false,
             'type' => 'select',
-            'class'       => array( 'custom-field-class'),
+            'class' => array('custom-field-class'),
             'default' => 'CC',
             'options' => array(
                 'CC' => __('Cédula de ciudadanía'),
@@ -125,13 +125,13 @@ class Epayco_Subscription_Config
             'required' => true,
             'clear' => false,
             'type' => 'number',
-            'class'       => array( 'custom-field-class'),
+            'class'       => array('custom-field-class'),
         );
 
 
         $fields['shipping']['shipping_type_document'] = array(
             'label' => __('Tipo de documento', 'subscription-epayco'),
-            'placeholder' => _x('', 'placeholder', 'epayco-subscription'),
+            'placeholder' => '',
             'required' => true,
             'clear' => false,
             'type' => 'select',
@@ -155,7 +155,7 @@ class Epayco_Subscription_Config
             'required' => true,
             'clear' => false,
             'type' => 'number',
-            'class'       => array( 'custom-field-class'),
+            'class'       => array('custom-field-class'),
         );
 
         return $fields;
