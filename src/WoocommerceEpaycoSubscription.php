@@ -71,12 +71,12 @@ class WoocommerceEpaycoSubscription
     public function registerGateways(): void
     {
 
-       $gatewayClass = 'EpaycoSubscription\Woocommerce\Gateways\EpaycoSuscription';
+        $gatewayClass = 'EpaycoSubscription\Woocommerce\Gateways\EpaycoSuscription';
         /* add_filter('woocommerce_payment_gateways', function ($methods) use ($gatewayClass) {
             $methods[] = $gatewayClass;
             return $methods;
         });*/
-        if (class_exists('WC_Subscriptions')){
+        if (class_exists('WC_Subscriptions')) {
             $this->hooks->gateway->registerGateway($gatewayClass);
         }
     }
@@ -139,7 +139,7 @@ class WoocommerceEpaycoSubscription
     {
         $this->define('EPS_VERSION', self::PLUGIN_VERSION);
         $this->define('EPS_PLATFORM_NAME', self::PLATFORM_NAME);
-        $this->define('EPS_PLUGIN_URL',sprintf('%s%s', plugin_dir_url(__FILE__), '../assets/json/'));
+        $this->define('EPS_PLUGIN_URL', sprintf('%s%s', plugin_dir_url(__FILE__), '../assets/json/'));
     }
 
     /**
@@ -233,34 +233,34 @@ class WoocommerceEpaycoSubscription
      * @return void
      */
     public function adminNoticeMissWoocoommerceSubscription(): void
-{
-    $url_docs = 'https://github.com/wp-premium/woocommerce-subscriptions';
-
-   
-    $subs = sprintf(
-         /* translators: %1$s es la URL de la documentación, %2$s es el texto del enlace */
-        __('Subscription ePayco: Woocommerce subscriptions must be installed and active, <a target="_blank" href="%1$s">%2$s</a>', 'text-domain'),
-        esc_url($url_docs),
-        __('Check documentation for help', 'text-domain')
-    );
-
-    add_action(
-        'admin_notices',
-        function() use ($subs) {
-            $this->subscription_epayco_se_notices($subs);
-        }
-    );
-}
-
-
-
-    public function subscription_epayco_se_notices( $notice ): void
     {
-        ?>
+        $url_docs = 'https://github.com/wp-premium/woocommerce-subscriptions';
+
+
+        $subs = sprintf(
+            /* translators: %1$s es la URL de la documentación, %2$s es el texto del enlace */
+            __('Subscription ePayco: Woocommerce subscriptions must be installed and active, <a target="_blank" href="%1$s">%2$s</a>', 'text-domain'),
+            esc_url($url_docs),
+            __('Check documentation for help', 'text-domain')
+        );
+
+        add_action(
+            'admin_notices',
+            function () use ($subs) {
+                $this->subscription_epayco_se_notices($subs);
+            }
+        );
+    }
+
+
+
+    public function subscription_epayco_se_notices($notice): void
+    {
+?>
         <div class="error notice">
             <p><?php echo $notice; ?></p>
         </div>
-        <?php
+<?php
     }
 
     /**
@@ -294,10 +294,10 @@ class WoocommerceEpaycoSubscription
                     'activate_woocommerce' => __('Activate WooCommerce', 'epayco-subscription'),
                     'install_woocommerce'  => __('Install WooCommerce', 'epayco-subscription'),
                     'see_woocommerce'      => __('See WooCommerce', 'epayco-subscription'),
-                    'miss_woocommerce'     => sprintf(
-                        __('Epayco module needs an active version of %s in order to work!', 'epayco-subscription'),
-                        '<a target="_blank" href="https://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a>'
-                    ),
+                    /* translators: Mensaje de error cuando WooCommerce no está activo */
+                    'miss_woocommerce' => __('Epayco module needs an active version of WooCommerce in order to work!', 'epayco-subscription') .
+                        ' <a target="_blank" href="https://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a>',
+
                 ];
 
                 $activateLink = wp_nonce_url(
