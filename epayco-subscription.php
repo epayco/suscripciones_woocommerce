@@ -123,7 +123,10 @@ function register_epayco_suscription_order_status()
         'show_in_admin_status_list' => true,
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
-        'label_count' => _n_noop('ePayco Pago Fallido <span class="count">(%s)</span>', 'ePayco Pago Fallido <span class="count">(%s)</span>')
+        /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Fallido" */
+        'label_count' => _n_noop(
+            'ePayco Pago Fallido <span class="count">(%s)</span>', 'ePayco Pago Fallido <span class="count">(%s)</span>', 'text-domain'
+        )
     ));
 
     register_post_status('wc-epayco_failed', array(
@@ -132,7 +135,9 @@ function register_epayco_suscription_order_status()
         'show_in_admin_status_list' => true,
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
-        'label_count' => _n_noop('ePayco Pago Fallido Prueba <span class="count">(%s)</span>', 'ePayco Pago Fallido Prueba <span class="count">(%s)</span>')
+        /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Fallido Prueba" */
+        'label_count' => _n_noop(
+            'ePayco Pago Fallido Prueba <span class="count">(%s)</span>', 'ePayco Pago Fallido Prueba <span class="count">(%s)</span>')
     ));
 
     register_post_status('wc-epayco-cancelled', array(
@@ -141,7 +146,9 @@ function register_epayco_suscription_order_status()
         'show_in_admin_status_list' => true,
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
-        'label_count' => _n_noop('ePayco Pago Cancelado <span class="count">(%s)</span>', 'ePayco Pago Cancelado <span class="count">(%s)</span>')
+        /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Cancelado" */
+        'label_count' => _n_noop(
+            'ePayco Pago Cancelado <span class="count">(%s)</span>', 'ePayco Pago Cancelado <span class="count">(%s)</span>')
     ));
 
     register_post_status('wc-epayco_cancelled', array(
@@ -150,7 +157,9 @@ function register_epayco_suscription_order_status()
         'show_in_admin_status_list' => true,
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
-        'label_count' => _n_noop('ePayco Pago Cancelado Prueba <span class="count">(%s)</span>', 'ePayco Pago Cancelado Prueba <span class="count">(%s)</span>')
+        /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Cancelado Prueba" */
+        'label_count' => _n_noop(
+            'ePayco Pago Cancelado Prueba <span class="count">(%s)</span>', 'ePayco Pago Cancelado Prueba <span class="count">(%s)</span>')
     ));
 
     register_post_status('wc-epayco-on-hold', array(
@@ -159,7 +168,9 @@ function register_epayco_suscription_order_status()
         'show_in_admin_status_list' => true,
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
-        'label_count' => _n_noop('ePayco Pago Pendiente <span class="count">(%s)</span>', 'ePayco Pago Pendiente <span class="count">(%s)</span>')
+        /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Pendiente" */
+        'label_count' => _n_noop(
+            'ePayco Pago Pendiente <span class="count">(%s)</span>', 'ePayco Pago Pendiente <span class="count">(%s)</span>')
     ));
 
     register_post_status('wc-epayco_on_hold', array(
@@ -168,7 +179,9 @@ function register_epayco_suscription_order_status()
         'show_in_admin_status_list' => true,
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
-        'label_count' => _n_noop('ePayco Pago Pendiente Prueba <span class="count">(%s)</span>', 'ePayco Pago Pendiente Prueba <span class="count">(%s)</span>')
+        /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Pendiente Prueba" */
+        'label_count' => _n_noop(
+            'ePayco Pago Pendiente Prueba <span class="count">(%s)</span>', 'ePayco Pago Pendiente Prueba <span class="count">(%s)</span>')
     ));
 
     register_post_status('wc-epayco-processing', array(
@@ -177,7 +190,9 @@ function register_epayco_suscription_order_status()
         'show_in_admin_status_list' => true,
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
-        'label_count' => _n_noop('ePayco Procesando Pago <span class="count">(%s)</span>', 'ePayco Procesando Pago <span class="count">(%s)</span>')
+        /* translators: %s representa la cantidad de pedidos con estado "ePayco Procesando Pago" */
+        'label_count' => _n_noop(
+            'ePayco Procesando Pago <span class="count">(%s)</span>', 'ePayco Procesando Pago <span class="count">(%s)</span>')
     ));
 
     register_post_status('wc-epayco_processing', array(
@@ -186,7 +201,9 @@ function register_epayco_suscription_order_status()
         'show_in_admin_status_list' => true,
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
-        'label_count' => _n_noop('ePayco Procesando Pago Prueba<span class="count">(%s)</span>', 'ePayco Procesando Pago Prueba<span class="count">(%s)</span>')
+        /* translators: %s representa la cantidad de pedidos con estado "ePayco Procesando Pago Prueba" */
+        'label_count' => _n_noop(
+            'ePayco Procesando Pago Prueba<span class="count">(%s)</span>', 'ePayco Procesando Pago Prueba<span class="count">(%s)</span>')
     ));
 
     register_post_status('wc-processing', array(
@@ -195,6 +212,7 @@ function register_epayco_suscription_order_status()
         'show_in_admin_status_list' => true,
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
+        /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Cancelado Prueba" */
         'label_count' => _n_noop('Procesando<span class="count">(%s)</span>', 'Procesando<span class="count">(%s)</span>')
     ));
 
@@ -204,6 +222,7 @@ function register_epayco_suscription_order_status()
         'show_in_admin_status_list' => true,
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
+        /* translators: %s representa la cantidad de pedidos con estado "Procesando Prueba" */
         'label_count' => _n_noop('Procesando Prueba<span class="count">(%s)</span>', 'Procesando Prueba<span class="count">(%s)</span>')
     ));
 
@@ -213,6 +232,7 @@ function register_epayco_suscription_order_status()
         'show_in_admin_status_list' => true,
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
+        /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Completado" */
         'label_count' => _n_noop('ePayco Pago Completado <span class="count">(%s)</span>', 'ePayco Pago Completado <span class="count">(%s)</span>')
     ));
 
@@ -222,6 +242,7 @@ function register_epayco_suscription_order_status()
         'show_in_admin_status_list' => true,
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
+        /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Completado Prueba" */
         'label_count' => _n_noop('ePayco Pago Completado Prueba <span class="count">(%s)</span>', 'ePayco Pago Completado Prueba <span class="count">(%s)</span>')
     ));
 
@@ -231,6 +252,7 @@ function register_epayco_suscription_order_status()
         'show_in_admin_status_list' => true,
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
+        /* translators: %s representa la cantidad de pedidos con estado "Completado" */
         'label_count' => _n_noop('Completado<span class="count">(%s)</span>', 'Completado<span class="count">(%s)</span>')
     ));
 
@@ -240,6 +262,7 @@ function register_epayco_suscription_order_status()
         'show_in_admin_status_list' => true,
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
+        /* translators: %s representa la cantidad de pedidos con estado "Completado Prueba" */
         'label_count' => _n_noop('Completado Prueba<span class="count">(%s)</span>', 'Completado Prueba<span class="count">(%s)</span>')
     ));
 }
@@ -494,4 +517,3 @@ add_action('woocommerce_checkout_update_order_meta', function ($order_id) {
         update_post_meta($order_id, '_epayco_billing_dni', sanitize_text_field($_POST['epayco_billing_dni']));
     }
 });
-
