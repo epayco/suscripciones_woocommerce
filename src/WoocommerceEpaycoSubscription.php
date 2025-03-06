@@ -294,9 +294,12 @@ class WoocommerceEpaycoSubscription
                     'activate_woocommerce' => __('Activate WooCommerce', 'epayco-subscription'),
                     'install_woocommerce'  => __('Install WooCommerce', 'epayco-subscription'),
                     'see_woocommerce'      => __('See WooCommerce', 'epayco-subscription'),
-                    /* translators: Mensaje de error cuando WooCommerce no está activo */
-                    'miss_woocommerce' => __('Epayco module needs an active version of WooCommerce in order to work!', 'epayco-subscription') .
-                        ' <a target="_blank" href="https://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a>',
+                    'miss_woocommerce' => sprintf(
+                        //error 13
+                        /* translators: %s será reemplazado con el enlace a la página de WooCommerce */
+                        esc_html__('Epayco module needs an active version of %s in order to work!', 'epayco-subscription'),
+                        '<a target="_blank" href="https://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a>'
+                    ),
 
                 ];
 
