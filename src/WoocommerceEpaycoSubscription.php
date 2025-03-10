@@ -239,9 +239,9 @@ class WoocommerceEpaycoSubscription
 
         $subs = sprintf(
             /* translators: %1$s es la URL de la documentación, %2$s es el texto del enlace */
-            __('Subscription ePayco: Woocommerce subscriptions must be installed and active, <a target="_blank" href="%1$s">%2$s</a>', 'text-domain'),
+            __('Subscription ePayco: Woocommerce subscriptions must be installed and active, <a target="_blank" href="%1$s">%2$s</a>', 'suscripciones_woocommerce'),
             esc_url($url_docs),
-            __('Check documentation for help', 'text-domain')
+            __('Check documentation for help', 'suscripciones_woocommerce')
         );
 
         add_action(
@@ -291,13 +291,13 @@ class WoocommerceEpaycoSubscription
 
                 $minilogo     = sprintf('%s%s', plugin_dir_url(__FILE__), '../assets/images/comercio.png');
                 $translations = [
-                    'activate_woocommerce' => __('Activate WooCommerce', 'epayco-subscription'),
-                    'install_woocommerce'  => __('Install WooCommerce', 'epayco-subscription'),
-                    'see_woocommerce'      => __('See WooCommerce', 'epayco-subscription'),
+                    'activate_woocommerce' => __('Activate WooCommerce', 'suscripciones_woocommerce'),
+                    'install_woocommerce'  => __('Install WooCommerce', 'suscripciones_woocommerce'),
+                    'see_woocommerce'      => __('See WooCommerce', 'suscripciones_woocommerce'),
                     'miss_woocommerce' => sprintf(
                         //error 13
                         /* translators: %s será reemplazado con el enlace a la página de WooCommerce */
-                        esc_html__('Epayco module needs an active version of %s in order to work!', 'epayco-subscription'),
+                        esc_html__('Epayco module needs an active version of %s in order to work!', 'suscripciones_woocommerce'),
                         '<a target="_blank" href="https://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a>'
                     ),
 

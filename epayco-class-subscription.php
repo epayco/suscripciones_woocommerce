@@ -47,7 +47,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     'status' => false,
                     //error 1
                     /* translators: %s será reemplazado con el mensaje de error del cliente */
-                    'message' => sprintf(esc_html__('Error: %s', 'epayco-subscription'), esc_html($customer->message))
+                    'message' => sprintf(esc_html__('Error: %s', 'suscripciones_woocommerce'), esc_html($customer->message))
 
 
 
@@ -67,7 +67,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             if (!$inserCustomer) {
                 $response_status = [
                     'status' => false,
-                    'message' => __('internar error, tray again', 'epayco-subscription')
+                    'message' => __('internar error, tray again', 'suscripciones_woocommerce')
                 ];
                 return $response_status;
             }
@@ -86,7 +86,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                         'status' => false,
                         //error 2
                         /* translators: %s será reemplazado con el mensaje de error del cliente */
-                        'message' => sprintf(esc_html__('Error: %s', 'epayco-subscription'), esc_html($customer->message))
+                        'message' => sprintf(esc_html__('Error: %s', 'suscripciones_woocommerce'), esc_html($customer->message))
 
                     ];
                     return $response_status;
@@ -103,7 +103,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 if (!$inserCustomer) {
                     $response_status = [
                         'status' => false,
-                        'message' => __('internar error, tray again', 'epayco-subscription')
+                        'message' => __('internar error, tray again', 'suscripciones_woocommerce')
                     ];
                     return $response_status;
                 }
@@ -251,7 +251,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     'status' => false,
                     //error 3
                     /* translators: %s será reemplazado con el mensaje de error del nuevo plan */
-                    'message' => sprintf(esc_html__('Error: %s', 'epayco-subscription'), esc_html($newPLan->message))
+                    'message' => sprintf(esc_html__('Error: %s', 'suscripciones_woocommerce'), esc_html($newPLan->message))
 
                 ];
                 return $response_status;
@@ -760,7 +760,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
                     $note = sprintf(
                         /* translators: %1$s es el ID de la suscripción, %2$s es la referencia de pago */
-                        __('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'epayco-subscription'),
+                        __('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'suscripciones_woocommerce'),
                         $sub->subscription->_id,
                         $sub->data->ref_payco
                     );
@@ -1103,7 +1103,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     $note = sprintf(
                         //error 6
                         /* translators: %1$s es el ID de la suscripción, %2$s es la referencia de pago */
-                        __('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'epayco-subscription'),
+                        __('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'suscripciones_woocommerce'),
                         $subscription->get_data()['id'],
                         $x_ref_payco
                     );

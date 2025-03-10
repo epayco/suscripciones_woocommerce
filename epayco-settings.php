@@ -58,7 +58,7 @@ class Epayco_Subscription_Config
     {
         try {
             if ($this->_bootstrapped) {
-                throw new Exception(__('Subscription ePayco  can only be called once'));
+                throw new Exception(__('Subscription ePayco can only be called once', 'suscripciones_woocommerce'));
             }
             $this->_run();
             $this->_bootstrapped = true;
@@ -84,8 +84,10 @@ class Epayco_Subscription_Config
     public function plugin_action_links($links)
     {
         $plugin_links = array();
-        $plugin_links[] = '<a href="admin.php?page=wc-settings&tab=checkout&section=epayco-subscription">' . esc_html__('Configuraciones') . '</a>';
-        $plugin_links[] = '<a href="https://docs.epayco.co/integrations/plugins/" target="_blank">' . esc_html__('Documentación') . '</a>';
+        $plugin_links[] = '<a href="admin.php?page=wc-settings&tab=checkout&section=epayco-subscription">' . esc_html__('Configuraciones', 'suscripciones_woocommerce') . '</a>';
+
+        $plugin_links[] = '<a href="https://docs.epayco.co/integrations/plugins/" target="_blank">' . esc_html__('Documentación', 'suscripciones_woocommerce') . '</a>';
+
         return array_merge($plugin_links, $links);
     }
 
@@ -100,7 +102,7 @@ class Epayco_Subscription_Config
     public function custom_woocommerce_billing_fields($fields)
     {
         $fields['billing']['billing_type_document'] = array(
-            'label' => __('Tipo de documento', 'epayco-subscription'),
+            'label' => __('Tipo de documento', 'suscripciones_woocommerce'),
             'placeholder' => '',
             'required' => true,
             'clear' => false,
@@ -108,20 +110,20 @@ class Epayco_Subscription_Config
             'class' => array('custom-field-class'),
             'default' => 'CC',
             'options' => array(
-                'CC' => __('Cédula de ciudadanía'),
-                'CE' => __('Cédula de extranjería'),
-                'PPN' => __('Pasaporte'),
-                'SSN' => __('Número de seguridad social'),
-                'LIC' => __('Licencia de conducción'),
-                'NIT' => __('(NIT) Número de indentificación tributaria'),
-                'TI' => __('Tarjeta de identidad'),
-                'DNI' => __('Documento nacional de identificación')
+                'CC'  => __('Cédula de ciudadanía', 'suscripciones_woocommerce'), // Línea 113  
+                'CE'  => __('Cédula de extranjería', 'suscripciones_woocommerce'),
+                'PPN' => __('Pasaporte', 'suscripciones_woocommerce'),
+                'SSN' => __('Número de seguridad social', 'suscripciones_woocommerce'),
+                'LIC' => __('Licencia de conducción', 'suscripciones_woocommerce'),
+                'NIT' => __('(NIT) Número de identificación tributaria', 'suscripciones_woocommerce'),
+                'TI'  => __('Tarjeta de identidad', 'suscripciones_woocommerce'),
+                'DNI' => __('Documento nacional de identificación', 'suscripciones_woocommerce') // Línea 120  
             )
         );
 
         $fields['billing']['billing_dni'] = array(
-            'label' => __('Número de documento', 'epayco-subscription'),
-            'placeholder' => _x('Número de documento...', 'placeholder', 'subscription-epayco'),
+            'label' => __('Número de documento', 'suscripciones_woocommerce'),
+            'placeholder' => _x('Número de documento...', 'placeholder', 'suscripciones_woocommerce'),
             'required' => true,
             'clear' => false,
             'type' => 'number',
@@ -130,7 +132,7 @@ class Epayco_Subscription_Config
 
 
         $fields['shipping']['shipping_type_document'] = array(
-            'label' => __('Tipo de documento', 'subscription-epayco'),
+            'label' => __('Tipo de documento', 'suscripciones_woocommerce'),
             'placeholder' => '',
             'required' => true,
             'clear' => false,
@@ -138,20 +140,20 @@ class Epayco_Subscription_Config
             'class'       => array('custom-field-class'),
             'default' => 'CC',
             'options' => array(
-                'CC' => __('Cédula de ciudadanía'),
-                'CE' => __('Cédula de extranjería'),
-                'PPN' => __('Pasaporte'),
-                'SSN' => __('Número de seguridad social'),
-                'LIC' => __('Licencia de conducción'),
-                'NIT' => __('(NIT) Número de indentificación tributaria'),
-                'TI' => __('Tarjeta de identidad'),
-                'DNI' => __('Documento nacional de identificación')
+                'CC'  => __('Cédula de ciudadanía', 'suscripciones_woocommerce'), // Línea 113  
+                'CE'  => __('Cédula de extranjería', 'suscripciones_woocommerce'),
+                'PPN' => __('Pasaporte', 'suscripciones_woocommerce'),
+                'SSN' => __('Número de seguridad social', 'suscripciones_woocommerce'),
+                'LIC' => __('Licencia de conducción', 'suscripciones_woocommerce'),
+                'NIT' => __('(NIT) Número de identificación tributaria', 'suscripciones_woocommerce'),
+                'TI'  => __('Tarjeta de identidad', 'suscripciones_woocommerce'),
+                'DNI' => __('Documento nacional de identificación', 'suscripciones_woocommerce') // Línea 120  
             )
         );
 
         $fields['shipping']['shipping_dni'] = array(
-            'label' => __('Número de documento', 'subscription-epayco'),
-            'placeholder' => _x('Número de documento...', 'placeholder', 'epayco-subscription'),
+            'label' => __('Número de documento', 'suscripciones_woocommerce'),
+            'placeholder' => _x('Número de documento...', 'placeholder', 'suscripciones_woocommerce'),
             'required' => true,
             'clear' => false,
             'type' => 'number',
