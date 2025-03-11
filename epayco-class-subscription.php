@@ -45,7 +45,13 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             if ($customer->data->status == 'error' || !$customer->status) {
                 $response_status = [
                     'status' => false,
-                    'message' => __($customer->message, 'epayco-subscription')
+                    //error 1
+                    /* translators: %s será reemplazado con el mensaje de error del cliente */
+                    'message' => sprintf(esc_html__('Error: %s', 'suscripciones_woocommerce'), esc_html($customer->message))
+
+
+
+
                 ];
                 return $response_status;
             }
@@ -61,7 +67,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             if (!$inserCustomer) {
                 $response_status = [
                     'status' => false,
-                    'message' => __('internar error, tray again', 'epayco-subscription')
+                    'message' => __('internar error, tray again', 'suscripciones_woocommerce')
                 ];
                 return $response_status;
             }
@@ -78,7 +84,10 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 if ($customer->data->status == 'error') {
                     $response_status = [
                         'status' => false,
-                        'message' => __($customer->message, 'epayco-subscription')
+                        //error 2
+                        /* translators: %s será reemplazado con el mensaje de error del cliente */
+                        'message' => sprintf(esc_html__('Error: %s', 'suscripciones_woocommerce'), esc_html($customer->message))
+
                     ];
                     return $response_status;
                 }
@@ -94,7 +103,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 if (!$inserCustomer) {
                     $response_status = [
                         'status' => false,
-                        'message' => __('internar error, tray again', 'epayco-subscription')
+                        'message' => __('internar error, tray again', 'suscripciones_woocommerce')
                     ];
                     return $response_status;
                 }
@@ -128,7 +137,6 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 subscription_epayco_se()->log('getPlans: ' . $exception->getMessage());
             }
         }
-
     }
 
     public function customerCreate(array $data)
@@ -185,7 +193,6 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 } else {
                     return false;
                 }
-
             } catch (Exception $exception) {
                 var_dump($exception->getMessage());
                 die();
@@ -203,13 +210,11 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             } else {
                 return false;
             }
-
         } catch (Exception $exception) {
             var_dump($exception->getMessage());
             die();
             subscription_epayco_se()->log('getPlansList: ' . $exception->getMessage());
         }
-
     }
 
     public function getPlanById($plan_id)
@@ -221,10 +226,9 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             } else {
                 return false;
             }
-
         } catch (Exception $exception) {
             var_dump($exception->getMessage());
-                die();
+            die();
             subscription_epayco_se()->log('getPlans ' . $exception->getMessage());
         }
     }
@@ -245,7 +249,10 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             } else {
                 $response_status = [
                     'status' => false,
-                    'message' => __($newPLan->message, 'epayco-subscription')
+                    //error 3
+                    /* translators: %s será reemplazado con el mensaje de error del nuevo plan */
+                    'message' => sprintf(esc_html__('Error: %s', 'suscripciones_woocommerce'), esc_html($newPLan->message))
+
                 ];
                 return $response_status;
             }
@@ -277,7 +284,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 if (intval($plan_amount_cart) == $plan_amount_epayco) {
                     return $this->process_payment_epayco($plans, $customer, $confirm_url, $subscriptions, $order);
                 } else {
-                    return $this->validateNewPlanData($subscriptions, $order_id, true, false,$plans,$customer, $confirm_url, $order);
+                    return $this->validateNewPlanData($subscriptions, $order_id, true, false, $plans, $customer, $confirm_url, $order);
                 }
             } catch (Exception $exception) {
                 echo $exception->getMessage();
@@ -346,11 +353,9 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                             }
                         }
                     }
-
                 } else {
                     return false;
                 }
-
             }
         } else {
 
@@ -419,7 +424,6 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 );
 
                 return $suscriptioncreted;
-
             } catch (Exception $exception) {
                 var_dump($exception->getMessage());
                 die();
@@ -446,7 +450,6 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                         "method_confirmation" => "POST"
                     ]
                 );
-
             } catch (Exception $exception) {
                 var_dump($exception->getMessage());
                 die();
@@ -463,7 +466,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             $this->epayco->subscriptions->cancel($subscription_id);
         } catch (Exception $exception) {
             var_dump($exception->getMessage());
-                die();
+            die();
             subscription_epayco_se()->log('cancelSubscription: ' . $exception->getMessage());
         }
     }
@@ -481,8 +484,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         $data = [];
         $subscription = end($subscriptions);
         if ($subscription) {
-            $doc_number = get_post_meta($subscription->get_id(), '_billing_dni', true) != null?get_post_meta($subscription->get_id(), '_billing_dni', true):$order->get_meta('_billing_dni');
-            $type_document = get_post_meta($subscription->get_id(), '_billing_type_document', true)!=null?get_post_meta($subscription->get_id(), '_billing_type_document', true):$order->get_meta('_billing_type_document');
+            $doc_number = get_post_meta($subscription->get_id(), '_billing_dni', true) != null ? get_post_meta($subscription->get_id(), '_billing_dni', true) : $order->get_meta('_billing_dni');
+            $type_document = get_post_meta($subscription->get_id(), '_billing_type_document', true) != null ? get_post_meta($subscription->get_id(), '_billing_type_document', true) : $order->get_meta('_billing_type_document');
             $data['name'] = $customer_name;
             $data['email'] = $subscription->get_billing_email();
             $data['phone'] = $subscription->get_billing_phone();
@@ -502,7 +505,6 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             wp_redirect($redirect["redirect"]);
             die();
         }
-
     }
 
     public function getPlansBySubscription(array $subscriptions)
@@ -657,15 +659,19 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 if ($isTestMode == "true") {
                     $message = 'Pago pendiente de aprobación Prueba';
                     $orderStatus = "epayco_on_hold";
-                    if ($current_state != "epayco_on_hold" ||
-                        $current_state == "pending") {
+                    if (
+                        $current_state != "epayco_on_hold" ||
+                        $current_state == "pending"
+                    ) {
                         $this->restore_order_stock($order->id, '+');
                     }
                 } else {
                     $message = 'Pago pendiente de aprobación';
                     $orderStatus = "epayco-on-hold";
-                    if ($current_state != "epayco-on-hold" ||
-                        $current_state == "pending") {
+                    if (
+                        $current_state != "epayco-on-hold" ||
+                        $current_state == "pending"
+                    ) {
                         $this->restore_order_stock($order->id, '+');
                     }
                 }
@@ -681,7 +687,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     $messageStatus['message'] = array_merge($messageStatus['message'], ["estado: {$sub->data->respuesta}"]);
                     if ($isTestMode == "true") {
                         $message = 'Pago rechazado Prueba: ' . $sub->data->ref_payco;
-                        if ($current_state == "epayco_failed" ||
+                        if (
+                            $current_state == "epayco_failed" ||
                             $current_state == "epayco_cancelled" ||
                             $current_state == "failed" ||
                             $current_state == "epayco_processing" ||
@@ -698,9 +705,9 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                             $order->add_order_note($message);
                             $subscription->update_status('cancelled');
                         }
-
                     } else {
-                        if ($current_state == "epayco-failed" ||
+                        if (
+                            $current_state == "epayco-failed" ||
                             $current_state == "epayco-cancelled" ||
                             $current_state == "failed" ||
                             $current_state == "epayco-processing" ||
@@ -725,23 +732,19 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     if ($isTestMode == "true") {
                         $message = 'Pago exitoso Prueba';
                         switch ($this->epayco_endorder_state) {
-                            case 'epayco-processing':
-                                {
+                            case 'epayco-processing': {
                                     $orderStatus = 'epayco_processing';
                                 }
                                 break;
-                            case 'epayco-completed':
-                                {
+                            case 'epayco-completed': {
                                     $orderStatus = 'epayco_completed';
                                 }
                                 break;
-                            case 'processing':
-                                {
+                            case 'processing': {
                                     $orderStatus = 'processing_test';
                                 }
                                 break;
-                            case 'completed':
-                                {
+                            case 'completed': {
                                     $orderStatus = 'completed_test';
                                 }
                                 break;
@@ -753,8 +756,14 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
                     $order->update_status($orderStatus);
                     $order->add_order_note($message);
-                    $note = sprintf(__('Successful subscription (subscription ID: %s), reference (%s)', 'epayco-subscription'),
-                        $sub->subscription->_id, $sub->data->ref_payco);
+                    //error 4 y 5 
+
+                    $note = sprintf(
+                        /* translators: %1$s es el ID de la suscripción, %2$s es la referencia de pago */
+                        __('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'suscripciones_woocommerce'),
+                        $sub->subscription->_id,
+                        $sub->data->ref_payco
+                    );
                     $subscription->add_order_note($note);
                     $messageStatus['ref_payco'] = array_merge($messageStatus['ref_payco'], [$sub->data->ref_payco]);
                     $subscription->payment_complete();
@@ -802,7 +811,6 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             update_post_meta($order->get_id(), 'plan_id', $planId);
         }
         return $messageStatus;
-
     }
 
     public function savePlanId($order_id, array $plans, array $subscriptions, $update = null, $product_id = null)
@@ -827,14 +835,15 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                             'amount' => $plan_amount,
                             'product_id' => $product_id,
                             'currency' => $plan_currency,
-                        ], [
+                        ],
+                        [
                             'order_id' => intval($order_id),
                             'product_id' => $product_id,
                         ]
                     );
                 } catch (Exception $exception) {
                     var_dump($exception->getMessage());
-                die();
+                    die();
                     subscription_epayco_se()->log('save plan: ' . $exception->getMessage());
                 }
             }
@@ -860,7 +869,6 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     $dataToSave
                 );
                 $result = 1;
-
             } catch (Exception $exception) {
                 var_dump($exception->getMessage());
                 die();
@@ -934,13 +942,14 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
     public function authSignature($x_ref_payco, $x_transaction_id, $x_amount, $x_currency_code)
     {
-        $signature = hash('sha256',
+        $signature = hash(
+            'sha256',
             trim($this->custIdCliente) . '^'
-            . trim($this->pKey) . '^'
-            . $x_ref_payco . '^'
-            . $x_transaction_id . '^'
-            . $x_amount . '^'
-            . $x_currency_code
+                . trim($this->pKey) . '^'
+                . $x_ref_payco . '^'
+                . $x_transaction_id . '^'
+                . $x_amount . '^'
+                . $x_currency_code
         );
         return $signature;
     }
@@ -972,7 +981,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         foreach ($subscriptions as $subscription) {
             if ($isTestMode == "true") {
                 $message = 'Pago rechazado Prueba';
-                if ($current_state == "epayco_failed" ||
+                if (
+                    $current_state == "epayco_failed" ||
                     $current_state == "epayco_cancelled" ||
                     $current_state == "failed" ||
                     $current_state == "epayco_processing" ||
@@ -989,9 +999,9 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     $order->add_order_note($message);
                     $subscription->update_status('on-hold');
                 }
-
             } else {
-                if ($current_state == "epayco-failed" ||
+                if (
+                    $current_state == "epayco-failed" ||
                     $current_state == "epayco-cancelled" ||
                     $current_state == "failed" ||
                     $current_state == "epayco-processing" ||
@@ -1024,7 +1034,6 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             ];
 
             return $response_status;
-
         }
     }
 
@@ -1059,23 +1068,19 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     if ($isTestMode == "true") {
                         $message = 'Pago exitoso Prueba';
                         switch ($this->epayco_endorder_state) {
-                            case 'epayco-processing':
-                                {
+                            case 'epayco-processing': {
                                     $orderStatus = 'epayco_processing';
                                 }
                                 break;
-                            case 'epayco-completed':
-                                {
+                            case 'epayco-completed': {
                                     $orderStatus = 'epayco_completed';
                                 }
                                 break;
-                            case 'processing':
-                                {
+                            case 'processing': {
                                     $orderStatus = 'processing_test';
                                 }
                                 break;
-                            case 'completed':
-                                {
+                            case 'completed': {
                                     $orderStatus = 'completed_test';
                                 }
                                 break;
@@ -1095,14 +1100,21 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     $subscription->payment_complete();
                     $order->update_status($orderStatus);
                     $order->add_order_note($message);
-                    $note = sprintf(__('Successful subscription (subscription ID: %s), reference (%s)', 'epayco-subscription'),
-                        $subscription->get_data()['id'], $x_ref_payco);
+                    $note = sprintf(
+                        //error 6
+                        /* translators: %1$s es el ID de la suscripción, %2$s es la referencia de pago */
+                        __('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'suscripciones_woocommerce'),
+                        $subscription->get_data()['id'],
+                        $x_ref_payco
+                    );
+
                     $subscription->add_order_note($note);
 
                     echo "1";
                 }
 
-                if ($x_cod_transaction_state == 2 ||
+                if (
+                    $x_cod_transaction_state == 2 ||
                     $x_cod_transaction_state == 4 ||
                     $x_cod_transaction_state == 6 ||
                     $x_cod_transaction_state == 9 ||
@@ -1111,7 +1123,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 ) {
                     if ($isTestMode == "true") {
                         $message = 'Pago rechazado Prueba: ' . $x_ref_payco;
-                        if ($current_state == "epayco_failed" ||
+                        if (
+                            $current_state == "epayco_failed" ||
                             $current_state == "epayco_cancelled" ||
                             $current_state == "failed" ||
                             $current_state == "epayco_processing" ||
@@ -1128,16 +1141,15 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                             $subscription->update_status('on-hold');
                             if (
                                 $current_state = "epayco-on-hold" ||
-                                    $current_state = "epayco-on-hold"
+                                $current_state = "epayco-on-hold"
                             ) {
                                 $this->restore_order_stock($order->get_id());
                             }
-
                         }
-
                     } else {
                         $message = 'Pago rechazado: ' . $x_ref_payco;
-                        if ($current_state == "epayco-failed" ||
+                        if (
+                            $current_state == "epayco-failed" ||
                             $current_state == "epayco-cancelled" ||
                             $current_state == "failed" ||
                             $current_state == "epayco-processing" ||
@@ -1148,18 +1160,16 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                             $order->update_status('epayco-cancelled');
                             $order->add_order_note($message);
                             $subscription->update_status('on-hold');
-
                         } else {
                             $order->update_status('epayco-cancelled');
                             $order->add_order_note($message);
                             $subscription->update_status('on-hold');
                             if (
                                 $current_state = "epayco-on-hold" ||
-                                    $current_state = "epayco-on-hold"
+                                $current_state = "epayco-on-hold"
                             ) {
                                 $this->restore_order_stock($order->get_id());
                             }
-
                         }
                     }
                     echo $x_cod_transaction_state;
@@ -1187,7 +1197,6 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     die();
                 }
             }
-
         } else {
             $message = 'Firma no valida';
             echo $message;

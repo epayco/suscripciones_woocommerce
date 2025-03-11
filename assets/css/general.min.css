@@ -161,15 +161,16 @@ a:link {
 }
 
 .call_action {
-  border-radius: 0 0 5px 5px;
-  max-width: 100%;
-  height: auto;
-  margin-top: 15px;
-  line-height: 35px;
-  cursor: pointer;
-  /*padding: 5px 0;*/
-  width: 100% !important;
+    border-radius: 0 0 5px 5px !important;
+    max-width: 100% !important;
+    height: auto !important;
+    margin-top: 15px !important;
+    line-height: 35px !important;
+    cursor: pointer !important;
+    padding: 5px 0 !important;
+    width: 100% !important;
 }
+
 
 .call_action img {
   margin-top: -3px;
@@ -556,6 +557,7 @@ img.home-icons {
   margin-top: 1em;
 }
 
+/* Estilo general para todos los navegadores */
 #web-checkout-content .flag {
   margin-left: 15px !important;
   margin-right: 10px !important; 
@@ -564,8 +566,16 @@ img.home-icons {
   font-size: 32px !important;
   margin-left: 17px !important;
   margin-top: 10.9% !important;
-
 }
+
+/* Estilo exclusivo para Firefox */
+@-moz-document url-prefix() {
+  #web-checkout-content .flag {
+    margin-top: 0.9% !important;
+  }
+}
+
+
 
 #web-checkout-content  #icon-flecha{
   margin-top: -20px !important;
@@ -758,6 +768,7 @@ input[type="checkbox"]:checked+label:before {
   margin-left: 0% !important;
   margin-right: 3% !important;
   background-color: white !important;
+  padding: 0 !important;
   
 
 }
@@ -885,11 +896,11 @@ input[type="checkbox"]:checked+label:before {
 
 
 .load {
-  opacity: 0.9;
-  line-height: 30px;
-  text-align: center;
-  border: none;
-  border-radius: 0 0 5px 5px;
+    opacity: 0.9 !important;
+    line-height: 30px !important;
+    text-align: center !important;
+    border: none !important;
+    border-radius: 0 0 5px 5px !important;
 }
 
 .loader::before {
@@ -1211,7 +1222,7 @@ input[type="checkbox"]:checked+label:before {
 
 .btn-block {
       display: block;
-   width: 100%;
+   width: 88%;
    color: #ffffff !important;
    background-color: #4d90fe !important;
    border: none !important;

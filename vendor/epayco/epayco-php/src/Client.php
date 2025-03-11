@@ -150,36 +150,17 @@ class Client extends GraphqlClient
                 return json_decode($response->body);
             }
             if ($response->status_code == 400) {
+                $code = 0;
+                $message = "Bad request";
                 try {
-                    // Verificar si el cuerpo de la respuesta existe y es un JSON válido
-                    $decodedBody = json_decode($response->body, true);
-
-                    if (json_last_error() !== JSON_ERROR_NONE) {
-                        throw new ErrorException('El cuerpo de la respuesta no es un JSON válido', 103);
-                    }
-
-                    // Manejar caso en que el campo "errors" exista
-                    if (isset($decodedBody['errors']) && is_array($decodedBody['errors'])) {
-                        $error = $decodedBody['errors'][0] ?? 'Error desconocido';
-                        $message = is_array($error) ? current($error) : $error;
-                    }
-                    // Manejar caso en que el campo "message" exista
-                    elseif (isset($decodedBody['message'])) {
-                        $message = $decodedBody['message'];
-                    }
-                    // Caso en que no hay información detallada del error
-                    else {
-                        $message = 'Bad Request sin detalles adicionales proporcionados.';
-                    }
-
-                    throw new ErrorException($message, 103);
+                    $error = (array)json_decode($response->body)->errors[0];
+                    $code = key($error);
+                    $message = current($error);
                 } catch (\Exception $e) {
-                    // Registrar el error y volver a lanzar la excepción para depuración
-                    error_log('Error al procesar el código 400: ' . $e->getMessage());
                     throw new ErrorException($e->getMessage(), $e->getCode());
                 }
+                throw new ErrorException($message, 103);
             }
-
             if ($response->status_code == 401) {
                 throw new ErrorException('Unauthorized', 104);
             }
