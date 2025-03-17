@@ -172,7 +172,7 @@ class EpaycoSuscription extends AbstractGateway
                 'title' => __('Estado Final del Pedido', 'suscripciones_woocommerce'),
                 'type' => 'select',
                 'css' => 'line-height: inherit',
-                'description' => __('Seleccione el estado del pedido que se aplicar谩 a la hora de aceptar y confirmar el pago de la orden', 'suscripciones_woocommerce'),
+                'description' => __('Seleccione el estado del pedido que se aplicaría a la hora de aceptar y confirmar el pago de la orden', 'suscripciones_woocommerce'),
                 'options' => array(
                     'epayco-processing' => "ePayco Procesando Pago",
                     "epayco-completed" => "ePayco Pago Completado",
