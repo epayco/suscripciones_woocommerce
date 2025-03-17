@@ -56,7 +56,7 @@ class EpaycoSuscription extends AbstractGateway
         $this->method_description = 'crea productos de suscripciones para tus clientes';
         $this->epaycosuscription->hooks->gateway->registerUpdateOptions($this);
         $this->epaycosuscription->hooks->gateway->registerGatewayTitle($this);
-      //  $this->epaycosuscription->hooks->gateway->registerThankyouPage($this->id, [$this, 'saveOrderPaymentsId']);
+        //  $this->epaycosuscription->hooks->gateway->registerThankyouPage($this->id, [$this, 'saveOrderPaymentsId']);
         $this->epaycosuscription->hooks->gateway->registerAvailablePaymentGateway();
         $this->epaycosuscription->hooks->gateway->registerCustomBillingFieldOptions();
         $this->epaycosuscription->hooks->gateway->registerGatewayReceiptPage($this->id, [$this, 'receiptPage']);
@@ -98,81 +98,81 @@ class EpaycoSuscription extends AbstractGateway
 
         $this->form_fields = array(
             'enabled' => array(
-                'title' => __('Habilitar/Deshabilitar', 'epayco_woocommerce_sub'),
+                'title' => __('Habilitar/Deshabilitar', 'suscripciones_woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('Habilitar ePayco Checkout Suscription', 'epayco-subscription'),
+                'label' => __('Habilitar ePayco Checkout Suscription', 'suscripciones_woocommerce'),
                 'default' => 'yes'
             ),
             'epayco_title' => array(
-                'title' => __('Titulo', 'epayco-subscription'),
+                'title' => __('Titulo', 'suscripciones_woocommerce'),
                 'type' => 'text',
-                'description' => __('Corresponde al titulo que los usuarios visualizan el chekout'),
-                'default' => __('Subscription ePayco'),
+                'description' => __('Corresponde al titulo que los usuarios visualizan el chekout', 'suscripciones_woocommerce'),
+                'default' => __('Subscription ePayco', 'suscripciones_woocommerce'),
                 'desc_tip' => true,
             ),
             'shop_name' => array(
-                'title' => __('Nombre del comercio'),
+                'title' => __('Nombre del comercio', 'suscripciones_woocommerce'),
                 'type' => 'text',
-                'description' => __('Corresponde al nombre de la tienda que los usuarios visualizan en el checkout'),
-                'default' => __('Subscription ePayco'),
+                'description' => __('Corresponde al nombre de la tienda que los usuarios visualizan en el checkout', 'suscripciones_woocommerce'),
+                'default' => __('Subscription ePayco', 'suscripciones_woocommerce'),
                 'desc_tip' => true,
             ),
             'description' => array(
-                'title' => __('Description'),
+                'title' => __('Description', 'suscripciones_woocommerce'),
                 'type' => 'textarea',
-                'description' => __('Corresponde al descripción de la tienda que los usuarios visualizan en el checkout'),
-                'default' => __('Subscription ePayco'),
+                'description' => __('Corresponde al descripción de la tienda que los usuarios visualizan en el checkout', 'suscripciones_woocommerce'),
+                'default' => __('Subscription ePayco', 'suscripciones_woocommerce'),
                 'desc_tip' => true,
             ),
             'environment' => array(
-                'title' => __('Modo'),
+                'title' => __('Modo', 'suscripciones_woocommerce'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select',
-                'description' => __('mode prueba/producción'),
+                'description' => __('mode prueba/producción', 'suscripciones_woocommerce'),
                 'desc_tip' => true,
                 'default' => true,
                 'options' => array(
-                    false => __('Production'),
-                    true => __('Test'),
+                    false => __('Production', 'suscripciones_woocommerce'),
+                    true => __('Test', 'suscripciones_woocommerce'),
                 ),
             ),
             'custIdCliente' => array(
-                'title' => __('P_CUST_ID_CLIENTE'),
+                'title' => __('P_CUST_ID_CLIENTE', 'suscripciones_woocommerce'),
                 'type' => 'text',
-                'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API'),
+                'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API', 'suscripciones_woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
                 'placeholder' => ''
             ),
             'pKey' => array(
-                'title' => __('P_KEY'),
+                'title' => __('P_KEY', 'suscripciones_woocommerce'),
                 'type' => 'text',
-                'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API'),
+                'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API', 'suscripciones_woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
                 'placeholder' => ''
             ),
             'apiKey' => array(
-                'title' => __('PUBLIC_KEY'),
+                'title' => __('PUBLIC_KEY', 'suscripciones_woocommerce'),
                 'type' => 'text',
-                'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API'),
+                'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API', 'suscripciones_woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
                 'placeholder' => ''
             ),
             'privateKey' => array(
-                'title' => __('PRIVATE_KEY'),
+                'title' => __('PRIVATE_KEY', 'suscripciones_woocommerce'),
                 'type' => 'password',
-                'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API'),
+                'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API', 'suscripciones_woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
                 'placeholder' => ''
             ),
             'epayco_endorder_state' => array(
-                'title' => __('Estado Final del Pedido'),
+                'title' => __('Estado Final del Pedido', 'suscripciones_woocommerce'),
                 'type' => 'select',
                 'css' => 'line-height: inherit',
-                'description' => __('Seleccione el estado del pedido que se aplicar谩 a la hora de aceptar y confirmar el pago de la orden'),
+                'description' => __('Seleccione el estado del pedido que se aplicaría a la hora de aceptar y confirmar el pago de la orden', 'suscripciones_woocommerce'),
                 'options' => array(
                     'epayco-processing' => "ePayco Procesando Pago",
                     "epayco-completed" => "ePayco Pago Completado",
@@ -491,7 +491,9 @@ class EpaycoSuscription extends AbstractGateway
             if ($customer->data->status == 'error' || !$customer->status) {
                 $response_status = [
                     'status' => false,
-                    'message' => __($customer->message, 'epayco-subscription')
+                    /* translators: %s será reemplazado con el mensaje de error del cliente */
+                    'message' => sprintf(esc_html__('Error: %s', 'suscripciones_woocommerce'), esc_html($customer->message))
+
                 ];
             }
             $inserCustomer = $wpdb->insert(
@@ -507,7 +509,7 @@ class EpaycoSuscription extends AbstractGateway
             if (!$inserCustomer) {
                 $response_status = [
                     'status' => false,
-                    'message' => __('internar error, tray again', 'epayco-subscription')
+                    'message' => __('internar error, tray again', 'suscripciones_woocommerce')
                 ];
             }
             $customerData['customer_id'] = $customer->data->customerId;
@@ -523,7 +525,11 @@ class EpaycoSuscription extends AbstractGateway
                 if ($customer->data->status == 'error') {
                     $response_status = [
                         'status' => false,
-                        'message' => __($customer->message, 'epayco-subscription')
+                   
+                        /* translators: %s será reemplazado con el mensaje de error del nuevo plan */
+                        'message' => sprintf(__('Error: %s', 'suscripciones_woocommerce'), $newPLan->message)
+
+
                     ];
                 }
                 $inserCustomer = $wpdb->insert(
@@ -539,7 +545,7 @@ class EpaycoSuscription extends AbstractGateway
                 if (!$inserCustomer) {
                     $response_status = [
                         'status' => false,
-                        'message' => __('internar error, tray again', 'epayco-subscription')
+                        'message' => __('internar error, tray again', 'suscripciones_woocommerce')
                     ];
                 }
                 $customerData['customer_id'] = $customer->data->customerId;
@@ -703,7 +709,10 @@ class EpaycoSuscription extends AbstractGateway
             } else {
                 $response_status = [
                     'status' => false,
-                    'message' => __($newPLan->message, 'epayco-subscription')
+                    
+                    /* translators: %s será reemplazado con el mensaje de error del nuevo plan */
+                    'message' => sprintf(__('Error: %s', 'suscripciones_woocommerce'), $newPLan->message)
+
                 ];
                 return $response_status;
             }
@@ -940,7 +949,7 @@ class EpaycoSuscription extends AbstractGateway
             $doc_number = get_post_meta($subscription->get_id(), '_epayco_billing_dni', true) != null ? get_post_meta($subscription->get_id(), '_epayco_billing_dni', true) : $order->get_meta('_epayco_billing_dni');
             $type_document = get_post_meta($subscription->get_id(), '_epayco_billing_type_document', true) != null ? get_post_meta($subscription->get_id(), '_epayco_billing_type_document', true) : $order->get_meta('_epayco_billing_type_document');
 
-            
+
 
             $data['name'] = $customerName;
             $data['email'] = $subscription->get_billing_email();
@@ -1212,10 +1221,13 @@ class EpaycoSuscription extends AbstractGateway
 
                     $order->update_status($orderStatus);
                     $order->add_order_note($message);
+
                     $note = sprintf(
-                        __('Successful subscription (subscription ID: %s), reference (%s)', 'epayco-subscription'),
-                        $sub->subscription->_id,
-                        $sub->data->ref_payco
+                        
+                        /* translators: %1$s será reemplazado con el ID de la suscripción y %2$s con la referencia de pago */
+                        esc_html__('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'suscripciones_woocommerce'),
+                        esc_html($sub->subscription->_id),
+                        esc_html($sub->data->ref_payco)
                     );
                     $subscription->add_order_note($note);
                     $messageStatus['ref_payco'] = array_merge($messageStatus['ref_payco'], [$sub->data->ref_payco]);
@@ -1551,11 +1563,14 @@ class EpaycoSuscription extends AbstractGateway
                     $subscription->payment_complete();
                     $order->update_status($orderStatus);
                     $order->add_order_note($message);
+
                     $note = sprintf(
-                        __('Successful subscription (subscription ID: %s), reference (%s)', 'epayco-subscription'),
-                        $subscription->get_data()['id'],
-                        $x_ref_payco
+                        /* translators: %1$s será reemplazado con el ID de la suscripción y %2$s con la referencia de pago */
+                        esc_html__('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'suscripciones_woocommerce'),
+                        esc_html($subscription->get_data()['id']),
+                        esc_html($x_ref_payco)
                     );
+
                     $subscription->add_order_note($note);
 
                     echo "1";

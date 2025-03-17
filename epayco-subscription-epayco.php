@@ -6,8 +6,8 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
   public function __construct()
   {
     $this->id = 'epayco-subscription';
-    $this->method_title = __('ePayco Subscription');
-    $this->method_description = __('Subscription ePayco recurring payments');
+    $this->method_title       = __('ePayco Subscription', 'suscripciones_woocommerce');
+    $this->method_description = __('Subscription ePayco recurring payments', 'suscripciones_woocommerce');
     $this->description = $this->get_option('description');
     //$this->order_button_text = __('Pay', 'epayco-subscription');
     if (! defined('EPAYCO_MULTIMEDIA_URL')) {
@@ -122,7 +122,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
       header('HTTP/1.1 200 OK');
       do_action("ePaycosub_init", $_REQUEST);
     } else {
-      wp_die(__("ePayco Request Failure", 'epayco-subscription'));
+      wp_die(__("ePayco Request Failure", 'suscripciones_woocommerce'));
     }
   }
 
@@ -634,6 +634,4 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
     $clean = ($anal) ? preg_replace("/[^a-zA-Z0-9]/", "", $clean) : $clean;
     return $clean;
   }
-
 }
-
