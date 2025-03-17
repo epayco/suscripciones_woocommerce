@@ -45,7 +45,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             if ($customer->data->status == 'error' || !$customer->status) {
                 $response_status = [
                     'status' => false,
-                    //error 1
+                    
                     /* translators: %s será reemplazado con el mensaje de error del cliente */
                     'message' => sprintf(esc_html__('Error: %s', 'suscripciones_woocommerce'), esc_html($customer->message))
 
@@ -84,7 +84,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 if ($customer->data->status == 'error') {
                     $response_status = [
                         'status' => false,
-                        //error 2
+                        
                         /* translators: %s será reemplazado con el mensaje de error del cliente */
                         'message' => sprintf(esc_html__('Error: %s', 'suscripciones_woocommerce'), esc_html($customer->message))
 
@@ -249,7 +249,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             } else {
                 $response_status = [
                     'status' => false,
-                    //error 3
+                    
                     /* translators: %s será reemplazado con el mensaje de error del nuevo plan */
                     'message' => sprintf(esc_html__('Error: %s', 'suscripciones_woocommerce'), esc_html($newPLan->message))
 
@@ -756,7 +756,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
                     $order->update_status($orderStatus);
                     $order->add_order_note($message);
-                    //error 4 y 5 
+                   
 
                     $note = sprintf(
                         /* translators: %1$s es el ID de la suscripción, %2$s es la referencia de pago */
@@ -1101,7 +1101,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     $order->update_status($orderStatus);
                     $order->add_order_note($message);
                     $note = sprintf(
-                        //error 6
+                       
                         /* translators: %1$s es el ID de la suscripción, %2$s es la referencia de pago */
                         __('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'suscripciones_woocommerce'),
                         $subscription->get_data()['id'],

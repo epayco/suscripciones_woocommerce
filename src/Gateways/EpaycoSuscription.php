@@ -525,7 +525,7 @@ class EpaycoSuscription extends AbstractGateway
                 if ($customer->data->status == 'error') {
                     $response_status = [
                         'status' => false,
-                        //error 9
+                   
                         /* translators: %s será reemplazado con el mensaje de error del nuevo plan */
                         'message' => sprintf(__('Error: %s', 'suscripciones_woocommerce'), $newPLan->message)
 
@@ -709,7 +709,7 @@ class EpaycoSuscription extends AbstractGateway
             } else {
                 $response_status = [
                     'status' => false,
-                    //error 10
+                    
                     /* translators: %s será reemplazado con el mensaje de error del nuevo plan */
                     'message' => sprintf(__('Error: %s', 'suscripciones_woocommerce'), $newPLan->message)
 
@@ -1223,7 +1223,7 @@ class EpaycoSuscription extends AbstractGateway
                     $order->add_order_note($message);
 
                     $note = sprintf(
-                        //error 12
+                        /
                         /* translators: %1$s será reemplazado con el ID de la suscripción y %2$s con la referencia de pago */
                         esc_html__('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'suscripciones_woocommerce'),
                         esc_html($sub->subscription->_id),

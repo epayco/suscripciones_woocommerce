@@ -295,7 +295,7 @@ class WoocommerceEpaycoSubscription
                     'install_woocommerce'  => __('Install WooCommerce', 'suscripciones_woocommerce'),
                     'see_woocommerce'      => __('See WooCommerce', 'suscripciones_woocommerce'),
                     'miss_woocommerce' => sprintf(
-                        //error 13
+                       
                         /* translators: %s será reemplazado con el enlace a la página de WooCommerce */
                         esc_html__('Epayco module needs an active version of %s in order to work!', 'suscripciones_woocommerce'),
                         '<a target="_blank" href="https://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a>'
