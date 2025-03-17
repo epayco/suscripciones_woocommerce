@@ -1223,7 +1223,7 @@ class EpaycoSuscription extends AbstractGateway
                     $order->add_order_note($message);
 
                     $note = sprintf(
-                        /
+                        
                         /* translators: %1$s será reemplazado con el ID de la suscripción y %2$s con la referencia de pago */
                         esc_html__('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'suscripciones_woocommerce'),
                         esc_html($sub->subscription->_id),
