@@ -2,20 +2,23 @@
 
 /**
  * @since             1.0.0
- * @package           epayco-subscription
+ * @package           epayco-subscriptions-for-woocommerce
  *
  * @wordpress-plugin
- * Plugin Name:       ePayco WooCommerce Suscripction
- * Description:       Plugin ePayco WooCommerce.
+ * Plugin Name:       ePayco Subscriptions for WooCommerce
+ * Description:       Plugin ePayco Subscription
  * Version:           6.1.0
  * Author:            ePayco
- * Text Domain: epayco-subscription
+ * Text Domain:       epayco-subscriptions-for-woocommerce
  * Author URI:
- * Licence
+ * License:           GPLv2 or later
+ * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Domain Path:       /languages
  *
  * @package EpaycoSubscription
  */
+
+
 
 if (!defined('ABSPATH')) {
     exit;
@@ -114,7 +117,7 @@ function registerBlocks(): void
         );
     }
 }
-//Correccion agregar el dominio (suscripciones_woocommerce)
+//Correccion agregar el dominio (epayco-subscriptions-for-woocommerce)
 function register_epayco_suscription_order_status()
 {
     register_post_status('wc-epayco-failed', array(
@@ -125,10 +128,10 @@ function register_epayco_suscription_order_status()
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Fallido" */
         'label_count' => _n_noop(
-    'ePayco Pago Fallido <span class="count">(%s)</span>', 
-    'ePayco Pago Fallido <span class="count">(%s)</span>', 
-    'suscripciones_woocommerce' 
-)
+            'ePayco Pago Fallido <span class="count">(%s)</span>',
+            'ePayco Pago Fallido <span class="count">(%s)</span>',
+            'epayco-subscriptions-for-woocommerce'
+        )
     ));
 
     register_post_status('wc-epayco_failed', array(
@@ -139,7 +142,10 @@ function register_epayco_suscription_order_status()
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Fallido Prueba" */
         'label_count' => _n_noop(
-            'ePayco Pago Fallido Prueba <span class="count">(%s)</span>', 'ePayco Pago Fallido Prueba <span class="count">(%s)</span>', 'suscripciones_woocommerce' )
+            'ePayco Pago Fallido Prueba <span class="count">(%s)</span>',
+            'ePayco Pago Fallido Prueba <span class="count">(%s)</span>',
+            'epayco-subscriptions-for-woocommerce'
+        )
     ));
 
     register_post_status('wc-epayco-cancelled', array(
@@ -150,7 +156,10 @@ function register_epayco_suscription_order_status()
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Cancelado" */
         'label_count' => _n_noop(
-            'ePayco Pago Cancelado <span class="count">(%s)</span>', 'ePayco Pago Cancelado <span class="count">(%s)</span>', 'suscripciones_woocommerce' )
+            'ePayco Pago Cancelado <span class="count">(%s)</span>',
+            'ePayco Pago Cancelado <span class="count">(%s)</span>',
+            'epayco-subscriptions-for-woocommerce'
+        )
     ));
 
     register_post_status('wc-epayco_cancelled', array(
@@ -161,7 +170,10 @@ function register_epayco_suscription_order_status()
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Cancelado Prueba" */
         'label_count' => _n_noop(
-            'ePayco Pago Cancelado Prueba <span class="count">(%s)</span>', 'ePayco Pago Cancelado Prueba <span class="count">(%s)</span>', 'suscripciones_woocommerce' )
+            'ePayco Pago Cancelado Prueba <span class="count">(%s)</span>',
+            'ePayco Pago Cancelado Prueba <span class="count">(%s)</span>',
+            'epayco-subscriptions-for-woocommerce'
+        )
     ));
 
     register_post_status('wc-epayco-on-hold', array(
@@ -172,7 +184,10 @@ function register_epayco_suscription_order_status()
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Pendiente" */
         'label_count' => _n_noop(
-            'ePayco Pago Pendiente <span class="count">(%s)</span>', 'ePayco Pago Pendiente <span class="count">(%s)</span>', 'suscripciones_woocommerce' )
+            'ePayco Pago Pendiente <span class="count">(%s)</span>',
+            'ePayco Pago Pendiente <span class="count">(%s)</span>',
+            'epayco-subscriptions-for-woocommerce'
+        )
     ));
 
     register_post_status('wc-epayco_on_hold', array(
@@ -183,7 +198,10 @@ function register_epayco_suscription_order_status()
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Pendiente Prueba" */
         'label_count' => _n_noop(
-            'ePayco Pago Pendiente Prueba <span class="count">(%s)</span>', 'ePayco Pago Pendiente Prueba <span class="count">(%s)</span>', 'suscripciones_woocommerce' )
+            'ePayco Pago Pendiente Prueba <span class="count">(%s)</span>',
+            'ePayco Pago Pendiente Prueba <span class="count">(%s)</span>',
+            'epayco-subscriptions-for-woocommerce'
+        )
     ));
 
     register_post_status('wc-epayco-processing', array(
@@ -194,7 +212,10 @@ function register_epayco_suscription_order_status()
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "ePayco Procesando Pago" */
         'label_count' => _n_noop(
-            'ePayco Procesando Pago <span class="count">(%s)</span>', 'ePayco Procesando Pago <span class="count">(%s)</span>', 'suscripciones_woocommerce' )
+            'ePayco Procesando Pago <span class="count">(%s)</span>',
+            'ePayco Procesando Pago <span class="count">(%s)</span>',
+            'epayco-subscriptions-for-woocommerce'
+        )
     ));
 
     register_post_status('wc-epayco_processing', array(
@@ -205,7 +226,10 @@ function register_epayco_suscription_order_status()
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "ePayco Procesando Pago Prueba" */
         'label_count' => _n_noop(
-            'ePayco Procesando Pago Prueba<span class="count">(%s)</span>', 'ePayco Procesando Pago Prueba<span class="count">(%s)</span>', 'suscripciones_woocommerce' )
+            'ePayco Procesando Pago Prueba<span class="count">(%s)</span>',
+            'ePayco Procesando Pago Prueba<span class="count">(%s)</span>',
+            'epayco-subscriptions-for-woocommerce'
+        )
     ));
 
     register_post_status('wc-processing', array(
@@ -215,7 +239,7 @@ function register_epayco_suscription_order_status()
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Cancelado Prueba" */
-        'label_count' => _n_noop('Procesando<span class="count">(%s)</span>', 'Procesando<span class="count">(%s)</span>', 'suscripciones_woocommerce' )
+        'label_count' => _n_noop('Procesando<span class="count">(%s)</span>', 'Procesando<span class="count">(%s)</span>', 'epayco-subscriptions-for-woocommerce')
     ));
 
     register_post_status('wc-processing_test', array(
@@ -225,7 +249,7 @@ function register_epayco_suscription_order_status()
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "Procesando Prueba" */
-        'label_count' => _n_noop('Procesando Prueba<span class="count">(%s)</span>', 'Procesando Prueba<span class="count">(%s)</span>', 'suscripciones_woocommerce' )
+        'label_count' => _n_noop('Procesando Prueba<span class="count">(%s)</span>', 'Procesando Prueba<span class="count">(%s)</span>', 'epayco-subscriptions-for-woocommerce')
     ));
 
     register_post_status('wc-epayco-completed', array(
@@ -235,7 +259,7 @@ function register_epayco_suscription_order_status()
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Completado" */
-        'label_count' => _n_noop('ePayco Pago Completado <span class="count">(%s)</span>', 'ePayco Pago Completado <span class="count">(%s)</span>', 'suscripciones_woocommerce' )
+        'label_count' => _n_noop('ePayco Pago Completado <span class="count">(%s)</span>', 'ePayco Pago Completado <span class="count">(%s)</span>', 'epayco-subscriptions-for-woocommerce')
     ));
 
     register_post_status('wc-epayco_completed', array(
@@ -245,7 +269,7 @@ function register_epayco_suscription_order_status()
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Completado Prueba" */
-        'label_count' => _n_noop('ePayco Pago Completado Prueba <span class="count">(%s)</span>', 'ePayco Pago Completado Prueba <span class="count">(%s)</span>', 'suscripciones_woocommerce' )
+        'label_count' => _n_noop('ePayco Pago Completado Prueba <span class="count">(%s)</span>', 'ePayco Pago Completado Prueba <span class="count">(%s)</span>', 'epayco-subscriptions-for-woocommerce')
     ));
 
     register_post_status('wc-completed', array(
@@ -255,7 +279,7 @@ function register_epayco_suscription_order_status()
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "Completado" */
-        'label_count' => _n_noop('Completado<span class="count">(%s)</span>', 'Completado<span class="count">(%s)</span>', 'suscripciones_woocommerce' )
+        'label_count' => _n_noop('Completado<span class="count">(%s)</span>', 'Completado<span class="count">(%s)</span>', 'epayco-subscriptions-for-woocommerce')
     ));
 
     register_post_status('wc-completed_test', array(
@@ -265,7 +289,7 @@ function register_epayco_suscription_order_status()
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "Completado Prueba" */
-        'label_count' => _n_noop('Completado Prueba<span class="count">(%s)</span>', 'Completado Prueba<span class="count">(%s)</span>', 'suscripciones_woocommerce' )
+        'label_count' => _n_noop('Completado Prueba<span class="count">(%s)</span>', 'Completado Prueba<span class="count">(%s)</span>', 'epayco-subscriptions-for-woocommerce')
     ));
 }
 
@@ -359,41 +383,42 @@ function styling_admin_suscription_order_list()
 ?>
 
     <style>
-        .order-status.status-<?php echo sanitize_title($order_status_failed); ?> {
+        .order-status.status-<?php echo esc_attr(sanitize_title($order_status_failed)); ?> {
             background: #eba3a3;
             color: #761919;
         }
 
-        .order-status.status-<?php echo sanitize_title($order_status_on_hold); ?> {
+        .order-status.status-<?php echo esc_attr(sanitize_title($order_status_on_hold)); ?> {
             background: #f8dda7;
             color: #94660c;
         }
 
-        .order-status.status-<?php echo sanitize_title($order_status_processing); ?> {
+        .order-status.status-<?php echo esc_attr(sanitize_title($order_status_processing)); ?> {
             background: #c8d7e1;
             color: #2e4453;
         }
 
-        .order-status.status-<?php echo sanitize_title($order_status_processing_); ?> {
+        .order-status.status-<?php echo esc_attr(sanitize_title($order_status_processing_)); ?> {
             background: #c8d7e1;
             color: #2e4453;
         }
 
-        .order-status.status-<?php echo sanitize_title($order_status_completed); ?> {
+        .order-status.status-<?php echo esc_attr(sanitize_title($order_status_completed)); ?> {
             background: #d7f8a7;
             color: #0c942b;
         }
 
-        .order-status.status-<?php echo sanitize_title($order_status_completed_); ?> {
+        .order-status.status-<?php echo esc_attr(sanitize_title($order_status_completed_)); ?> {
             background: #d7f8a7;
             color: #0c942b;
         }
 
-        .order-status.status-<?php echo sanitize_title($order_status_cancelled); ?> {
+        .order-status.status-<?php echo esc_attr(sanitize_title($order_status_cancelled)); ?> {
             background: #eba3a3;
             color: #761919;
         }
     </style>
+
 
 <?php
 }
@@ -407,27 +432,20 @@ function activate_subscription_epayco()
     $table_setings_epayco = $wpdb->prefix . 'epayco_setings';
     $charset_collate = $wpdb->get_charset_collate();
 
-    require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-
-    if ($wpdb->get_var("SHOW TABLES LIKE '$table_subscription_epayco '") !== $table_subscription_epayco) {
-
-        $sql = "CREATE TABLE $table_subscription_epayco (
-		id mediumint(9) NOT NULL AUTO_INCREMENT,
-		order_id INT(10) NOT NULL,
-		ref_payco VARCHAR(60) NOT NULL,
-		PRIMARY KEY  (id)
-	) $charset_collate;";
-        $sql2 = "CREATE TABLE $table_plan_epayco (
-            id mediumint(9) NOT NULL AUTO_INCREMENT,
+    
+    // Verifica si la tabla ya existe antes de intentar crearla
+   // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_subscription_epayco}'") !== $table_subscription_epayco) {
+        require_once ABSPATH . 'wp-admin/includes/upgrade.php';
+    
+        $sql = "CREATE TABLE {$table_subscription_epayco} (
+            id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
             order_id INT(10) NOT NULL,
-            plan_id VARCHAR(255) NOT NULL,
-            amount decimal(19,4) NOT NULL,
-            product_id bigint(20) NOT NULL,
-            currency VARCHAR(60) NOT NULL,
-            PRIMARY KEY  (id)
-        ) $charset_collate;";
+            ref_payco VARCHAR(60) NOT NULL,
+            PRIMARY KEY (id)
+        ) " . $wpdb->get_charset_collate() . ";";
 
-        $sql3 = "CREATE TABLE IF NOT  EXISTS $table_setings_epayco (
+        $sql3 = "CREATE TABLE IF NOT EXISTS $table_setings_epayco (
             id INT NOT NULL AUTO_INCREMENT,
             id_payco TEXT NULL,
             customer_id TEXT NULL,
@@ -448,11 +466,11 @@ function some_custom_checkout_field_update_order_meta($order_id)
 {
 
 
-    if (!empty($_POST['recipient_address'])) {
-        add_post_meta($order_id, 'recipient_address', sanitize_text_field($_POST['recipient_address']));
+    if (!empty($_POST['recipient_address']) && isset($_POST['recipient_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['recipient_nonce'])), 'save_recipient_data')) {
+        add_post_meta($order_id, 'recipient_address', sanitize_text_field(wp_unslash($_POST['recipient_address'])));
     }
-    if (!empty($_POST['recipient_phone_number'])) {
-        update_post_meta($order_id, 'recipient phone number', sanitize_text_field($_POST['recipient_phone_number']));
+    if (!empty($_POST['recipient_phone_number']) && isset($_POST['recipient_nonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['recipient_nonce'])), 'save_recipient_data')) {
+        update_post_meta($order_id, 'recipient_phone_number', sanitize_text_field(wp_unslash($_POST['recipient_phone_number'])));
     }
 }
 
@@ -474,35 +492,35 @@ add_action('woocommerce_set_additional_field_value', function ($key, $value, $gr
 //Campos adicionales en el checkout woocommerce blocks
 add_action('woocommerce_init', function () {
     // Registrar campo "Tipo de documento"
-woocommerce_register_additional_checkout_field(
-    array(
-        'id'          => 'epayco/billing_type_document',
-        'label'       => __('Tipo de documento', 'suscripciones_woocommerce'), // Corregido
-        'placeholder' => 'Seleccionar tipo de documento',
-        'location'    => 'contact',
-        'type'        => 'select',
-        'required'    => true,
-        'class'       => ['custom-field-class'],
-        'default'     => 'CC',
-        'options'     => [
-            ['value' => 'CC', 'label' => __('Cédula de ciudadanía', 'suscripciones_woocommerce')], // Corregido
-            ['value' => 'CE', 'label' => __('Cédula de extranjería', 'suscripciones_woocommerce')], // Corregido
-            ['value' => 'PPN', 'label' => __('Pasaporte', 'suscripciones_woocommerce')], // Corregido
-            ['value' => 'SSN', 'label' => __('Número de seguridad social', 'suscripciones_woocommerce')], // Corregido
-            ['value' => 'LIC', 'label' => __('Licencia de conducción', 'suscripciones_woocommerce')], // Corregido
-            ['value' => 'NIT', 'label' => __('(NIT) Número de identificación tributaria', 'suscripciones_woocommerce')], // Corregido
-            ['value' => 'TI', 'label' => __('Tarjeta de identidad', 'suscripciones_woocommerce')], // Corregido
-            ['value' => 'DNI', 'label' => __('Documento nacional de identificación', 'suscripciones_woocommerce')] // Corregido
-        ]
-    )
-);
+    woocommerce_register_additional_checkout_field(
+        array(
+            'id'          => 'epayco/billing_type_document',
+            'label'       => __('Tipo de documento', 'epayco-subscriptions-for-woocommerce'), // Corregido
+            'placeholder' => 'Seleccionar tipo de documento',
+            'location'    => 'contact',
+            'type'        => 'select',
+            'required'    => true,
+            'class'       => ['custom-field-class'],
+            'default'     => 'CC',
+            'options'     => [
+                ['value' => 'CC', 'label' => __('Cédula de ciudadanía', 'epayco-subscriptions-for-woocommerce')], // Corregido
+                ['value' => 'CE', 'label' => __('Cédula de extranjería', 'epayco-subscriptions-for-woocommerce')], // Corregido
+                ['value' => 'PPN', 'label' => __('Pasaporte', 'epayco-subscriptions-for-woocommerce')], // Corregido
+                ['value' => 'SSN', 'label' => __('Número de seguridad social', 'epayco-subscriptions-for-woocommerce')], // Corregido
+                ['value' => 'LIC', 'label' => __('Licencia de conducción', 'epayco-subscriptions-for-woocommerce')], // Corregido
+                ['value' => 'NIT', 'label' => __('(NIT) Número de identificación tributaria', 'epayco-subscriptions-for-woocommerce')], // Corregido
+                ['value' => 'TI', 'label' => __('Tarjeta de identidad', 'epayco-subscriptions-for-woocommerce')], // Corregido
+                ['value' => 'DNI', 'label' => __('Documento nacional de identificación', 'epayco-subscriptions-for-woocommerce')] // Corregido
+            ]
+        )
+    );
 
 
     // Registrar campo "Número de documento"
     woocommerce_register_additional_checkout_field(
         array(
             'id'          => 'epayco/billing_dni',
-            'label'       => __('Ingrese el número de documento', 'suscripciones_woocommerce'),
+            'label'       => __('Ingrese el número de documento', 'epayco-subscriptions-for-woocommerce'),
             'location'    => 'contact',
             'type'        => 'text',
             'required'    => true,
@@ -513,10 +531,110 @@ woocommerce_register_additional_checkout_field(
 
 // Guardar campos adicionales en la orden
 add_action('woocommerce_checkout_update_order_meta', function ($order_id) {
-    if (!empty($_POST['epayco_billing_type_document'])) {
-        update_post_meta($order_id, '_epayco_billing_type_document', sanitize_text_field($_POST['epayco_billing_type_document']));
+    if (!empty($_POST['epayco_billing_type_document']) && isset($_POST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'woocommerce-process_checkout')) {
+        update_post_meta($order_id, '_epayco_billing_type_document', sanitize_text_field(wp_unslash($_POST['epayco_billing_type_document'])));
     }
-    if (!empty($_POST['epayco_billing_dni'])) {
-        update_post_meta($order_id, '_epayco_billing_dni', sanitize_text_field($_POST['epayco_billing_dni']));
+    if (!empty($_POST['epayco_billing_dni']) && isset($_POST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'woocommerce-process_checkout')) {
+        update_post_meta($order_id, '_epayco_billing_dni', sanitize_text_field(wp_unslash($_POST['epayco_billing_dni'])));
     }
 });
+
+//encolar css 
+function epayco_enqueue_styles()
+{
+    if (!function_exists('plugins_url') || !function_exists('wp_enqueue_style')) {
+        return; // Ensure WordPress functions are available
+    }
+
+    // Define the base path for plugin assets
+    $plugin_url = plugins_url('assets/css/', EPS_PLUGIN_FILE);
+
+    // Enqueue styles with explicit versions to avoid caching issues
+    $plugin_url_base = plugins_url('assets/', __FILE__);
+
+
+    wp_enqueue_style('epayco-animate', $plugin_url_base . 'animate.min.css', array(), '4.1.1');
+    wp_enqueue_style('epayco-fontawesome', $plugin_url_base . 'fontawesome-all.css', array(), '5.15.4');
+    wp_enqueue_style('epayco-bootstrap-slider', $plugin_url_base . 'bootstrap-slider.min.css', array(), '10.4.2');
+    // wp_enqueue_style('epayco-style', $plugin_url . 'style.css', array(), '1.0');
+    // wp_enqueue_style('epayco-general', $plugin_url . 'general.min.css', array(), '1.0');
+    // wp_enqueue_style('epayco-card-style', $plugin_url . 'card-js.min.css', array(), '1.0');
+    // wp_enqueue_style('epayco-cardsjs', $plugin_url . 'cardsjs.min.css', array(), '1.0');
+}
+add_action('wp_enqueue_scripts', 'epayco_enqueue_styles',9999);
+
+
+// Enqueue the script properly in WordPress
+function enqueue_epayco_scripts() {
+    wp_enqueue_script('jquery'); // Usa la versión de WordPress
+}
+add_action('wp_enqueue_scripts', 'enqueue_epayco_scripts');
+
+
+// // Enqueue the script properly in WordPress
+// function enqueue_epayco_cardsjs_script() {
+//     $cardsjs = plugins_url('assets/js/cardsjs.js', EPS_PLUGIN_FILE);
+//     wp_enqueue_script('epayco-cardsjs', esc_url($cardsjs), array(), '1.0.0', true);
+// }
+// add_action('wp_enqueue_scripts', 'enqueue_epayco_cardsjs_script');
+
+
+
+// Enqueue the script properly in WordPress
+function enqueue_epayco_epaycojs_script() {
+    if (!function_exists('wp_enqueue_script') || !function_exists('esc_url')) {
+        return; // Ensure WordPress functions are available
+    }
+    $epaycojs = plugins_url('assets/js/epayco.js', __FILE__); // Define the variable
+    wp_enqueue_script('epayco-js', esc_url($epaycojs), array(), '1.0.0', true); // Set version to avoid caching issues
+}
+add_action('wp_enqueue_scripts', 'enqueue_epayco_epaycojs_script');
+
+
+
+
+//images
+add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
+    if ($attachment_id === 0) {
+        // URL de la imagen externa
+        $external_logo = plugin_dir_url(__FILE__) . 'assets/images/comercio.png';
+        return [$external_logo, 90, 90, false];
+    }
+    return $image;
+}, 10, 4);
+
+add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
+    if ($attachment_id === 1) {
+        // URL de la imagen externa
+        $external_logo2 = 'https://msecure.epayco.co/img/credit-cards/disable.png';
+        return [$external_logo2, 90, 90, false];
+    }
+    return $image;
+}, 10, 4);
+
+add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
+    if ($attachment_id === 2) {
+        // URL de la imagen externa
+        $external_logo3 = 'https://multimedia.epayco.co/plugins-sdks/logo-negro-epayco.png';
+        return [$external_logo3, 90, 90, false];
+    }
+    return $image;
+}, 10, 4);
+
+add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
+    if ($attachment_id === 3) {
+        // URL de la imagen externa
+        $external_logo4 = 'https://msecure.epayco.co/img/reloj.png';
+        return [$external_logo4, 60, 60, false];
+    }
+    return $image;
+}, 10, 4);
+
+add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
+    if ($attachment_id === 4) {
+        // URL de la imagen externa
+        $external_logo5 = 'https://secure.epayco.co/img/new_epayco_white.png';
+        return [$external_logo5, 90, 90, false];
+    }
+    return $image;
+}, 10, 4);

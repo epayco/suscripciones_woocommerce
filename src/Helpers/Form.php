@@ -34,6 +34,9 @@ class Form
      */
     public static function sanitizedPostData(string $key = "")
     {
+        if (!isset($_POST['_wpnonce']) || !\wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'your_action_name')) {
+            // wp_die(__('Nonce verification failed', 'text-domain'));
+        }
         $data = sanitize_post($_POST);
         if ($key != "") {
             $data = $data[$key];

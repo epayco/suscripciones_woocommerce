@@ -33,21 +33,30 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         $customerData = $this->paramsBilling($subscriptions, $order, $customerName);
         $customerData['token_card'] = $token;
         $sql_ = 'SELECT * FROM ' . $table_name_setings . ' WHERE id_payco = ' . $this->custIdCliente . ' AND email = ' . $customerData['email'];
-        $customerGetData = $wpdb->get_results(
-            $wpdb->prepare(
-                "SELECT * FROM $table_name_setings WHERE id_payco = %d AND email = %s",
-                $this->custIdCliente,
-                $customerData['email']
-            )
-        );
+        $cache_key = 'epayco_customer_' . $this->custIdCliente . '_' . md5($customerData['email']);
+        $customerGetData = wp_cache_get($cache_key, 'epayco');
+
+        if ($customerGetData === false) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $customerGetData = $wpdb->get_results(
+                
+                $wpdb->prepare(
+                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                    "SELECT * FROM $table_name_setings WHERE id_payco = %d AND email = %s",
+                    $this->custIdCliente,
+                    $customerData['email']
+                )
+            );
+            wp_cache_set($cache_key, $customerGetData, 'epayco', 3600); // Cache for 1 hour
+        }
         if (count($customerGetData) == 0) {
             $customer = $this->customerCreate($customerData);
             if ($customer->data->status == 'error' || !$customer->status) {
                 $response_status = [
                     'status' => false,
-                    
+
                     /* translators: %s será reemplazado con el mensaje de error del cliente */
-                    'message' => sprintf(esc_html__('Error: %s', 'suscripciones_woocommerce'), esc_html($customer->message))
+                    'message' => sprintf(esc_html__('Error: %s', 'epayco-subscriptions-for-woocommerce'), esc_html($customer->message))
 
 
 
@@ -55,6 +64,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 ];
                 return $response_status;
             }
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
             $inserCustomer = $wpdb->insert(
                 $table_name_setings,
                 [
@@ -64,10 +74,11 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     'email' => $customerData['email']
                 ]
             );
+
             if (!$inserCustomer) {
                 $response_status = [
                     'status' => false,
-                    'message' => __('internar error, tray again', 'suscripciones_woocommerce')
+                    'message' => __('internar error, tray again', 'epayco-subscriptions-for-woocommerce')
                 ];
                 return $response_status;
             }
@@ -84,13 +95,14 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 if ($customer->data->status == 'error') {
                     $response_status = [
                         'status' => false,
-                        
+
                         /* translators: %s será reemplazado con el mensaje de error del cliente */
-                        'message' => sprintf(esc_html__('Error: %s', 'suscripciones_woocommerce'), esc_html($customer->message))
+                        'message' => sprintf(esc_html__('Error: %s', 'epayco-subscriptions-for-woocommerce'), esc_html($customer->message))
 
                     ];
                     return $response_status;
                 }
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
                 $inserCustomer = $wpdb->insert(
                     $table_name_setings,
                     [
@@ -100,10 +112,11 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                         'email' => $customerData['email']
                     ]
                 );
+
                 if (!$inserCustomer) {
                     $response_status = [
                         'status' => false,
-                        'message' => __('internar error, tray again', 'suscripciones_woocommerce')
+                        'message' => __('internar error, tray again', 'epayco-subscriptions-for-woocommerce')
                     ];
                     return $response_status;
                 }
@@ -132,8 +145,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             try {
                 return $validatePlan_;
             } catch (Exception $exception) {
-                var_dump($exception->getMessage());
-                die();
+                // var_dump($exception->getMessage());
+                // die();
                 subscription_epayco_se()->log('getPlans: ' . $exception->getMessage());
             }
         }
@@ -157,9 +170,10 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 ]
             );
         } catch (Exception $exception) {
-            echo 'create client: ' . $exception->getMessage();
+            echo 'create client: ' . esc_html($exception->getMessage()); // Línea 160 corregida
             die();
         }
+
 
         return $customer;
     }
@@ -175,9 +189,10 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 ]
             );
         } catch (Exception $exception) {
-            echo 'add token: ' . $exception->getMessage();
+            echo esc_html('add token: ' . $exception->getMessage());
             die();
         }
+
 
         return $customer;
     }
@@ -194,8 +209,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     return false;
                 }
             } catch (Exception $exception) {
-                var_dump($exception->getMessage());
-                die();
+                // var_dump($exception->getMessage());
+                // die();
                 subscription_epayco_se()->log('getPlans: ' . $exception->getMessage());
             }
         }
@@ -211,8 +226,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 return false;
             }
         } catch (Exception $exception) {
-            var_dump($exception->getMessage());
-            die();
+            // var_dump($exception->getMessage());
+            // die();
             subscription_epayco_se()->log('getPlansList: ' . $exception->getMessage());
         }
     }
@@ -227,8 +242,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 return false;
             }
         } catch (Exception $exception) {
-            var_dump($exception->getMessage());
-            die();
+            // var_dump($exception->getMessage());
+            // die();
             subscription_epayco_se()->log('getPlans ' . $exception->getMessage());
         }
     }
@@ -249,9 +264,9 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             } else {
                 $response_status = [
                     'status' => false,
-                    
+
                     /* translators: %s será reemplazado con el mensaje de error del nuevo plan */
-                    'message' => sprintf(esc_html__('Error: %s', 'suscripciones_woocommerce'), esc_html($newPLan->message))
+                    'message' => sprintf(esc_html__('Error: %s', 'epayco-subscriptions-for-woocommerce'), esc_html($newPLan->message))
 
                 ];
                 return $response_status;
@@ -287,9 +302,9 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     return $this->validateNewPlanData($subscriptions, $order_id, true, false, $plans, $customer, $confirm_url, $order);
                 }
             } catch (Exception $exception) {
-                echo $exception->getMessage();
-                var_dump($exception->getMessage());
-                die();
+                echo esc_html($exception->getMessage());
+                // var_dump($exception->getMessage());
+                // die();
                 return false;
             }
         } else {
@@ -312,15 +327,71 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             $product_id = $porciones[0];
         }
         $sql = 'SELECT * FROM ' . $wc_order_product_lookup . ' WHERE order_id =' . intval($order_id);
-        $results = $wpdb->get_results($sql, OBJECT);
+        $cache_key = "order_products_{$order_id}";
+        $cached_results = wp_cache_get($cache_key, 'epayco');
+
+        if ($cached_results === false) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+            $results = $wpdb->get_results(
+                $wpdb->prepare(
+                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                    "SELECT * FROM {$wc_order_product_lookup} WHERE order_id = %d",
+                    $order_id
+                ),
+                ARRAY_A
+            );
+
+            wp_cache_set($cache_key, $results, 'epayco', 3600); // Caché por 1 hora
+        } else {
+            $results = $cached_results;
+        }
+
         $product_id = $results[0]->product_id ? $results[0]->product_id : $product_id;
         $query = 'SELECT * FROM ' . $table_name . ' WHERE order_id =' . intval($order_id);
-        $orderData = $wpdb->get_results($query, OBJECT);
+        // $orderData = $wpdb->get_results($query, OBJECT);
+        $cache_key = "order_data_{$order_id}";
+        $cached_order_data = wp_cache_get($cache_key, 'epayco');
+
+        if ($cached_order_data === false) {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+            $orderData = $wpdb->get_row(
+                $wpdb->prepare(
+                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                    "SELECT * FROM {$table_name} WHERE order_id = %d",
+                    $order_id
+                ),
+                ARRAY_A
+            );
+
+            wp_cache_set($cache_key, $orderData, 'epayco', 3600); // Caché por 1 hora
+        } else {
+            $orderData = $cached_order_data;
+        }
+
         if (count($orderData) == 0) {
             if ($value) {
                 $savePlanId_ = $this->savePlanId($order_id, $plans, $subscriptions, null, $product_id);
                 if ($savePlanId_) {
-                    $orderData = $wpdb->get_results($query, OBJECT);
+                    // $orderData = $wpdb->get_results($query, OBJECT);
+                    $cache_key = "order_data_{$order_id}";
+                    $cached_order_data = wp_cache_get($cache_key, 'epayco');
+
+                    if ($cached_order_data === false) {
+                        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                        $orderData = $wpdb->get_row(
+                            $wpdb->prepare(
+                                // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                                "SELECT * FROM {$table_name} WHERE order_id = %d",
+                                $order_id
+                            ),
+                            ARRAY_A
+                        );
+
+                        wp_cache_set($cache_key, $orderData, 'epayco', 3600); // Caché por 1 hora
+                    } else {
+                        $orderData = $cached_order_data;
+                    }
+
                     if (count($orderData) == 0) {
                         return false;
                     } else {
@@ -399,8 +470,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
                 return $plan_;
             } catch (Exception $exception) {
-                var_dump($exception->getMessage());
-                die();
+                // var_dump($exception->getMessage());
+                // die();
                 subscription_epayco_se()->log('create plan: ' . $exception->getMessage());
             }
         }
@@ -425,8 +496,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
                 return $suscriptioncreted;
             } catch (Exception $exception) {
-                var_dump($exception->getMessage());
-                die();
+                // var_dump($exception->getMessage());
+                // die();
                 subscription_epayco_se()->log('subscriptionCreate: ' . $exception->getMessage());
             }
         }
@@ -451,8 +522,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     ]
                 );
             } catch (Exception $exception) {
-                var_dump($exception->getMessage());
-                die();
+                // var_dump($exception->getMessage());
+                // die();
                 subscription_epayco_se()->log('subscriptionCharge: ' . $exception->getMessage());
             }
         }
@@ -465,8 +536,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         try {
             $this->epayco->subscriptions->cancel($subscription_id);
         } catch (Exception $exception) {
-            var_dump($exception->getMessage());
-            die();
+            // var_dump($exception->getMessage());
+            // die();
             subscription_epayco_se()->log('cancelSubscription: ' . $exception->getMessage());
         }
     }
@@ -545,7 +616,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
     public function updatePlansBySubscription(array $subscriptions)
     {
-        $ran = rand(1, 999);
+        $ran = wp_rand(1, 999);
         $plans = [];
         foreach ($subscriptions as $key => $subscription) {
             $total_discount = $subscription->get_total_discount();
@@ -756,11 +827,11 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
                     $order->update_status($orderStatus);
                     $order->add_order_note($message);
-                   
+
 
                     $note = sprintf(
                         /* translators: %1$s es el ID de la suscripción, %2$s es la referencia de pago */
-                        __('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'suscripciones_woocommerce'),
+                        __('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'epayco-subscriptions-for-woocommerce'),
                         $sub->subscription->_id,
                         $sub->data->ref_payco
                     );
@@ -787,6 +858,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     $order->add_order_note($message);
                     $subscription->update_status('on-hold');
 
+                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
                     $wpdb->insert(
                         $table_subscription_epayco,
                         [
@@ -815,7 +887,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
 
     public function savePlanId($order_id, array $plans, array $subscriptions, $update = null, $product_id = null)
     {
-        $ran = rand(1, 9999);
+        $ran = wp_rand(1, 999);
 
         global $wpdb;
         $table_subscription_epayco = $wpdb->prefix . 'epayco_plans';
@@ -827,6 +899,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     $plan_id_ = strtolower((string)$plan['id_plan']);
                     $plan_amount = floatval($plan['amount']);
                     $plan_currency = (string)$plan['currency'];
+                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                     $result = $wpdb->update(
                         $table_subscription_epayco,
                         [
@@ -842,8 +915,8 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                         ]
                     );
                 } catch (Exception $exception) {
-                    var_dump($exception->getMessage());
-                    die();
+                    // var_dump($exception->getMessage());
+                    // die();
                     subscription_epayco_se()->log('save plan: ' . $exception->getMessage());
                 }
             }
@@ -864,14 +937,15 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     'currency' => $plan_currency,
                 ];
 
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
                 $result = $wpdb->insert(
                     $table_subscription_epayco,
                     $dataToSave
                 );
                 $result = 1;
             } catch (Exception $exception) {
-                var_dump($exception->getMessage());
-                die();
+                // var_dump($exception->getMessage());
+                // die();
                 subscription_epayco_se()->log('save plan: ' . $exception->getMessage());
             }
         }
@@ -1045,12 +1119,37 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         $current_state = $order->get_status();
         if (isset($params['x_signature'])) {
 
-            $x_ref_payco = trim(sanitize_text_field($_REQUEST['x_ref_payco']));
-            $x_transaction_id = trim(sanitize_text_field($_REQUEST['x_transaction_id']));
-            $x_amount = trim(sanitize_text_field($_REQUEST['x_amount']));
-            $x_currency_code = trim(sanitize_text_field($_REQUEST['x_currency_code']));
-            $x_signature = trim(sanitize_text_field($_REQUEST['x_signature']));
-            $x_cod_transaction_state = (int)trim(sanitize_text_field($_REQUEST['x_cod_transaction_state']));
+            if (!defined('ABSPATH')) {
+                exit; // Exit if accessed directly outside WordPress
+            }
+
+            if (defined('ABSPATH') && function_exists('wp_verify_nonce') && function_exists('wp_unslash') && isset($_REQUEST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])), 'epayco_subscription_nonce')) {
+                if (isset($_REQUEST['x_ref_payco'])) {
+                    $x_ref_payco = trim(sanitize_text_field(wp_unslash($_REQUEST['x_ref_payco'])));
+                }
+            } else {
+                wp_die(esc_html(__('Nonce verification failed.', 'epayco-subscriptions-for-woocommerce')));
+            }
+
+            if (isset($_REQUEST['x_transaction_id'])) {
+                $x_transaction_id = trim(sanitize_text_field(wp_unslash($_REQUEST['x_transaction_id'])));
+            } else {
+                $x_transaction_id = '';
+            }
+            if (isset($_REQUEST['x_amount'])) {
+                $x_amount = trim(sanitize_text_field(wp_unslash($_REQUEST['x_amount'])));
+            } else {
+                $x_amount = '';
+            }
+            if (isset($_REQUEST['x_currency_code'])) {
+                $x_currency_code = trim(sanitize_text_field(wp_unslash($_REQUEST['x_currency_code'])));
+            } else {
+                $x_currency_code = '';
+            }
+            $x_signature = isset($_REQUEST['x_signature']) ? trim(sanitize_text_field(wp_unslash($_REQUEST['x_signature']))) : '';
+            $x_cod_transaction_state = isset($_REQUEST['x_cod_transaction_state'])
+                ? (int)trim(sanitize_text_field(wp_unslash($_REQUEST['x_cod_transaction_state'])))
+                : 0;
             if ($order_id != "" && $x_ref_payco != "") {
                 $authSignature = $this->authSignature($x_ref_payco, $x_transaction_id, $x_amount, $x_currency_code);
             }
@@ -1059,7 +1158,9 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         $current_state = $order->get_status();
         if ($authSignature == $x_signature) {
             $subscriptions = $this->getWooCommerceSubscriptionFromOrderId($order_id);
-            $x_test_request = trim(sanitize_text_field($_REQUEST['x_test_request']));
+            $x_test_request = isset($_REQUEST['x_test_request'])
+                ? trim(sanitize_text_field(wp_unslash($_REQUEST['x_test_request'])))
+                : '';
             $isTestTransaction = $x_test_request == "TRUE" ? "yes" : "no";
             update_option('epayco_order_status', $isTestTransaction);
             $isTestMode = get_option('epayco_order_status') == "yes" ? "true" : "false";
@@ -1101,9 +1202,9 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     $order->update_status($orderStatus);
                     $order->add_order_note($message);
                     $note = sprintf(
-                       
+
                         /* translators: %1$s es el ID de la suscripción, %2$s es la referencia de pago */
-                        __('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'suscripciones_woocommerce'),
+                        __('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'epayco-subscriptions-for-woocommerce'),
                         $subscription->get_data()['id'],
                         $x_ref_payco
                     );
@@ -1172,7 +1273,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                             }
                         }
                     }
-                    echo $x_cod_transaction_state;
+                    echo esc_html($x_cod_transaction_state);
                 }
 
                 if ($x_cod_transaction_state == 3) {
@@ -1199,7 +1300,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             }
         } else {
             $message = 'Firma no valida';
-            echo $message;
+            echo esc_html($message);
         }
     }
 }
