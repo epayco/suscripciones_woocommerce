@@ -51,9 +51,9 @@ class EpaycoSuscription extends AbstractGateway
             'subscription_cancellation',
             'multiple_subscriptions'
         ];
-        $this->description        = 'pagos de suscripciones con epayco';
-        $this->method_title       = 'suscripciones epayco';
-        $this->method_description = 'crea productos de suscripciones para tus clientes';
+        $this->description        = 'Pagos de suscripciónes con epayco';
+        $this->method_title       = 'Suscripciónes ePayco';
+        $this->method_description = 'Crea productos de suscripciónes para tus clientes';
         $this->epaycosuscription->hooks->gateway->registerUpdateOptions($this);
         $this->epaycosuscription->hooks->gateway->registerGatewayTitle($this);
         //  $this->epaycosuscription->hooks->gateway->registerThankyouPage($this->id, [$this, 'saveOrderPaymentsId']);
@@ -1337,7 +1337,7 @@ class EpaycoSuscription extends AbstractGateway
                     $order->add_order_note($message);
                     $subscription->update_status('on-hold');
 
-                     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                     $wpdb->insert(
                         $table_subscription_epayco,
                         [
@@ -1378,7 +1378,7 @@ class EpaycoSuscription extends AbstractGateway
                     $plan_id_ = strtolower((string)$plan['id_plan']);
                     $plan_amount = floatval($plan['amount']);
                     $plan_currency = (string)$plan['currency'];
-                     // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                     $result = $wpdb->update(
                         $table_subscription_epayco,
                         [
@@ -1415,7 +1415,7 @@ class EpaycoSuscription extends AbstractGateway
                     'currency' => $plan_currency,
                 ];
 
-                 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching1
+                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching1
                 $result = $wpdb->insert(
                     $table_subscription_epayco,
                     $dataToSave
