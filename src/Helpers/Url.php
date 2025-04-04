@@ -2,6 +2,9 @@
 
 namespace EpaycoSubscription\Woocommerce\Helpers;
 use EpaycoSubscription\Woocommerce\Helpers\Form;
+use function wp_verify_nonce;
+use function wp_unslash;
+use function sanitize_text_field;
 
 
 if (!defined('ABSPATH')) {
@@ -75,7 +78,10 @@ class Url
      */
     public function getCurrentPage(): string
     {
-        return isset($_GET['page']) ? '': '';
+        if (function_exists('wp_verify_nonce') && isset($_GET['page']) && isset($_GET['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'your_nonce_action')) {
+            return sanitize_text_field(wp_unslash($_GET['page']));
+        }
+        return '';
     }
 
     /**
@@ -85,7 +91,10 @@ class Url
      */
     public function getCurrentSection(): string
     {
-        return isset($_GET['section']) ? Form::sanitizedGetData('section') : '';
+        if (isset($_GET['section']) && isset($_GET['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'your_nonce_action')) {
+            return Form::sanitizedGetData('section');
+        }
+        return '';
     }
 
     /**
@@ -95,7 +104,10 @@ class Url
      */
     public function getCurrentTab(): string
     {
-        return isset($_GET['tab']) ? Form::sanitizedGetData('tab') : '';
+        if (isset($_GET['tab']) && isset($_GET['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'])), 'your_nonce_action')) {
+            return Form::sanitizedGetData('tab');
+        }
+        return '';
     }
 
     /**
@@ -230,7 +242,7 @@ class Url
      */
     public function validateGetVar(string $expectedVar): bool
     {
-        return isset($_GET[$expectedVar]);
+        return isset($_GET[$expectedVar]) && function_exists('wp_verify_nonce') && wp_verify_nonce(sanitize_text_field(wp_unslash($_GET['_wpnonce'] ?? '')), 'your_nonce_action');
     }
 
     /**

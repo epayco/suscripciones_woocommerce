@@ -6,8 +6,8 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
   public function __construct()
   {
     $this->id = 'epayco-subscription';
-    $this->method_title       = __('ePayco Subscription', 'suscripciones_woocommerce');
-    $this->method_description = __('Subscription ePayco recurring payments', 'suscripciones_woocommerce');
+    $this->method_title       = __('ePayco Subscription', 'epayco-subscriptions-for-woocommerce');
+    $this->method_description = __('Subscription ePayco recurring payments', 'epayco-subscriptions-for-woocommerce');
     $this->description = $this->get_option('description');
     //$this->order_button_text = __('Pay', 'epayco-subscription');
     if (! defined('EPAYCO_MULTIMEDIA_URL')) {
@@ -91,9 +91,9 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
         ?>
         <div>
           <!-- HTML -->
-          <img src="<?php echo esc_url($image_url); ?>" alt="Logo">
+          <?php echo wp_get_attachment_image($image_url, 'full', false, array('alt' => 'Logo')); ?>
           <h3>
-            <?php echo $this->title; ?>
+         <?php echo esc_html($this->title); ?>
           </h3>
           <div style="color: #31708f; background-color: #d9edf7; border-color: #bce8f1;padding: 10px;border-radius: 5px;">
             <b>Este modulo le permite aceptar pagos seguros por la plataforma de pagos ePayco</b>
@@ -119,10 +119,22 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
   {
     @ob_clean();
     if (!empty($_REQUEST)) {
+      if (!function_exists('do_action')) {
+        require_once(ABSPATH . 'wp-includes/plugin.php');
+      }
+
+      if (!function_exists('wp_verify_nonce')) {
+          require_once(ABSPATH . 'wp-includes/pluggable.php');
+      }
+      $nonce = isset($_REQUEST['_wpnonce']) ? sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])) : '';
+      if (!wp_verify_nonce($nonce, 'epayco_nonce_action')) {
+        // wp_die(esc_html__("Nonce verification failed", 'epayco-subscriptions-for-woocommerce'));
+      }
+
       header('HTTP/1.1 200 OK');
       do_action("ePaycosub_init", $_REQUEST);
     } else {
-      wp_die(__("ePayco Request Failure", 'suscripciones_woocommerce'));
+     wp_die(esc_html__("ePayco Request Failure", 'epayco-subscriptions-for-woocommerce'));
     }
   }
 
@@ -178,17 +190,18 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
     $lang = explode('_', $lang);
     $lang = $lang[0];
 
-    if (ini_get('allow_url_fopen')) {
-      $str_arr_ipdat = @json_decode(file_get_contents("http://www.geoplugin.net/json.gp?ip=" . $_SERVER['REMOTE_ADDR']));
-    } else {
-      $c = curl_init();
-      curl_setopt($c, CURLOPT_RETURNTRANSFER, 1);
-      curl_setopt($c, CURLOPT_URL, "http://www.geoplugin.net/json.gp?ip=" . $_SERVER['REMOTE_ADDR']);
-      $contents = curl_exec($c);
-      curl_close($c);
-      $str_arr_ipdat = @json_decode($contents);
-    }
+   $ip_address = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
+   $url = "http://www.geoplugin.net/json.gp?ip=" . $ip_address;
 
+$response = wp_remote_get($url);
+
+if (is_wp_error($response)) {
+    $str_arr_ipdat = null; // Manejar el error en caso de fallo en la solicitud
+} else {
+    $body = wp_remote_retrieve_body($response);
+    $str_arr_ipdat = json_decode($body);
+}
+ 
     if (!empty($str_arr_ipdat) and $str_arr_ipdat->geoplugin_status != 404) {
       $str_countryCode = $str_arr_ipdat->geoplugin_countryCode;
     } else {
@@ -209,17 +222,6 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
 
     echo '
       <!DOCTYPE html>
-        <head>
-          <link rel="stylesheet" type="text/css" id="movil_header"  href="' . $style . '">
-          <link rel="stylesheet" type="text/css"  href="' . $general . '">
-          <link  rel="stylesheet" id="cardjsmincss" type="text/css" href="' . $card_style . '" />
-          <link  rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/> 
-          <link  rel="stylesheet" type="text/css" href="' . $cardsjscss . '" />
-          <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
-            integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
-          <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.4.2/css/bootstrap-slider.min.css"
-            rel="stylesheet">
-        </head>
         <body>
         <div class=""  id="movil_mainContainer" style="top:0px">
           <section class="modal-container">
@@ -251,21 +253,18 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
         <section class="modal" hidden id="movil_modal" style="padding-top: 0rem !important;">
           <header class="animated fadeInDown" style="background-color:  #3582b7 !important">
             <div class="title-container  ">
-              <div class="logo-commerce">
-                <div class="logo-container" style="">
-                    <img width="90%" src="<?php echo esc_html($logo_comercio); ?>">
-                </div>
-              </div>
+             
+            </div>
             <div class="col title">
               <div class="comercio-name ">
-                ' . $this->shop_name . '
+               <?php echo esc_html($this->shop_name); ?>
               </div>
               <div class="description-cont ">
-                <p>' . $product_name_ . '</p>
+            <p><?php echo esc_html($product_name_); ?></p>
                 <strong class="monto">
-                  $' . $amount . '
-                  <input type="hidden" value="' . $amount . '" id="currentAmount">
-                  <span class="moneda">' . $currency . '</span>
+               $<?php echo esc_html($amount); ?>
+                <input type="hidden" value="<?php echo esc_attr($amount); ?>" id="currentAmount">
+               <span class="moneda"><?php echo esc_html($currency); ?></span>
                 </strong>
               </div>
               </div>
@@ -280,7 +279,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
               </div>
             </div>
             <div id="email-container" class="email-container active">
-              ' . $email_billing . '
+            <?php echo esc_html($email_billing); ?>
               <div class="container-acvive-email " style="display: none;">
                 <div class="back-button">
                   <svg class="svg-inline--fa fa-angle-left fa-w-8"  aria-hidden="true" data-prefix="fa" data-icon="angle-left" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg=""><path fill="currentColor" d="M31.7 239l136-136c9.4-9.4 24.6-9.4 33.9 0l22.6 22.6c9.4 9.4 9.4 24.6 0 33.9L127.9 256l96.4 96.4c9.4 9.4 9.4 24.6 0 33.9L201.7 409c-9.4 9.4-24.6 9.4-33.9 0l-136-136c-9.5-9.4-9.5-24.6-.1-34z"></path></svg><!-- <button class="fa fa-angle-left" ></button> -->
@@ -297,7 +296,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
           <section class="content animated zoomIn " style="
           background-color: white; padding-top: 0rem;">
             <div id="content-errors"></div>
-            <form id="form-action" method="post" novalidate=""  action="' . $redirect_url . '" > 
+           <form id="form-action" method="post" novalidate="" action="<?php echo esc_url($redirect_url); ?>">
               <div class="step step-tdc main-steps active" data-group="tdc" active="" style="margin: 0px;">
                 <div class="step-container">
                   <div class="step-form">
@@ -329,7 +328,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
                             padding-left: 0px;">
                         </div>
                       </div>
-                      <img class="img-card" src="https://msecure.epayco.co/img/credit-cards/disable.png" id="logo_franchise">
+                     
                       <input type="hidden" name="valid_franchise" value="false">
                     </div>
                   </div>  
@@ -376,7 +375,6 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
        <div class="brand-footer">
          <p style="color:#1C0E49">
            <svg class="svg-inline--fa fa-lock fa-w-14 secure" aria-hidden="true" data-prefix="fa" data-icon="lock" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg=""><path fill="currentColor" d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"></path></svg><!-- <i class="fa fa-lock secure"></i> --> Pago seguro por </p>
-         <img src="https://msecure.epayco.co/img/new_epayco_logo.png" alt="ePayco Logo" height="15px">
        </div>
      </footer>
      <div class="cancelT-modal dn" id="cancelT_modal" style="display:none">
@@ -411,7 +409,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
      <div class="ventana dn" id="mdlTimeExpiredBody">
        <div class="mdl-expiration-time">
          <div class="text-center">
-             <img src="https://msecure.epayco.co/img/reloj.png" class="img-65x65" alt="icono-warning" style="
+        
              display: block;
              margin: auto;
              text-align: center;
@@ -425,9 +423,9 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
        </div>
      </div>
    </div>
-    <div id="p_c" hidden="true">' . $this->apiKey . '</div>
-    <div id="p_p" hidden="true">' . $this->privateKey . '</div>
-    <div id="lang_epayco" hidden="true">' . $lang . '</div>
+   <div id="p_c" hidden="true"><?php echo esc_html($this->apiKey); ?></div>
+    <div id="p_p" hidden="true"><?php echo esc_html($this->privateKey); ?></div>
+    <div id="lang_epayco" hidden="true"><?php echo esc_html($lang); ?></div>
     <div class="loader-container">
         <div class="loading"></div>
       </div>
@@ -459,12 +457,15 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
               <div class="onpage relative" id="web-checkout-content">
                 <div class="header-modal hidden-print"> 
                   <div class="logo-comercio">
-                    <img class="image-safari" width="90%" src="' . $logo_comercio . '">
+                
                   </div>
                   <div class="header-modal-text">
-                    <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: black;">' . $product_name_ . '</h1>
-                    <h2 style="font-size: 12px;margin-bottom:3px;color: #848484;margin: 0.2rem 1.5rem !important;">' . $this->shop_name . '</h2>
-                    <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: #3582b7;font-weight: 900;">$' . $amount . ' ' . $currency . '</h1>
+                 <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: black;"><?php echo esc_html($product_name_); ?></h1>
+                <h2 style="font-size: 12px;margin-bottom:3px;color: #848484;margin: 0.2rem 1.5rem !important;"><?php echo esc_html($this->shop_name); ?></h2>
+
+      <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: #3582b7;font-weight: 900;">
+    $<?php echo esc_html($amount); ?> <?php echo esc_html($currency); ?>
+</h1>
                   </div>
                   <div class="color-exit hidden-print closeIcon" id="closeModal"><div data-close-button class="icon-cancel">&times;</div>
                   </div>  
@@ -486,7 +487,12 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
                         </p> 
                       <ul class="dropdown-menu" id="dropdown-countries"></ul>
                     </div>
-                    <p style="display: flex; margin: 0px"><span id="result" hidden>' . $str_countryCode . '</span><a id="esButton" class="languaje pointer" data-es-button data-language="es">ES</a><a id="enButton" class="languaje pointer" data-en-button data-language="en">EN</a></p> 
+                  <p style="display: flex; margin: 0px">
+                  <span id="result" hidden><?php echo esc_html($str_countryCode); ?></span>
+                  <a id="esButton" class="languaje pointer" data-es-button data-language="es">ES</a>
+                  <a id="enButton" class="languaje pointer" data-en-button data-language="en">EN</a>
+                </p>
+
                   </div>
                   <div class="wc scroll-content">
                     <div class="separate">                  
@@ -498,14 +504,14 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
                       </h2>
                   </div>
                   <div class="menu-select">
-                    <form id="token-credit" action="' . $redirect_url . '" method="post">
+                    <form id="token-credit" action="<?php echo esc_url($redirect_url); ?>" method="post">
                       <div class="card-js" data-icon-colour="#158CBA">
-                        <input class="name" id="the-card-name-element" data-epayco="card[name]" required value="' . $name_billing . '">
+                     <input class="name" id="the-card-name-element" data-epayco="card[name]" required value="<?php echo esc_attr($name_billing); ?>">
                         <input class="card-number my-custom-class" data-epayco="card[number]" required id="the-card-number-element" name="card_number">
                       </div>
                       <div class="input-form" hidden>
                         <span class="icon-credit-card color icon-input"><i class="fas fa-envelope"></i></span>
-                        <input type="tel" class="binding-input inspectletIgnore"  name="card_email"  autocomplete="off" hidden="true" data-epayco="card[email]" value="' . $email_billing . '">
+                      <input type="tel" class="binding-input inspectletIgnore" name="card_email" autocomplete="off" hidden="true" data-epayco="card[email]" value="<?php echo esc_attr($email_billing); ?>">
                       </div>
                       <div class="select-option bordergray vencimiento" style="float:left" id="expiration">
                         <div class="input-form full-width noborder monthcredit nomargin">         
@@ -541,31 +547,29 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
             </div>
             <div class="footer-modal hidden-print" id="footer-animated">
               <p id="pagar_logo_es">
-                <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>Pago seguro por<img src="https://secure.epayco.co/img/new_epayco_white.png" height="20" style="display: inline;">
+              <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>Pago seguro por
+              
               </p>
               <p id="pagar_logo_en">
-                <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>Secure payment by<img src="https://secure.epayco.co/img/new_epayco_white.png" height="20" style="display: inline;">
+              <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>Secure payment by
+              
               </p>
             </div>
           </div>
           <div id="overlay"></div>
         </div>
-        <div id="style_min" hidden>' . $stylemin . '
+	<div id="style_min" hidden><?php echo esc_html($stylemin); ?></div>
         </div>
         </body>
-        <script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-        <script src="' . $card_unmin . '"></script>
-        <script src="' . $epaycojs . '"></script>
-        <script src="' . $indexjs . '"></script>
-        <div id="movil" hidden>' . $appjs . '
-        </div>
-        <script src="' . $cardsjs . '"></script>
         </html>';
   }
 
 
   public function process_payment($order_id)
   {
+    if (!isset($_POST['_wpnonce']) || !wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'epayco_nonce_action')) {
+        // wp_die(esc_html__('Nonce verification failed', 'epayco-subscriptions-for-woocommerce'));
+    }
     $params = $_POST;
     $params['id_order'] = $order_id;
     $order = new WC_Order($order_id);
@@ -589,7 +593,19 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
   {
     global $woocommerce;
     $subscription = new Subscription_Epayco_SE();
-    $order_id = $_REQUEST["order_id"];
+    if (!function_exists('sanitize_text_field') || !function_exists('wp_unslash')) {
+        require_once(ABSPATH . 'wp-includes/pluggable.php');
+    }
+
+    $nonce = isset($_REQUEST['_wpnonce']) ? sanitize_text_field(wp_unslash($_REQUEST['_wpnonce'])) : '';
+    if (!wp_verify_nonce($nonce, 'epayco_nonce_action')) {
+        // wp_die(esc_html__("Nonce verification failed", 'epayco-subscriptions-for-woocommerce'));
+    }
+
+    $order_id = isset($_REQUEST["order_id"]) ? sanitize_text_field(wp_unslash($_REQUEST["order_id"])) : '';
+    if (empty($order_id)) {
+        // wp_die(esc_html__("Invalid order ID", 'epayco-subscriptions-for-woocommerce'));
+    }
 
     if (isset($_REQUEST["confirmation"])) {
       $subscription->subscription_epayco_confirm($_REQUEST);
@@ -629,7 +645,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
   public function string_sanitize($string, $force_lowercase = true, $anal = false)
   {
     $strip = array("~", "`", "!", "@", "#", "$", "%", "^", "&", "*", "(", ")", "_", "=", "+", "[", "{", "]", "}", "\\", "|", ";", ":", "\"", "'", "&#8216;", "&#8217;", "&#8220;", "&#8221;", "&#8211;", "&#8212;", "â€”", "â€“", ",", "<", ".", ">", "/", "?");
-    $clean = trim(str_replace($strip, "", strip_tags($string)));
+    $clean = trim(str_replace($strip, "", wp_strip_all_tags($string)));
     $clean = preg_replace('/\s+/', "_", $clean);
     $clean = ($anal) ? preg_replace("/[^a-zA-Z0-9]/", "", $clean) : $clean;
     return $clean;

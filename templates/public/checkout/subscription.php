@@ -34,18 +34,23 @@ if (!defined('ABSPATH')) {
 ?>
 <!DOCTYPE html>
 
+
 <head>
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-    <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.2.0/css/all.css"
-        integrity="sha384-hWVjflwFxL6sNzntih27bfxkr27PmbbK/iSvJ+a4+0owXq79v+lsFkW54bOGbiDQ" crossorigin="anonymous">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.4.2/css/bootstrap-slider.min.css"
-        rel="stylesheet">
-    <link rel="stylesheet" type="text/css" id="movil_header" href=" <?php echo esc_html($style); ?> ">
-    <link rel="stylesheet" type="text/css" href=" <?php echo esc_html($general); ?> ">
-    <link rel="stylesheet" id="cardjsmincss" type="text/css" href=" <?php echo esc_html($card_style); ?> ">
-    <link rel="stylesheet" type="text/css" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
-    <link rel="stylesheet" type="text/css" href=" <?php echo esc_html($cardsjscss); ?> ">
+    <?php
+    // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
+    echo '<link rel="stylesheet" type="text/css" id="movil_header" href="' . esc_html($style) . '">';
+
+    // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
+    echo '<link rel="stylesheet" type="text/css" href="' . esc_html($general) . '">';
+
+    // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
+    echo '<link rel="stylesheet" id="cardjsmincss" type="text/css" href="' . esc_html($card_style) . '">';
+
+    // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
+    echo '<link rel="stylesheet" type="text/css" href="' . esc_html($cardsjscss) . '">';
+    ?>
 </head>
+
 
 <body>
     <div class="" id="movil_mainContainer" style="top:0px">
@@ -84,9 +89,10 @@ if (!defined('ABSPATH')) {
                 <header class="animated fadeInDown" style="background-color: #3582b7 !important">
                     <div class="title-container  ">
                         <div class="logo-commerce">
-                            <div class="logo-container" style="">
-                                <img width="90%" src="<?php echo esc_html($logo_comercio); ?>">
+                            <div class="logo-container">
+                                <?php echo wp_get_attachment_image(0, 'full'); ?>
                             </div>
+
                         </div>
                         <div class="col title">
                             <div class="comercio-name ">
@@ -167,7 +173,7 @@ if (!defined('ABSPATH')) {
                                                         autocapitalize="off" style="padding-left: 0px; margin-left: -32px;">
                                                 </div>
                                             </div>
-                                            <img class="img-card" src="https://msecure.epayco.co/img/credit-cards/disable.png" id="logo_franchise">
+                                            <?php echo wp_get_attachment_image(1, 'full', false, ['class' => 'img-card', 'id' => 'logo_franchise']); ?>
                                             <input type="hidden" name="valid_franchise" value="false">
                                         </div>
                                     </div>
@@ -223,7 +229,8 @@ if (!defined('ABSPATH')) {
                         <path fill="currentColor" d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"></path>
                     </svg><!-- <i class="fa fa-lock secure"></i> --> Pago seguro por
                 </p>
-                <img src="https://multimedia.epayco.co/plugins-sdks/logo-negro-epayco.png" alt="ePayco Logo" height="15px">
+                <?php echo wp_get_attachment_image(2, 'full', false, ['id' => 'logo_epayco', 'alt' => 'ePayco Logo', 'height' => '15px']); ?>
+
             </div>
         </footer>
         <div class="cancelT-modal dn" id="cancelT_modal" style="display:none">
@@ -260,11 +267,12 @@ if (!defined('ABSPATH')) {
             <div class="ventana dn" id="mdlTimeExpiredBody">
                 <div class="mdl-expiration-time">
                     <div class="text-center">
-                        <img src="https://msecure.epayco.co/img/reloj.png" class="img-65x65" alt="icono-warning" style="
-                 display: block;
-                 margin: auto;
-                 text-align: center;
-                  ">
+                        <?php echo wp_get_attachment_image(3, 'full', false, [
+                            'class' => 'img-65x65',
+                            'alt' => 'icono-warning',
+                            'style' => 'display: block; margin: auto; text-align: center;'
+                        ]); ?>
+                    </div>
                     </div>
                     <p class="mdl-expiration-time-title">Su sesión ha expirado por inactividad</p>
                     <p class="mdl-expiration-time-content text-center">
@@ -310,7 +318,7 @@ if (!defined('ABSPATH')) {
                 <div class="onpage relative" id="web-checkout-content">
                     <div class="header-modal hidden-print">
                         <div class="logo-comercio">
-                            <img class="image-safari" width="90%" src="<?php echo esc_html($logo_comercio); ?>">
+                            <?php echo wp_get_attachment_image(0, 'full', false, ['class' => 'img-card', 'id' => 'image-safari', 'style' => 'width: 90%;']);; ?>                          
                         </div>
                         <div class="header-modal-text">
                             <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: black;"><?php echo esc_html($product_name_); ?></h1>
@@ -361,12 +369,14 @@ if (!defined('ABSPATH')) {
                                         <div class="input-form" style="position: relative;">
                                             <span class="icon-credit-card color icon-input"><i class="far fa-credit-card" style="margin-left: -5px;"></i></span>
                                             <input class="card-number my-custom-class" data-epayco="card[number]" required id="the-card-number-element" name="card-number2" placeholder="**** **** **** ****" type="tel" maxlength="19" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" style="padding-right: 40px;">
-                                            <img class="img-card" src="https://msecure.epayco.co/img/credit-cards/disable.png" id="logo_franchise_2" style="display: block;position: absolute;right: 12px;top: 41.5%;transform: translateY(-50%);width: 40px;">
+                                    
+                                            <?php echo wp_get_attachment_image(1, 'full', false, ['class' => 'img-card', 'id' => 'logo_franchise_2', 'style' => 'display: block;position: absolute;right: 12px;top: 41.5%;transform: translateY(-50%);width: 40px;']); ?>
+
                                         </div>
                                     </div>
 
                                     <div class="input-form" hidden>
-                                        <span class="icon-credit-card color icon-input"><i class="fas fa-envelope"></i></span>
+                  -                      <span class="icon-credit-card color icon-input"><i class="fas fa-envelope"></i></span>
                                         <input type="tel" class="binding-input inspectletIgnore" name="card_email" autocomplete="off" hidden="true" data-epayco="card[email]" value="<?php echo esc_html($email_billing) ?>">
                                     </div>
                                     <div class="select-option bordergray vencimiento" style="float:left" id="expiration">
@@ -396,10 +406,12 @@ if (!defined('ABSPATH')) {
                 </div>
                 <div class="footer-modal hidden-print" id="footer-animated">
                     <p id="pagar_logo_es">
-                        <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>Pago seguro por<img src="https://secure.epayco.co/img/new_epayco_white.png" height="20" style="display: inline;">
+                        <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>Pago seguro por
+                        <?php echo wp_get_attachment_image(4, 'full', false, ['height' => '20', 'style' => 'display: inline;']); ?>
                     </p>
                     <p id="pagar_logo_en">
-                        <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>Secure payment by<img src="https://secure.epayco.co/img/new_epayco_white.png" height="20" style="display: inline;">
+                        <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>Secure payment by
+                        <?php echo wp_get_attachment_image(4, 'full', false, ['height' => '20', 'style' => 'display: inline;']); ?>
                     </p>
                 </div>
             </div>
@@ -408,12 +420,19 @@ if (!defined('ABSPATH')) {
         <div id="style_min" hidden><?php echo esc_html($stylemin) ?></div>
     </div>
 </body>
-<script src="https://code.jquery.com/jquery-1.11.3.min.js"></script>
-<script src="<?php echo esc_html($cardsjs) ?>"></script>
-<!--<script src="<?php echo esc_html($card_unmin) ?>"></script>-->
-<script src="<?php echo esc_html($epaycojs) ?>"></script>
-<script src="<?php echo esc_html($indexjs) ?>"></script>
-<script id="movil" hidden>
-    <?php echo esc_html($appjs) ?>
-</script>
-<script src="<?php echo esc_html($epaycocheckout) ?>"></script>
+<script id="movil" hidden><?php echo esc_html($appjs) ?></script>
+
+<?php
+// Ensure WordPress functions are available
+if (function_exists('wp_enqueue_script') && function_exists('esc_url')) {
+    // Enqueue the script properly with a version parameter
+    wp_enqueue_script('epayco-index-js', esc_url($indexjs), array(), '1.0.0', true);
+}
+?>
+<?php
+// Ensure WordPress functions are available
+if (function_exists('wp_enqueue_script') && function_exists('esc_url')) {
+    // Enqueue the script properly with a version parameter
+    wp_enqueue_script('epayco-checkout-js', esc_url($epaycocheckout), array(), '1.0.0', true);
+}
+?>

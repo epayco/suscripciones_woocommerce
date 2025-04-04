@@ -18,7 +18,7 @@ class WoocommerceEpaycoSubscription
 {
     private const PLUGIN_VERSION = '4.0.0';
     private const PLATFORM_NAME = 'woocommerce';
-    private const PLUGIN_NAME = 'suscripciones_woocommerce/epayco-subscription.php';
+    private const PLUGIN_NAME = 'epayco-subscriptions-for-woocommerce/epayco-subscription.php';
 
     public WooCommerce $woocommerce;
 
@@ -50,7 +50,7 @@ class WoocommerceEpaycoSubscription
         $textDomain = $this->pluginMetadata('text-domain');
         unload_textdomain($textDomain);
         $locale = explode('_', apply_filters('plugin_locale', get_locale(), $textDomain))[0];
-        load_textdomain($textDomain, Paths::basePath(Paths::join($this->pluginMetadata('domain-path'), "suscripciones_woocommerce-$locale.mo")));
+        load_textdomain($textDomain, Paths::basePath(Paths::join($this->pluginMetadata('domain-path'), "epayco-subscriptions-for-woocommerce-$locale.mo")));
     }
 
     /**
@@ -239,9 +239,9 @@ class WoocommerceEpaycoSubscription
 
         $subs = sprintf(
             /* translators: %1$s es la URL de la documentación, %2$s es el texto del enlace */
-            __('Subscription ePayco: Woocommerce subscriptions must be installed and active, <a target="_blank" href="%1$s">%2$s</a>', 'suscripciones_woocommerce'),
+            __('Subscription ePayco: Woocommerce subscriptions must be installed and active, <a target="_blank" href="%1$s">%2$s</a>', 'epayco-subscriptions-for-woocommerce'),
             esc_url($url_docs),
-            __('Check documentation for help', 'suscripciones_woocommerce')
+            __('Check documentation for help', 'epayco-subscriptions-for-woocommerce')
         );
 
         add_action(
@@ -258,7 +258,7 @@ class WoocommerceEpaycoSubscription
     {
 ?>
         <div class="error notice">
-            <p><?php echo $notice; ?></p>
+        <p><?php echo wp_kses_post($notice); ?></p>
         </div>
 <?php
     }
@@ -291,13 +291,13 @@ class WoocommerceEpaycoSubscription
 
                 $minilogo     = sprintf('%s%s', plugin_dir_url(__FILE__), '../assets/images/comercio.png');
                 $translations = [
-                    'activate_woocommerce' => __('Activate WooCommerce', 'suscripciones_woocommerce'),
-                    'install_woocommerce'  => __('Install WooCommerce', 'suscripciones_woocommerce'),
-                    'see_woocommerce'      => __('See WooCommerce', 'suscripciones_woocommerce'),
+                    'activate_woocommerce' => __('Activate WooCommerce', 'epayco-subscriptions-for-woocommerce'),
+                    'install_woocommerce'  => __('Install WooCommerce', 'epayco-subscriptions-for-woocommerce'),
+                    'see_woocommerce'      => __('See WooCommerce', 'epayco-subscriptions-for-woocommerce'),
                     'miss_woocommerce' => sprintf(
-                        //error 13
+                       
                         /* translators: %s será reemplazado con el enlace a la página de WooCommerce */
-                        esc_html__('Epayco module needs an active version of %s in order to work!', 'suscripciones_woocommerce'),
+                        esc_html__('Epayco module needs an active version of %s in order to work!', 'epayco-subscriptions-for-woocommerce'),
                         '<a target="_blank" href="https://wordpress.org/extend/plugins/woocommerce/">WooCommerce</a>'
                     ),
 
