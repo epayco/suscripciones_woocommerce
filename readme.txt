@@ -4,7 +4,7 @@ Contributors: ePayco Team
 Donate link: https://epayco.com/
 Tags: e-commerce, checkout, epayco, subscriptions, recurring-payments
 Requires at least: 5.5
-Tested up to: 6.7
+Tested up to: 6.8
 Requires PHP: 7.4 
 Stable tag: 6.1.0
 License: GPLv2 or later
