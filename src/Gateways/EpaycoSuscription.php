@@ -326,7 +326,7 @@ class EpaycoSuscription extends AbstractGateway
         $cardsjscss = plugins_url('assets/css/cardsjs.min.css', EPS_PLUGIN_FILE);
         $card_unmin = plugins_url('assets/js/card-js-unmin.js', EPS_PLUGIN_FILE);
         $indexjs = plugins_url('assets/js/index.js', EPS_PLUGIN_FILE);
-        $appjs = plugins_url('assets/js/app.min.js', EPS_PLUGIN_FILE);
+        $appjs = plugins_url('assets/js/app.js', EPS_PLUGIN_FILE);
         $cardsjs = plugins_url('assets/js/cardsjs.js', EPS_PLUGIN_FILE);
         $epaycojs = plugins_url('assets/js/epayco.js', EPS_PLUGIN_FILE);
         //$epaycojs ="https://checkout.epayco.co/epayco.min.js";
@@ -363,7 +363,7 @@ class EpaycoSuscription extends AbstractGateway
         } else {
             $str_countryCode = "CO";
         }
-
+/*
         $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
             'wc_epaycosuscription_checkout',
             $this->epaycosuscription->helpers->url->getJsAsset('checkouts/suscription/ep-suscription-checkout'),
@@ -438,7 +438,7 @@ class EpaycoSuscription extends AbstractGateway
             'wc_epaycosubscription_animate',
             $this->epaycosuscription->helpers->url->getCssAsset('animate')
         );
-
+*/
         $this->epaycosuscription->hooks->template->getWoocommerceTemplate(
             'public/checkout/subscription.php',
             [
@@ -495,7 +495,8 @@ class EpaycoSuscription extends AbstractGateway
         $customerCard = $params['card-number2'];
         $customerData = $this->paramsBilling($subscriptions, $order, $customerCard, $customerName);
         $customerData['token_card'] = $token;
-        $sql_ = 'SELECT * FROM ' . $table_name_setings . ' WHERE id_payco = ' . $this->get_option('custIdCliente') . ' AND email = ' . $customerData['email'];
+        $this->custIdCliente =  $this->get_option('custIdCliente');
+        $sql_ = 'SELECT * FROM ' . $table_name_setings . ' WHERE id_payco = ' . $this->custIdCliente . ' AND email = ' . $customerData['email'];
         $cache_key = "epayco_customer_{$this->custIdCliente}_{$customerData['email']}";
         $customerGetData = wp_cache_get($cache_key, 'epayco');
 
@@ -530,7 +531,7 @@ class EpaycoSuscription extends AbstractGateway
             $inserCustomer = $wpdb->insert(
                 $table_name_setings,
                 [
-                    'id_payco' => $this->get_option('custIdCliente'),
+                    'id_payco' => $this->custIdCliente,
                     'customer_id' => $customer->data->customerId,
                     'token_id' => $customerData['token_card'],
                     'email' => $customerData['email'],
@@ -547,7 +548,8 @@ class EpaycoSuscription extends AbstractGateway
         } else {
             $count_customers = 0;
             for ($i = 0; $i < count($customerGetData); $i++) {
-                if ($customerGetData[$i]->email == $customerData['email']) {
+                $email = $customerGetData[$i]->email??$customerGetData[0]['email'];
+                if ($email == $customerData['email']) {
                     $count_customers += 1;
                 }
             }
@@ -567,7 +569,7 @@ class EpaycoSuscription extends AbstractGateway
                 $inserCustomer = $wpdb->insert(
                     $table_name_setings,
                     [
-                        'id_payco' => $this->get_option('custIdCliente'),
+                        'id_payco' => $this->custIdCliente,
                         'customer_id' => $customer->data->customerId,
                         'token_id' => $customerData['token_card'],
                         'email' => $customerData['email'],
@@ -583,10 +585,13 @@ class EpaycoSuscription extends AbstractGateway
                 $customerData['customer_id'] = $customer->data->customerId;
             } else {
                 for ($i = 0; $i < count($customerGetData); $i++) {
-                    if ($customerGetData[$i]->email == $customerData['email'] && $customerGetData[$i]->token_id != $token) {
-                        $customerAddtoken = $this->customerAddToken($customerGetData[$i]->customer_id, $customerData['token_card']);
+                    $email = $customerGetData[$i]->email??$customerGetData[0]['email'];
+                    $token_id = $customerGetData[$i]->token_id??$customerGetData[0]['token_id'];
+                    $customer_id = $customerGetData[$i]->customer_id??$customerGetData[0]['customer_id'];
+                    if ($email == $customerData['email'] && $token_id != $token) {
+                         $this->customerAddToken($token_id, $customerData['token_card']);
                     }
-                    $customerData['customer_id'] = $customerGetData[$i]->customer_id;
+                    $customerData['customer_id'] = $customer_id;
                 }
             }
         }
@@ -779,7 +784,6 @@ class EpaycoSuscription extends AbstractGateway
                     return $this->validateNewPlanData($subscriptions, $order_id, true, false, $plans, $customer, $confirm_url, $order);
                 }
             } catch (Exception $exception) {
-                echo esc_html($exception->getMessage());
                 echo esc_html($exception->getMessage());
                 die();
                 return false;

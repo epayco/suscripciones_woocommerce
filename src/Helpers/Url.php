@@ -60,7 +60,7 @@ class Url
      */
     public function getJsAsset(string $fileName): string
     {
-        return $this->getPluginFileUrl("assets/js/$fileName.min.js");
+        return $this->getPluginFileUrl("assets/js/$fileName.js");
     }
 
     /**

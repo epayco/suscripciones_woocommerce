@@ -182,7 +182,7 @@ class WC_Payment_Epayco_Subscription extends WC_Payment_Gateway
     $cardsjscss = trim(plugin_dir_url(__FILE__) . 'assets/css/cardsjs.min.css');
     $card_unmin = plugin_dir_url(__FILE__) . 'assets/js/card-js-unmin.js';
     $indexjs = plugin_dir_url(__FILE__) . 'assets/js/index.js';
-    $appjs = trim(plugin_dir_url(__FILE__) . 'assets/js/app.min.js');
+    $appjs = trim(plugin_dir_url(__FILE__) . 'assets/js/app.js');
     $cardsjs = trim(plugin_dir_url(__FILE__) . 'assets/js/cardsjs.js');
     //$epaycojs ="https://checkout.epayco.co/epayco.min.js";
     $epaycojs = trim(plugin_dir_url(__FILE__) . 'assets/js/epayco.js');
