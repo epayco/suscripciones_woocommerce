@@ -3859,7 +3859,7 @@ input:-webkit-autofill, input:-webkit-autofill:active, input:-webkit-autofill:fo
     background-color: #fff;
     padding: 15px;
     width: 380px;
-    height: 250px
+    /* height: 76px */
 }
 
 .mdl-expiration-time-title {
@@ -4039,7 +4039,7 @@ input:-webkit-autofill, input:-webkit-autofill:active, input:-webkit-autofill:fo
     position: fixed;
     top: 52%;
     left: 51%;
-    margin-top: -37px;
+    margin-top: -44px;
     margin-left: -42px;
     border-radius: 50%;
     z-index: 2

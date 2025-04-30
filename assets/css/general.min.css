@@ -849,7 +849,7 @@ input[type="checkbox"]:checked+label:before {
 #web-checkout-content .estilosContryName {
   text-align: left !important;
   font-size: 15px !important;
-  margin-top: 12% !important;
+  margin-top: 40px !important;
   margin-left: 50px !important;
   padding: unset !important;
 }
@@ -1221,8 +1221,8 @@ input[type="checkbox"]:checked+label:before {
 }
 
 .btn-block {
-      display: block;
-   width: 88%;
+   display: block;
+   width: 100%;
    color: #ffffff !important;
    background-color: #4d90fe !important;
    border: none !important;

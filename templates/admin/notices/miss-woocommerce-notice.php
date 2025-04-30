@@ -6,7 +6,6 @@
  * @var string $installLink
  * @var string $missWoocommerceAction
  * @var array $translations
- * @var array $allowedHtmlTags
  *
  * @see \EpaycoSubscription\Woocommerce\WoocommerceEpaycoSubscription
  */
@@ -20,24 +19,24 @@ if (!defined('ABSPATH')) {
 <div id="message" class="notice notice-error">
     <div class="mp-alert-frame">
         <div class="mp-left-alert">
-            <img src="<?= esc_url($minilogo) ?>" alt="ePayco mini logo" />
+            <?php echo wp_get_attachment_image($minilogo, 'full', false, array('alt' => 'ePayco mini logo')); ?>
         </div>
 
         <div class="mp-right-alert">
-            <p><?= wp_kses($translations['miss_woocommerce'], $allowedHtmlTags) ?></p>
+            <p><?php echo esc_html($translations['miss_woocommerce']); ?></p> <!-- Corregido -->
 
             <p>
                 <?php if ($missWoocommerceAction === 'active') : ?>
-                    <a class="button button-primary" href="<?= esc_html($activateLink) ?>">
-                        <?= wp_kses($translations['activate_woocommerce'], $allowedHtmlTags) ?>
+                    <a class="button button-primary" href="<?php echo esc_url($activateLink); ?>">
+                        <?php echo esc_html($translations['activate_woocommerce']); ?> <!-- Corregido -->
                     </a>
                 <?php elseif ($missWoocommerceAction === 'install') : ?>
-                    <a class="button button-primary" href="<?= esc_html($installLink) ?>">
-                        <?= wp_kses($translations['install_woocommerce'], $allowedHtmlTags) ?>
+                    <a class="button button-primary" href="<?php echo esc_url($installLink); ?>">
+                        <?php echo esc_html($translations['install_woocommerce']); ?> <!-- Corregido -->
                     </a>
                 <?php else : ?>
                     <a class="button button-primary" href="https://wordpress.org/plugins/woocommerce/">
-                        <?= wp_kses($translations['see_woocommerce'], $allowedHtmlTags) ?>
+                        <?php echo esc_html($translations['see_woocommerce']); ?> <!-- Corregido -->
                     </a>
                 <?php endif; ?>
             </p>
