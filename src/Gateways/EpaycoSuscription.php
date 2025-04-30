@@ -1083,8 +1083,7 @@ class EpaycoSuscription extends AbstractGateway
             $plan_name = trim(str_replace("-", " ", $product_name));
             $plans[] = array_merge(
                 [
-                    //"id_plan" => strtolower(str_replace("__", "_", $plan_id)),
-                    "id_plan" =>  "sede_bosa_la_esperanza_plan_dion_plus_0474_30",
+                    "id_plan" => strtolower(str_replace("__", "_", $plan_id)),
                     "name" => "Plan $plan_name",
                     "description" => "Plan $plan_name",
                     "currency" => $order_currency,
