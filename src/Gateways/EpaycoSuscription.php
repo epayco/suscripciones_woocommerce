@@ -534,8 +534,7 @@ class EpaycoSuscription extends AbstractGateway
                     'id_payco' => $this->custIdCliente,
                     'customer_id' => $customer->data->customerId,
                     'token_id' => $customerData['token_card'],
-                    'email' => $customerData['email'],
-                    'name' => $customerData['name']
+                    'email' => $customerData['email']
                 ]
             );
             if (!$inserCustomer) {
@@ -572,8 +571,7 @@ class EpaycoSuscription extends AbstractGateway
                         'id_payco' => $this->custIdCliente,
                         'customer_id' => $customer->data->customerId,
                         'token_id' => $customerData['token_card'],
-                        'email' => $customerData['email'],
-                        'name' => $customerData['name']
+                        'email' => $customerData['email']
                     ]
                 );
                 if (!$inserCustomer) {
@@ -589,7 +587,26 @@ class EpaycoSuscription extends AbstractGateway
                     $token_id = $customerGetData[$i]->token_id??$customerGetData[0]['token_id'];
                     $customer_id = $customerGetData[$i]->customer_id??$customerGetData[0]['customer_id'];
                     if ($email == $customerData['email'] && $token_id != $token) {
-                         $this->customerAddToken($token_id, $customerData['token_card']);
+                         $this->customerAddToken($customer_id, $token);
+                        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                         $inserCustomer = $wpdb->update(
+                            $table_name_setings,
+                            [
+                                'id_payco' => $this->custIdCliente,
+                                'customer_id' => $customer_id,
+                                'token_id' => $token
+                            ],
+                             [
+                                 'email' => $email
+                             ]
+                        );
+                        if (!$inserCustomer) {
+                            $response_status = [
+                                'status' => false,
+                                'message' => __('internar error, tray again', 'epayco-subscriptions-for-woocommerce')
+                            ];
+                        }
+                        $customerData['token_card'] =$token_id;
                     }
                     $customerData['customer_id'] = $customer_id;
                 }
@@ -1081,11 +1098,16 @@ class EpaycoSuscription extends AbstractGateway
             $plan_code = rtrim($plan_code, "-");
             $plan_id = str_replace(array("-", "--"), array("_", ""), $plan_code);
             $plan_name = trim(str_replace("-", " ", $product_name));
+            $plan_name = strtolower(str_replace("__", "_", $plan_id));
+            $normalized = preg_replace('/[-_]+/', '_', $plan_code);
+            $normalized = strtolower($normalized);
+            $normalized = preg_replace('/[^a-z0-9_]/', '', $normalized);
+            $description = str_replace('_', ' ', $plan_name);
             $plans[] = array_merge(
                 [
-                    "id_plan" => strtolower(str_replace("__", "_", $plan_id)),
-                    "name" => "Plan $plan_name",
-                    "description" => "Plan $plan_name",
+                    "id_plan" => $normalized,
+                    "name" => "Plan $description",
+                    "description" => "Plan $description",
                     "currency" => $order_currency,
                 ],
                 [
@@ -1465,10 +1487,29 @@ class EpaycoSuscription extends AbstractGateway
             }
         } else {
             $errorMessage = $subsCreated->data->description;
+            $errors = $subsCreated->data->errors;
+            $all_errors = [];
+            if (is_object($errors)) {
+                foreach ($errors as $field => $messages) {
+                    foreach ($messages as $message) {
+                        $all_errors[] = $message;
+                    }
+                }
+            } elseif (is_array($errors)) {
+                foreach ($errors as $field => $messages) {
+                    foreach ($messages as $message) {
+                        $all_errors[] = $message;
+                    }
+                }
+            }
+            $error_string = !empty($all_errors)
+                ? implode(' | ', $all_errors)
+                : 'Ocurrió un error, por favor contactar con soporte.';
+
             $response_status = [
                 'ref_payco' => null,
                 'status' => false,
-                'message' => $errorMessage,
+                'message' => $errorMessage ." " .$error_string,
                 'url' => $order->get_checkout_order_received_url()
             ];
         }
