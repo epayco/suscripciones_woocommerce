@@ -1787,7 +1787,6 @@
         var r = ePayco._utils.parseForm(e);
         if ("object" == typeof r && ePayco._utils.objectKeys(r).length > 0) if (r.card) {
             var i, n;
-            debugger
             let expYearDate = r.card.exp_year.length == 2 ? "20"+r.card.exp_year : r.card.exp_year;
             i = {
                 customer: [{
