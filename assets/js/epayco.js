@@ -1811,7 +1811,7 @@
                     validate: ePayco.card.validateCVC(r.card.cvc)
                 }, {
                     type: "date_exp",
-                    value: r.card.exp_month + "/" + r.card.exp_year,
+                    value: r.card.exp_month + "/" + expYearDate,
                     required: !0,
                     validate: ePayco.card.validateExpirationDate(r.card.exp_month, expYearDate)
                 }]
