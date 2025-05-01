@@ -1310,47 +1310,6 @@ class EpaycoSuscription extends AbstractGateway
                 $isTestMode = get_option('epayco_order_status') == "yes" ? "true" : "false";
                 if (isset($sub->data->cod_respuesta) && $sub->data->cod_respuesta === 2 || $sub->data->cod_respuesta === 4) {
                     $messageStatus['message'] = array_merge($messageStatus['message'], ["estado: {$sub->data->respuesta}"]);
-                    if ($isTestMode == "true") {
-                        $message = 'Pago rechazado Prueba: ' . $sub->data->ref_payco;
-                        if (
-                            $current_state == "epayco_failed" ||
-                            $current_state == "epayco_cancelled" ||
-                            $current_state == "failed" ||
-                            $current_state == "epayco_processing" ||
-                            $current_state == "epayco_completed" ||
-                            $current_state == "processing_test" ||
-                            $current_state == "completed_test"
-                        ) {
-                            $order->update_status('epayco_cancelled');
-                            $order->add_order_note($message);
-                            $subscription->update_status('cancelled');
-                        } else {
-                            $messageClass = 'woocommerce-error';
-                            $order->update_status('epayco_cancelled');
-                            $order->add_order_note($message);
-                            $subscription->update_status('cancelled');
-                        }
-                    } else {
-                        if (
-                            $current_state == "epayco-failed" ||
-                            $current_state == "epayco-cancelled" ||
-                            $current_state == "failed" ||
-                            $current_state == "epayco-processing" ||
-                            $current_state == "epayco-completed" ||
-                            $current_state == "processing" ||
-                            $current_state == "completed"
-                        ) {
-                            $subscription->payment_failed();
-                            $order->update_status('epayco-cancelled');
-                            $order->add_order_note('Pago fallido');
-                        } else {
-                            $message = 'Pago rechazado' . $sub->data->ref_payco;
-                            $messageClass = 'woocommerce-error';
-                            $order->update_status('epayco-cancelled');
-                            $order->add_order_note('Pago fallido');
-                            $subscription->payment_failed();
-                        }
-                    }
                 }
 
                 if (isset($sub->data->cod_respuesta) && $sub->data->cod_respuesta === 1) {
@@ -1520,7 +1479,7 @@ class EpaycoSuscription extends AbstractGateway
                     $response_status = [
                         'ref_payco' => $messageStatus['ref_payco'][0],
                         'status' => $messageStatus['status'],
-                        'message' => $messageStatus['message'],
+                        'message' => $messageStatus['message'][0],
                         'url' => $order->get_checkout_order_received_url()
                     ];
                 } else {
