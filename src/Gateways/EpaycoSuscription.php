@@ -189,7 +189,7 @@ class EpaycoSuscription extends AbstractGateway
      */
     public function admin_options()
     {
-?>
+        ?>
         <div style="color: #31708f; background-color: #d9edf7; border-color: #bce8f1;padding: 10px;border-radius: 5px;">
             <b>Este modulo le permite aceptar pagos seguros por la plataforma de pagos ePayco</b>
             <br>Si el cliente decide pagar por ePayco, el estado del pedido cambiara a ePayco Esperando Pago
@@ -198,12 +198,12 @@ class EpaycoSuscription extends AbstractGateway
         </div>
         <table class="form-table">
             <tbody>
-                <?php
-                $this->generate_settings_html();
-                ?>
+            <?php
+            $this->generate_settings_html();
+            ?>
             </tbody>
         </table>
-<?php
+        <?php
     }
 
     /**
@@ -326,7 +326,7 @@ class EpaycoSuscription extends AbstractGateway
         $cardsjscss = plugins_url('assets/css/cardsjs.min.css', EPS_PLUGIN_FILE);
         $card_unmin = plugins_url('assets/js/card-js-unmin.js', EPS_PLUGIN_FILE);
         $indexjs = plugins_url('assets/js/index.js', EPS_PLUGIN_FILE);
-        $appjs = plugins_url('assets/js/app.min.js', EPS_PLUGIN_FILE);
+        $appjs = plugins_url('assets/js/app.js', EPS_PLUGIN_FILE);
         $cardsjs = plugins_url('assets/js/cardsjs.js', EPS_PLUGIN_FILE);
         $epaycojs = plugins_url('assets/js/epayco.js', EPS_PLUGIN_FILE);
         //$epaycojs ="https://checkout.epayco.co/epayco.min.js";
@@ -363,82 +363,82 @@ class EpaycoSuscription extends AbstractGateway
         } else {
             $str_countryCode = "CO";
         }
+        /*
+                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+                    'wc_epaycosuscription_checkout',
+                    $this->epaycosuscription->helpers->url->getJsAsset('checkouts/suscription/ep-suscription-checkout'),
+                    [
+                        'site_id' => 'epayco',
+                    ]
+                );
 
-        $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-            'wc_epaycosuscription_checkout',
-            $this->epaycosuscription->helpers->url->getJsAsset('checkouts/suscription/ep-suscription-checkout'),
-            [
-                'site_id' => 'epayco',
-            ]
-        );
+                $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
+                    'wc_epaycosubscription_style',
+                    $this->epaycosuscription->helpers->url->getCssAsset('style')
+                );
 
-        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-            'wc_epaycosubscription_style',
-            $this->epaycosuscription->helpers->url->getCssAsset('style')
-        );
+                $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
+                    'wc_epaycosubscription_general',
+                    $this->epaycosuscription->helpers->url->getCssAsset('general')
+                );
 
-        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-            'wc_epaycosubscription_general',
-            $this->epaycosuscription->helpers->url->getCssAsset('general')
-        );
+                $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
+                    'wc_epaycosubscription_card-js',
+                    $this->epaycosuscription->helpers->url->getCssAsset('card-js')
+                );
 
-        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-            'wc_epaycosubscription_card-js',
-            $this->epaycosuscription->helpers->url->getCssAsset('card-js')
-        );
+                $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
+                    'wc_epaycosubscription_cloudflare',
+                    "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
+                );
 
-        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-            'wc_epaycosubscription_cloudflare',
-            "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-        );
+                $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
+                    'wc_epaycosubscription_cardsjs',
+                    $this->epaycosuscription->helpers->url->getCssAsset('cardsjs')
+                );
 
-        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-            'wc_epaycosubscription_cardsjs',
-            $this->epaycosuscription->helpers->url->getCssAsset('cardsjs')
-        );
+                $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
+                    'wc_epaycosubscription_fontawesome',
+                    "https://use.fontawesome.com/releases/v5.2.0/css/all.css"
+                );
 
-        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-            'wc_epaycosubscription_fontawesome',
-            "https://use.fontawesome.com/releases/v5.2.0/css/all.css"
-        );
+                $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
+                    'wc_epaycosubscription_cloudflare',
+                    "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.4.2/css/bootstrap-slider.min.css"
+                );
 
-        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-            'wc_epaycosubscription_cloudflare',
-            "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.4.2/css/bootstrap-slider.min.css"
-        );
+                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+                    'jquery',
+                    "https://code.jquery.com/jquery-1.11.3.min.js"
+                );
 
-        $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-            'jquery',
-            "https://code.jquery.com/jquery-1.11.3.min.js"
-        );
+                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+                    'app',
+                    $this->epaycosuscription->helpers->url->getJsAsset('app')
+                );
+                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+                    'cardsjs',
+                    $this->epaycosuscription->helpers->url->getJsAsset('cardsjs')
+                );
+                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+                    'epaycocheckout',
+                    $this->epaycosuscription->helpers->url->getJsAsset('epaycocheckout')
+                );
+                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+                    'card-js-unmin',
+                    $this->epaycosuscription->helpers->url->getJsAsset('card-js-unmin')
+                );
 
-        $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-            'app',
-            $this->epaycosuscription->helpers->url->getJsAsset('app')
-        );
-        $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-            'cardsjs',
-            $this->epaycosuscription->helpers->url->getJsAsset('cardsjs')
-        );
-        $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-            'epaycocheckout',
-            $this->epaycosuscription->helpers->url->getJsAsset('epaycocheckout')
-        );
-        $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-            'card-js-unmin',
-            $this->epaycosuscription->helpers->url->getJsAsset('card-js-unmin')
-        );
+                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
+                    'index',
+                    $this->epaycosuscription->helpers->url->getJsAsset('index')
+                );
 
-        $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-            'index',
-            $this->epaycosuscription->helpers->url->getJsAsset('index')
-        );
-
-        $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-            'wc_epaycosubscription_animate',
-            $this->epaycosuscription->helpers->url->getCssAsset('animate')
-        );
-
+                $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
+                    'wc_epaycosubscription_animate',
+                    $this->epaycosuscription->helpers->url->getCssAsset('animate')
+                );
+        */
         $this->epaycosuscription->hooks->template->getWoocommerceTemplate(
             'public/checkout/subscription.php',
             [
@@ -495,7 +495,8 @@ class EpaycoSuscription extends AbstractGateway
         $customerCard = $params['card-number2'];
         $customerData = $this->paramsBilling($subscriptions, $order, $customerCard, $customerName);
         $customerData['token_card'] = $token;
-        $sql_ = 'SELECT * FROM ' . $table_name_setings . ' WHERE id_payco = ' . $this->get_option('custIdCliente') . ' AND email = ' . $customerData['email'];
+        $this->custIdCliente =  $this->get_option('custIdCliente');
+        $sql_ = 'SELECT * FROM ' . $table_name_setings . ' WHERE id_payco = ' . $this->custIdCliente . ' AND email = ' . $customerData['email'];
         $cache_key = "epayco_customer_{$this->custIdCliente}_{$customerData['email']}";
         $customerGetData = wp_cache_get($cache_key, 'epayco');
 
@@ -503,7 +504,7 @@ class EpaycoSuscription extends AbstractGateway
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
             $customerGetData = $wpdb->get_results(
                 $wpdb->prepare(
-                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                     "SELECT * FROM $table_name_setings WHERE id_payco = %d AND email = %s",
                     $this->custIdCliente,
                     $customerData['email']
@@ -530,11 +531,10 @@ class EpaycoSuscription extends AbstractGateway
             $inserCustomer = $wpdb->insert(
                 $table_name_setings,
                 [
-                    'id_payco' => $this->get_option('custIdCliente'),
+                    'id_payco' => $this->custIdCliente,
                     'customer_id' => $customer->data->customerId,
                     'token_id' => $customerData['token_card'],
-                    'email' => $customerData['email'],
-                    'name' => $customerData['name']
+                    'email' => $customerData['email']
                 ]
             );
             if (!$inserCustomer) {
@@ -547,7 +547,8 @@ class EpaycoSuscription extends AbstractGateway
         } else {
             $count_customers = 0;
             for ($i = 0; $i < count($customerGetData); $i++) {
-                if ($customerGetData[$i]->email == $customerData['email']) {
+                $email = $customerGetData[$i]->email??$customerGetData[0]['email'];
+                if ($email == $customerData['email']) {
                     $count_customers += 1;
                 }
             }
@@ -567,11 +568,10 @@ class EpaycoSuscription extends AbstractGateway
                 $inserCustomer = $wpdb->insert(
                     $table_name_setings,
                     [
-                        'id_payco' => $this->get_option('custIdCliente'),
+                        'id_payco' => $this->custIdCliente,
                         'customer_id' => $customer->data->customerId,
                         'token_id' => $customerData['token_card'],
-                        'email' => $customerData['email'],
-                        'name' => $customerData['name']
+                        'email' => $customerData['email']
                     ]
                 );
                 if (!$inserCustomer) {
@@ -583,10 +583,32 @@ class EpaycoSuscription extends AbstractGateway
                 $customerData['customer_id'] = $customer->data->customerId;
             } else {
                 for ($i = 0; $i < count($customerGetData); $i++) {
-                    if ($customerGetData[$i]->email == $customerData['email'] && $customerGetData[$i]->token_id != $token) {
-                        $customerAddtoken = $this->customerAddToken($customerGetData[$i]->customer_id, $customerData['token_card']);
+                    $email = $customerGetData[$i]->email??$customerGetData[0]['email'];
+                    $token_id = $customerGetData[$i]->token_id??$customerGetData[0]['token_id'];
+                    $customer_id = $customerGetData[$i]->customer_id??$customerGetData[0]['customer_id'];
+                    if ($email == $customerData['email'] && $token_id != $token) {
+                        $this->customerAddToken($customer_id, $token);
+                        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+                        $inserCustomer = $wpdb->update(
+                            $table_name_setings,
+                            [
+                                'id_payco' => $this->custIdCliente,
+                                'customer_id' => $customer_id,
+                                'token_id' => $token
+                            ],
+                            [
+                                'email' => $email
+                            ]
+                        );
+                        if (!$inserCustomer) {
+                            $response_status = [
+                                'status' => false,
+                                'message' => __('internar error, tray again', 'epayco-subscriptions-for-woocommerce')
+                            ];
+                        }
+                        $customerData['token_card'] =$token_id;
                     }
-                    $customerData['customer_id'] = $customerGetData[$i]->customer_id;
+                    $customerData['customer_id'] = $customer_id;
                 }
             }
         }
@@ -776,10 +798,9 @@ class EpaycoSuscription extends AbstractGateway
                 if (intval($plan_amount_cart) == $plan_amount_epayco) {
                     return $this->process_payment_epayco($plans, $customer, $confirm_url, $subscriptions, $order);
                 } else {
-                    return $this->validateNewPlanData($subscriptions, $order_id, true, false, $plans, $customer, $confirm_url, $order);
+                    return $this->validateNewPlanData($subscriptions, $order_id, $plan_amount_cart, $plan_currency_epayco, $plans, $customer, $confirm_url, $order);
                 }
             } catch (Exception $exception) {
-                echo esc_html($exception->getMessage());
                 echo esc_html($exception->getMessage());
                 die();
                 return false;
@@ -793,6 +814,14 @@ class EpaycoSuscription extends AbstractGateway
     public function validateNewPlanData($subscriptions, $order_id, $value, $currency, $plans, $customer, $confirm_url, $order)
     {
         global $wpdb;
+
+        $subsCreated = $this->planUpdate($plans);
+        if($subsCreated->success){
+            return $this->process_payment_epayco($plans, $customer, $confirm_url, $subscriptions, $order);
+        }
+        die();
+
+
         $table_name = $wpdb->prefix . 'epayco_plans';
         $wc_order_product_lookup = $wpdb->prefix . "wc_order_product_lookup";
         /*valida la actualizacion del precio del plan*/
@@ -811,7 +840,7 @@ class EpaycoSuscription extends AbstractGateway
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $results = $wpdb->get_results(
                 $wpdb->prepare(
-                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                     "SELECT * FROM {$wc_order_product_lookup} WHERE order_id = %d",
                     $order_id
                 ),
@@ -831,7 +860,7 @@ class EpaycoSuscription extends AbstractGateway
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
             $orderData = $wpdb->get_row(
                 $wpdb->prepare(
-                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                     "SELECT * FROM {$table_name} WHERE order_id = %d",
                     $order_id
                 ),
@@ -854,7 +883,7 @@ class EpaycoSuscription extends AbstractGateway
                         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
                         $orderData = $wpdb->get_row(
                             $wpdb->prepare(
-                                // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+                            // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                                 "SELECT * FROM {$table_name} WHERE order_id = %d",
                                 $order_id
                             ),
@@ -1005,6 +1034,35 @@ class EpaycoSuscription extends AbstractGateway
         return $subs;
     }
 
+    public function planUpdate(array $plans)
+    {
+        foreach ($plans as $plan) {
+            try {
+                $plan_ = $this->epaycoSdk->plan->update(
+                    (string)strtolower($plan['id_plan']),
+                    [
+                        "name" => (string)$plan['name'],
+                        "description" => (string)$plan['description'],
+                        "amount" => $plan['amount'],
+                        "currency" => $plan['currency'],
+                        "interval" => $plan['interval'],
+                        "interval_count" => $plan['interval_count'],
+                        "trial_days" => $plan['trial_days'],
+                        "iva" => $plan['iva'],
+                    ]
+                );
+
+
+
+                return $plan_;
+            } catch (Exception $exception) {
+                echo esc_html($exception->getMessage());
+                die();
+            }
+        }
+    }
+
+
     public function cancelSubscription($subscription_id)
     {
         try {
@@ -1062,6 +1120,15 @@ class EpaycoSuscription extends AbstractGateway
         $plans = [];
         foreach ($subscriptions as $key => $subscription) {
             $total_discount = $subscription->get_total_discount();
+            $total = $subscription->get_base_data()['total'];
+            $tax = $subscription->get_base_data()['total_tax']??0;
+            $subtotal = $total - $tax;
+            if ($subtotal > 0 && $tax > 0) {
+                $tax_percentage = ($tax / $subtotal) * 100;
+                $tax_percentage = intval($tax_percentage); // Redondear a 2 decimales
+            } else {
+                $tax_percentage = 0;
+            }
             $order_currency = $subscription->get_currency();
             $products = $subscription->get_items();
             $product_plan = $this->getPlan($products);
@@ -1077,12 +1144,20 @@ class EpaycoSuscription extends AbstractGateway
             $plan_code = rtrim($plan_code, "-");
             $plan_id = str_replace(array("-", "--"), array("_", ""), $plan_code);
             $plan_name = trim(str_replace("-", " ", $product_name));
+            $plan_name = strtolower(str_replace("__", "_", $plan_id));
+            $normalized = preg_replace('/[-_]+/', '_', $plan_code);
+            $normalized = strtolower($normalized);
+            $normalized = preg_replace('/[^a-z0-9_]/', '', $normalized);
+            $description = str_replace('_', ' ', $plan_name);
             $plans[] = array_merge(
                 [
-                    "id_plan" => strtolower(str_replace("__", "_", $plan_id)),
-                    "name" => "Plan $plan_name",
-                    "description" => "Plan $plan_name",
+                    "id_plan" => $normalized,
+                    "name" => "Plan $description",
+                    "description" => "Plan $description",
                     "currency" => $order_currency,
+                    "amount" => $total,
+                    "iva" => $tax_percentage,
+                    "ico" => 0
                 ],
                 [
                     "trial_days" => $trial_days
@@ -1235,47 +1310,6 @@ class EpaycoSuscription extends AbstractGateway
                 $isTestMode = get_option('epayco_order_status') == "yes" ? "true" : "false";
                 if (isset($sub->data->cod_respuesta) && $sub->data->cod_respuesta === 2 || $sub->data->cod_respuesta === 4) {
                     $messageStatus['message'] = array_merge($messageStatus['message'], ["estado: {$sub->data->respuesta}"]);
-                    if ($isTestMode == "true") {
-                        $message = 'Pago rechazado Prueba: ' . $sub->data->ref_payco;
-                        if (
-                            $current_state == "epayco_failed" ||
-                            $current_state == "epayco_cancelled" ||
-                            $current_state == "failed" ||
-                            $current_state == "epayco_processing" ||
-                            $current_state == "epayco_completed" ||
-                            $current_state == "processing_test" ||
-                            $current_state == "completed_test"
-                        ) {
-                            $order->update_status('epayco_cancelled');
-                            $order->add_order_note($message);
-                            $subscription->update_status('cancelled');
-                        } else {
-                            $messageClass = 'woocommerce-error';
-                            $order->update_status('epayco_cancelled');
-                            $order->add_order_note($message);
-                            $subscription->update_status('cancelled');
-                        }
-                    } else {
-                        if (
-                            $current_state == "epayco-failed" ||
-                            $current_state == "epayco-cancelled" ||
-                            $current_state == "failed" ||
-                            $current_state == "epayco-processing" ||
-                            $current_state == "epayco-completed" ||
-                            $current_state == "processing" ||
-                            $current_state == "completed"
-                        ) {
-                            $subscription->payment_failed();
-                            $order->update_status('epayco-cancelled');
-                            $order->add_order_note('Pago fallido');
-                        } else {
-                            $message = 'Pago rechazado' . $sub->data->ref_payco;
-                            $messageClass = 'woocommerce-error';
-                            $order->update_status('epayco-cancelled');
-                            $order->add_order_note('Pago fallido');
-                            $subscription->payment_failed();
-                        }
-                    }
                 }
 
                 if (isset($sub->data->cod_respuesta) && $sub->data->cod_respuesta === 1) {
@@ -1283,20 +1317,20 @@ class EpaycoSuscription extends AbstractGateway
                         $message = 'Pago exitoso Prueba';
                         switch ($this->get_option('epayco_endorder_state')) {
                             case 'epayco-processing': {
-                                    $orderStatus = 'epayco_processing';
-                                }
+                                $orderStatus = 'epayco_processing';
+                            }
                                 break;
                             case 'epayco-completed': {
-                                    $orderStatus = 'epayco_completed';
-                                }
+                                $orderStatus = 'epayco_completed';
+                            }
                                 break;
                             case 'processing': {
-                                    $orderStatus = 'processing_test';
-                                }
+                                $orderStatus = 'processing_test';
+                            }
                                 break;
                             case 'completed': {
-                                    $orderStatus = 'completed_test';
-                                }
+                                $orderStatus = 'completed_test';
+                            }
                                 break;
                         }
                     } else {
@@ -1309,7 +1343,7 @@ class EpaycoSuscription extends AbstractGateway
 
                     $note = sprintf(
 
-                        /* translators: %1$s será reemplazado con el ID de la suscripción y %2$s con la referencia de pago */
+                    /* translators: %1$s será reemplazado con el ID de la suscripción y %2$s con la referencia de pago */
                         esc_html__('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'epayco-subscriptions-for-woocommerce'),
                         esc_html($sub->subscription->_id),
                         esc_html($sub->data->ref_payco)
@@ -1445,7 +1479,7 @@ class EpaycoSuscription extends AbstractGateway
                     $response_status = [
                         'ref_payco' => $messageStatus['ref_payco'][0],
                         'status' => $messageStatus['status'],
-                        'message' => $messageStatus['message'],
+                        'message' => $messageStatus['message'][0],
                         'url' => $order->get_checkout_order_received_url()
                     ];
                 } else {
@@ -1461,10 +1495,29 @@ class EpaycoSuscription extends AbstractGateway
             }
         } else {
             $errorMessage = $subsCreated->data->description;
+            $errors = $subsCreated->data->errors;
+            $all_errors = [];
+            if (is_object($errors)) {
+                foreach ($errors as $field => $messages) {
+                    foreach ($messages as $message) {
+                        $all_errors[] = $message;
+                    }
+                }
+            } elseif (is_array($errors)) {
+                foreach ($errors as $field => $messages) {
+                    foreach ($messages as $message) {
+                        $all_errors[] = $message;
+                    }
+                }
+            }
+            $error_string = !empty($all_errors)
+                ? implode(' | ', $all_errors)
+                : 'Ocurrió un error, por favor contactar con soporte.';
+
             $response_status = [
                 'ref_payco' => null,
                 'status' => false,
-                'message' => $errorMessage,
+                'message' => $errorMessage ." " .$error_string,
                 'url' => $order->get_checkout_order_received_url()
             ];
         }
@@ -1496,11 +1549,11 @@ class EpaycoSuscription extends AbstractGateway
         $signature = hash(
             'sha256',
             trim($this->get_option('custIdCliente')) . '^'
-                . trim($this->get_option('pKey')) . '^'
-                . $x_ref_payco . '^'
-                . $x_transaction_id . '^'
-                . $x_amount . '^'
-                . $x_currency_code
+            . trim($this->get_option('pKey')) . '^'
+            . $x_ref_payco . '^'
+            . $x_transaction_id . '^'
+            . $x_amount . '^'
+            . $x_currency_code
         );
         return $signature;
     }
@@ -1628,20 +1681,20 @@ class EpaycoSuscription extends AbstractGateway
                         $message = 'Pago exitoso Prueba';
                         switch ($this->get_option('epayco_endorder_state')) {
                             case 'epayco-processing': {
-                                    $orderStatus = 'epayco_processing';
-                                }
+                                $orderStatus = 'epayco_processing';
+                            }
                                 break;
                             case 'epayco-completed': {
-                                    $orderStatus = 'epayco_completed';
-                                }
+                                $orderStatus = 'epayco_completed';
+                            }
                                 break;
                             case 'processing': {
-                                    $orderStatus = 'processing_test';
-                                }
+                                $orderStatus = 'processing_test';
+                            }
                                 break;
                             case 'completed': {
-                                    $orderStatus = 'completed_test';
-                                }
+                                $orderStatus = 'completed_test';
+                            }
                                 break;
                         }
 
@@ -1661,7 +1714,7 @@ class EpaycoSuscription extends AbstractGateway
                     $order->add_order_note($message);
 
                     $note = sprintf(
-                        /* translators: %1$s será reemplazado con el ID de la suscripción y %2$s con la referencia de pago */
+                    /* translators: %1$s será reemplazado con el ID de la suscripción y %2$s con la referencia de pago */
                         esc_html__('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'epayco-subscriptions-for-woocommerce'),
                         esc_html($subscription->get_data()['id']),
                         esc_html($x_ref_payco)
@@ -1700,7 +1753,7 @@ class EpaycoSuscription extends AbstractGateway
                             $subscription->update_status('on-hold');
                             if (
                                 $current_state = "epayco-on-hold" ||
-                                $current_state = "epayco-on-hold"
+                                    $current_state = "epayco-on-hold"
                             ) {
                                 $this->restore_order_stock($order->get_id());
                             }
@@ -1725,7 +1778,7 @@ class EpaycoSuscription extends AbstractGateway
                             $subscription->update_status('on-hold');
                             if (
                                 $current_state = "epayco-on-hold" ||
-                                $current_state = "epayco-on-hold"
+                                    $current_state = "epayco-on-hold"
                             ) {
                                 $this->restore_order_stock($order->get_id());
                             }

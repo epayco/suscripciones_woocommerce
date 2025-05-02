@@ -12,16 +12,16 @@ document.addEventListener('DOMContentLoaded', function () {
         // Detectar el tipo de tarjeta y actualizar el ícono
         let isCardDetected = false; // Variable para saber si hay una tarjeta detectada
         if (/^4[0-9]{6,}$/.test(cardNumber)) {
-          cardLogo.src = 'https://multimedia-epayco.s3.amazonaws.com/plugins-sdks/vs.png'; // Ruta de la imagen de Visa
+          cardLogo.src = 'https://msecure.epayco.co/img/credit-cards/vs.png'; // Ruta de la imagen de Visa
           isCardDetected = true;
         } else if (/^5[1-5][0-9]{5,}$/.test(cardNumber)) {
-          cardLogo.src = 'https://multimedia-epayco.s3.amazonaws.com/plugins-sdks/mc.png'; // Ruta de la imagen de Mastercard
+          cardLogo.src = 'https://msecure.epayco.co/img/credit-cards/mc.png'; // Ruta de la imagen de Mastercard
           isCardDetected = true;
         } else if (/^3[47][0-9]{3,}$/.test(cardNumber)) {
-          cardLogo.src = 'https://multimedia-epayco.s3.amazonaws.com/plugins-sdks/amex.png'; // Ruta de la imagen de Amex
+          cardLogo.src = 'https://msecure.epayco.co/img/credit-cards/amex.png'; // Ruta de la imagen de Amex
           isCardDetected = true;
         } else if (/^6(?:011|5[0-9]{2})[0-9]{3,}$/.test(cardNumber)) {
-          cardLogo.src = 'https://multimedia-epayco.s3.amazonaws.com/plugins-sdks/discover.png'; // Ruta de la imagen de Discover
+          cardLogo.src = 'https://msecure.epayco.co/img/credit-cards/discover.png'; // Ruta de la imagen de Discover
           isCardDetected = true;
         } else {
           cardLogo.src = 'https://msecure.epayco.co/img/credit-cards/disable.png'; // Ruta de la imagen deshabilitada
@@ -55,16 +55,16 @@ document.addEventListener('DOMContentLoaded', function () {
         // Detectar el tipo de tarjeta y actualizar el ícono
         let isCardDetected = false; // Variable para saber si hay una tarjeta detectada
         if (/^4[0-9]{6,}$/.test(cardNumber)) {
-          cardLogo.src = 'https://multimedia-epayco.s3.amazonaws.com/plugins-sdks/vs.png'; // Ruta de la imagen de Visa
+          cardLogo.src = 'https://msecure.epayco.co/img/credit-cards/vs.png'; // Ruta de la imagen de Visa
           isCardDetected = true;
         } else if (/^5[1-5][0-9]{5,}$/.test(cardNumber)) {
-          cardLogo.src = 'https://multimedia-epayco.s3.amazonaws.com/plugins-sdks/mc.png'; // Ruta de la imagen de Mastercard
+          cardLogo.src = 'https://msecure.epayco.co/img/credit-cards/mc.png'; // Ruta de la imagen de Mastercard
           isCardDetected = true;
         } else if (/^3[47][0-9]{3,}$/.test(cardNumber)) {
-          cardLogo.src = 'https://multimedia-epayco.s3.amazonaws.com/plugins-sdks/amex.png'; // Ruta de la imagen de Amex
+          cardLogo.src = 'https://msecure.epayco.co/img/credit-cards/amex.png'; // Ruta de la imagen de Amex
           isCardDetected = true;
         } else if (/^6(?:011|5[0-9]{2})[0-9]{3,}$/.test(cardNumber)) {
-          cardLogo.src = 'https://multimedia-epayco.s3.amazonaws.com/plugins-sdks/discover.png'; // Ruta de la imagen de Discover
+          cardLogo.src = 'https://msecure.epayco.co/img/credit-cards/discover.png'; // Ruta de la imagen de Discover
           isCardDetected = true;
         } else {
           cardLogo.src = 'https://msecure.epayco.co/img/credit-cards/disable.png'; // Ruta de la imagen deshabilitada
@@ -82,3 +82,4 @@ document.addEventListener('DOMContentLoaded', function () {
       });
     }
   });
+  
