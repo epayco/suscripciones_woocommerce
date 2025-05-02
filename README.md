@@ -1,4 +1,4 @@
-#ePayco plugin para WooCommerce Suscripcion
+# epayco-subscriptions-for-woocommerce
 
 **Si usted tiene alguna pregunta o problema, no dude en ponerse en contacto con nuestro soporte técnico: desarrollo@payco.co.**
 
@@ -54,3 +54,4 @@
 * [ePayco plugin WooCommerce v5.2](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v5.2)
 * [ePayco plugin WooCommerce v6.0](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v6.0)
 * [ePayco plugin WooCommerce v6.1](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v6.1)
+* [ePayco plugin WooCommerce v6.2](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v6.2)
