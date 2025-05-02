@@ -496,7 +496,6 @@ class EpaycoSuscription extends AbstractGateway
         $customerData = $this->paramsBilling($subscriptions, $order, $customerCard, $customerName);
         $customerData['token_card'] = $token;
         $this->custIdCliente =  $this->get_option('custIdCliente');
-        $sql_ = 'SELECT * FROM ' . $table_name_setings . ' WHERE id_payco = ' . $this->custIdCliente . ' AND email = ' . $customerData['email'];
         $cache_key = "epayco_customer_{$this->custIdCliente}_{$customerData['email']}";
         $customerGetData = wp_cache_get($cache_key, 'epayco');
 
