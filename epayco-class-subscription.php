@@ -20,6 +20,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         );
     }
 
+    //!IMPORTANT: This function is used to create a subscription with Epayco
     public function subscription_epayco(array $params)
     {
         global $wpdb;
@@ -705,6 +706,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         return $confirm_url;
     }
 
+    //!IMPORTANT: This function is used to handle the status of subscriptions
     public function handleStatusSubscriptions(array $subscriptionsStatus, array $subscriptions, array $customer, $order, $customerId, $suscriptionId, $planId)
     {
 
@@ -1046,6 +1048,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         }
     }
 
+    //IMPORTANTE: Esta función se utiliza para manejar el estado de las suscripciones canceladas
     public function cancelledPayment($order_id, $id_client, $subscription_id, $planId)
     {
         $order = new WC_Order($order_id);
@@ -1111,6 +1114,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         }
     }
 
+    //!IMPORTANT: This function is used to confirm the subscription payment
     public function subscription_epayco_confirm(array $params)
     {
 

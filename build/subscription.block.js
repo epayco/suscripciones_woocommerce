@@ -9,7 +9,7 @@
     var r;
     const m = "mp_checkout_blocks", d = "woo-epaycosubscription",
         i = (0, o.getSetting)("woo-epaycosubscription_data", {}),
-        p = (0, c.decodeEntities)(i.title) || "ePayco Suscripción", u = t => {
+        p = (0, c.decodeEntities)(i.title) || "ePayco", u = t => {
             (e => {
                 const {extensionCartUpdate: t} = wc.blocksCheckout, {
                     eventRegistration: o,
@@ -64,10 +64,44 @@
         }, l = {
             name: d,
             label: (0, e.createElement)((t => {
-                const {PaymentMethodLabel: o} = t.components, a = (0, c.decodeEntities)(i?.params?.fee_title || ""),
-                    n = `${p} ${a}`;
-                return (0, e.createElement)(o, {text: n})
-            }), null),
+            const { PaymentMethodLabel: o } = t.components;
+            const title = (0, c.decodeEntities)(i.title) || "Paga con ePayco";
+            return (0, e.createElement)("div", { 
+                style: { 
+                    display: "flex", 
+                    flexDirection: "column", 
+                    alignItems: "flex-start",
+                    width: "100%",
+                    maxWidth: "100%",
+                },
+                className: "epayco-payment-label-responsive"
+            },
+                (0, e.createElement)(o, { text: title }),
+                (0, e.createElement)("img", {
+                    src: "https://multimedia.epayco.co/plugins-sdks/PaymentsCreditCards.svg",
+                    alt: "ePayco",
+                    style: {
+                        maxWidth: "360px",
+                        width: "100%",
+                        margin: "10px 0px",
+                        maxHeight: "none",
+                        height: "auto"
+                    }
+                }),
+                (0, e.createElement)("style", null, `
+                    @media (max-width: 480px) {
+                        .epayco-payment-label-responsive img {
+                            max-width: 100% !important;
+                            width: 100% !important;
+                            height: auto !important;
+                        }
+                        .epayco-payment-label-responsive {
+                            align-items: stretch !important;
+                        }
+                    }
+                `)
+            );
+}), null),
             content: (0, e.createElement)(u, null),
             edit: (0, e.createElement)(u, null),
             canMakePayment: () => !0,

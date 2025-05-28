@@ -27,6 +27,12 @@ if (!defined('ABSPATH')) {
 if (!defined('EPAYCO_SUBSCRIPTION_SE_VERSION')) {
     define('EPAYCO_SUBSCRIPTION_SE_VERSION', '3.0.1');
 }
+define( 'EPAYCO_PLUGIN_SUSCRIPCIONES_URL', plugin_dir_url( __FILE__ ) );
+
+if ( ! defined( 'EPAYCO_PLUGIN_PATH' ) ) {
+	define( 'EPAYCO_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+}
+
 
 defined('EPS_PLUGIN_FILE') || define('EPS_PLUGIN_FILE', __FILE__);
 //require_once dirname(__FILE__) . '/vendor/autoload.php';
@@ -638,3 +644,90 @@ add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $siz
     }
     return $image;
 }, 10, 4);
+
+
+//cron 
+
+//Limpia y elimina acciones programadas al momento de la desactivación del plugin
+function epayco_suscripcion_cron_job_deactivation() {
+    //elimina todas las tareas programadas del hook -> hook woocommerc_epayco_suscripcion_cron_hook
+    wp_clear_scheduled_hook('woocommerc_epayco_suscripcion_cron_hook');
+    //Elimina cualquier accion programada de Action scheduler con el hook 
+    //elimina una acción programada específica del Action Scheduler, es decir, desprograma una tarea pendiente.
+    as_unschedule_action( 'woocommerce_epayco_suscripcion_cleanup_draft_orders' );
+    //Busca si hay una tarea programada en el hook y si existe la elimina 
+    $timestamp = wp_next_scheduled('woocommerce_epayco_suscripcion_cleanup_draft_orders');
+    if ($timestamp) {
+        wp_unschedule_event($timestamp, 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
+    }
+}
+//Se ejecuta una ves se desactiva el plugin gracias a register_deactivation_hook
+register_deactivation_hook(__FILE__, 'epayco_suscripcion_cron_job_deactivation');
+
+//registra una accion o evento personalizado y cuando se ejecuta el evento se ejecuta la funcion
+add_action('woocommerc_epayco_suscripcion_order_hook', 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
+
+register_deactivation_hook(__FILE__, 'epayco_suscripcion_cron_inactive');
+
+//elimina todas las tareas programadas  asociadas al hook bf_epayco_suscripcion_event cuando se desactiva el plugin
+function epayco_suscripcion_cron_inactive() {
+    wp_clear_scheduled_hook('bf_epayco_suscripcion_event');
+}
+
+// function that registers new custom schedule
+
+//Añade un intervalo de 5 minutos personalizado a los cron jobs de WordPress llamado every_five_minutes
+//que representa 300 segundos (5 minutos) esto permite programar tareas cada 5 minutos
+function bf_add_epayco_suscripcion_schedule( $schedules )
+{
+
+    $schedules[ 'every_five_minutes' ] = array(
+        'interval' => 300,
+        'display'  => 'Every 5 minutes',
+    );
+
+    return $schedules;
+}
+
+// function that schedules epayco event
+
+//añade el nuevo intervalo al sistema y programa el evento  bf_epayco_suscripcion_event que se ejecuta cada 5 minutos si aun no esta 
+// programado 
+function bf_schedule_epayco_suscripcion_event() 
+{
+    // the actual hook to register new epayco schedule
+    //añade el nuevo intervalo de 5 minutos al sistema
+    add_filter( 'cron_schedules', 'bf_add_epayco_suscripcion_schedule' );
+
+    // schedule epayco event
+    //Valida si ya hay una tarea programada en el hook bf_epayco_suscripcion_event, si no existe la programa
+    if( !wp_next_scheduled( 'bf_epayco_suscripcion_event' ) )
+    {
+        //y se ejecutara cada 5 minutos
+        wp_schedule_event( time(), 'every_five_minutes', 'bf_epayco_suscripcion_event' );
+    }
+}
+
+//se engancha el evento init para que se ejecute cada vez que wordpress se inicializa
+add_action( 'init', 'bf_schedule_epayco_suscripcion_event' );
+
+
+//es la que se ejecuta cada ves que el evento bf_schedule_epayco_suscripcion_event es ejecutado
+function bf_do_something_on_schedule_suscripcion()
+{
+    //se llama un metodo de la clase WC_Gateway_Epayco que se encarga de consultar el estado de las ordenes
+    //verifica si existe la clase, asegura que el plugin este activo y cargando 
+    if (class_exists('EpaycoSuscription')) {
+        //si existe crea la instancia de la clase 
+        $ePayco = new EpaycoSuscription();
+        //una ves creada llama el metodo que se encarga de realizar varias tareas 
+        $ePayco->woocommerc_epayco_suscripcion_cron_job_funcion();
+    }
+    
+}
+//bf_epayco_suscripcion_event es el nombre del evento y bf_do_something_on_schedule_suscripcion es la funcion que se ejecutara cada ves que se dispare el evento
+add_action( 'bf_epayco_suscripcion_event', 'bf_do_something_on_schedule_suscripcion' );
+
+//resumen cada 5 minutos wordpress ejecuta esta funcion para que el plugin epayco 
+//revice y actualice automaticamente los estados de las ordenes manteniendo sincronizada los pagos de suscripciones.
+
