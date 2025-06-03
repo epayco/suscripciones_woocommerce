@@ -39,16 +39,11 @@ class EpaycoSuscription extends AbstractGateway
      */
     public function __construct()
     {
-        //llama al constructor de la clase padre
         parent::__construct();
-        //Configura propiedades baasicas del gateway
         $this->id        = self::ID;
         $this->title     = $this->epaycosuscription->storeConfig->getGatewayTitle($this, 'epayco');
-        //inicializa los campos del formulario de configuracion del gateway
         $this->init_form_fields();
-        //inicializa los scripts de pago del gateway
         $this->payment_scripts($this->id);
-        //define las funciones soportadas por el gateway
         $this->supports = [
             'subscriptions',
             'subscription_suspension',
@@ -59,7 +54,7 @@ class EpaycoSuscription extends AbstractGateway
         $this->description        = 'Pagos de suscripciónes con epayco';
         $this->method_title       = 'Suscripciónes ePayco';
         $this->method_description = 'Crea productos de suscripciónes para tus clientes';
-        //registra hooks y endpoints 
+      
         $this->epaycosuscription->hooks->gateway->registerUpdateOptions($this);
         $this->epaycosuscription->hooks->gateway->registerGatewayTitle($this);
         //  $this->epaycosuscription->hooks->gateway->registerThankyouPage($this->id, [$this, 'saveOrderPaymentsId']);
@@ -77,12 +72,8 @@ class EpaycoSuscription extends AbstractGateway
         add_action('woocommerce_subscription_status_cancelled', [$this, 'on_wc_subscription_cancelled']);
 
         add_action('woocommerce_epayco_suscripcion_cleanup_draft_orders', [$this, 'delete_epayco_expired_draft_orders']);
-        //se encarga de actualizar los estados de los pedidos consultando la api de epayco.
-        //¡IMPORTANTE!
         add_action('woocommerc_epayco_suscripcion_cron_hook', [$this, 'woocommerc_epayco_suscripcion_cron_job_funcion']);
-
         add_action('admin_init', [$this, 'install']);
-        //configuracion del sdk
         $this->epaycoSdk = new EpaycoSdk\Epayco(
             [
                 "apiKey" => $this->get_option('apiKey'),
@@ -97,15 +88,11 @@ class EpaycoSuscription extends AbstractGateway
     {
         $this->maybe_create_cronjobs();
     }
-
     protected function maybe_create_cronjobs()
     {
-        //verifica si el rastreo de orden está habilitado si es asi continua 
         $cron_data = $this->cron_data == "yes" ? true : false;
         if ($cron_data) {
-            //verifica si ya hay una accion programada con ese nombre 
             if (function_exists('as_next_scheduled_action') && false === as_next_scheduled_action('woocommerce_epayco_suscripcion_cleanup_draft_orders')) {
-                //si no existe la crea y se ejecuta cada hora
                 as_schedule_recurring_action(time() + 3600, 3600, 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
             }
         }
@@ -115,24 +102,18 @@ class EpaycoSuscription extends AbstractGateway
     public function woocommerc_epayco_suscripcion_cron_job_funcion()
     {
 
-        //verifica si el rastreo de orden está habilitado si es asi continua
         if (isset($this->cron_data)) {
             $cron_data = $this->cron_data == "yes" ? true : false;
             if ($cron_data) {
-                //llama a este metodo que busca y actualiza los estados de los pedidos 
-                //en pendientes consultando la api de epayco. 
-                $this->updateStatusSubscription();
+            $this->updateStatusSubscription();
             }
         }
-        // Aquí va la lógica para consultar y actualizar las suscripciones
 
     }
 
     public function delete_epayco_expired_draft_orders()
     {
-        //llama a este metodo 
-        //busca pedidos en pendientes relacionados con epayco, sincroniza los estados con la api de epayco
-        // y puede actualizar o limpiar pedidos expirados. 
+       
         $this->updateStatusSubscription();
     }
 
@@ -254,9 +235,9 @@ class EpaycoSuscription extends AbstractGateway
     /**
      * Output the gateway settings screen.
      */
-    //muestra lA configuracion del gateway en el panel de administracion de woocommerce
+  
     public function admin_options()
-    {  //!importante¡
+    { 
 ?>
         <img src="<?php echo EPAYCO_PLUGIN_SUSCRIPCIONES_URL . '/assets/images/iconoepayco2025.png' ?>">
         <div style="color: #31708f; background-color: #d9edf7; border-color: #bce8f1; padding: 10px; border-radius: 5px;">
@@ -270,7 +251,6 @@ class EpaycoSuscription extends AbstractGateway
         <table class="form-table">
             <tbody>
                 <?php
-                //muestra la tabla de configuracion del gateway
                 $this->generate_settings_html();
                 ?>
             </tbody>
@@ -285,7 +265,7 @@ class EpaycoSuscription extends AbstractGateway
      *
      * @return void
      */
-    //carga los scripts del gateway en el checkout
+ 
     public function payment_scripts(string $gatewaySection): void
     {
         parent::payment_scripts($gatewaySection);
@@ -300,7 +280,7 @@ class EpaycoSuscription extends AbstractGateway
      *
      * @return void
      */
-    //registra los scripts del gateway en el checkout
+   
     public function registerCheckoutScripts(): void
     {
         parent::registerCheckoutScripts();
@@ -334,7 +314,6 @@ class EpaycoSuscription extends AbstractGateway
      * @throws Exception
      */
 
-    //procesa el pago de una orden cuando el cliente selecciona el gateway de ePayco
     public function process_payment($order_id): array
     {
         $order = wc_get_order($order_id);
@@ -358,17 +337,13 @@ class EpaycoSuscription extends AbstractGateway
      *
      * @param $order_id
      */
-    //redirige al cliente a la pagina de recibo del checkout de ePayco mostrando el formulario 
-    //y los datos necesarios para completar el pago de la orden
     public function receiptPage($order_id): void
     {
         global $woocommerce;
         global $wpdb;
-        //obtine la orden y la suscripcion asociada a la orden
         $subscription = new \WC_Subscription($order_id);
         $order = wc_get_order($order_id);
-        $order_data = $order->get_data(); // The Order data
-        //prepara los datos del cliente y de la orden
+        $order_data = $order->get_data();
         $name_billing = $subscription->get_billing_first_name() . ' ' . $subscription->get_billing_last_name();
         $email_billing = $subscription->get_billing_email();
         $redirect_url = get_site_url() . "/";
@@ -398,7 +373,7 @@ class EpaycoSuscription extends AbstractGateway
             $resultado = substr($product_name, 0, 19);
             $product_name_ = $resultado . "...";
         }
-        //obtiene url de recursos 
+      
         $logo_comercio = plugins_url('assets/images/comercio.png', EPS_PLUGIN_FILE);
         $style = plugins_url('assets/css/style.css', EPS_PLUGIN_FILE);
         $general = plugins_url('assets/css/general.min.css', EPS_PLUGIN_FILE);
@@ -413,7 +388,7 @@ class EpaycoSuscription extends AbstractGateway
         //$epaycojs ="https://checkout.epayco.co/epayco.min.js";
         $epaycocheckout =  plugins_url('assets/js/epaycocheckout.js', EPS_PLUGIN_FILE);
 
-        //detecta el idioma y el paus del cliente utilizando la ip del cliente
+       
         $lang = get_locale();
         $lang = explode('_', $lang);
         $lang = $lang[0];
@@ -521,8 +496,7 @@ class EpaycoSuscription extends AbstractGateway
                     $this->epaycosuscription->helpers->url->getCssAsset('animate')
                 );
         */
-        //llama a una plantilla de checkout personalizada para mostrar el formulario de pago y le pasa todos los datos compilados 
-        //para mostrar el formulario de pago al cliente
+       
         $this->epaycosuscription->hooks->template->getWoocommerceTemplate(
             'public/checkout/subscription.php',
             [
@@ -555,14 +529,13 @@ class EpaycoSuscription extends AbstractGateway
         );
     }
 
-    //Gestiona el webhook de epayco para recibir notificaciones de pago validar y crear el cliente y el plan si es necesario 
-    // actualizar el estado de la orden y la suscripcion en woocomerce 
+   
     public function webhook(): void
     {
 
         global $woocommerce;
         global $wpdb;
-        //verifica la nonce de seguridad para evitar ataques CSRF
+       
         if (!isset($_REQUEST['_wpnonce']) || !\wp_verify_nonce(\sanitize_text_field(\wp_unslash($_REQUEST['_wpnonce'])), 'epayco_subscription_action')) {
             if (!function_exists('wp_die') || !function_exists('__')) {
                 require_once ABSPATH . 'wp-includes/pluggable.php';
@@ -591,7 +564,7 @@ class EpaycoSuscription extends AbstractGateway
         $cache_key = "epayco_customer_{$this->custIdCliente}_{$customerData['email']}";
         $customerGetData = wp_cache_get($cache_key, 'epayco');
 
-        // Consulta en la base de datos si existe el cliente con ese email e id_payco
+       
 
         if ($customerGetData === false) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
@@ -604,18 +577,18 @@ class EpaycoSuscription extends AbstractGateway
                 ),
                 ARRAY_A
             );
-            // Si encuentra datos, los guarda en caché por 1 hora
+          
 
             if (!empty($customerGetData)) {
                 wp_cache_set($cache_key, $customerGetData, 'epayco', 3600); // Cache por 1 hora
             }
         }
-        // Si NO existe el cliente en la base de datos
+     
 
         if (count($customerGetData) == 0) {
-            // Crea el cliente en ePayco usando la API
+            
             $customer = $this->customerCreate($customerData);
-            // Si hay error al crear el cliente, prepara el mensaje de error
+           
             if ($customer->data->status == 'error' || !$customer->status) {
                 $response_status = [
                     'status' => false,
@@ -624,8 +597,7 @@ class EpaycoSuscription extends AbstractGateway
 
                 ];
             }
-            // Inserta el cliente en la base de datos local
-
+          
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
             $inserCustomer = $wpdb->insert(
                 $table_name_setings,
@@ -636,7 +608,7 @@ class EpaycoSuscription extends AbstractGateway
                     'email' => $customerData['email']
                 ]
             );
-            // Si falla el insert, prepara mensaje de error
+           
 
             if (!$inserCustomer) {
                 $response_status = [
@@ -645,8 +617,7 @@ class EpaycoSuscription extends AbstractGateway
                 ];
             }
             $customerData['customer_id'] = $customer->data->customerId;
-            // Si el cliente ya existe en la base de datos
-
+           
         } else {
             $count_customers = 0;
             for ($i = 0; $i < count($customerGetData); $i++) {
@@ -655,7 +626,7 @@ class EpaycoSuscription extends AbstractGateway
                     $count_customers += 1;
                 }
             }
-            // Si no hay coincidencia de email, crea el cliente
+           
 
             if ($count_customers == 0) {
                 $customer = $this->customerCreate($customerData);
@@ -686,14 +657,14 @@ class EpaycoSuscription extends AbstractGateway
                     ];
                 }
                 $customerData['customer_id'] = $customer->data->customerId;
-                // Si el cliente existe, revisa si el token cambió
+               
 
             } else {
                 for ($i = 0; $i < count($customerGetData); $i++) {
                     $email = $customerGetData[$i]->email ?? $customerGetData[0]['email'];
                     $token_id = $customerGetData[$i]->token_id ?? $customerGetData[0]['token_id'];
                     $customer_id = $customerGetData[$i]->customer_id ?? $customerGetData[0]['customer_id'];
-                    // Si el token cambió, lo actualiza en ePayco y en la base de datos
+                
                     if ($email == $customerData['email'] && $token_id != $token) {
                         $this->customerAddToken($customer_id, $token);
                         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
@@ -726,43 +697,37 @@ class EpaycoSuscription extends AbstractGateway
         $getPlans = $this->getPlans($plans);
         //$getPlansList = $this->getPlansList();
 
-        // Si NO existe el plan en ePayco, lo crea y lo valida
         if (!$getPlans) {
             $validatePlan_ = $this->validatePlan(true, $order_id, $plans, $subscriptions, $customerData, $confirm_url, $order, false, false, null);
         } else {
-            // Si ya existe el plan, solo lo valida
             $validatePlan_ = $this->validatePlan(false, $order_id, $plans, $subscriptions, $customerData, $confirm_url, $order, true, false, $getPlans);
         }
 
-        // Si la validación retorna algo, lo procesa
-
         if ($validatePlan_) {
             try {
-                $response_status = $validatePlan_;
+            $response_status = $validatePlan_;
             } catch (Exception $exception) {
-                echo esc_html($exception->getMessage());
-                die();
+            echo esc_html($exception->getMessage());
+            die();
             }
         }
-        // Si hubo error, muestra mensaje y redirige al usuario a pagar de nuevo
 
         if (!$response_status['status']) {
             wc_add_notice($response_status['message'], 'error');
             $order = new \WC_Order($order_id);
             if (version_compare(WOOCOMMERCE_VERSION, '2.1', '>=')) {
-                $redirect = array(
-                    'result' => 'success',
-                    'redirect' => add_query_arg('order-pay', $order->get_id(), add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
-                );
+            $redirect = array(
+                'result' => 'success',
+                'redirect' => add_query_arg('order-pay', $order->get_id(), add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
+            );
             } else {
-                $redirect = array(
-                    'result' => 'success',
-                    'redirect' => add_query_arg('order', $order->get_id(), add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
-                );
+            $redirect = array(
+                'result' => 'success',
+                'redirect' => add_query_arg('order', $order->get_id(), add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))))
+            );
             }
             wp_redirect($redirect["redirect"]);
         } else {
-            // Si todo salió bien, vacía el carrito y redirige al usuario a la URL de éxito de ePayco
             WC()->cart->empty_cart();
             $arguments = array();
             $arguments['ref_payco'] = $response_status['ref_payco'];
@@ -770,25 +735,24 @@ class EpaycoSuscription extends AbstractGateway
             $redirect_url = add_query_arg($arguments, $redirect_url);
             wp_redirect($redirect_url);
         }
-    }
+        }
 
-    //crear customer en ePayco
-    public function customerCreate(array $data)
-    {
+        public function customerCreate(array $data)
+        {
         $customer = false;
         try {
             $customer = $this->epaycoSdk->customer->create(
-                [
-                    "token_card" => $data['token_card'],
-                    "name" => $data['name'],
-                    "email" => $data['email'],
-                    "phone" => $data['phone'],
-                    "cell_phone" => $data['phone'],
-                    "country" => $data['country'],
-                    "city" => $data['city'],
-                    "address" => $data['address'],
-                    "default" => true
-                ]
+            [
+                "token_card" => $data['token_card'],
+                "name" => $data['name'],
+                "email" => $data['email'],
+                "phone" => $data['phone'],
+                "cell_phone" => $data['phone'],
+                "country" => $data['country'],
+                "city" => $data['city'],
+                "address" => $data['address'],
+                "default" => true
+            ]
             );
         } catch (Exception $exception) {
             echo esc_html('create client: ' . $exception->getMessage());
@@ -796,18 +760,17 @@ class EpaycoSuscription extends AbstractGateway
         }
 
         return $customer;
-    }
+        }
 
-    //agregar token al customer en ePayco
-    public function customerAddToken($customer_id, $token_card)
-    {
+        public function customerAddToken($customer_id, $token_card)
+        {
         $customer = false;
         try {
             $customer = $this->epaycoSdk->customer->addNewToken(
-                [
-                    "token_card" => $token_card,
-                    "customer_id" => $customer_id
-                ]
+            [
+                "token_card" => $token_card,
+                "customer_id" => $customer_id
+            ]
             );
         } catch (Exception $exception) {
             echo esc_html('add token: ' . $exception->getMessage());
@@ -815,79 +778,69 @@ class EpaycoSuscription extends AbstractGateway
         }
 
         return $customer;
-    }
+        }
 
-    //mostrar planes de ePayco
-    public function getPlans(array $plans)
-    {
+        public function getPlans(array $plans)
+        {
         foreach ($plans as $key => $plan) {
             try {
-                $plan = $this->epaycoSdk->plan->get(strtolower($plans[$key]['id_plan']));
-                if ($plan->status) {
-                    unset($plans[$key]);
-                    return $plan;
-                } else {
-                    return false;
-                }
+            $plan = $this->epaycoSdk->plan->get(strtolower($plans[$key]['id_plan']));
+            if ($plan->status) {
+                unset($plans[$key]);
+                return $plan;
+            } else {
+                return false;
+            }
             } catch (Exception $exception) {
-                echo esc_html($exception->getMessage());
-                die();
+            echo esc_html($exception->getMessage());
+            die();
             }
         }
-    }
+        }
 
-    //lista los planes de ePayco
-    public function getPlansList()
-    {
+        public function getPlansList()
+        {
         try {
             $plan = $this->epaycoSdk->plan->getList();
             if ($plan->status) {
-                return $plan;
+            return $plan;
             } else {
-                return false;
+            return false;
             }
         } catch (Exception $exception) {
             echo esc_html($exception->getMessage());
             die();
         }
-    }
+        }
 
-
-    //mostrar plan por id
-    public function getPlanById($plan_id)
-    {
+        public function getPlanById($plan_id)
+        {
         try {
             $plan = $this->epaycoSdk->plan->get(strtolower($plan_id));
             if ($plan->status) {
-                return $plan;
+            return $plan;
             } else {
-                return false;
+            return false;
             }
         } catch (Exception $exception) {
             echo esc_html($exception->getMessage());
             die();
         }
-    }
+        }
 
 
-    //valida que el plan de suscripcion de epayco exista y sea correcto. si no lo crea y si existe lo valida y continua
     public function validatePlan($create, $order_id, array $plans, $subscriptions, $customer, $confirm_url, $order, $confirm = null, $update = null, $getPlans = null)
     {
-
         if ($create) {
-            //crea el plan de suscripcion en ePayco
             $newPLan = $this->plansCreate($plans);
             if ($newPLan->status) {
-                //si el plan fue creado correctamente, obtiene el plan de ePayco
                 $getPlans_ = $this->getPlans($plans);
                 if ($getPlans_) {
                     $eXistPLan = $this->validatePlanData($plans, $getPlans_, $order_id, $subscriptions, $customer, $confirm_url, $order);
                 } else {
-                    //si existe el plan llama a  validatePlanData para validar los datos del plan y continua 
                     $this->validatePlan(true, $order_id, $plans, $subscriptions, $customer, $confirm_url, $order, false, false, null);
                 }
             } else {
-                //si el plan no fue creado correctamente, retorna un mensaje de error
                 $response_status = [
                     'status' => false,
 
@@ -905,13 +858,11 @@ class EpaycoSuscription extends AbstractGateway
         return $eXistPLan;
     }
 
-    //valida si el plan de suscripcion del carrito concuerda con el plan creado en ePayco, si no concuerda lo actualiza y continua
     public function validatePlanData($plans, $getPlans, $order_id, $subscriptions, $customer, $confirm_url, $order)
     {
         global $wpdb;
         $table_name = $wpdb->prefix . 'epayco_plans';
         $wc_order_product_lookup = $wpdb->prefix . "wc_order_product_lookup";
-        //obtiene los datos del carrito y del plan 
         foreach ($plans as $plan) {
             $plan_amount_cart = $plan['amount'];
             $plan_id_cart = $plan['id_plan'];
@@ -920,9 +871,9 @@ class EpaycoSuscription extends AbstractGateway
         $plan_amount_epayco = $getPlans->plan->amount;
         $plan_id_epayco = $getPlans->plan->id_plan;
         $plan_currency_epayco = $getPlans->plan->currency;
-        //validar que el id del plan del carrito concuerda con el plan creado
+
         if ($plan_id_cart == $plan_id_epayco) {
-            //validar que el valor del carrito de compras concuerda con el del plan creado
+
             try {
                 if (intval($plan_amount_cart) == $plan_amount_epayco) {
                     return $this->process_payment_epayco($plans, $customer, $confirm_url, $subscriptions, $order);
@@ -944,27 +895,17 @@ class EpaycoSuscription extends AbstractGateway
     {
         global $wpdb;
 
-        // 1. Intenta actualizar el plan en ePayco con los nuevos datos
-        //estos datos son los que provienen del carrito de compras y que pueden ser diferentes a los del plan creado en ePayco
+
         $subsCreated = $this->planUpdate($plans);
         if ($subsCreated->success) {
-            // Si la actualización fue exitosa, procesa el pago normalmente
+
             return $this->process_payment_epayco($plans, $customer, $confirm_url, $subscriptions, $order);
         }
         die();
 
-
-
-        // --- El resto del código es redundante y probablemente nunca se ejecuta por el die() anterior ---
-
-        // 2. Obtiene información de productos y planes relacionados con la orden y la suscripción
-        // 3. Si no hay datos del plan en la base de datos, los guarda y crea un nuevo plan con el precio actualizado
-        // 4. Si ya hay datos, obtiene el plan por ID y procesa el pago con esos datos
-
-        // (Este bloque solo se ejecutaría si se elimina el die() anterior)
         $table_name = $wpdb->prefix . 'epayco_plans';
         $wc_order_product_lookup = $wpdb->prefix . "wc_order_product_lookup";
-        /*valida la actualizacion del precio del plan*/
+
         foreach ($subscriptions as $key => $subscription) {
             $products = $subscription->get_items();
             $product_plan = $this->getPlan($products);
@@ -1058,7 +999,7 @@ class EpaycoSuscription extends AbstractGateway
                             "interval_count" => $plan_interval_count_cart,
                         ];
 
-                        //crear nuevo plan con precio actualizado
+
                         $newPLan = $this->plansCreate($newPlanToCreated);
                         if ($newPLan->status) {
                             $getPlans_ = $this->getPlans($newPlanToCreated);
@@ -1093,7 +1034,7 @@ class EpaycoSuscription extends AbstractGateway
     }
 
 
-    //crea el plan de suscripcion en ePayco
+
     public function plansCreate(array $plans)
     {
 
@@ -1122,7 +1063,7 @@ class EpaycoSuscription extends AbstractGateway
         }
     }
 
-    //crear la suscripcion en ePayco
+
     public function subscriptionCreate(array $plans, array $customer, $confirm_url)
 
     {
@@ -1149,7 +1090,7 @@ class EpaycoSuscription extends AbstractGateway
         }
     }
 
-    //procesa el pago de la suscripcion en ePayco
+
     public function subscriptionCharge(array $plans, array $customer, $confirm_url)
     {
         $subs = [];
@@ -1177,7 +1118,7 @@ class EpaycoSuscription extends AbstractGateway
         return $subs;
     }
 
-    //actualiza el plan de suscripcion en ePayco
+
     public function planUpdate(array $plans)
     {
         foreach ($plans as $plan) {
@@ -1206,7 +1147,7 @@ class EpaycoSuscription extends AbstractGateway
         }
     }
 
-    //cancela la suscripcion en ePayco
+
 
     public function cancelSubscription($subscription_id)
     {
@@ -1215,11 +1156,11 @@ class EpaycoSuscription extends AbstractGateway
             error_log("ePayco cancel result: " . print_r($result, true));
         } catch (Exception $exception) {
             error_log("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
-            throw $exception; // Para ver el error en pantalla si estás en desarrollo
+            throw $exception;
         }
     }
 
-    //obtiene la suscripcion de woocommerce a partir del id de la orden
+
     private function getWooCommerceSubscriptionFromOrderId($orderId)
     {
         $subscriptions = wcs_get_subscriptions_for_order($orderId);
@@ -1227,7 +1168,7 @@ class EpaycoSuscription extends AbstractGateway
         return $subscriptions;
     }
 
-    // Establece los datos de identificación de pagos en el pedido de WooCommerce.
+
     public function setPaymentsIdData(\WC_Order $order, $value): void
     {
         try {
@@ -1251,11 +1192,11 @@ class EpaycoSuscription extends AbstractGateway
             if (is_array($subscription)) {
                 foreach ($subscription as $sub) {
                     if ($sub instanceof \WC_Subscription) {
-                        $sub->delete_meta_data(self::ID); // Elimina cualquier valor anterior
-                        $sub->update_meta_data(self::ID, $value); // Inserta el nuevo valor
-                        $sub->save(); // Guarda cambios
+                        $sub->delete_meta_data(self::ID);
+                        $sub->update_meta_data(self::ID, $value);
+                        $sub->save();
 
-                        // Reinstancia para asegurarte de leer el valor actualizado
+
                         $sub = wcs_get_subscription($sub->get_id());
                         $logger->add($this->id, "Metadato ePayco guardado en suscripción #{$sub->get_id()}: " . $sub->get_meta(self::ID));
                     } else {
@@ -1275,7 +1216,7 @@ class EpaycoSuscription extends AbstractGateway
 
 
 
-    //obtiene los parametros de facturacion del cliente a partir de la suscripcion, necesarios para crear el cliente en epayco y procesar el pago
+
     public function paramsBilling($subscriptions, $order, $customerCard, $customerName)
     {
         $data = [];
@@ -1283,7 +1224,7 @@ class EpaycoSuscription extends AbstractGateway
         if ($subscription) {
 
 
-            // Recuperar campos adicionales en el archivo EpaycoSuscription.php
+
             $doc_number = get_post_meta($subscription->get_id(), '_epayco_billing_dni', true) != null ? get_post_meta($subscription->get_id(), '_epayco_billing_dni', true) : $order->get_meta('_epayco_billing_dni');
             $type_document = get_post_meta($subscription->get_id(), '_epayco_billing_type_document', true) != null ? get_post_meta($subscription->get_id(), '_epayco_billing_type_document', true) : $order->get_meta('_epayco_billing_type_document');
 
@@ -1310,9 +1251,7 @@ class EpaycoSuscription extends AbstractGateway
         }
     }
 
-    //Genera un array con la informacion de los planes de suscripcion a partir de las suscripciones de woocommerce
-    //para ser usados en la creacion o validacion de planes en epayco.
-    //sirve para actualizar o validar los planes de suscripcion en epayco segurando que toda la informacion relevante este incluida y constantemente formateada.
+
     public function getPlansBySubscription(array $subscriptions)
     {
         $plans = [];
@@ -1366,17 +1305,15 @@ class EpaycoSuscription extends AbstractGateway
         return $plans;
     }
 
-    //Genera un array con la informacion de los planes de suscripcion a partir de las suscripciones de woocommerce
-    //pero forrzando la creacion de un identificador de plan (añadiendo un numero aleatorio al final del id del plan)
-    //para asegurar que el plan sea unico y no se repita en ePayco.
+
     public function updatePlansBySubscription(array $subscriptions)
     {
-        //genera un numero aleatorio 
+
         $ran = wp_rand(1, 999);
         $plans = [];
-        //se recorre cada suscripcion de woocommerce
+
         foreach ($subscriptions as $key => $subscription) {
-            //obtiene los datos relevantes 
+
             $total_discount = $subscription->get_total_discount();
             $order_currency = $subscription->get_currency();
             $products = $subscription->get_items();
@@ -1385,15 +1322,14 @@ class EpaycoSuscription extends AbstractGateway
             $product_name = $product_plan['name'];
             $product_id = $product_plan['id'];
             $trial_days = $this->getTrialDays($subscription);
-            //construye un codigo unico de plan
+
             $plan_code = "$product_name-$product_id";
             $plan_code = $trial_days > 0 ? "$product_name-$product_id-$trial_days" : $plan_code;
             $plan_code = get_option('woocommerce_currency') !== $order_currency ? "$plan_code-$order_currency" : $plan_code;
             $plan_code = $quantity > 1 ? "$plan_code-$quantity" : $plan_code;
             $plan_code = $total_discount > 0 ? "$plan_code-$total_discount" : $plan_code;
             $plan_code = rtrim($plan_code, "-");
-            //prepara el array con los datos del plan
-            //agrega el plan al array de planes
+
             $plans[] = array_merge(
                 [
                     "id_plan" => $plan_code . '-' . $ran,
@@ -1407,7 +1343,6 @@ class EpaycoSuscription extends AbstractGateway
                 $this->intervalAmount($subscription)
             );
         }
-        //devuelve el array de planes listo para ser usado en la creacion o validacion de planes en ePayco.
         return $plans;
     }
 
@@ -1676,7 +1611,6 @@ class EpaycoSuscription extends AbstractGateway
         $subsCreated = $this->subscriptionCreate($plans, $customerData, $confirm_url);
 
         if ($subsCreated->status) {
-            // Guardar el ID de la suscripción de ePayco en la suscripción de WooCommerce
             if (isset($subsCreated->id)) {
                 $epayco_subscription_id = $subsCreated->id;
                 if (wcs_order_contains_subscription($order->get_id())) {
@@ -2036,118 +1970,7 @@ class EpaycoSuscription extends AbstractGateway
         }
     }
 
-    // public function updateStatusSubscription()
-    // {
-    //     $subs = $this->epaycoSdk->subscriptions->getList();
-    //     $logger = new \WC_Logger();
 
-    //     if (!empty($subs->data)) {
-    //         foreach ($subs->data as $epayco_subscription) {
-    //             $epayco_id = $epayco_subscription->_id ?? null;
-    //             $epayco_status = strtolower($epayco_subscription->status ?? '');
-
-    //             if (empty($epayco_id)) {
-    //                 $logger->add(self::LOG_SOURCE, "Suscripción sin ID encontrada, omitiendo...");
-    //                 continue;
-    //             }
-
-    //             $logger->add(self::LOG_SOURCE, "Consultando suscripción SDK ePayco : ID={$epayco_id}, status_plan={$epayco_status}");
-
-    //             // Buscar en las suscripciones de WooCommerce por meta key + value
-    //             $args = [
-    //                 'post_type'      => 'shop_subscription',
-    //                 'post_status'    => 'any',
-    //                 'posts_per_page' => -1,
-    //                 'fields'         => 'ids',
-    //                 'meta_query'     => [
-    //                     [
-    //                         'key'     => '_epayco_subscription_id',
-    //                         'value'   => strval(trim($epayco_id)),
-    //                         'compare' => '=',
-    //                     ],
-    //                 ],
-    //             ];
-
-    //             // $all_subs = get_posts([
-    //             //     'post_type' => 'shop_subscription',
-    //             //     'post_status' => 'any',
-    //             //     'posts_per_page' => -1,
-    //             //     'fields' => 'ids',
-    //             // ]);
-
-    //             // Debug: Verifica los IDs de suscripciones que cumplen con el meta_query
-    //             foreach ($args['meta_query'] as $meta_query) {
-    //                 $logger->add(
-    //                     self::LOG_SOURCE,
-    //                     "Buscando suscripciones con meta key={$meta_query['key']} y value={$meta_query['value']}"
-    //                 );
-    //             }
-
-    //             global $wpdb;
-    //             $meta = $wpdb->get_results(
-    //                 $wpdb->prepare(
-    //                     "SELECT * FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s",
-    //                     '_epayco_subscription_id',
-    //                     strval(trim($epayco_id))
-    //                 )
-    //             );
-    //             $logger->add(self::LOG_SOURCE, "Consulta directa encontró: " . count($meta));
-
-    //             if (!empty($meta)) {
-    //                 foreach ($meta as $row) {
-    //                     $logger->add(self::LOG_SOURCE, "Post ID: " . $row->post_id . ", Meta Value: " . $row->meta_value);
-    //                 }
-    //             } else {
-    //                 $logger->add(self::LOG_SOURCE, "No se encontraron resultados.");
-    //             }
-
-
-    //             // $wc_subscriptions = get_posts($args);
-    //             // $logger->add(self::LOG_SOURCE, "Suscripciones encontradas: " . count($wc_subscriptions));
-
-    //             if (!empty($wc_subscriptions)) {
-    //                 foreach ($wc_subscriptions as $wc_subscription_id) {
-    //                     $wc_subscription = wcs_get_subscription($wc_subscription_id);
-    //                     $current_status = $wc_subscription->get_status();
-
-    //                     // Determinar nuevo estado deseado
-    //                     $desired_status = null;
-    //                     if (in_array($epayco_status, ['inactive', 'cancelled', 'canceled'])) {
-    //                         $desired_status = 'cancelled';
-    //                     } elseif ($epayco_status === 'pending') {
-    //                         $desired_status = 'on-hold';
-    //                     } elseif ($epayco_status === 'active') {
-    //                         $desired_status = 'active';
-    //                     }
-
-    //                     if ($desired_status) {
-    //                         if ($current_status !== $desired_status) {
-    //                             $wc_subscription->update_status($desired_status);
-    //                             $logger->add(
-    //                                 self::LOG_SOURCE,
-    //                                 "Suscripción WooCommerce ID={$wc_subscription_id}: Estado actualizado de '{$current_status}' a '{$desired_status}'"
-    //                             );
-    //                         } else {
-    //                             $logger->add(
-    //                                 self::LOG_SOURCE,
-    //                                 "Suscripción WooCommerce ID={$wc_subscription_id} ya está en estado '{$current_status}', sin cambios."
-    //                             );
-    //                         }
-    //                     } else {
-    //                         $logger->add(
-    //                             self::LOG_SOURCE,
-    //                             "Suscripción WooCommerce ID={$wc_subscription_id}: Estado ePayco '{$epayco_status}' no reconocido"
-    //                         );
-    //                     }
-    //                 }
-    //             } else {
-    //                 $logger->add(self::LOG_SOURCE, "No se encontró suscripción WooCommerce para ePayco ID={$epayco_id}");
-    //             }
-    //         }
-    //     } else {
-    //         $logger->add(self::LOG_SOURCE, "No se encontraron suscripciones en ePayco para sincronizar.");
-    //     }
-    // }
 
     public function updateStatusSubscription()
     {
@@ -2197,7 +2020,6 @@ class EpaycoSuscription extends AbstractGateway
                 );
                 $logger->add(self::LOG_SOURCE, "Consulta directa encontró: " . count($meta));
 
-                // Si encuentra el metadato, actualiza el estado de la suscripción
                 if (!empty($meta)) {
                     foreach ($meta as $row) {
                         $wc_subscription_id = $row->post_id;
@@ -2237,10 +2059,6 @@ class EpaycoSuscription extends AbstractGateway
                 } else {
                     $logger->add(self::LOG_SOURCE, "No se encontraron resultados.");
                 }
-
-                // Si quieres mantener la lógica de get_posts, puedes dejar este bloque también
-                // $wc_subscriptions = get_posts($args);
-                // if (!empty($wc_subscriptions)) { ... }
             }
         } else {
             $logger->add(self::LOG_SOURCE, "No se encontraron suscripciones en ePayco para sincronizar.");
@@ -2252,7 +2070,6 @@ class EpaycoSuscription extends AbstractGateway
     {
         $logger = new \WC_Logger();
 
-        // Obtén el ID de la suscripción de ePayco guardado en el meta de la suscripción de WooCommerce
         $epayco_subscription_id = get_post_meta($subscription->get_id(), '_epayco_subscription_id', true);
 
         $logger->add('epayco_debug', "Cancelando suscripción WooCommerce ID={$subscription->get_id()}, ePayco ID={$epayco_subscription_id}");
