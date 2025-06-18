@@ -7,7 +7,7 @@
  * @wordpress-plugin
  * Plugin Name:       ePayco Subscriptions for WooCommerce
  * Description:       Plugin ePayco Subscription
- * Version:           6.2.0
+ * Version:           6.3.0
  * Author:            ePayco
  * Text Domain:       epayco-subscriptions-for-woocommerce
  * Author URI:
@@ -27,6 +27,12 @@ if (!defined('ABSPATH')) {
 if (!defined('EPAYCO_SUBSCRIPTION_SE_VERSION')) {
     define('EPAYCO_SUBSCRIPTION_SE_VERSION', '3.0.1');
 }
+define( 'EPAYCO_PLUGIN_SUSCRIPCIONES_URL', plugin_dir_url( __FILE__ ) );
+
+if ( ! defined( 'EPAYCO_PLUGIN_PATH' ) ) {
+	define( 'EPAYCO_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+}
+
 
 defined('EPS_PLUGIN_FILE') || define('EPS_PLUGIN_FILE', __FILE__);
 //require_once dirname(__FILE__) . '/vendor/autoload.php';
@@ -117,7 +123,6 @@ function registerBlocks(): void
         );
     }
 }
-//Correccion agregar el dominio (epayco-subscriptions-for-woocommerce)
 function register_epayco_suscription_order_status()
 {
     register_post_status('wc-epayco-failed', array(
@@ -433,7 +438,7 @@ function activate_subscription_epayco()
     $charset_collate = $wpdb->get_charset_collate();
 
     
-    // Verifica si la tabla ya existe antes de intentar crearla
+   
    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     if ($wpdb->get_var("SHOW TABLES LIKE '{$table_subscription_epayco}'") !== $table_subscription_epayco) {
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
@@ -477,7 +482,7 @@ function some_custom_checkout_field_update_order_meta($order_id)
 register_activation_hook(__FILE__, 'activate_subscription_epayco');
 
 
-// Guardar campos adicionales en la orden
+
 add_action('woocommerce_set_additional_field_value', function ($key, $value, $group, $wc_object) {
     if ('epayco/billing_type_document' === $key) {
         $wc_object->update_meta_data('_epayco_billing_type_document', $value, true);
@@ -489,9 +494,9 @@ add_action('woocommerce_set_additional_field_value', function ($key, $value, $gr
 
 
 
-//Campos adicionales en el checkout woocommerce blocks
+
 add_action('woocommerce_init', function () {
-    // Registrar campo "Tipo de documento"
+  
     woocommerce_register_additional_checkout_field(
         array(
             'id'          => 'epayco/billing_type_document',
@@ -516,7 +521,6 @@ add_action('woocommerce_init', function () {
     );
 
 
-    // Registrar campo "Número de documento"
     woocommerce_register_additional_checkout_field(
         array(
             'id'          => 'epayco/billing_dni',
@@ -529,7 +533,6 @@ add_action('woocommerce_init', function () {
     );
 });
 
-// Guardar campos adicionales en la orden
 add_action('woocommerce_checkout_update_order_meta', function ($order_id) {
     if (!empty($_POST['epayco_billing_type_document']) && isset($_POST['_wpnonce']) && wp_verify_nonce(sanitize_text_field(wp_unslash($_POST['_wpnonce'])), 'woocommerce-process_checkout')) {
         update_post_meta($order_id, '_epayco_billing_type_document', sanitize_text_field(wp_unslash($_POST['epayco_billing_type_document'])));
@@ -539,7 +542,7 @@ add_action('woocommerce_checkout_update_order_meta', function ($order_id) {
     }
 });
 
-//encolar css 
+
 function epayco_enqueue_styles()
 {
     if (!function_exists('plugins_url') || !function_exists('wp_enqueue_style')) {
@@ -571,15 +574,6 @@ function enqueue_epayco_scripts() {
 add_action('wp_enqueue_scripts', 'enqueue_epayco_scripts');
 
 
-// // Enqueue the script properly in WordPress
-// function enqueue_epayco_cardsjs_script() {
-//     $cardsjs = plugins_url('assets/js/cardsjs.js', EPS_PLUGIN_FILE);
-//     wp_enqueue_script('epayco-cardsjs', esc_url($cardsjs), array(), '1.0.0', true);
-// }
-// add_action('wp_enqueue_scripts', 'enqueue_epayco_cardsjs_script');
-
-
-
 // Enqueue the script properly in WordPress
 function enqueue_epayco_epaycojs_script() {
     if (!function_exists('wp_enqueue_script') || !function_exists('esc_url')) {
@@ -593,7 +587,7 @@ add_action('wp_enqueue_scripts', 'enqueue_epayco_epaycojs_script');
 
 
 
-//images
+
 add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
     if ($attachment_id === 0) {
         // URL de la imagen externa
@@ -638,3 +632,49 @@ add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $siz
     }
     return $image;
 }, 10, 4);
+
+
+function epayco_suscripcion_cron_job_deactivation() {
+    wp_clear_scheduled_hook('woocommerc_epayco_suscripcion_cron_hook');
+    as_unschedule_action('woocommerce_epayco_suscripcion_cleanup_draft_orders');
+    $timestamp = wp_next_scheduled('woocommerce_epayco_suscripcion_cleanup_draft_orders');
+    if ($timestamp) {
+        wp_unschedule_event($timestamp, 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
+    }
+}
+register_deactivation_hook(__FILE__, 'epayco_suscripcion_cron_job_deactivation');
+
+add_action('woocommerc_epayco_suscripcion_order_hook', 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
+
+register_deactivation_hook(__FILE__, 'epayco_suscripcion_cron_inactive');
+
+function epayco_suscripcion_cron_inactive() {
+    wp_clear_scheduled_hook('bf_epayco_suscripcion_event');
+}
+
+function bf_add_epayco_suscripcion_schedule($schedules)
+{
+    $schedules['every_five_minutes'] = array(
+        'interval' => 300,
+        'display'  => 'Every 5 minutes',
+    );
+    return $schedules;
+}
+
+function bf_schedule_epayco_suscripcion_event()
+{
+    add_filter('cron_schedules', 'bf_add_epayco_suscripcion_schedule');
+    if (!wp_next_scheduled('bf_epayco_suscripcion_event')) {
+        wp_schedule_event(time(), 'every_five_minutes', 'bf_epayco_suscripcion_event');
+    }
+}
+add_action('init', 'bf_schedule_epayco_suscripcion_event');
+
+function bf_do_something_on_schedule_suscripcion()
+{
+    if (class_exists('EpaycoSuscription')) {
+        $ePayco = new EpaycoSuscription();
+        $ePayco->woocommerc_epayco_suscripcion_cron_job_funcion();
+    }
+}
+add_action('bf_epayco_suscripcion_event', 'bf_do_something_on_schedule_suscripcion');

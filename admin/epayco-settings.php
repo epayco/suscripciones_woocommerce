@@ -5,7 +5,7 @@ return array(
     'enabled' => array(
         'title' => __('Habilitar/Deshabilitar', 'epayco-subscriptions-for-woocommerce'),
         'type' => 'checkbox',
-        'label' => __('Habilitar ePayco Checkout Suscription', 'epayco-subscriptions-for-woocommerce'),
+        'label' => __('Habilitar ePayco Checkout Suscripción', 'epayco-subscriptions-for-woocommerce'),
         'default' => 'yes'
     ),
     'epayco_title' => array(

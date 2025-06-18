@@ -6,7 +6,7 @@ Tags: e-commerce, checkout, epayco, subscriptions, recurring-payments
 Requires at least: 5.5
 Tested up to: 6.8
 Requires PHP: 7.4 
-Stable tag: 6.2.0
+Stable tag: 6.3.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -80,7 +80,11 @@ Yes, an SSL certificate is required to ensure secure transactions and protect cu
 
 == Changelog ==
 
-= 6.1.0 =
+= 6.1 =
+
+= 6.2 =
+
+= 6.3 =
 * Initial release of the ePayco Subscriptions plugin for WooCommerce.
 
 == Additional Info ==
