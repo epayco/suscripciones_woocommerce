@@ -508,6 +508,7 @@ add_action('woocommerce_init', function () {
             'class'       => ['custom-field-class'],
             'default'     => 'CC',
             'options'     => [
+                ['value' => 'Seleccionar', 'label' => __('Seleccione el tipo de documento', 'epayco-subscriptions-for-woocommerce')],
                 ['value' => 'CC', 'label' => __('Cédula de ciudadanía', 'epayco-subscriptions-for-woocommerce')], // Corregido
                 ['value' => 'CE', 'label' => __('Cédula de extranjería', 'epayco-subscriptions-for-woocommerce')], // Corregido
                 ['value' => 'PPN', 'label' => __('Pasaporte', 'epayco-subscriptions-for-woocommerce')], // Corregido
