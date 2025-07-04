@@ -588,14 +588,13 @@ class EpaycoSuscription extends AbstractGateway
         if (count($customerGetData) == 0) {
             
             $customer = $this->customerCreate($customerData);
-           
             if ($customer->data->status == 'error' || !$customer->status) {
-                $response_status = [
-                    'status' => false,
-                    /* translators: %s será reemplazado con el mensaje de error del cliente */
-                    'message' => sprintf(esc_html__('Error: %s', 'epayco-subscriptions-for-woocommerce'), esc_html($customer->message))
-
-                ];
+                $customerJson = json_decode(json_encode($customer), true);
+                $dataError = $customerJson;
+                $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('El token no se puede asociar al cliente, verifique que: el token existe, el cliente no esté asociado y que el token no este asociado a otro cliente.', 'epayco-subscriptions-for-woocommerce'));
+                wc_add_notice($error, 'error');
+                wp_redirect(wc_get_checkout_url());
+                exit;
             }
           
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
@@ -611,10 +610,12 @@ class EpaycoSuscription extends AbstractGateway
            
 
             if (!$inserCustomer) {
-                $response_status = [
-                    'status' => false,
-                    'message' => __('internar error, tray again', 'epayco-subscriptions-for-woocommerce')
-                ];
+                $customerJson = json_decode(json_encode($customer), true);
+                $dataError = $customerJson;
+                $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('Error interno, intente de nuevo.', 'epayco-subscriptions-for-woocommerce'));
+                wc_add_notice($error, 'error');
+                wp_redirect(wc_get_checkout_url());
+                exit;
             }
             $customerData['customer_id'] = $customer->data->customerId;
            
@@ -631,14 +632,12 @@ class EpaycoSuscription extends AbstractGateway
             if ($count_customers == 0) {
                 $customer = $this->customerCreate($customerData);
                 if ($customer->data->status == 'error') {
-                    $response_status = [
-                        'status' => false,
-
-                        /* translators: %s será reemplazado con el mensaje de error del nuevo plan */
-                        'message' => sprintf(__('Error: %s', 'epayco-subscriptions-for-woocommerce'), $newPLan->message)
-
-
-                    ];
+                    $customerJson = json_decode(json_encode($customer), true);
+                    $dataError = $customerJson;
+                    $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('El token no se puede asociar al cliente, verifique que: el token existe, el cliente no esté asociado y que el token no este asociado a otro cliente.', 'epayco-subscriptions-for-woocommerce'));
+                    wc_add_notice($error, 'error');
+                    wp_redirect(wc_get_checkout_url());
+                    exit;
                 }
                 // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
                 $inserCustomer = $wpdb->insert(
@@ -680,10 +679,12 @@ class EpaycoSuscription extends AbstractGateway
                             ]
                         );
                         if (!$inserCustomer) {
-                            $response_status = [
-                                'status' => false,
-                                'message' => __('internar error, tray again', 'epayco-subscriptions-for-woocommerce')
-                            ];
+                            $customerJson = json_decode(json_encode($customer), true);
+                            $dataError = $customerJson;
+                            $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('Error interno, intente de nuevo.', 'epayco-subscriptions-for-woocommerce'));
+                            wc_add_notice($error, 'error');
+                            wp_redirect(wc_get_checkout_url());
+                            exit;
                         }
                         $customerData['token_card'] = $token_id;
                     }
@@ -833,21 +834,31 @@ class EpaycoSuscription extends AbstractGateway
     {
         if ($create) {
             $newPLan = $this->plansCreate($plans);
+            
             if ($newPLan->status) {
                 $getPlans_ = $this->getPlans($plans);
+             
                 if ($getPlans_) {
                     $eXistPLan = $this->validatePlanData($plans, $getPlans_, $order_id, $subscriptions, $customer, $confirm_url, $order);
                 } else {
                     $this->validatePlan(true, $order_id, $plans, $subscriptions, $customer, $confirm_url, $order, false, false, null);
                 }
             } else {
+                
+            $newPlanJson = json_decode($newPLan, true);
+                
+             
+              $dataError= $newPlanJson;
+           
+             
+                $error = isset($dataError->message) ? $dataError->message : ( isset($dataError["message"]) ? $dataError["message"] : __('El identificador del plan ya está en uso para este comercio. Por favor, elija un nombre diferente para el plancito', 'epayco-subscriptions-for-woocommerce'));
+                
                 $response_status = [
                     'status' => false,
-
                     /* translators: %s será reemplazado con el mensaje de error del nuevo plan */
-                    'message' => sprintf(__('Error: %s', 'epayco-subscriptions-for-woocommerce'), $newPLan->message)
-
+                    'message' => $error,
                 ];
+         
                 return $response_status;
             }
         } else {
@@ -1637,41 +1648,26 @@ class EpaycoSuscription extends AbstractGateway
                         'url' => $order->get_checkout_order_received_url()
                     ];
                 } else {
-                    $errorMessage = $sub->data->errors;
+                    $subJson = json_decode(json_encode($sub), true);
+                    $dataError = $subJson;
+                    $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('Ocurrió un error, por favor contactar con soporte.', 'epayco-subscriptions-for-woocommerce'));
                     $response_status = [
                         'ref_payco' => null,
                         'status' => false,
-                        'message' => $errorMessage,
+                        'message' => $error,
                         'url' => $order->get_checkout_order_received_url()
                     ];
                 }
             }
         } else {
-            $errorMessage = $subsCreated->data->description;
-            $errors = $subsCreated->data->errors;
-            $all_errors = [];
-            if (is_object($errors)) {
-                foreach ($errors as $field => $messages) {
-                    foreach ($messages as $message) {
-                        $all_errors[] = $message;
-                    }
-                }
-            } elseif (is_array($errors)) {
-                foreach ($errors as $field => $messages) {
-                    foreach ($messages as $message) {
-                        $all_errors[] = $message;
-                    }
-                }
-            }
-            $error_string = !empty($all_errors)
-                ? implode(' | ', $all_errors)
-                : 'Ocurrió un error, por favor contactar con soporte.';
-
+            $subsCreatedJson = json_decode(json_encode($subsCreated), true);
+            $dataError = $subsCreatedJson;
+            $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('Ocurrió un error, por favor contactar con soporte.', 'epayco-subscriptions-for-woocommerce'));
             $response_status = [
-                'ref_payco' => null,
-                'status' => false,
-                'message' => $errorMessage . " " . $error_string,
-                'url' => $order->get_checkout_order_received_url()
+            'ref_payco' => null,
+            'status' => false,
+            'message' => $error,
+            'url' => $order->get_checkout_order_received_url()
             ];
         }
         return $response_status;
@@ -1983,11 +1979,11 @@ class EpaycoSuscription extends AbstractGateway
                 $epayco_status = strtolower($epayco_subscription->status ?? '');
 
                 if (empty($epayco_id)) {
-                    $logger->add(self::LOG_SOURCE, "Suscripción sin ID encontrada, omitiendo...");
+                    // $logger->add(self::LOG_SOURCE, "Suscripción sin ID encontrada, omitiendo...");
                     continue;
                 }
 
-                $logger->add(self::LOG_SOURCE, "Consultando suscripción SDK ePayco : ID={$epayco_id}, status_plan={$epayco_status}");
+                // $logger->add(self::LOG_SOURCE, "Consultando suscripción SDK ePayco : ID={$epayco_id}, status_plan={$epayco_status}");
 
                 $args = [
                     'post_type'      => 'shop_subscription',
@@ -2004,10 +2000,10 @@ class EpaycoSuscription extends AbstractGateway
                 ];
 
                 foreach ($args['meta_query'] as $meta_query) {
-                    $logger->add(
-                        self::LOG_SOURCE,
-                        "Buscando suscripciones con meta key={$meta_query['key']} y value={$meta_query['value']}"
-                    );
+                    // $logger->add(
+                    //     self::LOG_SOURCE,
+                    //     "Buscando suscripciones con meta key={$meta_query['key']} y value={$meta_query['value']}"
+                    // );
                 }
 
                 global $wpdb;
@@ -2018,7 +2014,7 @@ class EpaycoSuscription extends AbstractGateway
                         strval(trim($epayco_id))
                     )
                 );
-                $logger->add(self::LOG_SOURCE, "Consulta directa encontró: " . count($meta));
+                // $logger->add(self::LOG_SOURCE, "Consulta directa encontró: " . count($meta));
 
                 if (!empty($meta)) {
                     foreach ($meta as $row) {
