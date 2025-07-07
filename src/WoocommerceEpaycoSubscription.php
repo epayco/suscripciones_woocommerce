@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 
 class WoocommerceEpaycoSubscription
 {
-    private const PLUGIN_VERSION = '6.2.0';
+    private const PLUGIN_VERSION = '6.3.0';
     private const PLATFORM_NAME = 'woocommerce';
     private const PLUGIN_NAME = 'epayco-subscriptions-for-woocommerce/epayco-subscription.php';
 

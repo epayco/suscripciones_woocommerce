@@ -14,7 +14,7 @@ use WpOrg\Requests\Requests;
 class Client extends GraphqlClient
 {
 
-    const BASE_URL = "https://eks-subscription-api-lumen-service.epayco.io";
+     const BASE_URL = "https://eks-subscription-api-lumen-service.epayco.io";
     const BASE_URL_SECURE = "https://eks-rest-recaudo-service.epayco.io/restpagos";
     const BASE_URL_APIFY = "https://eks-apify-service.epayco.io";
     const IV = "0000000000000000";
@@ -156,29 +156,69 @@ class Client extends GraphqlClient
                 }
                 return json_decode($response->body);
             }
-            if ($response->status_code == 400) {
-                try {
-                    $errors = (array)json_decode($response->body);
-                    $error = isset($errors['message']) ? $errors['message'] : (isset($errors['errors']) ? $errors['errors'][0] : "Ocurrio un error, por favor contactar con soporte");
-                    $message = $error;
-                } catch (\Exception $e) {
-                    throw new ErrorException($e->getMessage(), $e->getCode());
+            if ($response->status_code >= 400 && $response->status_code < 600) {
+                $body = $response->body;
+
+
+                if (empty($body)) {
+                    $responseDataBody = array(
+                        "status" => false,
+                        "message" => "La respuesta del servidor está vacía o no es válida.",
+                        "data" => []
+                    );
+                    return json_encode($responseDataBody, JSON_PRETTY_PRINT);
                 }
-                throw new ErrorException($message, 103);
+
+                $errors = (array)json_decode($body);
+
+
+                $error = "Ocurrió un error, por favor contactar con soporte.";
+
+                switch ($response->status_code) {
+                    case 400:
+                        $error = isset($errors['message'])
+                            ? $errors['message']
+                            : (isset($errors['errors'][0])
+                                ? $errors['errors'][0]
+                                : "Solicitud incorrecta, por favor verifica los datos enviados");
+                        break;
+                    case 401:
+                        $error = isset($errors['message'])
+                            ? $errors['message']
+                            : (isset($errors['errors'][0])
+                                ? $errors['errors'][0]
+                                : "No autorizado, revisa tus credenciales");
+                        break;
+                    case 403:
+                        $error = isset($errors['message'])
+                            ? $errors['message']
+                            : (isset($errors['errors'][0])
+                                ? $errors['errors'][0]
+                                : "Acceso prohibido, no tienes permisos para esta acción");
+                        break;
+                    case 404:
+                        $error = "La ruta en la que estás realizando la petición no existe";
+                        break;
+                    case 405:
+                        $error = isset($errors['message'])
+                            ? $errors['message']
+                            : (isset($errors['errors'][0])
+                                ? $errors['errors'][0]
+                                : "Método no permitido en esta ruta");
+                        break;
+                    default:
+                        $error = "Error inesperado del servidor (HTTP {$response->status_code})";
+                        break;
+                }
+
+                $responseData = array(
+                    "status" => false,
+                    "message" => $error,
+                    "data" => []
+                );
+
+                return json_encode($responseData, JSON_PRETTY_PRINT);
             }
-            if ($response->status_code == 401) {
-                throw new ErrorException('Unauthorized', 104);
-            }
-            if ($response->status_code == 404) {
-                throw new ErrorException('Not found', 105);
-            }
-            if ($response->status_code == 403) {
-                throw new ErrorException('Permission denegated', 106);
-            }
-            if ($response->status_code == 405) {
-                throw new ErrorException('Not allowed', 107);
-            }
-            throw new ErrorException('Internal error', 102);
         } catch (\Exception $e) {
             throw new ErrorException($e->getMessage(), $e->getCode());
         }
