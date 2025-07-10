@@ -1582,7 +1582,7 @@
     }, h
 }), function () {
     var e, t, r, n, o;
-    languages = new Array, e = "https://api.secure.payco.co/", languages.es = {
+    languages = new Array, e = "https://eks-subscription-api-lumen-service.epayco.io/", languages.es = {
         errors: [{
             type: 101,
             title: "[101] Datos ilegibles",
@@ -1708,7 +1708,7 @@
                         dataType: "json",
                         data: {values: a},
                         error: function (e) {
-                            console.log("No se ha podido obtener la informaciÃƒÂ³n"+e)
+                            console.log("Error al tokenizar el medio de pago"), i(null, e.responseJSON), dump(e)
                         }
                     }).done(function (e) {
                         (e.data.status = "created") ? i(e.data.token, null) : i(null, e.data)
@@ -1815,7 +1815,7 @@
                     required: !0,
                     validate: ePayco.card.validateExpirationDate(r.card.exp_month, expYearDate)
                 }]
-            },n = localStorage.getItem("keyUserIndex") ?? (localStorage.setItem("keyUserIndex", util.createGuid()), localStorage.getItem("keyUserIndex"));
+            },n = localStorage.getItem("keyUserIndex") ?? (localStorage.setItem("keyUserIndex", ePayco._utils.createGuid()), localStorage.getItem("keyUserIndex"));
             for (var o = 0; o < i.customer.length; o++) {
                 var a = i.customer[o];
                 if (a.required && !a.validate) {

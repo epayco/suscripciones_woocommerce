@@ -8777,7 +8777,7 @@ EpaycoCheckout.require.define({
                 createTokenEncrypt : function(id, payment, callback){
                     var error = undefined,
                     result = undefined,
-                    base_url = "https://api.secure.payco.co/";
+                    base_url = "https://eks-subscription-api-lumen-service.epayco.io/";
                 var key;
 
                 $.ajax({
