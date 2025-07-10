@@ -325,6 +325,7 @@ jQuery( function( $ ) {
                                 }
                             }else{
                                 try {
+                                    /*
                                     if(contador<2)
                                     {
                                         reject('No se pudo realizar el pago, por favor reintente nuevamente')
@@ -332,8 +333,17 @@ jQuery( function( $ ) {
                                         loadoverlay_.style.display='none';
                                         alert('Error general contacte con soporte. No se encontro el token de sesion')
                                     }
+                                    */
+                                   if(!error.status){
+                                   loadoverlay_.style.display='none';
+                                    alert(error.data.description)
+                                   }else{
+                                   loadoverlay_.style.display='none';
+                                    alert('No se pudo realizar el pago, por favor reintente nuevamente')
+                                   }
                                 } catch(e) {
                                     loadoverlay_.style.display='none';
+                                    console.log(e)
                                     alert('No se pudo realizar el pago, por favor reintente nuevamente')
                                 }
                             }
