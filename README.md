@@ -34,15 +34,13 @@
 11. Si todo está bien recuerda cambiar la variable Modo Prueba a NO y empieza a recibir pagos de forma instantánea y segura con ePayco.
 12. Tener en cuenta que para la cancelación de la suscripciones se debe de realizar por medio del [dashboard](https://dashboard.epayco.co/login) donde encontrar la información de la suscripcion y podra realizar la cancelación de esta.
 
-## Tarea programada para realizar la actualizaciones del estado de las suscripciones 
-1. Ingresa al administrador de tu wordPress.
-2. Ingresa a Woocomerce / Estado / Acciones programadas. 
-3. Buscar por gancho, argumentos e ID de peticion y agregamos el nombre de epayco.
-5. Nos aparecera la tarea programada con el nombre,(woocommerce_epayco_suscripcion_cleanup_draft_orders) y haremos clic en Ejecutar. 
-6. Te aparecera un mensaje de confirmacion diciendote que la tarea programada se 
-ejecuto correctamente. 
-7. Con estos pasos anteriores los estados de tu suscripcion se actualizaran correctamente, manteniendo asi sinbcronizado el estado de la suscripcion en tu dashboard de ePayco con el estado de tus suscripciones en woocomerce. 
-
+## Tarea programada para realizar las actualizaciones del estado de las suscripciones 
+1. Ingresa al administrador de tu WordPress.
+2. Ingresa a WooCommerce / Estado / Acciones programadas. 
+3. Busca por gancho, argumentos e ID de petición y agrega el nombre de ePayco.
+4. Aparecerá la tarea programada con el nombre (woocommerce_epayco_suscripción_cleanup_draft_orders) y haz clic en Ejecutar. 
+5. Te aparecerá un mensaje de confirmación diciéndote que la tarea programada se ejecutó correctamente. 
+6. Con estos pasos anteriores los estados de tu suscripción se actualizarán correctamente, manteniendo así sincronizado el estado de la suscripción en tu dashboard de ePayco con el estado de tus suscripciones en WooCommerce. 
 
 ## Pasos
 
@@ -52,6 +50,9 @@ ejecuto correctamente.
 <img src="ImgTutorialWooCommerce/tuto-4.jpg" width="400px"/>
 <img src="ImgTutorialWooCommerce/tuto-5.jpg" width="400px"/>
 <img src="ImgTutorialWooCommerce/tuto-9.jpg" width="400px"/>
+
+## Pasos para ejecutar la Acción programada
+
 <img src="ImgTutorialWooCommerce/tuto-cron-10.jpg" width="400px"/>
 <img src="ImgTutorialWooCommerce/tuto-cron-11.jpg" width="400px"/>
 <img src="ImgTutorialWooCommerce/tuto-cron-12.jpg" width="400px"/>

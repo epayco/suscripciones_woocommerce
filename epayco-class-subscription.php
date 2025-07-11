@@ -40,7 +40,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         if ($customerGetData === false) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
             $customerGetData = $wpdb->get_results(
-                
+
                 $wpdb->prepare(
                     // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                     "SELECT * FROM $table_name_setings WHERE id_payco = %d AND email = %s",

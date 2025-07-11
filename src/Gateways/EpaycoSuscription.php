@@ -656,7 +656,7 @@ class EpaycoSuscription extends AbstractGateway
                 if (!$inserCustomer) {
                     $response_status = [
                         'status' => false,
-                        'message' => __('internar error, tray again', 'epayco-subscriptions-for-woocommerce')
+                        'message' => __('No se inserto el registro del cliente en la base de datos.', 'epayco-subscriptions-for-woocommerce')
                     ];
                 }
                 $customerData['customer_id'] = $customer->data->customerId;
