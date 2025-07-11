@@ -156,7 +156,7 @@ class Client extends GraphqlClient
                 }
                 return json_decode($response->body);
             }
-            if ($response->status_code >= 400 && $response->status_code < 600) {
+            if ($response->status_code >= 400 && $response->status_code < 500) {
                 $body = $response->body;
 
 
@@ -169,58 +169,54 @@ class Client extends GraphqlClient
                     return json_encode($responseDataBody, JSON_PRETTY_PRINT);
                 }
 
-                $errors = (array)json_decode($body);
-
+                $decoded = (array)json_decode($body, true);
+                $message = 'Ocurrió un error procesando el pago.';
 
                 $error = "Ocurrió un error, por favor contactar con soporte.";
 
-                switch ($response->status_code) {
-                    case 400:
-                        $error = isset($errors['message'])
-                            ? $errors['message']
-                            : (isset($errors['errors'][0])
-                                ? $errors['errors'][0]
-                                : "Solicitud incorrecta, por favor verifica los datos enviados");
-                        break;
-                    case 401:
-                        $error = isset($errors['message'])
-                            ? $errors['message']
-                            : (isset($errors['errors'][0])
-                                ? $errors['errors'][0]
-                                : "No autorizado, revisa tus credenciales");
-                        break;
-                    case 403:
-                        $error = isset($errors['message'])
-                            ? $errors['message']
-                            : (isset($errors['errors'][0])
-                                ? $errors['errors'][0]
-                                : "Acceso prohibido, no tienes permisos para esta acción");
-                        break;
-                    case 404:
-                        $error = "La ruta en la que estás realizando la petición no existe";
-                        break;
-                    case 405:
-                        $error = isset($errors['message'])
-                            ? $errors['message']
-                            : (isset($errors['errors'][0])
-                                ? $errors['errors'][0]
-                                : "Método no permitido en esta ruta");
-                        break;
-                    default:
-                        $error = "Error inesperado del servidor (HTTP {$response->status_code})";
-                        break;
+                if (is_array($decoded)) {
+                    $message = $decoded['message'] ?? $message;
+                    $errores_listados = [];
+                    if (isset($decoded['data']['errors']) && is_array($decoded['data']['errors'])) {
+                        foreach ($decoded['data']['errors'] as $campo => $mensajes) {
+                            foreach ($mensajes as $msg) {
+                                $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                            }
+                        }
+                    }
+                    if (isset($decoded['data']->errors) && is_array($decoded['data']->errors)) {
+                        foreach ($decoded['data']->errors as $campo => $mensajes) {
+                            foreach ($mensajes as $msg) {
+                                $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                            }
+                        }
+                    }
                 }
+                /*
+                $errors_list = isset($errors['data']['errors']) ? $errors['data']['errors'] :( isset($errors['data']->errors) ? $errors['data']->errors : []);
+                $errorMessages = [];
+                foreach ($errors_list as $field => $messages) {
+                    foreach ($messages as $msg) {
+                        $errorMessages[] = ucfirst($field) . ': ' . $msg;
+                    }
+                }
+                 $errorMessage = $message . ' → ' . implode(' | ', $errorMessages);
+                */
 
-                $responseData = array(
+                $errorMessage = $message;
+                if (!empty($errores_listados)) {
+                    $errorMessage .=  implode(' | ', $errores_listados);
+                }
+                return (object)[
                     "status" => false,
-                    "message" => $error,
-                    "data" => []
-                );
-
-                return json_encode($responseData, JSON_PRETTY_PRINT);
+                    "message" => $errorMessage,
+                    "data" => (object)[]
+                ];
             }
         } catch (\Exception $e) {
             throw new ErrorException($e->getMessage(), $e->getCode());
+        } catch (\Error $error){
+            throw new ErrorException($error->getMessage(), $error->getCode());
         }
     }
 

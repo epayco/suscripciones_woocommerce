@@ -8778,9 +8778,8 @@ EpaycoCheckout.require.define({
                     var error = undefined,
                     result = undefined,
                     base_url = "https://eks-subscription-api-lumen-service.epayco.io/";
-                var key;
-
-                $.ajax({
+                    var key;
+                    $.ajax({
                     type: "POST",
                     url: base_url + "token/encrypt",
                     crossDomain: true,
@@ -9018,7 +9017,6 @@ $(".set-lang").on("click", function(e) {
 
 $("#continue-tdc").on("click", function(e) {
     e.preventDefault();
-    //
     var t = util.validation(void 0, isValid);
     if (util.cleanErrors(t.data),
     t.status) {

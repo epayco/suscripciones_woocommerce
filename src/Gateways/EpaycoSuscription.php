@@ -556,6 +556,12 @@ class EpaycoSuscription extends AbstractGateway
         // $subscription = wcs_get_subscription($subscription_id);
 
         $token = $params['epaycoToken'];
+        if(is_null($token)){
+            $error =  __('Token no generado, por favor intente de nuevo.', 'epayco-subscriptions-for-woocommerce');
+            wc_add_notice($error, 'error');
+            wp_redirect(wc_get_checkout_url());
+            exit;
+        }
         $customerName =  $params['name'];
         $customerCard = $params['card-number2'];
         $customerData = $this->paramsBilling($subscriptions, $order, $customerCard, $customerName);
@@ -665,7 +671,25 @@ class EpaycoSuscription extends AbstractGateway
                     $customer_id = $customerGetData[$i]->customer_id ?? $customerGetData[0]['customer_id'];
                 
                     if ($email == $customerData['email'] && $token_id != $token) {
-                        $this->customerAddToken($customer_id, $token);
+                        if(is_null($customer_id)){
+                            $customer = $this->customerCreate($customerData);
+                            if ($customer->data->status == 'error') {
+                                $customerJson = json_decode(json_encode($customer), true);
+                                $dataError = $customerJson;
+                                $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('El token no se puede asociar al cliente, verifique que: el token existe, el cliente no esté asociado y que el token no este asociado a otro cliente.', 'epayco-subscriptions-for-woocommerce'));
+                                wc_add_notice($error, 'error');
+                                wp_redirect(wc_get_checkout_url());
+                                exit;
+                            }
+                        }else{
+                            $isAddedToken = $this->customerAddToken($customer_id, $token);
+                            if(!$isAddedToken->status){
+                                wc_add_notice( $isAddedToken->data->description, 'error');
+                                wp_redirect(wc_get_checkout_url());
+                                exit;
+                            }
+                        }
+
                         // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
                         $inserCustomer = $wpdb->update(
                             $table_name_setings,
@@ -1102,7 +1126,7 @@ class EpaycoSuscription extends AbstractGateway
     }
 
 
-    public function subscriptionCharge(array $plans, array $customer, $confirm_url)
+    public function subscriptionCharge(array $plans, array $customer, $confirm_url, $epayco_subscription_id)
     {
         $subs = [];
 
@@ -1117,7 +1141,8 @@ class EpaycoSuscription extends AbstractGateway
                         "doc_number" => $customer['doc_number'],
                         "ip" => $this->getIP(),
                         "url_confirmation" => $confirm_url,
-                        "method_confirmation" => "POST"
+                        "method_confirmation" => "POST",
+                        "idSubscription" => $epayco_subscription_id
                     ]
                 );
             } catch (Exception $exception) {
@@ -1234,12 +1259,8 @@ class EpaycoSuscription extends AbstractGateway
         $subscription = end($subscriptions);
         if ($subscription) {
 
-
-
-            $doc_number = get_post_meta($subscription->get_id(), '_epayco_billing_dni', true) != null ? get_post_meta($subscription->get_id(), '_epayco_billing_dni', true) : $order->get_meta('_epayco_billing_dni');
-            $type_document = get_post_meta($subscription->get_id(), '_epayco_billing_type_document', true) != null ? get_post_meta($subscription->get_id(), '_epayco_billing_type_document', true) : $order->get_meta('_epayco_billing_type_document');
-
-
+            $doc_number = get_post_meta($subscription->get_id(), '_epayco_billing_dni', true) != null ? get_post_meta($subscription->get_id(), '_epayco_billing_dni', true)  : ( $order->get_meta('_epayco_billing_dni') !=="" ? $order->get_meta('_epayco_billing_dni') :  $order->get_meta('_billing_custom_field') );
+            $type_document = get_post_meta($subscription->get_id(), '_epayco_billing_type_document', true) != null ? get_post_meta($subscription->get_id(), '_epayco_billing_type_document', true) : ($order->get_meta('_epayco_billing_type_document') !=="" ? $order->get_meta('_epayco_billing_type_document')  : "CC");
 
             $data['name'] = $customerName;
             $data['email'] = $subscription->get_billing_email();
@@ -1631,7 +1652,7 @@ class EpaycoSuscription extends AbstractGateway
                     }
                 }
             }
-            $subs = $this->subscriptionCharge($plans, $customerData, $confirm_url);
+            $subs = $this->subscriptionCharge($plans, $customerData, $confirm_url, $epayco_subscription_id);
             foreach ($subs as $sub) {
                 $customerId = isset($subsCreated->customer->_id) ? $subsCreated->customer->_id : null;
                 $suscriptionId = isset($subsCreated->id) ? $subsCreated->id : null;
@@ -1650,11 +1671,35 @@ class EpaycoSuscription extends AbstractGateway
                 } else {
                     $subJson = json_decode(json_encode($sub), true);
                     $dataError = $subJson;
-                    $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('Ocurrió un error, por favor contactar con soporte.', 'epayco-subscriptions-for-woocommerce'));
+                    $message = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('Ocurrió un error, por favor contactar con soporte.', 'epayco-subscriptions-for-woocommerce'));
+                    $errores_listados = [];
+                    if (isset($dataError['data']['errors'])) {
+                        if( is_array($dataError['data']['errors'])){
+                            foreach ($dataError['data']['errors'] as $campo => $mensajes) {
+                                foreach ($mensajes as $msg) {
+                                    $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                                }
+                            }
+                        }else{
+                            $errores_listados[] = $dataError['data']['errors'];
+                        }
+                    }
+                    if (isset($dataError['data']->errors) && is_array($dataError['data']->errors)) {
+                        foreach ($dataError['data']->errors as $campo => $mensajes) {
+                            foreach ($mensajes as $msg) {
+                                $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                            }
+                        }
+                    }
+                    $errorMessage = $message;
+                    if (!empty($errores_listados)) {
+                        $errorMessage .=  implode(' | ', $errores_listados);
+                    }
+
                     $response_status = [
                         'ref_payco' => null,
                         'status' => false,
-                        'message' => $error,
+                        'message' => $errorMessage,
                         'url' => $order->get_checkout_order_received_url()
                     ];
                 }
