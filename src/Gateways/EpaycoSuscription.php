@@ -617,7 +617,7 @@ class EpaycoSuscription extends AbstractGateway
             if (!$inserCustomer) {
                 $customerJson = json_decode(json_encode($customer), true);
                 $dataError = $customerJson;
-                $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('Error interno, intente de nuevo.', 'epayco-subscriptions-for-woocommerce'));
+                $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('No se inserto el registro del cliente en la base de datos.', 'epayco-subscriptions-for-woocommerce'));
                 wc_add_notice($error, 'error');
                 wp_redirect(wc_get_checkout_url());
                 exit;
@@ -656,7 +656,7 @@ class EpaycoSuscription extends AbstractGateway
                 if (!$inserCustomer) {
                     $response_status = [
                         'status' => false,
-                        'message' => __('internar error, tray again', 'epayco-subscriptions-for-woocommerce')
+                        'message' => __('No se inserto el registro del cliente en la base de datos.', 'epayco-subscriptions-for-woocommerce')
                     ];
                 }
                 $customerData['customer_id'] = $customer->data->customerId;
@@ -701,7 +701,7 @@ class EpaycoSuscription extends AbstractGateway
                         if (!$inserCustomer) {
                             $customerJson = json_decode(json_encode($customer), true);
                             $dataError = $customerJson;
-                            $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('Error interno, intente de nuevo.', 'epayco-subscriptions-for-woocommerce'));
+                            $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('No se inserto el registro del cliente en la base de datos.', 'epayco-subscriptions-for-woocommerce'));
                             wc_add_notice($error, 'error');
                             wp_redirect(wc_get_checkout_url());
                             exit;
@@ -871,7 +871,7 @@ class EpaycoSuscription extends AbstractGateway
                 $dataError = $newPlanJson;
 
 
-                $error = isset($dataError->message) ? $dataError->message : (isset($dataError["message"]) ? $dataError["message"] : __('El identificador del plan ya está en uso para este comercio. Por favor, elija un nombre diferente para el plancito', 'epayco-subscriptions-for-woocommerce'));
+                $error = isset($dataError->message) ? $dataError->message : (isset($dataError["message"]) ? $dataError["message"] : __('El identificador del plan ya está en uso para este comercio. Por favor, elija un nombre diferente para el plan.', 'epayco-subscriptions-for-woocommerce'));
 
                 $response_status = [
                     'status' => false,

@@ -40,7 +40,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
         if ($customerGetData === false) {
             // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
             $customerGetData = $wpdb->get_results(
-                
+
                 $wpdb->prepare(
                     // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
                     "SELECT * FROM $table_name_setings WHERE id_payco = %d AND email = %s",
@@ -57,7 +57,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     'status' => false,
 
                     /* translators: %s será reemplazado con el mensaje de error del cliente */
-                    'message' => sprintf(esc_html__('Error: %s', 'epayco-subscriptions-for-woocommerce'), esc_html($customer->message))
+                    'message' => sprintf(esc_html__('No se pudo crear el cliente', 'epayco-subscriptions-for-woocommerce'), esc_html($customer->message))
 
 
 
@@ -79,7 +79,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
             if (!$inserCustomer) {
                 $response_status = [
                     'status' => false,
-                    'message' => __('internar error, tray again', 'epayco-subscriptions-for-woocommerce')
+                    'message' => __('No se inserto el registro del cliente en la base de datos.', 'epayco-subscriptions-for-woocommerce')
                 ];
                 return $response_status;
             }
@@ -98,7 +98,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                         'status' => false,
 
                         /* translators: %s será reemplazado con el mensaje de error del cliente */
-                        'message' => sprintf(esc_html__('Error: %s', 'epayco-subscriptions-for-woocommerce'), esc_html($customer->message))
+                        'message' => sprintf(esc_html__('No se creo el cliente.', 'epayco-subscriptions-for-woocommerce'), esc_html($customer->message))
 
                     ];
                     return $response_status;
@@ -117,7 +117,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                 if (!$inserCustomer) {
                     $response_status = [
                         'status' => false,
-                        'message' => __('internar error, tray again', 'epayco-subscriptions-for-woocommerce')
+                        'message' => __('No se inserto el registro del cliente en la base de datos.', 'epayco-subscriptions-for-woocommerce')
                     ];
                     return $response_status;
                 }
@@ -267,7 +267,7 @@ class Subscription_Epayco_SE extends WC_Payment_Epayco_Subscription
                     'status' => false,
 
                     /* translators: %s será reemplazado con el mensaje de error del nuevo plan */
-                    'message' => sprintf(esc_html__('Error: %s', 'epayco-subscriptions-for-woocommerce'), esc_html($newPLan->message))
+                    'message' => sprintf(esc_html__('No se pudo validar el plan. ', 'epayco-subscriptions-for-woocommerce'), esc_html($newPLan->message))
 
                 ];
                 return $response_status;
