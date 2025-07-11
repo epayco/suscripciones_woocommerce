@@ -871,7 +871,7 @@ class EpaycoSuscription extends AbstractGateway
                 $dataError = $newPlanJson;
 
 
-                $error = isset($dataError->message) ? $dataError->message : (isset($dataError["message"]) ? $dataError["message"] : __('El identificador del plan ya está en uso para este comercio. Por favor, elija un nombre diferente para el plancito', 'epayco-subscriptions-for-woocommerce'));
+                $error = isset($dataError->message) ? $dataError->message : (isset($dataError["message"]) ? $dataError["message"] : __('El identificador del plan ya está en uso para este comercio. Por favor, elija un nombre diferente para el plan.', 'epayco-subscriptions-for-woocommerce'));
 
                 $response_status = [
                     'status' => false,
