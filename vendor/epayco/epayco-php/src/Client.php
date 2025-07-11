@@ -43,23 +43,22 @@ class Client extends GraphqlClient
         $cash = null,
         $card = null,
         $apify = false
-    )
-    {
+    ) {
 
         /**
          * Resources ip, traslate keys
          */
         $util = new Util();
-        if(!is_null($data) && is_array($data) && !isset($data['extras_epayco'])){
-            $data['extras_epayco']= array();
+        if (!is_null($data) && is_array($data) && !isset($data['extras_epayco'])) {
+            $data['extras_epayco'] = array();
             $data['extras_epayco'] = ["extra5" => "P42"];
         }
         /**
          * Switch traslate keys array petition in secure
          */
-        if($apify && is_array($data)){
+        if ($apify && is_array($data)) {
             $data = $util->setKeys_apify($data);
-        }else if ($switch && is_array($data)) {
+        } else if ($switch && is_array($data)) {
             $data = $util->setKeys($data);
         }
         try {
@@ -68,22 +67,22 @@ class Client extends GraphqlClient
              */
 
             $cookie_name = $api_key . ($apify ? "_apify" : "");
-            if(!isset($_COOKIE[$cookie_name])) {
+            if (!isset($_COOKIE[$cookie_name])) {
                 //  echo "Cookie named '" . $cookie_name . "' is not set!";
-                $dataAuth =$this->authentication($api_key,$private_key, $apify);
+                $dataAuth = $this->authentication($api_key, $private_key, $apify);
                 $json = json_decode($dataAuth);
-                if(!is_object($json)) {
+                if (!is_object($json)) {
                     throw new ErrorException("Error get bearer_token.", 106);
                 }
                 $bearer_token = false;
-                if(isset($json->bearer_token)) {
-                    $bearer_token=$json->bearer_token;
-                }else if(isset($json->token)){
-                    $bearer_token= $json->token;
+                if (isset($json->bearer_token)) {
+                    $bearer_token = $json->bearer_token;
+                } else if (isset($json->token)) {
+                    $bearer_token = $json->token;
                 }
-                if(!$bearer_token) {
+                if (!$bearer_token) {
                     $msj = isset($json->message) ? $json->message : "Error get bearer_token";
-                    if($msj == "Error get bearer_token" && isset($json->error)){
+                    if ($msj == "Error get bearer_token" && isset($json->error)) {
                         $msj = $json->error;
                     }
                     throw new ErrorException($msj, 422);
@@ -91,10 +90,9 @@ class Client extends GraphqlClient
                 $cookie_value = $bearer_token;
                 setcookie($cookie_name, $cookie_value, time() + (60 * 14), "/");
                 //  echo "token con login".$bearer_token;
-            }else{
+            } else {
                 $bearer_token = $_COOKIE[$cookie_name];
             }
-
         } catch (\Exception $e) {
             $data = array(
                 "status" => false,
@@ -118,9 +116,9 @@ class Client extends GraphqlClient
             );
 
             if ($method == "GET") {
-                if($apify){
+                if ($apify) {
                     $_url = Client::BASE_URL_APIFY . $url;
-                }elseif ($switch) {
+                } elseif ($switch) {
                     $_url = Client::BASE_URL_SECURE . $url;
                 } else {
                     $_url = Client::BASE_URL . $url;
@@ -128,13 +126,12 @@ class Client extends GraphqlClient
 
                 $response = Requests::get($_url, $headers, $options);
             } elseif ($method == "POST") {
-                if($apify){
+                if ($apify) {
                     $response = Requests::post(Client::BASE_URL_APIFY . $url, $headers, json_encode($data), $options);
-                }
-                elseif ($switch) {
+                } elseif ($switch) {
                     $data = $util->mergeSet($data, $test, $lang, $private_key, $api_key, $cash);
 
-                    $response = Requests::post(Client::BASE_URL_SECURE. $url, $headers, json_encode($data), $options);
+                    $response = Requests::post(Client::BASE_URL_SECURE . $url, $headers, json_encode($data), $options);
                 } else {
 
                     if (!$card) {
@@ -156,31 +153,67 @@ class Client extends GraphqlClient
                 }
                 return json_decode($response->body);
             }
-            if ($response->status_code == 400) {
-                try {
-                    $errors = (array)json_decode($response->body);
-                    $error = isset($errors['message']) ? $errors['message'] : (isset($errors['errors']) ? $errors['errors'][0] : "Ocurrio un error, por favor contactar con soporte");
-                    $message = $error;
-                } catch (\Exception $e) {
-                    throw new ErrorException($e->getMessage(), $e->getCode());
+            if ($response->status_code >= 400 && $response->status_code < 500) {
+                $body = $response->body;
+
+
+                if (empty($body)) {
+                    $responseDataBody = array(
+                        "status" => false,
+                        "message" => "La respuesta del servidor está vacía o no es válida.",
+                        "data" => []
+                    );
+                    return json_encode($responseDataBody, JSON_PRETTY_PRINT);
                 }
-                throw new ErrorException($message, 103);
+
+                $decoded = (array)json_decode($body, true);
+                $message = 'Ocurrió un error procesando el pago.';
+
+                $error = "Ocurrió un error, por favor contactar con soporte.";
+
+                if (is_array($decoded)) {
+                    $message = $decoded['message'] ?? $message;
+                    $errores_listados = [];
+                    if (isset($decoded['data']['errors']) && is_array($decoded['data']['errors'])) {
+                        foreach ($decoded['data']['errors'] as $campo => $mensajes) {
+                            foreach ($mensajes as $msg) {
+                                $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                            }
+                        }
+                    }
+                    if (isset($decoded['data']->errors) && is_array($decoded['data']->errors)) {
+                        foreach ($decoded['data']->errors as $campo => $mensajes) {
+                            foreach ($mensajes as $msg) {
+                                $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                            }
+                        }
+                    }
+                }
+                /*
+                $errors_list = isset($errors['data']['errors']) ? $errors['data']['errors'] :( isset($errors['data']->errors) ? $errors['data']->errors : []);
+                $errorMessages = [];
+                foreach ($errors_list as $field => $messages) {
+                    foreach ($messages as $msg) {
+                        $errorMessages[] = ucfirst($field) . ': ' . $msg;
+                    }
+                }
+                 $errorMessage = $message . ' → ' . implode(' | ', $errorMessages);
+                */
+
+                $errorMessage = $message;
+                if (!empty($errores_listados)) {
+                    $errorMessage .=  implode(' | ', $errores_listados);
+                }
+                return (object)[
+                    "status" => false,
+                    "message" => $errorMessage,
+                    "data" => (object)[]
+                ];
             }
-            if ($response->status_code == 401) {
-                throw new ErrorException('Unauthorized', 104);
-            }
-            if ($response->status_code == 404) {
-                throw new ErrorException('Not found', 105);
-            }
-            if ($response->status_code == 403) {
-                throw new ErrorException('Permission denegated', 106);
-            }
-            if ($response->status_code == 405) {
-                throw new ErrorException('Not allowed', 107);
-            }
-            throw new ErrorException('Internal error', 102);
         } catch (\Exception $e) {
             throw new ErrorException($e->getMessage(), $e->getCode());
+        } catch (\Error $error) {
+            throw new ErrorException($error->getMessage(), $error->getCode());
         }
     }
 
@@ -189,8 +222,8 @@ class Client extends GraphqlClient
         $schema,
         $api_key,
         $type,
-        $custom_key)
-    {
+        $custom_key
+    ) {
         try {
             $queryString = "";
             $initial_key = "";
@@ -204,7 +237,8 @@ class Client extends GraphqlClient
                     $queryString = $this->queryString(
                         $selectorParams,
                         $schema,
-                        $query); //rows returned
+                        $query
+                    ); //rows returned
                     $initial_key = $schema;
                     break;
                 case "fixed":
@@ -217,7 +251,6 @@ class Client extends GraphqlClient
         } catch (\Exception $e) {
             throw new ErrorException($e->getMessage(), 301);
         }
-
     }
 
     public function authentication($api_key, $private_key, $apify)
@@ -233,12 +266,12 @@ class Client extends GraphqlClient
             'connect_timeout' => 120,
         );
 
-        if($apify){
-            $token = base64_encode($api_key.":".$private_key);
-            $headers["Authorization"] = "Basic ".$token;
+        if ($apify) {
+            $token = base64_encode($api_key . ":" . $private_key);
+            $headers["Authorization"] = "Basic " . $token;
             $data = [];
         }
-        $url = $apify ? Client::BASE_URL_APIFY. "/login" : Client::BASE_URL."/v1/auth/login";
+        $url = $apify ? Client::BASE_URL_APIFY . "/login" : Client::BASE_URL . "/v1/auth/login";
         $response = Requests::post($url, $headers, json_encode($data), $options);
 
         return isset($response->body) ? $response->body : false;

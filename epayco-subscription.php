@@ -7,7 +7,7 @@
  * @wordpress-plugin
  * Plugin Name:       ePayco Subscriptions for WooCommerce
  * Description:       Plugin ePayco Subscription
- * Version:           6.3.0
+ * Version:           6.4.0
  * Author:            ePayco
  * Text Domain:       epayco-subscriptions-for-woocommerce
  * Author URI:
@@ -27,10 +27,10 @@ if (!defined('ABSPATH')) {
 if (!defined('EPAYCO_SUBSCRIPTION_SE_VERSION')) {
     define('EPAYCO_SUBSCRIPTION_SE_VERSION', '3.0.1');
 }
-define( 'EPAYCO_PLUGIN_SUSCRIPCIONES_URL', plugin_dir_url( __FILE__ ) );
+define('EPAYCO_PLUGIN_SUSCRIPCIONES_URL', plugin_dir_url(__FILE__));
 
-if ( ! defined( 'EPAYCO_PLUGIN_PATH' ) ) {
-	define( 'EPAYCO_PLUGIN_PATH', plugin_dir_path( __FILE__ ) );
+if (! defined('EPAYCO_PLUGIN_PATH')) {
+    define('EPAYCO_PLUGIN_PATH', plugin_dir_path(__FILE__));
 }
 
 
@@ -437,12 +437,12 @@ function activate_subscription_epayco()
     $table_setings_epayco = $wpdb->prefix . 'epayco_setings';
     $charset_collate = $wpdb->get_charset_collate();
 
-    
-   
-   // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
+
+
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
     if ($wpdb->get_var("SHOW TABLES LIKE '{$table_subscription_epayco}'") !== $table_subscription_epayco) {
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
-    
+
         $sql = "CREATE TABLE {$table_subscription_epayco} (
             id MEDIUMINT(9) NOT NULL AUTO_INCREMENT,
             order_id INT(10) NOT NULL,
@@ -496,7 +496,7 @@ add_action('woocommerce_set_additional_field_value', function ($key, $value, $gr
 
 
 add_action('woocommerce_init', function () {
-  
+
     woocommerce_register_additional_checkout_field(
         array(
             'id'          => 'epayco/billing_type_document',
@@ -508,6 +508,7 @@ add_action('woocommerce_init', function () {
             'class'       => ['custom-field-class'],
             'default'     => 'CC',
             'options'     => [
+                ['value' => 'Seleccionar', 'label' => __('Seleccione el tipo de documento', 'epayco-subscriptions-for-woocommerce')],
                 ['value' => 'CC', 'label' => __('Cédula de ciudadanía', 'epayco-subscriptions-for-woocommerce')], // Corregido
                 ['value' => 'CE', 'label' => __('Cédula de extranjería', 'epayco-subscriptions-for-woocommerce')], // Corregido
                 ['value' => 'PPN', 'label' => __('Pasaporte', 'epayco-subscriptions-for-woocommerce')], // Corregido
@@ -564,18 +565,20 @@ function epayco_enqueue_styles()
     // wp_enqueue_style('epayco-card-style', $plugin_url . 'card-js.min.css', array(), '1.0');
     // wp_enqueue_style('epayco-cardsjs', $plugin_url . 'cardsjs.min.css', array(), '1.0');
 }
-add_action('wp_enqueue_scripts', 'epayco_enqueue_styles',9999);
+add_action('wp_enqueue_scripts', 'epayco_enqueue_styles', 9999);
 
 
 // Enqueue the script properly in WordPress
-function enqueue_epayco_scripts() {
+function enqueue_epayco_scripts()
+{
     wp_enqueue_script('jquery'); // Usa la versión de WordPress
 }
 add_action('wp_enqueue_scripts', 'enqueue_epayco_scripts');
 
 
 // Enqueue the script properly in WordPress
-function enqueue_epayco_epaycojs_script() {
+function enqueue_epayco_epaycojs_script()
+{
     if (!function_exists('wp_enqueue_script') || !function_exists('esc_url')) {
         return; // Ensure WordPress functions are available
     }
@@ -634,7 +637,8 @@ add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $siz
 }, 10, 4);
 
 
-function epayco_suscripcion_cron_job_deactivation() {
+function epayco_suscripcion_cron_job_deactivation()
+{
     wp_clear_scheduled_hook('woocommerc_epayco_suscripcion_cron_hook');
     as_unschedule_action('woocommerce_epayco_suscripcion_cleanup_draft_orders');
     $timestamp = wp_next_scheduled('woocommerce_epayco_suscripcion_cleanup_draft_orders');
@@ -648,7 +652,8 @@ add_action('woocommerc_epayco_suscripcion_order_hook', 'woocommerce_epayco_suscr
 
 register_deactivation_hook(__FILE__, 'epayco_suscripcion_cron_inactive');
 
-function epayco_suscripcion_cron_inactive() {
+function epayco_suscripcion_cron_inactive()
+{
     wp_clear_scheduled_hook('bf_epayco_suscripcion_event');
 }
 

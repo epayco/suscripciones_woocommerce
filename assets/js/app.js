@@ -8461,6 +8461,13 @@ EpaycoCheckout.require.define({
                         if (e.hasOwnProperty(c))
                             try {
                                 var n = "remember" == c || "terms" == c || "privacy" == c ? $(e[c]).is(":checked") : $(e[c]).val();
+                                if(c=="expiry"){
+                                    var tt = n.split("/");
+                                    if(tt[1].length < 3){
+                                        tt[1] = "20"+tt[1]
+                                    }
+                                    n=tt[0]+"/"+tt[1]
+                                }
                                 t.push({
                                     type: c,
                                     value: n,
@@ -8771,9 +8778,8 @@ EpaycoCheckout.require.define({
                     var error = undefined,
                     result = undefined,
                     base_url = "https://api.secure.payco.co/";
-                var key;
-
-                $.ajax({
+                    var key;
+                    $.ajax({
                     type: "POST",
                     url: base_url + "token/encrypt",
                     crossDomain: true,
@@ -9024,14 +9030,13 @@ $("#continue-tdc").on("click", function(e) {
         loading_home.style.display = "block";
         var c = $("#the-card-number2-element").val().replace(" ", "");
         var sessionId;
-        if (localStorage.getItem("keyUserIndex") == undefined) {
+        if (localStorage.getItem("keyUserIndex") == undefined || localStorage.getItem("keyUserIndex") == null){
             sessionId = localStorage.setItem(
                 "keyUserIndex",
                 util.createGuid()
             );
-        } else {
-            sessionId = localStorage.getItem("keyUserIndex");
-        }
+        } 
+        sessionId = localStorage.getItem("keyUserIndex") ?? util.createGuid();
         var contador = 0;
         contador++;
         var form = document.getElementById('form-action');
@@ -9051,32 +9056,38 @@ $("#continue-tdc").on("click", function(e) {
                     form.appendChild(hiddenInput);
                     form.submit();
                 } else {
-                    if(contador<2)
-                    { 
-                        util.createTokenEncrypt(
-                            sessionId,
-                            t,
-                            function (result, error) {
-                                if(error){
-                                    contador++;
-                                    loading_home.style.display='none';
-                                    alert('No se pudo realizar el pago, por favor reintente neuvamente')
-                                }else{
-                                    $checkout_form.find('input[name=card-number2]').remove();
-                                    $checkout_form.find('input[name=expiry]').remove();
-                                    $checkout_form.find('input[name=cvc]').remove();
-                                    hiddenInput.setAttribute('type', 'hidden');
-                                    hiddenInput.setAttribute('name', 'epaycoToken');
-                                    hiddenInput.setAttribute('value', result);
-                                    form.appendChild(hiddenInput);
-                                    form.submit();
-                                }
-                        });
-                    }else {
+                    if(!error.responseJSON.status){
                         loading_home.style.display='none';
-                        alert('No se pudo realizar el pago, por favor reintente neuvamente')
-                    }
-                    
+                        alert(error.responseJSON.data.description)
+                    }else{
+                        if(contador<2)
+                        { 
+                            /*
+                            util.createTokenEncrypt(
+                                sessionId,
+                                t,
+                                function (result, error) {
+                                    if(error){
+                                        contador++;
+                                        loading_home.style.display='none';
+                                        alert(error.description)
+                                    }else{
+                                        $checkout_form.find('input[name=card-number2]').remove();
+                                        $checkout_form.find('input[name=expiry]').remove();
+                                        $checkout_form.find('input[name=cvc]').remove();
+                                        hiddenInput.setAttribute('type', 'hidden');
+                                        hiddenInput.setAttribute('name', 'epaycoToken');
+                                        hiddenInput.setAttribute('value', result);
+                                        form.appendChild(hiddenInput);
+                                        form.submit();
+                                    }
+                            });
+                            */
+                        }else {
+                            loading_home.style.display='none';
+                            alert("Error, por favor contacte con soporte.")
+                        }
+                    }         
                 }
             }
         );

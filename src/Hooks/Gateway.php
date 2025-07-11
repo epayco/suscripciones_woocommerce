@@ -141,14 +141,35 @@ class Gateway
     public function registerCustomBillingFieldOptions(): void
     {
         add_filter( 'woocommerce_checkout_fields', function( $fields ) {
-            $fields['billing']['billing_custom_field'] = array(
+            $fields['billing']['epayco_billing_dni'] = array(
                 'type'        => 'text',
-                'label'       => 'Numero de documento',
-                'placeholder' => 'Escribe algo...',
+                'label'       => 'Número de documento',
+                'placeholder' => '',
                 'required'    => true,
                 'class'       => array( 'form-row-wide' ),
                 'clear'       => true,
             );
+            $fields['billing']['epayco_billing_type_document'] = array(
+                'type'        => 'select',
+                'label'       => __('Tipo de documento', 'epayco-subscriptions-for-woocommerce'),
+                'placeholder' => __('Seleccionar tipo de documento', 'epayco-subscriptions-for-woocommerce'),
+                'required'    => true,
+                'class'       => array('form-row-wide'),
+                'clear'       => true,
+                'default'     => 'CC',
+                'options'     => [
+                    ''     => __('Seleccione el tipo de documento', 'epayco-subscriptions-for-woocommerce'),
+                    'CC'   => __('Cédula de ciudadanía', 'epayco-subscriptions-for-woocommerce'),
+                    'CE'   => __('Cédula de extranjería', 'epayco-subscriptions-for-woocommerce'),
+                    'PPN'  => __('Pasaporte', 'epayco-subscriptions-for-woocommerce'),
+                    'SSN'  => __('Número de seguridad social', 'epayco-subscriptions-for-woocommerce'),
+                    'LIC'  => __('Licencia de conducción', 'epayco-subscriptions-for-woocommerce'),
+                    'NIT'  => __('(NIT) Número de identificación tributaria', 'epayco-subscriptions-for-woocommerce'),
+                    'TI'   => __('Tarjeta de identidad', 'epayco-subscriptions-for-woocommerce'),
+                    'DNI'  => __('Documento nacional de identificación', 'epayco-subscriptions-for-woocommerce')
+                ]
+            );
+
 
             return $fields;
         });
