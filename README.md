@@ -34,6 +34,16 @@
 11. Si todo está bien recuerda cambiar la variable Modo Prueba a NO y empieza a recibir pagos de forma instantánea y segura con ePayco.
 12. Tener en cuenta que para la cancelación de la suscripciones se debe de realizar por medio del [dashboard](https://dashboard.epayco.co/login) donde encontrar la información de la suscripcion y podra realizar la cancelación de esta.
 
+## Tarea programada para realizar la actualizaciones del estado de las suscripciones 
+1. Ingresa al administrador de tu wordPress.
+2. Ingresa a Woocomerce / Estado / Acciones programadas. 
+3. Buscar por gancho, argumentos e ID de peticion y agregamos el nombre de epayco.
+5. Nos aparecera la tarea programada con el nombre,(woocommerce_epayco_suscripcion_cleanup_draft_orders) y haremos clic en Ejecutar. 
+6. Te aparecera un mensaje de confirmacion diciendote que la tarea programada se 
+ejecuto correctamente. 
+7. Con estos pasos anteriores los estados de tu suscripcion se actualizaran correctamente, manteniendo asi sinbcronizado el estado de la suscripcion en tu dashboard de ePayco con el estado de tus suscripciones en woocomerce. 
+
+
 ## Pasos
 
 <img src="ImgTutorialWooCommerce/tuto-1.jpg" width="400px"/>
@@ -42,8 +52,13 @@
 <img src="ImgTutorialWooCommerce/tuto-4.jpg" width="400px"/>
 <img src="ImgTutorialWooCommerce/tuto-5.jpg" width="400px"/>
 <img src="ImgTutorialWooCommerce/tuto-9.jpg" width="400px"/>
+<img src="ImgTutorialWooCommerce/tuto-cron-10.jpg" width="400px"/>
+<img src="ImgTutorialWooCommerce/tuto-cron-11.jpg" width="400px"/>
+<img src="ImgTutorialWooCommerce/tuto-cron-12.jpg" width="400px"/>
+<img src="ImgTutorialWooCommerce/tuto-cron-13.png" width="400px"/>
 
 ## Versiones
+* [ePayco plugin WooCommerce v6.4](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v6.4)
 * [ePayco plugin WooCommerce v6.3](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v6.3)
 * [ePayco plugin WooCommerce v6.2](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v6.2)
 * [ePayco plugin WooCommerce v6.1](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v6.1)
