@@ -293,14 +293,25 @@ jQuery( function( $ ) {
             ePayco.token.create($form, function(error, token) {
                 loading=false;
                 if(!error) {
-                    enviarData(token)
+                    if(error != undefined){
+                        enviarData(token)
+                    }else{
+                        reject("No pudimos procesar la transacción, por favor contacte con soporte.")
+                    }
                 } else {
-                    if(!error) {
+                    if(!error || error !== undefined) {
                         resolve(token)
                     } else {
                         try {
-                            if(!error.status){
-                                reject(error.data.description)
+                            if(error != undefined){
+                                if(!error.status){
+                                    let message = error.data.description;
+                                    reject(message)
+                                }else{
+                                    console.error(error)
+                                }
+                            }else{
+                                reject("No pudimos procesar la transacción, por favor contacte con soporte.")
                             }
                         } catch(e) {
                             reject('No se pudo realizar el pago, por favor reintente nuevamente')

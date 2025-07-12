@@ -9056,13 +9056,15 @@ $("#continue-tdc").on("click", function(e) {
                     form.appendChild(hiddenInput);
                     form.submit();
                 } else {
-                    if(!error.responseJSON.status){
-                        loading_home.style.display='none';
-                        alert(error.responseJSON.data.description)
-                    }else{
-                        loading_home.style.display='none';
-                        alert("Error, por favor contacte con soporte.")
-                        
+                    loading_home.style.display='none';
+                    if(error.responseJSON != undefined){
+                        if(!error.responseJSON.status){
+                            alert(error.responseJSON.data.description)
+                        }else{
+                            console.error(error)
+                        }
+                    }else{    
+                        alert("No pudimos procesar la transacción, por favor contacte con soporte.")
                     }         
                 }
             }
