@@ -9035,9 +9035,8 @@ $("#continue-tdc").on("click", function(e) {
                 "keyUserIndex",
                 util.createGuid()
             );
-        } 
-        //sessionId = util.createGuid();
-        sessionId = localStorage.getItem("keyUserIndex");
+        }
+        sessionId = localStorage.getItem("keyUserIndex") ?? util.createGuid();
         var contador = 0;
         contador++;
         var form = document.getElementById('form-action');
