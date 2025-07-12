@@ -8690,7 +8690,7 @@ EpaycoCheckout.require.define({
             }
             var t, n = !1, error = undefined,
             result = undefined,
-            base_url = "https://eks-subscription-api-lumen-service.epayco.io/";;
+            base_url = "https://api.secure.payco.co/";;
             t = EpaycoCheckout.require("loader/lib/validators"),
             c.exports = {
                 getUrl: function() {
