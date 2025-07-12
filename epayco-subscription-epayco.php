@@ -461,7 +461,7 @@ if (is_wp_error($response)) {
                   </div>
                   <div class="header-modal-text">
                  <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: black;"><?php echo esc_html($product_name_); ?></h1>
-                <h2 style="font-size: 12px;margin-bottom:3px;color: #848484;margin: 0.2rem 1.5rem !important;"><?php echo esc_html($this->shop_name); ?></h2>
+                <h2 style="font-size: 12px;margin-bottom:3px;color: #848484;margin: 0.2rem 1.5rem !important; font-family: Poppins"><?php echo esc_html($this->shop_name); ?></h2>
 
       <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: #3582b7;font-weight: 900;">
     $<?php echo esc_html($amount); ?> <?php echo esc_html($currency); ?>
