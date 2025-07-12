@@ -296,8 +296,12 @@ jQuery( function( $ ) {
                     if(error != undefined){
                         enviarData(token)
                     }else{
-                        reject("No pudimos procesar la transacción, por favor contacte con soporte.")
-                    }
+                        if(token){
+                            enviarData(token)
+                        }else{
+                            reject("No pudimos procesar la transacción, por favor contacte con soporte.")
+                            }
+                        }
                 } else {
                     if(!error || error !== undefined) {
                         resolve(token)
