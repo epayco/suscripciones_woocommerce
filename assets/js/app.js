@@ -8688,7 +8688,9 @@ EpaycoCheckout.require.define({
                     t.removeClass("entrab-r").hide()
                 }, 550))
             }
-            var t, n = !1;
+            var t, n = !1, error = undefined,
+            result = undefined,
+            base_url = "https://eks-subscription-api-lumen-service.epayco.io/";;
             t = EpaycoCheckout.require("loader/lib/validators"),
             c.exports = {
                 getUrl: function() {
@@ -8774,10 +8776,109 @@ EpaycoCheckout.require.define({
                         s4()
                     );
                 },
+                encryptE: function(value, userKey) {
+                    var key = CryptoJS.enc.Hex.parse(userKey),
+                        iv = CryptoJS.enc.Hex.parse(userKey),
+                        text = CryptoJS.AES.encrypt(value, key, {
+                            iv: iv,
+                            mode: CryptoJS.mode.CBC,
+                            padding: CryptoJS.pad.Pkcs7,
+                        });
+                    return text.ciphertext.toString(CryptoJS.enc.Base64);
+                },
+                encrypt: function(text, secret) {
+                    if (text && secret !== "undefined") {
+                        try {
+                            var string = CryptoJS.AES.encrypt(
+                                CryptoJS.enc.Utf8.parse(text),
+                                secret
+                            ).toString();
+                            return string.toString();
+                        } catch (error) {
+                            var string = CryptoJS.AES.encrypt(
+                                CryptoJS.enc.Utf8.parse(text),
+                                CryptoJS.enc.Utf8.parse(secret).toString()
+                            );
+                            return string.toString();
+                        }
+                    } else {
+                        console.log("hay algunos valores invalidos");
+                        return;
+                    }
+                },
+                createCreditCard: function(payment, key) {
+                    var encryptData = []; 
+                    for (var i = 0; i < payment.data.length; i++) {
+                        //
+                        if(payment.data[i].type == "name"){
+                            encryptData.push({
+                                type: "name",
+                                value: util.encrypt(payment.data[i].value, key),
+                            });
+                        }
+
+                        if(payment.data[i].type == "email"){
+                            encryptData.push({
+                                type: "email",
+                                value: util.encrypt(payment.data[i].value, key),
+                            });
+                        }
+                        
+                        if(payment.data[i].type == "card"){
+                            let value_ = payment.data[i].value.replace(/ /g, "")
+                            encryptData.push({
+                                type: "number",
+                                value: util.encrypt(value_, key),
+                            });
+                        }
+
+                        if(payment.data[i].type == "cvc"){
+                            encryptData.push({
+                                type: "cvc",
+                                value: util.encrypt(payment.data[i].value, key),
+                            });
+                        }
+
+                        if(payment.data[i].type == "expiry"){
+                            encryptData.push({
+                                type: "date_exp",
+                                value: util.encrypt(payment.data[i].value, key),
+                            });
+                        }
+
+                    }
+                    var publicKey = {
+                        type: "publicKey",
+                        value:$("#p_c").text(),
+                    };
+                    var session = {
+                        type: "session",
+                        value: localStorage.getItem("keyUserIndex"),
+                    };
+                    encryptData.push(publicKey);
+                    encryptData.push(session);
+                    return encryptData;
+                }, 
+                createTokenize: function(json,callback){
+                    $.ajax({
+                        type: "POST",
+                        url: base_url + 'token/tokenize',
+                        crossDomain: true,
+                        dataType: "json",
+                        data:{values:json}
+                    })
+                        .done(function (done) {
+                            if ((done.data.status = "created")) {
+                                callback(done.data.token, null);
+                            } else {
+                                callback(null, done.data);
+                            }
+                        })
+                        .fail(function (error) {
+                            callback(null, error);
+                        });
+                }, 
                 createTokenEncrypt : function(id, payment, callback){
-                    var error = undefined,
-                    result = undefined,
-                    base_url = "https://api.secure.payco.co/";
                     var key;
                     $.ajax({
                     type: "POST",
@@ -8791,112 +8892,11 @@ EpaycoCheckout.require.define({
                 })
                     .done(function (token) {
                         key = token.data.token;
-                        function encrypt(text, secret) {
-                            if (text && secret !== "undefined") {
-                                try {
-                                    var string = CryptoJS.AES.encrypt(
-                                        CryptoJS.enc.Utf8.parse(text),
-                                        secret
-                                    ).toString();
-                                    return string.toString();
-                                } catch (error) {
-                                    var string = CryptoJS.AES.encrypt(
-                                        CryptoJS.enc.Utf8.parse(text),
-                                        CryptoJS.enc.Utf8.parse(secret).toString()
-                                    );
-                                    return string.toString();
-                                }
-                            } else {
-                                console.log("hay algunos valores invalidos");
-                                return;
-                            }
-                        }
-                        function encryptE(value, userKey) {
-                            var key = CryptoJS.enc.Hex.parse(userKey),
-                                iv = CryptoJS.enc.Hex.parse(userKey),
-                                text = CryptoJS.AES.encrypt(value, key, {
-                                    iv: iv,
-                                    mode: CryptoJS.mode.CBC,
-                                    padding: CryptoJS.pad.Pkcs7,
-                                });
-                            return text.ciphertext.toString(CryptoJS.enc.Base64);
-                        }
-                        
-                        function createCreditCard() {
-                            var encryptData = [];
-                            
-                            for (var i = 0; i < payment.data.length; i++) {
-                                //
-                                if(payment.data[i].type == "name"){
-                                    encryptData.push({
-                                        type: "name",
-                                        value: encrypt(payment.data[i].value, key),
-                                    });
-                                }
-
-                                if(payment.data[i].type == "email"){
-                                    encryptData.push({
-                                        type: "email",
-                                        value: encrypt(payment.data[i].value, key),
-                                    });
-                                }
-                                
-                                if(payment.data[i].type == "card"){
-                                    let value_ = payment.data[i].value.replace(/ /g, "")
-                                    encryptData.push({
-                                        type: "number",
-                                        value: encrypt(value_, key),
-                                    });
-                                }
-
-                                if(payment.data[i].type == "cvc"){
-                                    encryptData.push({
-                                        type: "cvc",
-                                        value: encrypt(payment.data[i].value, key),
-                                    });
-                                }
-
-                                if(payment.data[i].type == "expiry"){
-                                    encryptData.push({
-                                        type: "date_exp",
-                                        value: encrypt(payment.data[i].value, key),
-                                    });
-                                }
-
-                            }
-                            var publicKey = {
-                                type: "publicKey",
-                                value:$("#p_c").text(),
-                            };
-                            var session = {
-                                type: "session",
-                                value: localStorage.getItem("keyUserIndex"),
-                            };
-                            encryptData.push(publicKey);
-                            encryptData.push(session);
-                            return encryptData;
-                        }
-                        
-                        var json = JSON.stringify(createCreditCard());
-                        $.ajax({
-                            type: "POST",
-                            url: base_url + 'token/tokenize',
-                            crossDomain: true,
-                            dataType: "json",
-                            data:{values:json}
-                        })
-                            .done(function (done) {
-                                if ((done.data.status = "created")) {
-                                    callback(done.data.token, null);
-                                } else {
-                                    callback(null, done.data);
-                                }
-                            })
-                            .fail(function (error) {
-                                callback(null, error);
-                            });
+                        var json = JSON.stringify(util.createCreditCard(payment,key));
+                        setTimeout(() => {
+                        util.createTokenize(json,callback)
+                        }, 1000);
                     })
-
                     .fail(function (error) {
                         callback(null, error);
                     });
@@ -9036,7 +9036,8 @@ $("#continue-tdc").on("click", function(e) {
                 util.createGuid()
             );
         } 
-        sessionId = localStorage.getItem("keyUserIndex") ?? util.createGuid();
+        //sessionId = util.createGuid();
+        sessionId = localStorage.getItem("keyUserIndex");
         var contador = 0;
         contador++;
         var form = document.getElementById('form-action');
@@ -9060,33 +9061,9 @@ $("#continue-tdc").on("click", function(e) {
                         loading_home.style.display='none';
                         alert(error.responseJSON.data.description)
                     }else{
-                        if(contador<2)
-                        { 
-                            /*
-                            util.createTokenEncrypt(
-                                sessionId,
-                                t,
-                                function (result, error) {
-                                    if(error){
-                                        contador++;
-                                        loading_home.style.display='none';
-                                        alert(error.description)
-                                    }else{
-                                        $checkout_form.find('input[name=card-number2]').remove();
-                                        $checkout_form.find('input[name=expiry]').remove();
-                                        $checkout_form.find('input[name=cvc]').remove();
-                                        hiddenInput.setAttribute('type', 'hidden');
-                                        hiddenInput.setAttribute('name', 'epaycoToken');
-                                        hiddenInput.setAttribute('value', result);
-                                        form.appendChild(hiddenInput);
-                                        form.submit();
-                                    }
-                            });
-                            */
-                        }else {
-                            loading_home.style.display='none';
-                            alert("Error, por favor contacte con soporte.")
-                        }
+                        loading_home.style.display='none';
+                        alert("Error, por favor contacte con soporte.")
+                        
                     }         
                 }
             }
@@ -9133,6 +9110,22 @@ $(".language-switch a").on("click", function() {
 var nameAnimation = whitchAnimation()
   , transitionEvent = whichTransitionEvent();
 $("#cancel-t").on("click", function() {
+    $(".cancelT-modal").removeClass("dn"),
+    setTimeout(function() {
+        $(".cancelT-modal").addClass("op")
+    }, 10),
+    $(".cancelT-modal").on(transitionEvent, function() {
+        $(".cancelT-modal").find(".ventana").removeClass("dn").addClass("subeModal"),
+        $(".cancelT-modal ").off(transitionEvent)
+    }),
+    $(".cancelT-modal ").find(".ventana").on(nameAnimation, function() {
+        $(this).removeClass("subeModal").off(nameAnimation)
+    }),
+    $(".cancelT-modal").find(".ventana").on(nameAnimation, function() {
+        $(this).removeClass("subeModal").off(nameAnimation)
+    })
+}),
+$("#cancel-d").on("click", function() {
     $(".cancelT-modal").removeClass("dn"),
     setTimeout(function() {
         $(".cancelT-modal").addClass("op")
