@@ -155,7 +155,10 @@ class Client extends GraphqlClient
             }
             if ($response->status_code >= 400 && $response->status_code < 500) {
                 $body = $response->body;
-
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info(error_log("checkout_error".json_encode($body)));
+                }
 
                 if (empty($body)) {
                     $responseDataBody = array(
