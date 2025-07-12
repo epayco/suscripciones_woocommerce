@@ -49,6 +49,7 @@ if (!defined('ABSPATH')) {
     // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
     echo '<link rel="stylesheet" type="text/css" href="' . esc_html($cardsjscss) . '">';
     ?>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 </head>
 
 
@@ -137,7 +138,7 @@ if (!defined('ABSPATH')) {
                     </div>
                 </header>
                 <section class="content animated zoomIn " style="
-              background-color: white; padding-top: 0rem;">
+                    background-color: white; padding-top: 0rem;">
                     <div id="content-errors"></div>
                     <form id="form-action" method="post" novalidate="" action="<?php echo esc_html($redirect_url); ?>">
                         <div class="step step-tdc main-steps active" data-group="tdc" active="" style="margin: 0px;">
@@ -145,7 +146,8 @@ if (!defined('ABSPATH')) {
                                 <div class="step-form">
                                     <!-- Name -->
                                     <div class="form-container extra-label">
-                                        <i class="fas fa-user icon" style="font-size: 1.5em; color: #000;"></i>
+                                        <!--<i class="fas fa-user icon" style="font-size: 1.5em; color: #000;"></i>-->
+                                        <svg class="svg-inline--fa fa-user fa-w-16 icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="#2a7ab7" d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z"/></svg>
                                         <div class="label-container">
                                             <label for="card" id="label_name_es" style="display:table-cell">Nombre</label>
                                         </div>
@@ -214,14 +216,14 @@ if (!defined('ABSPATH')) {
         </section>
         <footer class="footer-buttons" hidden id="movil_footer">
             <div class="button-actions" style="display: none;">
-                <button class="action-oneclick cancel-oneclick" style="background-color: #D8D8D8">Cancelar</button>
+                <button class="action-oneclick cancel-oneclick" id="cancel-d" style="background-color: #D8D8D8">Cancelar</button>
                 <button class="action-oneclick save-oneclik">Guardar</button>
             </div>
             <button id="continue-tdc" class="continue-container text-center btnpay" style="background-color: #3582b7;" type="submit">
                 Pagar
-                <svg class="svg-inline--fa fa-angle-right fa-w-8" aria-hidden="true" data-prefix="fas" data-icon="angle-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg="">
+                <!--<svg class="svg-inline--fa fa-angle-right fa-w-8" aria-hidden="true" data-prefix="fas" data-icon="angle-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg="">
                     <path fill="currentColor" d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
-                </svg><!-- <i class="fas fa-angle-right"></i> -->
+                </svg>--><!-- <i class="fas fa-angle-right"></i> -->
             </button>
             <div class="brand-footer">
                 <p style="color:#1C0E49">
@@ -233,6 +235,7 @@ if (!defined('ABSPATH')) {
 
             </div>
         </footer>
+
         <div class="cancelT-modal dn" id="cancelT_modal" style="display:none">
             <div class="ventana dn">
                 <div class="icono">
@@ -322,7 +325,7 @@ if (!defined('ABSPATH')) {
                         </div>
                         <div class="header-modal-text">
                             <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: black;"><?php echo esc_html($product_name_); ?></h1>
-                            <h2 style="font-size: 12px;margin-bottom:3px;color: #848484;margin: 0.2rem 1.5rem !important;"><?php echo esc_html($shop_name) ?></h2>
+                            <h2 style="font-size: 12px;margin-bottom:3px;color: #848484;margin: 0.2rem 1.5rem !important;  font-family: Poppins"><?php echo esc_html($shop_name) ?></h2>
                             <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: #3582b7;font-weight: 900;">$<?php echo esc_html($amount); ?> <?php echo esc_html($currency) ?></h1>
                         </div>
                         <div class="color-exit hidden-print closeIcon" id="closeModal">
@@ -351,10 +354,10 @@ if (!defined('ABSPATH')) {
                         <div class="wc scroll-content">
                             <div class="separate">
                                 <h2 class="title-body" style="text-align: left;width: calc(100% - 1.9em);
-                                margin: 0 auto 1em; font-size: 16px; font-weight: 500; color: #3a3a3a;" id="info_es">Información de la tarjeta
+                                margin: 0 auto 1em; font-size: 16px; font-weight: 500; color: #3a3a3a;font-family: 'Poppins' " id="info_es">Información de la tarjeta
                                 </h2>
                                 <h2 class="title-body" style="text-align: left;width: calc(100% - 1.5em);
-                                margin: 0 auto 1em; font-size: 16px; font-weight: 500; color: #3a3a3a;" id="info_en">Credit card information
+                                margin: 0 auto 1em; font-size: 16px; font-weight: 500; color: #3a3a3a;font-family: 'Poppins'" id="info_en">Credit card information
                                 </h2>
                             </div>
                             <div class="menu-select">
@@ -396,8 +399,8 @@ if (!defined('ABSPATH')) {
                                     <br>
                                     <div class="clearfix"></div>
                                     <button class="call_action bgcolor white_font pointer load hidden-print" id="send-form">
-                                        <h2 style="color: white;" id="pagar_es">Pagar</h2>
-                                        <h2 style="color: white;" id="pagar_en">Pay</h2>
+                                        <h2 style="color: white; font-family: 'Poppins'" id="pagar_es">Pagar</h2>
+                                        <h2 style="color: white; font-family: 'Poppins'" id="pagar_en">Pay</h2>
                                     </button>
                                 </form>
                             </div>

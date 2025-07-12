@@ -555,15 +555,14 @@ class EpaycoSuscription extends AbstractGateway
         // $subscription = wcs_get_subscription($subscription_id);
 
         $token = $params['epaycoToken'];
-        if (is_null($token)) {
+        if (is_null($token) || $token == "null" ) {
             $error =  __('Token no generado, por favor intente de nuevo.', 'epayco-subscriptions-for-woocommerce');
             wc_add_notice($error, 'error');
             wp_redirect(wc_get_checkout_url());
             exit;
         }
         $customerName =  $params['name'];
-        $customerCard = $params['card-number2'];
-        $customerData = $this->paramsBilling($subscriptions, $order, $customerCard, $customerName);
+        $customerData = $this->paramsBilling($subscriptions, $order, $customerName);
         $customerData['token_card'] = $token;
         $this->custIdCliente =  $this->get_option('custIdCliente');
         $cache_key = "epayco_customer_{$this->custIdCliente}_{$customerData['email']}";
@@ -1249,7 +1248,7 @@ class EpaycoSuscription extends AbstractGateway
 
 
 
-    public function paramsBilling($subscriptions, $order, $customerCard, $customerName)
+    public function paramsBilling($subscriptions, $order, $customerName)
     {
         $data = [];
         $subscription = end($subscriptions);

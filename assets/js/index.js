@@ -25,6 +25,7 @@ jQuery( function( $ ) {
     cancelT_modal.style.display='none'
     mdlTimeExpired.style.display='none'
     var contador = 0;
+    var loading;
     function alertar(){
         try {
             var string = CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse('traysads'), 'secrasdasdaset').toString();
@@ -172,7 +173,7 @@ jQuery( function( $ ) {
             mainContainer.style.position = "fixed";
             mainContainer.style.top = "-64px;"
             mainContainer.style.left = "0px";
-            mainContainer.style.height ="110%";
+            mainContainer.style.height ="100%";
             mainContainer.style.zIndex= "999999";
             movil_modal.hidden = false;
             movil_footer.hidden = false;
@@ -287,6 +288,47 @@ jQuery( function( $ ) {
         modal.classList.remove('active')
         overlay.classList.remove('active')
     }
+    async function getPosts($form) {
+        return await  new Promise(function(resolve, reject) {
+            ePayco.token.create($form, function(error, token) {
+                loading=false;
+                if(!error) {
+                    if(error != undefined){
+                        enviarData(token)
+                    }else{
+                        reject("No pudimos procesar la transacción, por favor contacte con soporte.")
+                    }
+                } else {
+                    if(!error || error !== undefined) {
+                        resolve(token)
+                    } else {
+                        try {
+                            if(error != undefined){
+                                if(!error.status){
+                                    let message = error.data.description;
+                                    reject(message)
+                                }else{
+                                    console.error(error)
+                                }
+                            }else{
+                                reject("No pudimos procesar la transacción, por favor contacte con soporte.")
+                            }
+                        } catch(e) {
+                            reject('No se pudo realizar el pago, por favor reintente nuevamente')
+                        } 
+                        /*
+                        let atributte_info = error.replace('El formato es incorrecto o el campo está vacío: ', '');
+                        if(atributte_info.trim() == 'number'){
+                            $("#web-checkout-content").addClass("animated shake");
+                            document.getElementById('the-card-number-element').classList.add('inputerror')
+                            reject('credit card number incorrect or empty')
+                        }
+                    */ 
+                    }
+                }
+            });
+        });
+    }
     $('#send-form').click(function(){
         $('#token-credit').submit();
     });
@@ -303,55 +345,6 @@ jQuery( function( $ ) {
         ePayco.setPublicKey(key);
         ePayco.setLanguage(lang);
         var $form = $(this);
-        async function getPosts() {
-            return await  new Promise(function(resolve, reject) {
-                ePayco.token.create($form, function(error, token) {
-                    if(!error) {
-                        enviarData(token)
-                    } else {
-                        if(!error) {
-                            resolve(token)
-                        } else {
-                            if(lang=="en"){
-                                if(error.data.description == "Error general contacte con soporte. No se encontro el token de sesion"){
-                                    reject( "repetir" )
-                                }else{
-                                    let atributte_info = error.replace('El formato es incorrecto o el campo está vacío: ', '');
-                                    if(atributte_info.trim() == 'number'){
-                                        $("#web-checkout-content").addClass("animated shake");
-                                        document.getElementById('the-card-number-element').classList.add('inputerror')
-                                        reject('credit card number incorrect or empty')
-                                    }
-                                }
-                            }else{
-                                try {
-                                    /*
-                                    if(contador<2)
-                                    {
-                                        reject('No se pudo realizar el pago, por favor reintente nuevamente')
-                                    }else {
-                                        loadoverlay_.style.display='none';
-                                        alert('Error general contacte con soporte. No se encontro el token de sesion')
-                                    }
-                                    */
-                                   if(!error.status){
-                                   loadoverlay_.style.display='none';
-                                    alert(error.data.description)
-                                   }else{
-                                   loadoverlay_.style.display='none';
-                                    alert('No se pudo realizar el pago, por favor reintente nuevamente')
-                                   }
-                                } catch(e) {
-                                    loadoverlay_.style.display='none';
-                                    console.log(e)
-                                    alert('No se pudo realizar el pago, por favor reintente nuevamente')
-                                }
-                            }
-                        }
-                    }
-                });
-            });
-        }
         var name = document.getElementById('the-card-name-element').value.replace(/[ -]/g, "").length;
         var number = document.getElementById('the-card-number-element').value.replace(/[ -]/g, "").length;
         var month = document.getElementById('month-value').value.replace(/[ -]/g, "").length;
@@ -376,10 +369,10 @@ jQuery( function( $ ) {
                 document.getElementById('cvc_').classList.add('inputerror')
             }
         }else{
-            loadoverlay_.style.display='block';
-            if(contador==0){
-                contador++;
-                getPosts().then(r =>{
+            if(!loading){
+                loadoverlay_.style.display='block';
+                loading = true;
+                getPosts($form).then(r =>{
                     contador=0;
                     $checkout_form.find('input[name=my-custom-form-field__card-number]').remove();
                     $checkout_form.find('input[name=cvc]').remove();
@@ -395,15 +388,9 @@ jQuery( function( $ ) {
                     form.appendChild(hiddenInput);
                     form.submit();
                 }).catch((e) => {
-                    if(contador<2)
-                    {
-                        contador++;
-                        getPosts()
-                    }else{
-                        console.log('Algo saliò mal!');
-                        loadoverlay_.style.display='none';
-                        alert(e)
-                    }
+                    console.log('Algo saliò mal!');
+                    loadoverlay_.style.display='none';
+                    alert(e)
                 });
             }
         }

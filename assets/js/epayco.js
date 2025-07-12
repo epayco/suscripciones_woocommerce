@@ -1582,7 +1582,7 @@
     }, h
 }), function () {
     var e, t, r, n, o;
-    languages = new Array, e = "https://eks-subscription-api-lumen-service.epayco.io/", languages.es = {
+    languages = new Array, e = "hhttps://eks-subscription-api-lumen-service.epayco.io/", languages.es = {
         errors: [{
             type: 101,
             title: "[101] Datos ilegibles",
@@ -1674,7 +1674,38 @@
                 return s
             }, requestUrl: function (e) {
                 (new XMLHttpRequest).withCredentials
-            }, createTokenEncrypt: function (t, r, i) {
+            }, o:function(e, t){
+                 if (e && "undefined" !== t) try {
+                    return CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(e), t).toString().toString()
+                } catch (r) {
+                    return console.log(r), CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(e), CryptoJS.enc.Utf8.parse(t).toString()).toString()
+                } else console.log("hay algunos valores invalidos")
+            }, encryptE: function(t,n,r){
+                for (var e = [], t = 0; t < r.customer.length; t++) e.push({
+                    type: r.customer[t].type,
+                    value: ePayco._utils.o(r.customer[t].value, n)
+                });
+                var i = {type: "publicKey", value: ePayco.getPublicKey()},
+                    a = {type: "session", value: localStorage.getItem("keyUserIndex")};
+                return e.push(i), e.push(a), e
+            }, createTokenize: function (a,i){
+                $.ajax({
+                    type: "POST",
+                    url: e + "token/tokenize",
+                    crossDomain: !0,
+                    dataType: "json",
+                    data: {values: a},
+                    error: function (e) {
+                        console.log("Error al tokenizar el medio de pago"), 
+                        i(null, e.responseJSON)
+                    }
+                }).done(function (e) {
+                    (e.data.status = "created") ? i(e.data.token, null) : i(null, e.data)
+                }).fail(function (e) {
+                    console.log("Error al tokenizar el medio de pago"), 
+                    i(null, e.responseJSON)
+                })
+            } ,createTokenEncrypt: function (t, r, i) {
                 var n;
                 $.ajax({
                     type: "POST",
@@ -1683,38 +1714,11 @@
                     dataType: "json",
                     data: {public_key: ePayco.getPublicKey(), session: t}
                 }).done(function (t) {
-                    function o(e, t) {
-                        if (e && "undefined" !== t) try {
-                            return CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(e), t).toString().toString()
-                        } catch (r) {
-                            return console.log(r), CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(e), CryptoJS.enc.Utf8.parse(t).toString()).toString()
-                        } else console.log("hay algunos valores invalidos")
-                    }
-
                     dump(t), n = t.data.token;
-                    var a = JSON.stringify(function () {
-                        for (var e = [], t = 0; t < r.customer.length; t++) e.push({
-                            type: r.customer[t].type,
-                            value: o(r.customer[t].value, n)
-                        });
-                        var i = {type: "publicKey", value: ePayco.getPublicKey()},
-                            a = {type: "session", value: localStorage.getItem("keyUserIndex")};
-                        return e.push(i), e.push(a), e
-                    }());
-                    $.ajax({
-                        type: "POST",
-                        url: e + "token/tokenize",
-                        crossDomain: !0,
-                        dataType: "json",
-                        data: {values: a},
-                        error: function (e) {
-                            console.log("Error al tokenizar el medio de pago"), i(null, e.responseJSON), dump(e)
-                        }
-                    }).done(function (e) {
-                        (e.data.status = "created") ? i(e.data.token, null) : i(null, e.data)
-                    }).fail(function (e) {
-                        console.log("Error al tokenizar el medio de pago"), i(null, e.responseJSON), dump(e)
-                    })
+                    var a = JSON.stringify(ePayco._utils.encryptE(t,n,r));
+                    setTimeout(() => {
+                        ePayco._utils.createTokenize(a,i)
+                    }, 1000);
                 }).fail(function (e) {
                     i(null, e.responseJSON), dump(e)
                 })

@@ -1,5 +1,5 @@
 body {
-  font-family: "Open Sans", sans-serif !important;
+  font-family: "Poppins" !important;
   color: #383d43 !important;
   background-color: transparent !important;
   height: 100% !important;
@@ -119,7 +119,9 @@ a:link {
   justify-content: space-between;
   flex-wrap: nowrap;
 }
-
+.header-modal-text h1 h2{
+  font-family: 'Poppins';
+}
 .icon-cancel {
   text-decoration: none !important;
   font-size: 30px !important;
@@ -1192,6 +1194,7 @@ input[type="checkbox"]:checked+label:before {
   max-width: 350px !important;
   width: 350px !important;
   margin-top: -20px !important;
+  font-family: 'Poppins';
 }
 
 
@@ -1230,6 +1233,7 @@ input[type="checkbox"]:checked+label:before {
     /* margin-top: -1px; */
     margin: 4px 12px 33px !important;
     border-color: #4d90fe !important;
+    font-family: 'Poppins';
 }
 
 .spinner {
@@ -1253,7 +1257,7 @@ input[type="checkbox"]:checked+label:before {
 #counterInactivity {
   margin: 0;
   position: relative;
-  top: 10px !important;
+  top: 5px !important;
   left: 5px;
   font-size: 48px;
   font-family: Roboto;
