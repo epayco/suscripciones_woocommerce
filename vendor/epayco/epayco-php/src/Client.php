@@ -157,7 +157,7 @@ class Client extends GraphqlClient
                 $body = $response->body;
                 if (class_exists('WC_Logger')) {
                     $logger = wc_get_logger();
-                    $logger->info(error_log("checkout_error".json_encode($body)));
+                    $logger->info("checkout_error".json_encode($body));
                 }
 
                 if (empty($body)) {
