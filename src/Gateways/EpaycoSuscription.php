@@ -37,6 +37,8 @@ class EpaycoSuscription extends AbstractGateway
      */
     public const LOG_SOURCE = 'EpaycoSuscription_Gateway';
 
+    public $cron_data;
+
     protected EpaycoSdk\Epayco $epaycoSdk;
 
     /**

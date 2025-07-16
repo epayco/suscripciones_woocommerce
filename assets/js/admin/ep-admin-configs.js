@@ -50,7 +50,7 @@ window.addEventListener("load", (function () {
                              modalContent.style.display = "block";
                              loader.style.display = "none";
                         }
-
+                        
                     }
                 });
             }
