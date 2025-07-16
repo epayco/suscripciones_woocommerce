@@ -2340,15 +2340,11 @@ class EpaycoSuscription extends AbstractGateway
 
     public function on_wc_subscription_cancelled($subscription)
     {
-        $logger = new \WC_Logger();
-
         $epayco_subscription_id = get_post_meta($subscription->get_id(), '_epayco_subscription_id', true);
 
         if ($epayco_subscription_id) {
             $this->cancelSubscription($epayco_subscription_id);
-        } else {
-            $logger->add('epayco_debug', "No se encontró _epayco_subscription_id para la suscripción WooCommerce ID={$subscription->get_id()}");
-        }
+        } 
     }
 
 
