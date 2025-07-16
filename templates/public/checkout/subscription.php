@@ -91,7 +91,15 @@ if (!defined('ABSPATH')) {
                     <div class="title-container  ">
                         <div class="logo-commerce">
                             <div class="logo-container">
-                                <?php echo wp_get_attachment_image(0, 'full'); ?>
+                                <!--<?php echo wp_get_attachment_image(0, 'full'); ?>-->
+                                <img 
+                                    loading="lazy" 
+                                    decoding="async" 
+                                    width="90" 
+                                    height="90" 
+                                    src="<?php echo esc_html($logo_comercio); ?>" 
+                                    class="attachment-full size-full" 
+                                    alt="" />
                             </div>
 
                         </div>
@@ -321,7 +329,16 @@ if (!defined('ABSPATH')) {
                 <div class="onpage relative" id="web-checkout-content">
                     <div class="header-modal hidden-print">
                         <div class="logo-comercio">
-                            <?php echo wp_get_attachment_image(0, 'full', false, ['class' => 'img-card', 'id' => 'image-safari', 'style' => 'width: 90%;']);; ?>                          
+                            <img 
+                            loading="lazy" 
+                            decoding="async" 
+                            width="90" height="90" 
+                            src="<?php echo esc_html($logo_comercio); ?>" 
+                            class="img-card" 
+                            alt="" 
+                            id="image-safari" 
+                            style="width: 90%;">
+                            <!--<?php echo wp_get_attachment_image(0, 'full', false, ['class' => 'img-card', 'id' => 'image-safari', 'style' => 'width: 90%;']); ?> -->                 
                         </div>
                         <div class="header-modal-text">
                             <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: black;"><?php echo esc_html($product_name_); ?></h1>

@@ -281,4 +281,20 @@ class Gateway
             return $methods;
         });
     }
+
+
+     /** Register gateway receipt
+     *
+     * @param mixed $class
+     * @param mixed $callback
+     * @return void
+     */
+    public function getAdminCredentiaslFields($class, $callback): void
+    {
+        add_action('ePayco_init_validation', array($class, $callback));
+    }
+    
+
+
+
 }

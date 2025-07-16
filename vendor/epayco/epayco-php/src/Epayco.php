@@ -41,6 +41,60 @@ class Epayco
     public $lang;
 
     /**
+     * Token
+     * @var Token
+     */
+    public $token;
+
+    /**
+     * Customer
+     * @var Customers
+     */
+    public $customer;
+    
+    /**
+     * Plan
+     * @var Plan
+     */
+    public $plan;
+
+    /**
+     * Subscriptions
+     * @var Subscriptions
+     */
+    public $subscriptions;
+
+    /**
+     * Bank
+     * @var Bank
+     */
+    public $bank;
+
+    /**
+     * Cash
+     * @var Cash
+     */
+    public $cash;
+
+    /**
+     * Charge
+     * @var Charge
+     */
+    public $charge;
+
+    /**
+     * Daviplata
+     * @var Daviplata
+     */
+    public $daviplata;
+
+    /**
+     * Safetypay
+     * @var Safetypay
+     */
+    public $safetypay;
+
+    /**
      * Constructor methods publics
      * @param array $options
      */

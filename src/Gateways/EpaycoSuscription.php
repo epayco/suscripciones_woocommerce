@@ -26,10 +26,18 @@ class EpaycoSuscription extends AbstractGateway
      */
     public const WEBHOOK_API_NAME = 'WC_WooEpaycoSuscription_Gateway';
 
+    /** 
+     * @const
+     */
+    public const WEBHOOK_API_NAME_VALIDATION = 'WC_WooEpaycoSuscription_Validation';
+
+
     /**
      * @const
      */
     public const LOG_SOURCE = 'EpaycoSuscription_Gateway';
+
+    public $cron_data;
 
     protected EpaycoSdk\Epayco $epaycoSdk;
 
@@ -63,11 +71,13 @@ class EpaycoSuscription extends AbstractGateway
         $this->epaycosuscription->hooks->gateway->registerGatewayReceiptPage($this->id, [$this, 'receiptPage']);
         $this->epaycosuscription->hooks->checkout->registerReceipt($this->id, [$this, 'renderOrderForm']);
         $this->epaycosuscription->hooks->endpoints->registerApiEndpoint(self::WEBHOOK_API_NAME, [$this, 'webhook']);
+        $this->epaycosuscription->hooks->endpoints->registerApiEndpoint(self::WEBHOOK_API_NAME_VALIDATION, [$this, 'validate_ePayco_request']);
+        $this->epaycosuscription->hooks->gateway->getAdminCredentiaslFields($this, 'ePayco_credentials_validation');
+    
         $lang = get_locale();
         $lang = explode('_', $lang);
         $lang = $lang[0];
         $this->cron_data = $this->get_option('cron_data');
-
 
         add_action('woocommerce_subscription_status_cancelled', [$this, 'on_wc_subscription_cancelled']);
 
@@ -157,6 +167,13 @@ class EpaycoSuscription extends AbstractGateway
                 'default' => __('Subscription ePayco', 'epayco-subscriptions-for-woocommerce'),
                 'desc_tip' => true,
             ),
+            'shop_icon' => array(
+                'title' => __('Icono del comercio', 'epayco-subscriptions-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Corresponde al icono de la tienda que los usuarios visualizan en el checkout', 'epayco-subscriptions-for-woocommerce'),
+                'default' => __('', 'epayco-subscriptions-for-woocommerce'),
+                'desc_tip' => true,
+            ),
             'description' => array(
                 'title' => __('Descripción', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'textarea',
@@ -202,7 +219,7 @@ class EpaycoSuscription extends AbstractGateway
             ),
             'privateKey' => array(
                 'title' => __('PRIVATE_KEY', 'epayco-subscriptions-for-woocommerce'),
-                'type' => 'password',
+                'type' => 'text',
                 'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API', 'epayco-subscriptions-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
@@ -237,7 +254,13 @@ class EpaycoSuscription extends AbstractGateway
 
     public function admin_options()
     {
-?>
+        $validation_url = get_site_url() . "/";
+        $validation_url = add_query_arg('wc-api', self::WEBHOOK_API_NAME_VALIDATION, $validation_url);
+        //$validation_url = add_query_arg('wc-api', get_class($this) . "Validation", $validation_url);
+        ?>
+        <div id="path_validate" hidden>
+            <?php esc_html_e($validation_url, 'text_domain'); ?>
+        </div>
         <img src="<?php echo EPAYCO_PLUGIN_SUSCRIPCIONES_URL . '/assets/images/iconoepayco2025.png' ?>">
         <div style="color: #31708f; background-color: #d9edf7; border-color: #bce8f1; padding: 10px; border-radius: 5px;">
             <h2><?php esc_html_e('ePayco Suscripciones', 'epayco-subscriptions-for-woocommerce'); ?></h2>
@@ -252,10 +275,44 @@ class EpaycoSuscription extends AbstractGateway
                 <?php
                 $this->generate_settings_html();
                 ?>
+                <tr valign="top">
+                <th scope="row" class="titledesc">
+                    <label for="woocommerce_epayco_enabled"><?php esc_html_e('Validar llaves', 'epayco-subscriptions-for-woocommerce'); ?></label>
+                    <span hidden id="public_key">0</span>
+                    <span hidden id="private_key">0</span>
+                <td class="forminp">
+                    <form method="post" action="#">
+                        <label for="woocommerce_epayco_enabled">
+                        </label>
+                        <input type="button" class="button-primary woocommerce-save-button validar" value="Validar">
+                        <p class="description">
+                            <?php esc_html_e('Validación de llaves PUBLIC_KEY y PRIVATE_KEY', 'epayco-subscriptions-for-woocommerce'); ?>
+                        </p>
+                    </form>
+                    <br>
+                    <!-- The Modal -->
+                    <div id="myModal" class="modal">
+                        <!-- Modal content -->
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <center>
+                                <img src="<?php echo EPAYCO_PLUGIN_SUSCRIPCIONES_URL . 'assets/images/logo_warning.png' ?>">
+                            </center>
+                            <p><strong><?php esc_html_e('Llaves de comercio inválidas', 'epayco-subscriptions-for-woocommerce'); ?></strong> </p>
+                            <p><?php esc_html_e('Las llaves Public Key, Private Key insertadas', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('del comercio son inválidas.', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('Consúltelas en el apartado de integraciones', 'epayco-subscriptions-for-woocommerce'); ?> <br><?php esc_html_e('Llaves API en su Dashboard ePayco.', 'epayco-subscriptions-for-woocommerce'); ?>,</p>
+                        </div>
+                        <span class="loader"></span>
+                    </div>
+
+                </td>
+                </th>
+            </tr>
             </tbody>
         </table>
 <?php
     }
+
+
 
     /**
      * Added gateway scripts
@@ -271,6 +328,7 @@ class EpaycoSuscription extends AbstractGateway
 
         if ($this->canCheckoutLoadScriptsAndStyles()) {
             $this->registerCheckoutScripts();
+            
         }
     }
 
@@ -288,6 +346,45 @@ class EpaycoSuscription extends AbstractGateway
             'https://code.jquery.com/jquery-1.11.3.min.js'
         );
     }
+
+    /**
+     * @param $validationData
+     */
+    public function ePayco_credentials_validation($validationData)
+    {
+        $username = sanitize_text_field($validationData['epayco_publickey']);
+        $password = sanitize_text_field($validationData['epayco_privatey']);
+        $response = wp_remote_post('https://apify.epayco.co/login', array(
+            'headers' => array(
+                'Authorization' => 'Basic ' . base64_encode($username . ':' . $password),
+            ),
+        ));
+
+
+        $data = json_decode(wp_remote_retrieve_body($response));
+        if ($data->token) {
+            $response = wp_remote_get("https://secure.payco.co/restpagos/validarllaves?public_key=".trim($username));
+
+            if ( is_wp_error( $response ) ) {
+                error_log( 'ePayco validation: ' . $response->get_error_message() );
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("checkout_error".$response->get_error_message());
+                }
+                return wp_send_json("{success:false}");
+            }
+
+            $body = wp_remote_retrieve_body( $response );
+            return wp_send_json($body);
+        }else{
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info("checkout_error".json_encode($data));
+            }
+            return wp_send_json("{success:false}");
+        }
+    }
+    
     /**
      * Render gateway checkout template
      *
@@ -373,7 +470,8 @@ class EpaycoSuscription extends AbstractGateway
             $product_name_ = $resultado . "...";
         }
 
-        $logo_comercio = plugins_url('assets/images/comercio.png', EPS_PLUGIN_FILE);
+        //$logo_comercio = plugins_url('assets/images/comercio.png', EPS_PLUGIN_FILE);
+        $logo_comercio=$this->get_option('shop_icon');
         $style = plugins_url('assets/css/style.css', EPS_PLUGIN_FILE);
         $general = plugins_url('assets/css/general.min.css', EPS_PLUGIN_FILE);
         $card_style = plugins_url('assets/css/card-js.min.css', EPS_PLUGIN_FILE);
@@ -623,6 +721,10 @@ class EpaycoSuscription extends AbstractGateway
                     $logger->info("inserCustomer: " . json_encode($customer));
                 }
                 $customerJson = json_decode(json_encode($customer), true);
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("Error : " . json_encode($customer));
+                }
                 $dataError = $customerJson;
                 $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('No se inserto el registro del cliente en la base de datos.', 'epayco-subscriptions-for-woocommerce'));
                 wc_add_notice($error, 'error');
@@ -648,6 +750,10 @@ class EpaycoSuscription extends AbstractGateway
                         $logger->info("customerCreate: " . json_encode($customer));
                     }
                     $customerJson = json_decode(json_encode($customer), true);
+                    if (class_exists('WC_Logger')) {
+                        $logger = wc_get_logger();
+                        $logger->info("Error : " . json_encode($customer));
+                    }
                     $dataError = $customerJson;
                     $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('El token no se puede asociar al cliente, verifique que: el token existe, el cliente no esté asociado y que el token no este asociado a otro cliente.', 'epayco-subscriptions-for-woocommerce'));
                     wc_add_notice($error, 'error');
@@ -723,6 +829,10 @@ class EpaycoSuscription extends AbstractGateway
                                 $logger->info("customerCreate".json_encode($customer));
                             }
                             $customerJson = json_decode(json_encode($customer), true);
+                            if (class_exists('WC_Logger')) {
+                                $logger = wc_get_logger();
+                                $logger->info("Error : " . json_encode($customer));
+                            }
                             $dataError = $customerJson;
                             $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('No se inserto el registro del cliente en la base de datos.', 'epayco-subscriptions-for-woocommerce'));
                             wc_add_notice($error, 'error');
@@ -752,6 +862,10 @@ class EpaycoSuscription extends AbstractGateway
                 $response_status = $validatePlan_;
             } catch (Exception $exception) {
                 echo esc_html($exception->getMessage());
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("Error : " . $exception->getMessage());
+                }
                 die();
             }
         }
@@ -781,6 +895,16 @@ class EpaycoSuscription extends AbstractGateway
         }
     }
 
+    public function validate_ePayco_request() :void {
+        @ob_clean();
+        if (! empty($_REQUEST)) {
+            header('HTTP/1.1 200 OK');
+            do_action("ePayco_init_validation", $_REQUEST);
+        } else {
+            wp_die('Do not access this page directly (ePayco)');
+        }
+    }
+
     public function customerCreate(array $data)
     {
         $customer = false;
@@ -804,6 +928,10 @@ class EpaycoSuscription extends AbstractGateway
                 $logger->info("customerCreate".$exception->getMessage());
             }
             echo esc_html('create client: ' . $exception->getMessage());
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info("Error : " . $exception->getMessage());
+            }
             die();
         }
 
@@ -826,6 +954,10 @@ class EpaycoSuscription extends AbstractGateway
                 $logger->info("customerAddToken".$exception->getMessage());
             }
             echo esc_html('add token: ' . $exception->getMessage());
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info("Error : " . $exception->getMessage());
+            }
             die();
         }
 
@@ -849,6 +981,10 @@ class EpaycoSuscription extends AbstractGateway
                     $logger->info("getPlans".$exception->getMessage());
                 }
                 echo esc_html($exception->getMessage());
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("Error : " . $exception->getMessage());
+                }
                 die();
             }
         }
@@ -869,6 +1005,10 @@ class EpaycoSuscription extends AbstractGateway
                 $logger->info("getPlansList".$exception->getMessage());
             }
             echo esc_html($exception->getMessage());
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info("Error : " . $exception->getMessage());
+            }
             die();
         }
     }
@@ -888,6 +1028,10 @@ class EpaycoSuscription extends AbstractGateway
                 $logger->info("getPlanById".$exception->getMessage());
             }
             echo esc_html($exception->getMessage());
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info("Error : " . $exception->getMessage());
+            }
             die();
         }
     }
@@ -912,7 +1056,10 @@ class EpaycoSuscription extends AbstractGateway
                     $logger->info("validatePlan".json_encode($newPLan));
                 }
                 $newPlanJson = json_decode($newPLan, true);
-
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("Error : " . json_encode($newPLan));
+                }
 
                 $dataError = $newPlanJson;
 
@@ -1143,6 +1290,10 @@ class EpaycoSuscription extends AbstractGateway
                     $logger->info("plansCreate".$exception->getMessage());
                 }
                 echo esc_html($exception->getMessage());
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("Error : " . $exception->getMessage());
+                }
                 die();
             }
         }
@@ -1174,6 +1325,10 @@ class EpaycoSuscription extends AbstractGateway
                     $logger->info("subscriptionCreate".$exception->getMessage());
                 }
                 echo esc_html($exception->getMessage());
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("Error : " . $exception->getMessage());
+                }
                 die();
             }
         }
@@ -1205,6 +1360,10 @@ class EpaycoSuscription extends AbstractGateway
                     $logger->info("subscriptionCharge".$exception->getMessage());
                 }
                 echo esc_html($exception->getMessage());
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("Error : " . $exception->getMessage());
+                }
                 die();
             }
         }
@@ -1240,6 +1399,10 @@ class EpaycoSuscription extends AbstractGateway
                     $logger->info("planUpdate".$exception->getMessage());
                 }
                 echo esc_html($exception->getMessage());
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("Error : " . $exception->getMessage());
+                }
                 die();
             }
         }
@@ -1258,6 +1421,10 @@ class EpaycoSuscription extends AbstractGateway
                 $logger->info("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
             }
             error_log("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
+            }
             throw $exception;
         }
     }
@@ -1300,7 +1467,6 @@ class EpaycoSuscription extends AbstractGateway
 
 
                         $sub = wcs_get_subscription($sub->get_id());
-                        $logger->add($this->id, "Metadato ePayco guardado en suscripción #{$sub->get_id()}: " . $sub->get_meta(self::ID));
                     } else {
                         $logger->add($this->id, "Elemento no es una instancia de WC_Subscription.");
                     }
@@ -1671,6 +1837,10 @@ class EpaycoSuscription extends AbstractGateway
                     );
                 } catch (Exception $exception) {
                     echo esc_html($exception->getMessage());
+                    if (class_exists('WC_Logger')) {
+                        $logger = wc_get_logger();
+                        $logger->info("sub error: ".$exception->getMessage());
+                    }
                     die();
                 }
             }
@@ -1699,6 +1869,10 @@ class EpaycoSuscription extends AbstractGateway
                 $result = 1;
             } catch (Exception $exception) {
                 echo esc_html($exception->getMessage());
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("sub error: ".$exception->getMessage());
+                }
                 die();
             }
         }
@@ -2154,31 +2328,13 @@ class EpaycoSuscription extends AbstractGateway
                             if ($desired_status) {
                                 if ($current_status !== $desired_status) {
                                     $wc_subscription->update_status($desired_status);
-                                    $logger->add(
-                                        self::LOG_SOURCE,
-                                        "Suscripción WooCommerce ID={$wc_subscription_id}: Estado actualizado de '{$current_status}' a '{$desired_status}' (por consulta directa)"
-                                    );
-                                } else {
-                                    $logger->add(
-                                        self::LOG_SOURCE,
-                                        "Suscripción WooCommerce ID={$wc_subscription_id} ya está en estado '{$current_status}', sin cambios. (por consulta directa)"
-                                    );
-                                }
-                            } else {
-                                $logger->add(
-                                    self::LOG_SOURCE,
-                                    "Suscripción WooCommerce ID={$wc_subscription_id}: Estado ePayco '{$epayco_status}' no reconocido (por consulta directa)"
-                                );
-                            }
+                                } 
+                            } 
                         }
                     }
-                } else {
-                    $logger->add(self::LOG_SOURCE, "No se encontraron resultados.");
-                }
+                } 
             }
-        } else {
-            $logger->add(self::LOG_SOURCE, "No se encontraron suscripciones en ePayco para sincronizar.");
-        }
+        } 
     }
 
 
@@ -2188,11 +2344,8 @@ class EpaycoSuscription extends AbstractGateway
 
         $epayco_subscription_id = get_post_meta($subscription->get_id(), '_epayco_subscription_id', true);
 
-        $logger->add('epayco_debug', "Cancelando suscripción WooCommerce ID={$subscription->get_id()}, ePayco ID={$epayco_subscription_id}");
-
         if ($epayco_subscription_id) {
             $this->cancelSubscription($epayco_subscription_id);
-            $logger->add('epayco_debug', "Llamada a cancelSubscription realizada para ePayco ID={$epayco_subscription_id}");
         } else {
             $logger->add('epayco_debug', "No se encontró _epayco_subscription_id para la suscripción WooCommerce ID={$subscription->get_id()}");
         }

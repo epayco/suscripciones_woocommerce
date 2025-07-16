@@ -16,7 +16,7 @@ if (!defined('ABSPATH')) {
 
 class WoocommerceEpaycoSubscription
 {
-    private const PLUGIN_VERSION = '6.3.0';
+    private const PLUGIN_VERSION = '6.4.1';
     private const PLATFORM_NAME = 'woocommerce';
     private const PLUGIN_NAME = 'epayco-subscriptions-for-woocommerce/epayco-subscription.php';
 
@@ -256,11 +256,11 @@ class WoocommerceEpaycoSubscription
 
     public function subscription_epayco_se_notices($notice): void
     {
-?>
+        ?>
         <div class="error notice">
         <p><?php echo wp_kses_post($notice); ?></p>
         </div>
-<?php
+        <?php
     }
 
     /**
