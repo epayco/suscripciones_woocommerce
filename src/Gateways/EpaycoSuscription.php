@@ -26,6 +26,12 @@ class EpaycoSuscription extends AbstractGateway
      */
     public const WEBHOOK_API_NAME = 'WC_WooEpaycoSuscription_Gateway';
 
+    /** 
+     * @const
+     */
+    public const WEBHOOK_API_NAME_VALIDATION = 'WC_WooEpaycoSuscription_Validation';
+
+
     /**
      * @const
      */
@@ -63,11 +69,13 @@ class EpaycoSuscription extends AbstractGateway
         $this->epaycosuscription->hooks->gateway->registerGatewayReceiptPage($this->id, [$this, 'receiptPage']);
         $this->epaycosuscription->hooks->checkout->registerReceipt($this->id, [$this, 'renderOrderForm']);
         $this->epaycosuscription->hooks->endpoints->registerApiEndpoint(self::WEBHOOK_API_NAME, [$this, 'webhook']);
+        $this->epaycosuscription->hooks->endpoints->registerApiEndpoint(self::WEBHOOK_API_NAME_VALIDATION, [$this, 'validate_ePayco_request']);
+        $this->epaycosuscription->hooks->gateway->getAdminCredentiaslFields($this, 'ePayco_credentials_validation');
+    
         $lang = get_locale();
         $lang = explode('_', $lang);
         $lang = $lang[0];
         $this->cron_data = $this->get_option('cron_data');
-
 
         add_action('woocommerce_subscription_status_cancelled', [$this, 'on_wc_subscription_cancelled']);
 
@@ -157,6 +165,13 @@ class EpaycoSuscription extends AbstractGateway
                 'default' => __('Subscription ePayco', 'epayco-subscriptions-for-woocommerce'),
                 'desc_tip' => true,
             ),
+            'shop_icon' => array(
+                'title' => __('Icono del comercio', 'epayco-subscriptions-for-woocommerce'),
+                'type' => 'text',
+                'description' => __('Corresponde al icono de la tienda que los usuarios visualizan en el checkout', 'epayco-subscriptions-for-woocommerce'),
+                'default' => __('', 'epayco-subscriptions-for-woocommerce'),
+                'desc_tip' => true,
+            ),
             'description' => array(
                 'title' => __('Descripción', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'textarea',
@@ -202,7 +217,7 @@ class EpaycoSuscription extends AbstractGateway
             ),
             'privateKey' => array(
                 'title' => __('PRIVATE_KEY', 'epayco-subscriptions-for-woocommerce'),
-                'type' => 'password',
+                'type' => 'text',
                 'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API', 'epayco-subscriptions-for-woocommerce'),
                 'default' => '',
                 'desc_tip' => true,
@@ -237,7 +252,13 @@ class EpaycoSuscription extends AbstractGateway
 
     public function admin_options()
     {
-?>
+        $validation_url = get_site_url() . "/";
+        $validation_url = add_query_arg('wc-api', self::WEBHOOK_API_NAME_VALIDATION, $validation_url);
+        //$validation_url = add_query_arg('wc-api', get_class($this) . "Validation", $validation_url);
+        ?>
+        <div id="path_validate" hidden>
+            <?php esc_html_e($validation_url, 'text_domain'); ?>
+        </div>
         <img src="<?php echo EPAYCO_PLUGIN_SUSCRIPCIONES_URL . '/assets/images/iconoepayco2025.png' ?>">
         <div style="color: #31708f; background-color: #d9edf7; border-color: #bce8f1; padding: 10px; border-radius: 5px;">
             <h2><?php esc_html_e('ePayco Suscripciones', 'epayco-subscriptions-for-woocommerce'); ?></h2>
@@ -252,10 +273,44 @@ class EpaycoSuscription extends AbstractGateway
                 <?php
                 $this->generate_settings_html();
                 ?>
+                <tr valign="top">
+                <th scope="row" class="titledesc">
+                    <label for="woocommerce_epayco_enabled"><?php esc_html_e('Validar llaves', 'epayco-subscriptions-for-woocommerce'); ?></label>
+                    <span hidden id="public_key">0</span>
+                    <span hidden id="private_key">0</span>
+                <td class="forminp">
+                    <form method="post" action="#">
+                        <label for="woocommerce_epayco_enabled">
+                        </label>
+                        <input type="button" class="button-primary woocommerce-save-button validar" value="Validar">
+                        <p class="description">
+                            <?php esc_html_e('Validación de llaves PUBLIC_KEY y PRIVATE_KEY', 'epayco-subscriptions-for-woocommerce'); ?>
+                        </p>
+                    </form>
+                    <br>
+                    <!-- The Modal -->
+                    <div id="myModal" class="modal">
+                        <!-- Modal content -->
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <center>
+                                <img src="<?php echo EPAYCO_PLUGIN_SUSCRIPCIONES_URL . 'assets/images/logo_warning.png' ?>">
+                            </center>
+                            <p><strong><?php esc_html_e('Llaves de comercio inválidas', 'epayco-subscriptions-for-woocommerce'); ?></strong> </p>
+                            <p><?php esc_html_e('Las llaves Public Key, Private Key insertadas', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('del comercio son inválidas.', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('Consúltelas en el apartado de integraciones', 'epayco-subscriptions-for-woocommerce'); ?> <br><?php esc_html_e('Llaves API en su Dashboard ePayco.', 'epayco-subscriptions-for-woocommerce'); ?>,</p>
+                        </div>
+                        <span class="loader"></span>
+                    </div>
+
+                </td>
+                </th>
+            </tr>
             </tbody>
         </table>
 <?php
     }
+
+
 
     /**
      * Added gateway scripts
@@ -271,6 +326,7 @@ class EpaycoSuscription extends AbstractGateway
 
         if ($this->canCheckoutLoadScriptsAndStyles()) {
             $this->registerCheckoutScripts();
+            
         }
     }
 
@@ -288,6 +344,37 @@ class EpaycoSuscription extends AbstractGateway
             'https://code.jquery.com/jquery-1.11.3.min.js'
         );
     }
+
+    /**
+     * @param $validationData
+     */
+    public function ePayco_credentials_validation($validationData)
+    {
+        $username = sanitize_text_field($validationData['epayco_publickey']);
+        $password = sanitize_text_field($validationData['epayco_privatey']);
+        $response = wp_remote_post('https://apify.epayco.co/login', array(
+            'headers' => array(
+                'Authorization' => 'Basic ' . base64_encode($username . ':' . $password),
+            ),
+        ));
+
+
+        $data = json_decode(wp_remote_retrieve_body($response));
+        if ($data->token) {
+            $response = wp_remote_get(" https://secure.payco.co/restpagos/validarllaves?public_key=1e9b3a5e3105ed0b0bf6312d7fe3181a");
+
+            if ( is_wp_error( $response ) ) {
+                error_log( 'ePayco valdiation: ' . $response->get_error_message() );
+                return wp_send_json("{success:false}");
+            }
+
+            $body = wp_remote_retrieve_body( $response );
+            return wp_send_json($body);
+        }else{
+            return wp_send_json("{success:false}");
+        }
+    }
+    
     /**
      * Render gateway checkout template
      *
@@ -754,6 +841,16 @@ class EpaycoSuscription extends AbstractGateway
             $redirect_url = $response_status['url'];
             $redirect_url = add_query_arg($arguments, $redirect_url);
             wp_redirect($redirect_url);
+        }
+    }
+
+    public function validate_ePayco_request() :void {
+        @ob_clean();
+        if (! empty($_REQUEST)) {
+            header('HTTP/1.1 200 OK');
+            do_action("ePayco_init_validation", $_REQUEST);
+        } else {
+            wp_die('Do not access this page directly (ePayco)');
         }
     }
 

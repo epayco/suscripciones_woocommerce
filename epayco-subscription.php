@@ -7,7 +7,7 @@
  * @wordpress-plugin
  * Plugin Name:       ePayco Subscriptions for WooCommerce
  * Description:       Plugin ePayco Subscription
- * Version:           6.4.0
+ * Version:           6.4.1
  * Author:            ePayco
  * Text Domain:       epayco-subscriptions-for-woocommerce
  * Author URI:
@@ -82,47 +82,11 @@ function eps_disable_plugin(): void
     //$GLOBALS['epaycosuscription']->disablePlugin();
 }
 
-//add_action('plugins_loaded', 'epayco_subscription_init', 0);
 //add_action('plugins_loaded', 'register_epayco_suscription_order_status');
 //add_filter('wc_order_statuses', 'add_epayco_suscription_to_order_statuses');
 //add_action('admin_head', 'styling_admin_suscription_order_list');
 //add_action('woocommerce_checkout_update_order_meta', 'some_custom_checkout_field_update_order_meta');
 
-
-
-function epayco_subscription_init()
-{
-    if (!class_exists('WC_Payment_Gateway')) {
-        return;
-    }
-    registerBlocks();
-    require_once(dirname(__FILE__) . '/epayco-settings.php');
-    $plugin = new Epayco_Subscription_Config(__FILE__, EPAYCO_SUBSCRIPTION_SE_VERSION, 'epayco-subscription');
-    $plugin->run_epayco();
-    if (get_option('subscription_epayco_se_redirect', false)) {
-        delete_option('subscription_epayco_se_redirect');
-        wp_redirect(admin_url('admin.php?page=wc-settings&tab=checkout&section=epayco-subscription'));
-    }
-}
-
-
-/**
- * Register woocommerce blocks support
- *
- * @return void
- */
-function registerBlocks(): void
-{
-    if (class_exists('Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodType')) {
-        require_once 'lib/blocks/epayco-block.php';
-        add_action(
-            'woocommerce_blocks_payment_method_type_registration',
-            function (PaymentMethodRegistry $payment_method_registry) {
-                $payment_method_registry->register(new CustomBlock());
-            }
-        );
-    }
-}
 function register_epayco_suscription_order_status()
 {
     register_post_status('wc-epayco-failed', array(
@@ -481,8 +445,6 @@ function some_custom_checkout_field_update_order_meta($order_id)
 
 register_activation_hook(__FILE__, 'activate_subscription_epayco');
 
-
-
 add_action('woocommerce_set_additional_field_value', function ($key, $value, $group, $wc_object) {
     if ('epayco/billing_type_document' === $key) {
         $wc_object->update_meta_data('_epayco_billing_type_document', $value, true);
@@ -491,9 +453,6 @@ add_action('woocommerce_set_additional_field_value', function ($key, $value, $gr
         $wc_object->update_meta_data('_epayco_billing_dni', $value, true);
     }
 }, 10, 4);
-
-
-
 
 add_action('woocommerce_init', function () {
 
@@ -543,7 +502,6 @@ add_action('woocommerce_checkout_update_order_meta', function ($order_id) {
     }
 });
 
-
 function epayco_enqueue_styles()
 {
     if (!function_exists('plugins_url') || !function_exists('wp_enqueue_style')) {
@@ -586,10 +544,6 @@ function enqueue_epayco_epaycojs_script()
     wp_enqueue_script('epayco-js', esc_url($epaycojs), array(), '1.0.0', true); // Set version to avoid caching issues
 }
 add_action('wp_enqueue_scripts', 'enqueue_epayco_epaycojs_script');
-
-
-
-
 
 add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
     if ($attachment_id === 0) {
@@ -650,12 +604,11 @@ register_deactivation_hook(__FILE__, 'epayco_suscripcion_cron_job_deactivation')
 
 add_action('woocommerc_epayco_suscripcion_order_hook', 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
 
-register_deactivation_hook(__FILE__, 'epayco_suscripcion_cron_inactive');
-
 function epayco_suscripcion_cron_inactive()
 {
     wp_clear_scheduled_hook('bf_epayco_suscripcion_event');
 }
+register_deactivation_hook(__FILE__, 'epayco_suscripcion_cron_inactive');
 
 function bf_add_epayco_suscripcion_schedule($schedules)
 {
