@@ -10,9 +10,9 @@ window.addEventListener("load", (function () {
             modalContent.style.display = "none";
         }
         var shop_name = document.getElementById("woocommerce_woo-epaycosubscription_shop_name")
-        //shop_name.style.display = "none";
+        shop_name.closest('tr').style.display = "none";
         var shop_icon = document.getElementById("woocommerce_woo-epaycosubscription_shop_icon")
-        //shop_icon.style.display = "none";
+        shop_icon.closest('tr').style.display = "none";
         $(".validar").on("click", function() {
             modal.style.display = "block";
             var url_validate = $("#path_validate")[0].innerHTML.trim();
