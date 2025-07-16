@@ -462,7 +462,8 @@ class EpaycoSuscription extends AbstractGateway
             $product_name_ = $resultado . "...";
         }
 
-        $logo_comercio = plugins_url('assets/images/comercio.png', EPS_PLUGIN_FILE);
+        //$logo_comercio = plugins_url('assets/images/comercio.png', EPS_PLUGIN_FILE);
+        $logo_comercio=$this->get_option('shop_icon');
         $style = plugins_url('assets/css/style.css', EPS_PLUGIN_FILE);
         $general = plugins_url('assets/css/general.min.css', EPS_PLUGIN_FILE);
         $card_style = plugins_url('assets/css/card-js.min.css', EPS_PLUGIN_FILE);
