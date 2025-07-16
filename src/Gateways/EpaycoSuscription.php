@@ -1056,20 +1056,50 @@ class EpaycoSuscription extends AbstractGateway
                     $logger->info("validatePlan".json_encode($newPLan));
                 }
                 $newPlanJson = json_decode($newPLan, true);
-                if (class_exists('WC_Logger')) {
-                    $logger = wc_get_logger();
-                    $logger->info("Error : " . json_encode($newPLan));
-                }
 
                 $dataError = $newPlanJson;
+   
+                if (is_array($dataError)) {
+                    $message = $dataError['message'];
+                    $errores_listados = [];
+                    if (isset($dataError['data']['errors']) && is_array($dataError['data']['errors'])) {
+                        foreach ($dataError['data']['errors'] as $campo => $mensajes) {
+                            foreach ($mensajes as $msg) {
+                                $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                            }
+                        }
+                    }
+                    if (isset($dataError['data']->errors) && is_array($dataError['data']->errors)) {
+                        foreach ($dataError['data']->errors as $campo => $mensajes) {
+                            foreach ($mensajes as $msg) {
+                                $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                            }
+                        }
+                    }
+                    
+                }else{
+                    if (isset($newPLan->data->errors) && is_array($newPLan->data->errors)) {
+                        foreach ($newPLan->data->errors as $campo => $mensajes) {
+                            foreach ($mensajes as $msg) {
+                                $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                            }
+                        }
+                    }
+                    $message = isset($newPLan->message) ? $newPLan->message : (isset($newPLan["message"]) ? $newPLan["message"] : __('El identificador del plan ya está en uso para este comercio. Por favor, elija un nombre diferente para el plan.', 'epayco-subscriptions-for-woocommerce'));
+                }
 
 
-                $error = isset($dataError->message) ? $dataError->message : (isset($dataError["message"]) ? $dataError["message"] : __('El identificador del plan ya está en uso para este comercio. Por favor, elija un nombre diferente para el plan.', 'epayco-subscriptions-for-woocommerce'));
+                $errorMessage = $message;
+                if (!empty($errores_listados)) {
+                    $errorMessage .=  implode(' | ', $errores_listados);
+                }
+                
+
 
                 $response_status = [
                     'status' => false,
                     /* translators: %s será reemplazado con el mensaje de error del nuevo plan */
-                    'message' => $error,
+                    'message' => $errorMessage,
                 ];
 
                 return $response_status;
