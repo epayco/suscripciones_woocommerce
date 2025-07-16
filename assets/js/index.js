@@ -142,7 +142,7 @@ jQuery( function( $ ) {
             });
         });
 
-        $.getJSON("https://restcountries.com/v3.1/all", function(result){
+        $.getJSON("https://restcountries.com/v3.1/independent?status=true", function(result){
             $.each(result, function(i, field){
                 newlink = document.createElement('a');
                 li = document.createElement('li');

@@ -54,10 +54,47 @@ abstract class AbstractGateway extends WC_Payment_Gateway implements EpaycoSubsc
      */
     public function payment_scripts(string $gatewaySection): void
     {
+        if ($this->canAdminLoadScriptsAndStyles($gatewaySection)) {
+            $this->registerAdminScripts();
+        }
+
 
         if ($this->canCheckoutLoadScriptsAndStyles()) {
             $this->registerCheckoutScripts();
+            $this->registerAdminScripts();
         }
+    }
+
+    /**
+     * Check if admin scripts and styles can be loaded
+     *
+     * @param string $gatewaySection
+     *
+     * @return bool
+     */
+    public function canAdminLoadScriptsAndStyles(string $gatewaySection): bool
+    {
+        return $this->epaycosuscription->hooks->admin->isAdmin() && ( $this->epaycosuscription->helpers->url->validatePage('wc-settings') &&
+                $this->epaycosuscription->helpers->url->validateSection($gatewaySection)
+            );
+    }
+
+       /**
+     * Register admin scripts
+     *
+     * @return void
+     */
+    public function registerAdminScripts()
+    {
+        $this->epaycosuscription->hooks->scripts->registerAdminScript(
+            'wc_epaycosuscription_admin_components',
+            $this->epaycosuscription->helpers->url->getJsAsset('admin/ep-admin-configs')
+        );
+
+        $this->epaycosuscription->hooks->scripts->registerAdminStyle(
+            'wc_epaycosuscription_admin_components',
+            $this->epaycosuscription->helpers->url->getCssAsset('admin/ep-admin-configs')
+        );
     }
 
     /**

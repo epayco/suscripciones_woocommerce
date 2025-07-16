@@ -24,6 +24,37 @@ class Scripts
         $this->url = $url;
     }
 
+     /**
+     * Register styles on admin
+     *
+     * @param string $name
+     * @param string $file
+     *
+     * @return void
+     */
+    public function registerAdminStyle(string $name, string $file): void
+    {
+        add_action('admin_enqueue_scripts', function () use ($name, $file) {
+            $this->registerStyle($name, $file);
+        });
+    }
+
+    /**
+     * Register scripts on admin
+     *
+     * @param string $name
+     * @param string $file
+     * @param array $variables
+     *
+     * @return void
+     */
+    public function registerAdminScript(string $name, string $file, array $variables = []): void
+    {
+        add_action('admin_enqueue_scripts', function () use ($name, $file, $variables) {
+            $this->registerScript($name, $file, $variables);
+        });
+    }
+
     /**
      * Register styles on checkout
      *
