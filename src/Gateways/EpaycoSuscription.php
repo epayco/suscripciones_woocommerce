@@ -275,38 +275,36 @@ class EpaycoSuscription extends AbstractGateway
                 <?php
                 $this->generate_settings_html();
                 ?>
-                <tr valign="top">
-                <th scope="row" class="titledesc">
-                    <label for="woocommerce_epayco_enabled"><?php esc_html_e('Validar llaves', 'epayco-subscriptions-for-woocommerce'); ?></label>
-                    <span hidden id="public_key">0</span>
-                    <span hidden id="private_key">0</span>
-                <td class="forminp">
-                    <form method="post" action="#">
-                        <label for="woocommerce_epayco_enabled">
-                        </label>
-                        <input type="button" class="button-primary woocommerce-save-button validar" value="Validar">
-                        <p class="description">
-                            <?php esc_html_e('Validación de llaves PUBLIC_KEY y PRIVATE_KEY', 'epayco-subscriptions-for-woocommerce'); ?>
-                        </p>
-                    </form>
-                    <br>
-                    <!-- The Modal -->
-                    <div id="myModal" class="modal">
-                        <!-- Modal content -->
-                        <div class="modal-content">
-                            <span class="close">&times;</span>
-                            <center>
-                                <img src="<?php echo EPAYCO_PLUGIN_SUSCRIPCIONES_URL . 'assets/images/logo_warning.png' ?>">
-                            </center>
-                            <p><strong><?php esc_html_e('Llaves de comercio inválidas', 'epayco-subscriptions-for-woocommerce'); ?></strong> </p>
-                            <p><?php esc_html_e('Las llaves Public Key, Private Key insertadas', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('del comercio son inválidas.', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('Consúltelas en el apartado de integraciones', 'epayco-subscriptions-for-woocommerce'); ?> <br><?php esc_html_e('Llaves API en su Dashboard ePayco.', 'epayco-subscriptions-for-woocommerce'); ?>,</p>
-                        </div>
-                        <span class="loader"></span>
-                    </div>
+                <!--<tr valign="top" >
+                    <th scope="row" class="titledesc">
+                        <label for="woocommerce_epayco_enabled"><?php esc_html_e('Validar llaves', 'epayco-subscriptions-for-woocommerce'); ?></label>
+                        <span hidden id="public_key">0</span>
+                        <span hidden id="private_key">0</span>
+                        <td class="forminp">
+                            <form method="post" action="#">
+                                <label for="woocommerce_epayco_enabled">
+                                </label>
+                                <input type="button" class="button-primary woocommerce-save-button validar" value="Validar">
+                                <p class="description">
+                                    <?php esc_html_e('Validación de llaves PUBLIC_KEY y PRIVATE_KEY', 'epayco-subscriptions-for-woocommerce'); ?>
+                                </p>
+                            </form>
+                            <br>
+                            <div id="myModal" class="modal" >
+                                <div class="modal-content">
+                                    <span class="close">&times;</span>
+                                    <center>
+                                        <img src="<?php echo EPAYCO_PLUGIN_SUSCRIPCIONES_URL . 'assets/images/logo_warning.png' ?>">
+                                    </center>
+                                    <p><strong><?php esc_html_e('Llaves de comercio inválidas', 'epayco-subscriptions-for-woocommerce'); ?></strong> </p>
+                                    <p><?php esc_html_e('Las llaves Public Key, Private Key insertadas', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('del comercio son inválidas.', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('Consúltelas en el apartado de integraciones', 'epayco-subscriptions-for-woocommerce'); ?> <br><?php esc_html_e('Llaves API en su Dashboard ePayco.', 'epayco-subscriptions-for-woocommerce'); ?>,</p>
+                                </div>
+                                <span class="loader"></span>
+                            </div>
 
-                </td>
-                </th>
-            </tr>
+                        </td>
+                    </th>
+                </tr>-->
             </tbody>
         </table>
 <?php
