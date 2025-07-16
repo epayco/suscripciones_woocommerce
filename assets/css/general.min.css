@@ -1208,7 +1208,7 @@ input[type="checkbox"]:checked+label:before {
   right: 8.82%;
   top: 94px;
   font-weight: 600;
-  line-height: 19px;
+  line-height: 25px;
   color: #383D43 !important;
   text-align: center;
 }
@@ -1218,7 +1218,7 @@ input[type="checkbox"]:checked+label:before {
   right: 5.88%;
   bottom: 100px;
   font-weight: 400;
-  line-height: 16px;
+  line-height: 20px;
   color: #828282 !important;
 }
 

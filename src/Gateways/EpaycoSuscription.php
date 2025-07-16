@@ -693,7 +693,7 @@ class EpaycoSuscription extends AbstractGateway
             if ($customer->data->status == 'error' || !$customer->status) {
                 if (class_exists('WC_Logger')) {
                     $logger = wc_get_logger();
-                    $logger->info("Error : " . json_encode($customer));
+                    $logger->info("customerCreate: " . json_encode($customer));
                 }
                 $customerJson = json_decode(json_encode($customer), true);
                 $dataError = $customerJson;
@@ -716,6 +716,10 @@ class EpaycoSuscription extends AbstractGateway
 
 
             if (!$inserCustomer) {
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("inserCustomer: " . json_encode($customer));
+                }
                 $customerJson = json_decode(json_encode($customer), true);
                 if (class_exists('WC_Logger')) {
                     $logger = wc_get_logger();
@@ -741,6 +745,10 @@ class EpaycoSuscription extends AbstractGateway
             if ($count_customers == 0) {
                 $customer = $this->customerCreate($customerData);
                 if ($customer->data->status == 'error') {
+                    if (class_exists('WC_Logger')) {
+                        $logger = wc_get_logger();
+                        $logger->info("customerCreate: " . json_encode($customer));
+                    }
                     $customerJson = json_decode(json_encode($customer), true);
                     if (class_exists('WC_Logger')) {
                         $logger = wc_get_logger();
@@ -781,7 +789,7 @@ class EpaycoSuscription extends AbstractGateway
                             if ($customer->data->status == 'error') {
                                 if (class_exists('WC_Logger')) {
                                     $logger = wc_get_logger();
-                                    $logger->info("Error : " . json_encode($customer));
+                                    $logger->info("customerCreate: " . json_encode($customer));
                                 }
                                 $customerJson = json_decode(json_encode($customer), true);
                                 $dataError = $customerJson;
@@ -795,7 +803,7 @@ class EpaycoSuscription extends AbstractGateway
                             if (!$isAddedToken->status) {
                                 if (class_exists('WC_Logger')) {
                                     $logger = wc_get_logger();
-                                    $logger->info("Error : " . json_encode($isAddedToken));
+                                    $logger->info("isAddedToken: " . json_encode($isAddedToken));
                                 }
                                 wc_add_notice($isAddedToken->data->description, 'error');
                                 wp_redirect(wc_get_checkout_url());
@@ -816,6 +824,10 @@ class EpaycoSuscription extends AbstractGateway
                             ]
                         );
                         if (!$inserCustomer) {
+                            if (class_exists('WC_Logger')) {
+                                $logger = wc_get_logger();
+                                $logger->info("customerCreate".json_encode($customer));
+                            }
                             $customerJson = json_decode(json_encode($customer), true);
                             if (class_exists('WC_Logger')) {
                                 $logger = wc_get_logger();
@@ -911,6 +923,10 @@ class EpaycoSuscription extends AbstractGateway
                 ]
             );
         } catch (Exception $exception) {
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info("customerCreate".$exception->getMessage());
+            }
             echo esc_html('create client: ' . $exception->getMessage());
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
@@ -933,6 +949,10 @@ class EpaycoSuscription extends AbstractGateway
                 ]
             );
         } catch (Exception $exception) {
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info("customerAddToken".$exception->getMessage());
+            }
             echo esc_html('add token: ' . $exception->getMessage());
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
@@ -956,6 +976,10 @@ class EpaycoSuscription extends AbstractGateway
                     return false;
                 }
             } catch (Exception $exception) {
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("getPlans".$exception->getMessage());
+                }
                 echo esc_html($exception->getMessage());
                 if (class_exists('WC_Logger')) {
                     $logger = wc_get_logger();
@@ -976,6 +1000,10 @@ class EpaycoSuscription extends AbstractGateway
                 return false;
             }
         } catch (Exception $exception) {
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info("getPlansList".$exception->getMessage());
+            }
             echo esc_html($exception->getMessage());
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
@@ -995,6 +1023,10 @@ class EpaycoSuscription extends AbstractGateway
                 return false;
             }
         } catch (Exception $exception) {
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info("getPlanById".$exception->getMessage());
+            }
             echo esc_html($exception->getMessage());
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
@@ -1019,7 +1051,10 @@ class EpaycoSuscription extends AbstractGateway
                     $this->validatePlan(true, $order_id, $plans, $subscriptions, $customer, $confirm_url, $order, false, false, null);
                 }
             } else {
-
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("validatePlan".json_encode($newPLan));
+                }
                 $newPlanJson = json_decode($newPLan, true);
                 if (class_exists('WC_Logger')) {
                     $logger = wc_get_logger();
@@ -1075,6 +1110,10 @@ class EpaycoSuscription extends AbstractGateway
                 return false;
             }
         } else {
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info("el id del plan creado no concuerda!");
+            }
             echo 'el id del plan creado no concuerda!';
             die();
         }
@@ -1246,6 +1285,10 @@ class EpaycoSuscription extends AbstractGateway
 
                 return $plan_;
             } catch (Exception $exception) {
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("plansCreate".$exception->getMessage());
+                }
                 echo esc_html($exception->getMessage());
                 if (class_exists('WC_Logger')) {
                     $logger = wc_get_logger();
@@ -1277,6 +1320,10 @@ class EpaycoSuscription extends AbstractGateway
 
                 return $suscriptioncreted;
             } catch (Exception $exception) {
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("subscriptionCreate".$exception->getMessage());
+                }
                 echo esc_html($exception->getMessage());
                 if (class_exists('WC_Logger')) {
                     $logger = wc_get_logger();
@@ -1308,6 +1355,10 @@ class EpaycoSuscription extends AbstractGateway
                     ]
                 );
             } catch (Exception $exception) {
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("subscriptionCharge".$exception->getMessage());
+                }
                 echo esc_html($exception->getMessage());
                 if (class_exists('WC_Logger')) {
                     $logger = wc_get_logger();
@@ -1343,6 +1394,10 @@ class EpaycoSuscription extends AbstractGateway
 
                 return $plan_;
             } catch (Exception $exception) {
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("planUpdate".$exception->getMessage());
+                }
                 echo esc_html($exception->getMessage());
                 if (class_exists('WC_Logger')) {
                     $logger = wc_get_logger();
@@ -1361,6 +1416,10 @@ class EpaycoSuscription extends AbstractGateway
             $result = $this->epaycoSdk->subscriptions->cancel($subscription_id);
             error_log("ePayco cancel result: " . print_r($result, true));
         } catch (Exception $exception) {
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
+            }
             error_log("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
@@ -1854,7 +1913,7 @@ class EpaycoSuscription extends AbstractGateway
                     $subJson = json_decode(json_encode($sub), true);
                     if (class_exists('WC_Logger')) {
                         $logger = wc_get_logger();
-                        $logger->info("sub error: ".json_encode($sub));
+                        $logger->info("process_payment_epayco_error_sub:".json_encode($sub));
                     }
                     $dataError = $subJson;
                     $message = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('Ocurrió un error, por favor contactar con soporte.', 'epayco-subscriptions-for-woocommerce'));
@@ -1893,6 +1952,10 @@ class EpaycoSuscription extends AbstractGateway
         } else {
             $subsCreatedJson = json_decode(json_encode($subsCreated), true);
             $dataError = $subsCreatedJson;
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info("process_payment_epayco_error:".json_encode($subsCreated));
+            }
             $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('Ocurrió un error, por favor contactar con soporte.', 'epayco-subscriptions-for-woocommerce'));
             $response_status = [
                 'ref_payco' => null,
@@ -2265,48 +2328,23 @@ class EpaycoSuscription extends AbstractGateway
                             if ($desired_status) {
                                 if ($current_status !== $desired_status) {
                                     $wc_subscription->update_status($desired_status);
-                                    $logger->add(
-                                        self::LOG_SOURCE,
-                                        "Suscripción WooCommerce ID={$wc_subscription_id}: Estado actualizado de '{$current_status}' a '{$desired_status}' (por consulta directa)"
-                                    );
-                                } else {
-                                    $logger->add(
-                                        self::LOG_SOURCE,
-                                        "Suscripción WooCommerce ID={$wc_subscription_id} ya está en estado '{$current_status}', sin cambios. (por consulta directa)"
-                                    );
-                                }
-                            } else {
-                                $logger->add(
-                                    self::LOG_SOURCE,
-                                    "Suscripción WooCommerce ID={$wc_subscription_id}: Estado ePayco '{$epayco_status}' no reconocido (por consulta directa)"
-                                );
-                            }
+                                } 
+                            } 
                         }
                     }
-                } else {
-                    $logger->add(self::LOG_SOURCE, "No se encontraron resultados.");
-                }
+                } 
             }
-        } else {
-            $logger->add(self::LOG_SOURCE, "No se encontraron suscripciones en ePayco para sincronizar.");
-        }
+        } 
     }
 
 
     public function on_wc_subscription_cancelled($subscription)
     {
-        $logger = new \WC_Logger();
-
         $epayco_subscription_id = get_post_meta($subscription->get_id(), '_epayco_subscription_id', true);
-
-        $logger->add('epayco_debug', "Cancelando suscripción WooCommerce ID={$subscription->get_id()}, ePayco ID={$epayco_subscription_id}");
 
         if ($epayco_subscription_id) {
             $this->cancelSubscription($epayco_subscription_id);
-            $logger->add('epayco_debug', "Llamada a cancelSubscription realizada para ePayco ID={$epayco_subscription_id}");
-        } else {
-            $logger->add('epayco_debug', "No se encontró _epayco_subscription_id para la suscripción WooCommerce ID={$subscription->get_id()}");
-        }
+        } 
     }
 
 
