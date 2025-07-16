@@ -167,13 +167,13 @@ class EpaycoSuscription extends AbstractGateway
                 'default' => __('Subscription ePayco', 'epayco-subscriptions-for-woocommerce'),
                 'desc_tip' => true,
             ),
-            'shop_icon' => array(
+            /*'shop_icon' => array(
                 'title' => __('Icono del comercio', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('Corresponde al icono de la tienda que los usuarios visualizan en el checkout', 'epayco-subscriptions-for-woocommerce'),
                 'default' => __('', 'epayco-subscriptions-for-woocommerce'),
                 'desc_tip' => true,
-            ),
+            ),*/
             'description' => array(
                 'title' => __('Descripción', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'textarea',
@@ -468,8 +468,8 @@ class EpaycoSuscription extends AbstractGateway
             $product_name_ = $resultado . "...";
         }
 
-        //$logo_comercio = plugins_url('assets/images/comercio.png', EPS_PLUGIN_FILE);
-        $logo_comercio=$this->get_option('shop_icon');
+        $logo_comercio = plugins_url('assets/images/comercio.png', EPS_PLUGIN_FILE);
+        //$logo_comercio=$this->get_option('shop_icon');
         $style = plugins_url('assets/css/style.css', EPS_PLUGIN_FILE);
         $general = plugins_url('assets/css/general.min.css', EPS_PLUGIN_FILE);
         $card_style = plugins_url('assets/css/card-js.min.css', EPS_PLUGIN_FILE);
