@@ -350,9 +350,9 @@ jQuery( function( $ ) {
         ePayco.setLanguage(lang);
         var $form = $(this);
         var name = document.getElementById('the-card-name-element').value.replace(/[ -]/g, "").length;
-        var number = document.getElementById('the-card-number-element').value.replace(/[ -]/g, "").length;
-        var month = document.getElementById('month-value').value.replace(/[ -]/g, "").length;
-        var year = document.getElementById('year-value').value.replace(/[ -]/g, "").length;
+        var number = document.getElementById('the-card-number-element').value.replace(/[^0-9]/g, "").length;
+        var month = document.getElementById('month-value').value.replace(/[^0-9]/g, "").length;
+        var year = document.getElementById('year-value').value.replace(/[^0-9]/g, "").length;
         var cvc = document.getElementById('card_cvc').value.replace(/[ -]/g, "").length;
         $("#web-checkout-content").removeClass("animated shake");
         if( number <= 14 || name <= 5 || month < 1 || year < 2 || cvc < 3 ){
