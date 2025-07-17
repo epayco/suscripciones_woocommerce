@@ -91,7 +91,15 @@ if (!defined('ABSPATH')) {
                     <div class="title-container  ">
                         <div class="logo-commerce">
                             <div class="logo-container">
-                                <?php echo wp_get_attachment_image(0, 'full'); ?>
+                                <!--<?php echo wp_get_attachment_image(0, 'full'); ?>-->
+                                <img 
+                                    loading="lazy" 
+                                    decoding="async" 
+                                    width="90" 
+                                    height="90" 
+                                    src="<?php echo esc_html($logo_comercio); ?>" 
+                                    class="attachment-full size-full" 
+                                    alt="" />
                             </div>
 
                         </div>
@@ -321,7 +329,16 @@ if (!defined('ABSPATH')) {
                 <div class="onpage relative" id="web-checkout-content">
                     <div class="header-modal hidden-print">
                         <div class="logo-comercio">
-                            <?php echo wp_get_attachment_image(0, 'full', false, ['class' => 'img-card', 'id' => 'image-safari', 'style' => 'width: 90%;']);; ?>                          
+                            <img 
+                            loading="lazy" 
+                            decoding="async" 
+                            width="90" height="90" 
+                            src="<?php echo esc_html($logo_comercio); ?>" 
+                            class="img-card" 
+                            alt="" 
+                            id="image-safari" 
+                            style="width: 90%;">
+                            <!--<?php echo wp_get_attachment_image(0, 'full', false, ['class' => 'img-card', 'id' => 'image-safari', 'style' => 'width: 90%;']); ?> -->                 
                         </div>
                         <div class="header-modal-text">
                             <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: black;"><?php echo esc_html($product_name_); ?></h1>
@@ -385,11 +402,11 @@ if (!defined('ABSPATH')) {
                                     <div class="select-option bordergray vencimiento" style="float:left" id="expiration">
                                         <div class="input-form full-width noborder monthcredit nomargin">
                                             <span class="icon-date_range color icon-select"><i class="far fa-calendar-alt"></i></span>
-                                            <input class="binding-input inspectletIgnore" id="month-value" name="month" placeholder="MM" maxlength="2" autocomplete="off" data-epayco="card[exp_month]" required>
+                                            <input type="number" class="binding-input inspectletIgnore" id="month-value" name="month" placeholder="MM" maxlength="2" autocomplete="off" data-epayco="card[exp_month]" required>
                                         </div>
                                         <div class="" style="float:left; width:12%; margin:0; text-align:center; line-height: 40px; height: 37px; background-color: white; color:#a3a3a3;">/</div>
                                         <div class="input-form full-width normalinput noborder yearcredit nomargin">
-                                            <input name="year" id="year-value" placeholder="YYYY" maxlength="4" autocomplete="off" data-epayco="card[exp_year]" required>
+                                            <input type="number" name="year" id="year-value" placeholder="YYYY" maxlength="4" autocomplete="off" data-epayco="card[exp_year]" required>
                                         </div>
                                     </div>
                                     <div class="input-form normalinput cvv_style" id="cvc_">

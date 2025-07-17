@@ -10,6 +10,7 @@ if (!defined('ABSPATH')) {
 class Helpers
 {
     public Url $url;
+    public Session $session;
 
     public function __construct(
         Session $session,
