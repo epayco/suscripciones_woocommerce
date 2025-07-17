@@ -803,8 +803,11 @@ class EpaycoSuscription extends AbstractGateway
                                     $logger = wc_get_logger();
                                     $logger->info("isAddedToken: " . json_encode($isAddedToken));
                                 }
-                                wc_add_notice($isAddedToken->data->description, 'error');
-                                wp_redirect(wc_get_checkout_url());
+                                $customerJson = json_decode(json_encode($isAddedToken), true);
+                                $dataError = $customerJson;
+                                $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('Error: El token que desea asociar ya se encuentra asociado a otro customer', 'epayco-subscriptions-for-woocommerce'));
+                                wc_add_notice($error, 'error');
+                                wp_redirect(wc_get_checkout_url());                        
                                 exit;
                             }
                         }
