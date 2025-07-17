@@ -411,7 +411,7 @@ if (!defined('ABSPATH')) {
                                     </div>
                                     <div class="input-form normalinput cvv_style" id="cvc_">
                                         <input type="password" placeholder="CVC" class="nomargin binding-input" name="cvc" id="card_cvc" autocomplete="off" maxlength="4" data-epayco="card[cvc]">
-                                        <i class="fa color fa-question-circle pointer" aria-hidden="true" style="right: 10px;padding: 0;top: -5px;font-size: 24px !important;!i;!;!;"></i>
+                                        <i class="fa color fa-question-circle pointer" aria-hidden="true" style="right: 10px;padding: 0;top: -5px;font-size: 24px !important;"></i>
                                     </div>
                                     <br>
                                     <div class="clearfix"></div>

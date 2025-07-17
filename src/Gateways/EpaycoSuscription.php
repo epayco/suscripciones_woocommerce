@@ -1990,11 +1990,34 @@ class EpaycoSuscription extends AbstractGateway
                 $logger = wc_get_logger();
                 $logger->info("process_payment_epayco_error:".json_encode($subsCreated));
             }
-            $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('Ocurrió un error, por favor contactar con soporte.', 'epayco-subscriptions-for-woocommerce'));
+            $message = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('Ocurrió un error, por favor contactar con soporte.', 'epayco-subscriptions-for-woocommerce'));
+            $errores_listados = [];
+            if (isset($dataError['data']['errors'])) {
+                if (is_array($dataError['data']['errors'])) {
+                    foreach ($dataError['data']['errors'] as $campo => $mensajes) {
+                        foreach ($mensajes as $msg) {
+                            $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                        }
+                    }
+                } else {
+                    $errores_listados[] = $dataError['data']['errors'];
+                }
+            }
+            if (isset($dataError['data']->errors) && is_array($dataError['data']->errors)) {
+                foreach ($dataError['data']->errors as $campo => $mensajes) {
+                    foreach ($mensajes as $msg) {
+                        $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                    }
+                }
+            }
+            $errorMessage = $message." ";
+            if (!empty($errores_listados)) {
+                $errorMessage .=  implode(' | ', $errores_listados);
+            }          
             $response_status = [
                 'ref_payco' => null,
                 'status' => false,
-                'message' => $error,
+                'message' => $errorMessage,
                 'url' => $order->get_checkout_order_received_url()
             ];
         }
