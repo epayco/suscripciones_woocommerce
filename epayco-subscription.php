@@ -420,7 +420,7 @@ function activate_subscription_epayco()
             customer_id TEXT NULL,
             token_id TEXT NULL,
             email TEXT NULL,
-            PRIMARY KEY (id)
+            PRIMARY KEY (id) UNIQUE KEY unique_email (email(191))
         ) $charset_collate;";
 
         dbDelta($sql);

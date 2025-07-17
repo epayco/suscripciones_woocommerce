@@ -276,35 +276,35 @@ class EpaycoSuscription extends AbstractGateway
                 $this->generate_settings_html();
                 ?>
                 <!--<tr valign="top" >
-                    <th scope="row" class="titledesc">
-                        <label for="woocommerce_epayco_enabled"><?php esc_html_e('Validar llaves', 'epayco-subscriptions-for-woocommerce'); ?></label>
-                        <span hidden id="public_key">0</span>
-                        <span hidden id="private_key">0</span>
-                        <td class="forminp">
-                            <form method="post" action="#">
-                                <label for="woocommerce_epayco_enabled">
-                                </label>
-                                <input type="button" class="button-primary woocommerce-save-button validar" value="Validar">
-                                <p class="description">
-                                    <?php esc_html_e('Validación de llaves PUBLIC_KEY y PRIVATE_KEY', 'epayco-subscriptions-for-woocommerce'); ?>
-                                </p>
-                            </form>
-                            <br>
-                            <div id="myModal" class="modal" >
-                                <div class="modal-content">
-                                    <span class="close">&times;</span>
-                                    <center>
-                                        <img src="<?php echo EPAYCO_PLUGIN_SUSCRIPCIONES_URL . 'assets/images/logo_warning.png' ?>">
-                                    </center>
-                                    <p><strong><?php esc_html_e('Llaves de comercio inválidas', 'epayco-subscriptions-for-woocommerce'); ?></strong> </p>
-                                    <p><?php esc_html_e('Las llaves Public Key, Private Key insertadas', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('del comercio son inválidas.', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('Consúltelas en el apartado de integraciones', 'epayco-subscriptions-for-woocommerce'); ?> <br><?php esc_html_e('Llaves API en su Dashboard ePayco.', 'epayco-subscriptions-for-woocommerce'); ?>,</p>
-                                </div>
-                                <span class="loader"></span>
-                            </div>
+                <th scope="row" class="titledesc">
+                    <label for="woocommerce_epayco_enabled"><?php esc_html_e('Validar llaves', 'epayco-subscriptions-for-woocommerce'); ?></label>
+                    <span hidden id="public_key">0</span>
+                    <span hidden id="private_key">0</span>
+                <td class="forminp">
+                    <form method="post" action="#">
+                        <label for="woocommerce_epayco_enabled">
+                        </label>
+                        <input type="button" class="button-primary woocommerce-save-button validar" value="Validar">
+                        <p class="description">
+                            <?php esc_html_e('Validación de llaves PUBLIC_KEY y PRIVATE_KEY', 'epayco-subscriptions-for-woocommerce'); ?>
+                        </p>
+                    </form>
+                    <br>
+                    <div id="myModal" class="modal" >
+                        <div class="modal-content">
+                            <span class="close">&times;</span>
+                            <center>
+                                <img src="<?php echo EPAYCO_PLUGIN_SUSCRIPCIONES_URL . 'assets/images/logo_warning.png' ?>">
+                            </center>
+                            <p><strong><?php esc_html_e('Llaves de comercio inválidas', 'epayco-subscriptions-for-woocommerce'); ?></strong> </p>
+                            <p><?php esc_html_e('Las llaves Public Key, Private Key insertadas', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('del comercio son inválidas.', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('Consúltelas en el apartado de integraciones', 'epayco-subscriptions-for-woocommerce'); ?> <br><?php esc_html_e('Llaves API en su Dashboard ePayco.', 'epayco-subscriptions-for-woocommerce'); ?>,</p>
+                        </div>
+                        <span class="loader"></span>
+                    </div>
 
-                        </td>
-                    </th>
-                </tr>-->
+                </td>
+                </th>
+            </tr>-->
             </tbody>
         </table>
 <?php
@@ -807,7 +807,7 @@ class EpaycoSuscription extends AbstractGateway
                                 $dataError = $customerJson;
                                 $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('Error: El token que desea asociar ya se encuentra asociado a otro customer', 'epayco-subscriptions-for-woocommerce'));
                                 wc_add_notice($error, 'error');
-                                wp_redirect(wc_get_checkout_url());                        
+                                wp_redirect(wc_get_checkout_url());
                                 exit;
                             }
                         }
@@ -1057,7 +1057,10 @@ class EpaycoSuscription extends AbstractGateway
                     $logger->info("validatePlan".json_encode($newPLan));
                 }
                 $newPlanJson = json_decode($newPLan, true);
-
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->info("Error : " . json_encode($newPLan));
+                }
                 $dataError = $newPlanJson;
    
                 if (is_array($dataError)) {
@@ -1094,8 +1097,8 @@ class EpaycoSuscription extends AbstractGateway
                 if (!empty($errores_listados)) {
                     $errorMessage .=  implode(' | ', $errores_listados);
                 }
+            
                 
-
 
                 $response_status = [
                     'status' => false,
@@ -2394,5 +2397,29 @@ class EpaycoSuscription extends AbstractGateway
         $clean = preg_replace('/\s+/', "_", $clean);
         $clean = ($anal) ? preg_replace("/[^a-zA-Z0-9]/", "", $clean) : $clean;
         return $clean;
+    }
+
+
+    public function updateCustomerInfo($customer,$customerData):void {
+      global $wpdb;
+
+        $table_name = $wpdb->prefix . 'settings_epayco';
+
+        $id_payco    = $this->custIdCliente;
+        $customer_id = $customer->data->customerId;
+        $token_id    = $customerData['token_card'];
+        $email       = $customerData['email'];
+
+        // Preparar SQL con ON DUPLICATE KEY
+        $sql = $wpdb->prepare("
+            INSERT INTO $table_name (id_payco, customer_id, token_id, email)
+            VALUES (%s, %s, %s, %s)
+            ON DUPLICATE KEY UPDATE
+                id_payco = VALUES(id_payco),
+                customer_id = VALUES(customer_id),
+                token_id = VALUES(token_id)
+        ", $id_payco, $customer_id, $token_id, $email);
+
+        $wpdb->query($sql);  
     }
 }
