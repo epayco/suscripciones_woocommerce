@@ -3165,14 +3165,14 @@ input:checked + .slider:before {
 }
 
 .loadDavi .circulo .lock:after {
-    position: absolute;
-    top: -5px;
-    left: -5px;
-    height: 100%;
-    width: 100%;
-    border: 5px solid transparent;
-    border-color: #999 transparent transparent;
-    border-radius: 50%
+    position: absolute !important;
+    /* top: -5px; */
+    left: 0vh !important;
+    height: 100% !important;
+    width: 100% !important;
+    border: 5px solid transparent !important;
+    border-color: #999 transparent transparent !important;
+    border-radius: 50% !important;
 }
 
 @-webkit-keyframes gira {

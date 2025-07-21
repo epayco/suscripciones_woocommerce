@@ -77,21 +77,13 @@ if (!defined('ABSPATH')) {
                 }
             </style>
             <div class="loading-home op" style="display: none" id="loading_home">
-                <!--<div class="circulo ">
+                <div class="circulo ">
                     <div class="lock">
                         <svg class="svg-inline--fa fa-lock fa-w-14" aria-hidden="true" data-prefix="fa" data-icon="lock" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
                             <path fill="currentColor" d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"></path>
-                        </svg>
+                        </svg><!-- <i class="fa fa-lock"></i> -->
                     </div>
                     Procesando Pago...
-                </div>-->
-                <div class="loaderContainer">
-                    <div class="loader">
-                    </div>
-                    <div style="position:absolute;top:38px" >
-                        <img src="https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png" alt="Loading"/>
-                    </div>
-                    <div class="textLoader">Procesando Pago</div>
                 </div>
             </div>
             <section class="modal" hidden id="movil_modal" style="padding-top: 0rem !important;">
@@ -100,13 +92,13 @@ if (!defined('ABSPATH')) {
                         <div class="logo-commerce">
                             <div class="logo-container">
                                 <!--<?php echo wp_get_attachment_image(0, 'full'); ?>-->
-                                <img 
-                                    loading="lazy" 
-                                    decoding="async" 
-                                    width="90" 
-                                    height="90" 
-                                    src="<?php echo esc_html($logo_comercio); ?>" 
-                                    class="attachment-full size-full" 
+                                <img
+                                    loading="lazy"
+                                    decoding="async"
+                                    width="90"
+                                    height="90"
+                                    src="<?php echo esc_html($logo_comercio); ?>"
+                                    class="attachment-full size-full"
                                     alt="" />
                             </div>
 
@@ -163,7 +155,9 @@ if (!defined('ABSPATH')) {
                                     <!-- Name -->
                                     <div class="form-container extra-label">
                                         <!--<i class="fas fa-user icon" style="font-size: 1.5em; color: #000;"></i>-->
-                                        <svg class="svg-inline--fa fa-user fa-w-16 icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512"><path fill="#2a7ab7" d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z"/></svg>
+                                        <svg class="svg-inline--fa fa-user fa-w-16 icon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512">
+                                            <path fill="#2a7ab7" d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z" />
+                                        </svg>
                                         <div class="label-container">
                                             <label for="card" id="label_name_es" style="display:table-cell">Nombre</label>
                                         </div>
@@ -292,30 +286,30 @@ if (!defined('ABSPATH')) {
                             'style' => 'display: block; margin: auto; text-align: center;'
                         ]); ?>
                     </div>
-                    </div>
-                    <p class="mdl-expiration-time-title">Su sesión ha expirado por inactividad</p>
-                    <p class="mdl-expiration-time-content text-center">
-                        De clic en cerrar para regresar e iniciar una nueva transacción.
-                    </p>
-                    <button type="button" class="btn btn-primary btn-block" id="btnMdlTimeExpired">Cerrar</button>
                 </div>
+                <p class="mdl-expiration-time-title">Su sesión ha expirado por inactividad</p>
+                <p class="mdl-expiration-time-content text-center">
+                    De clic en cerrar para regresar e iniciar una nueva transacción.
+                </p>
+                <button type="button" class="btn btn-primary btn-block" id="btnMdlTimeExpired">Cerrar</button>
             </div>
         </div>
+    </div>
 
-        <!-- Checkout Desktop -->
-        <div id="p_c" hidden="true"><?php echo esc_html($apiKey); ?></div>
-        <div id="p_p" hidden="true"><?php echo esc_html($privateKey); ?></div>
-        <div id="lang_epayco" hidden="true"><?php echo esc_html($lang); ?></div>
-        <div class="loader-container">
-            <div class="loading"></div>
-        </div>
-        <p style="text-align: center;" class="epayco-title" id="epayco_title">
-            <span class="animated-points">Cargando métodos de pago</span>
-            <br>
-            <small class="epayco-subtitle"> Si no se cargan automáticamente, de clic en el botón "Pagar con ePayco"</small>
-        </p>
-        <center>
-            <button data-modal-target="#centered" id="button_epayco" style="
+    <!-- Checkout Desktop -->
+    <div id="p_c" hidden="true"><?php echo esc_html($apiKey); ?></div>
+    <div id="p_p" hidden="true"><?php echo esc_html($privateKey); ?></div>
+    <div id="lang_epayco" hidden="true"><?php echo esc_html($lang); ?></div>
+    <div class="loader-container">
+        <div class="loading"></div>
+    </div>
+    <p style="text-align: center;" class="epayco-title" id="epayco_title">
+        <span class="animated-points">Cargando métodos de pago</span>
+        <br>
+        <small class="epayco-subtitle"> Si no se cargan automáticamente, de clic en el botón "Pagar con ePayco"</small>
+    </p>
+    <center>
+        <button data-modal-target="#centered" id="button_epayco" style="
                   background-image: url(https://multimedia.epayco.co/plugins-sdks/Boton-color-espanol.png);
                   background-repeat:no-repeat;
                   height:39px;
@@ -325,139 +319,132 @@ if (!defined('ABSPATH')) {
                   border-radius: 6px;
                   background-color: #28303d;
                   ">
-            </button>
-        </center>
-        <div class="middle-xs bg_onpage porcentbody m-0" style="margin: 0">
-            <div class="centered" id="centered">
-                <div class="loadoverlay" id="loadoverlay">
-                    <!--<div class="loader loadimg">
-                        <i class="fa fa-lock fa-xs loadshield2" style="color:gray;position:fixed;" aria-hidden="true"></i>
-                    </div>
-                    <span class="loadtext">Procesando Pago</span>-->
-                    <div class="loaderContainer">
-                        <div class="loader">
-                        </div>
-                        <div style="position:absolute;top:38px" >
-                            <img src="https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png" alt="Loading"/>
-                        </div>
-                        <div class="textLoader">Procesando Pago</div>
-                    </div>
-                </div>
-                <div class="onpage relative" id="web-checkout-content">
-                    <div class="header-modal hidden-print">
-                        <div class="logo-comercio">
-                            <img 
-                            loading="lazy" 
-                            decoding="async" 
-                            width="90" height="90" 
-                            src="<?php echo esc_html($logo_comercio); ?>" 
-                            class="img-card" 
-                            alt="" 
-                            id="image-safari" 
+        </button>
+    </center>
+    <div class="middle-xs bg_onpage porcentbody m-0" style="margin: 0">
+        <div class="centered" id="centered">
+            <div class="loadoverlay" id="loadoverlay">
+                <div class="loader loadimg"></div>
+                <i class="fa fa-lock fa-lg loadshield2" style="color:gray;position:fixed;" aria-hidden="true"></i>
+                <span class="loadtext">Procesando Pago</span>
+            </div>
+            <div class="onpage relative" id="web-checkout-content">
+                <div class="header-modal hidden-print">
+                    <div class="logo-comercio">
+                        <img
+                            loading="lazy"
+                            decoding="async"
+                            width="90" height="90"
+                            src="<?php echo esc_html($logo_comercio); ?>"
+                            class="img-card"
+                            alt=""
+                            id="image-safari"
                             style="width: 90%;">
-                            <!--<?php echo wp_get_attachment_image(0, 'full', false, ['class' => 'img-card', 'id' => 'image-safari', 'style' => 'width: 90%;']); ?> -->                 
-                        </div>
-                        <div class="header-modal-text">
-                            <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: black;"><?php echo esc_html($product_name_); ?></h1>
-                            <h2 style="font-size: 12px;margin-bottom:3px;color: #848484;margin: 0.2rem 1.5rem !important;  font-family: Poppins"><?php echo esc_html($shop_name) ?></h2>
-                            <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: #3582b7;font-weight: 900;">$<?php echo esc_html($amount); ?> <?php echo esc_html($currency) ?></h1>
-                        </div>
-                        <div class="color-exit hidden-print closeIcon" id="closeModal">
-                            <div data-close-button class="icon-cancel">&times;</div>
-                        </div>
+                        <!--<?php echo wp_get_attachment_image(0, 'full', false, ['class' => 'img-card', 'id' => 'image-safari', 'style' => 'width: 90%;']); ?> -->
                     </div>
-                    <div class="body-modal fix-top-safari">
-                        <div class="bar-option hidden-print">
-                            <div class="dropdown select-pais pointer" id="sample">
-                                <dd>
-                                    <ul id="foo"></ul>
-                                </dd>
-                                <p style="position: absolute !important;">
-                                    <a class="dropdown-toggle blockd" style="background: none; border: none;" type="button" data-toggle="dropdown">
-                                        <div class="flag flag-icon-background flag-icon-co" data-toggle="dropdown" id="flag"></div>
-
-                                        <div class="estilosContryName" id="countryName">Colombia</div>
-                                        <i class="fa fa-caret-down caret-languaje" id="icon-flecha" aria-hidden="true"></i>
-
-                                    </a>
-                                </p>
-                                <ul class="dropdown-menu" id="dropdown-countries"></ul>
-                            </div>
-                            <p style="display: flex; margin: 0px"><span id="result" hidden><?php echo esc_html($str_countryCode) ?></span><a id="esButton" class="languaje pointer" data-es-button data-language="es">ES</a><a id="enButton" class="languaje pointer" data-en-button data-language="en">EN</a></p>
-                        </div>
-                        <div class="wc scroll-content">
-                            <div class="separate">
-                                <h2 class="title-body" style="text-align: left;width: calc(100% - 1.9em);
-                                margin: 0 auto 1em; font-size: 16px; font-weight: 500; color: #3a3a3a;font-family: 'Poppins' " id="info_es">Información de la tarjeta
-                                </h2>
-                                <h2 class="title-body" style="text-align: left;width: calc(100% - 1.5em);
-                                margin: 0 auto 1em; font-size: 16px; font-weight: 500; color: #3a3a3a;font-family: 'Poppins'" id="info_en">Credit card information
-                                </h2>
-                            </div>
-                            <div class="menu-select">
-                                <form id="token-credit" action=" <?php echo esc_html($redirect_url) ?>  " method="post">
-                                    <div class="card-js" data-icon-colour="#158CBA">
-                                        <div class="input-form">
-                                            <span class="icon-user color icon-input"><i class="fas fa-user" style="margin-left: -2px;"></i></span>
-                                            <input class="name" id="the-card-name-element" data-epayco="card[name]" name="name" required value="<?php echo esc_html($name_billing) ?>">
-                                        </div>
-                                    </div>
-                                    <div class="card-js" data-icon-colour="#158CBA">
-                                        <div class="input-form" style="position: relative;">
-                                            <span class="icon-credit-card color icon-input"><i class="far fa-credit-card" style="margin-left: -5px;"></i></span>
-                                            <input class="card-number my-custom-class" data-epayco="card[number]" required id="the-card-number-element" name="card-number2" placeholder="**** **** **** ****" type="tel" maxlength="19" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" style="padding-right: 40px;">
-                                    
-                                            <?php echo wp_get_attachment_image(1, 'full', false, ['class' => 'img-card', 'id' => 'logo_franchise_2', 'style' => 'display: block;position: absolute;right: 12px;top: 41.5%;transform: translateY(-50%);width: 40px;']); ?>
-
-                                        </div>
-                                    </div>
-
-                                    <div class="input-form" hidden>
-                  -                      <span class="icon-credit-card color icon-input"><i class="fas fa-envelope"></i></span>
-                                        <input type="tel" class="binding-input inspectletIgnore" name="card_email" autocomplete="off" hidden="true" data-epayco="card[email]" value="<?php echo esc_html($email_billing) ?>">
-                                    </div>
-                                    <div class="select-option bordergray vencimiento" style="float:left" id="expiration">
-                                        <div class="input-form full-width noborder monthcredit nomargin">
-                                            <span class="icon-date_range color icon-select"><i class="far fa-calendar-alt"></i></span>
-                                            <input type="number" class="binding-input inspectletIgnore" id="month-value" name="month" placeholder="MM" maxlength="2" autocomplete="off" data-epayco="card[exp_month]" required>
-                                        </div>
-                                        <div class="" style="float:left; width:12%; margin:0; text-align:center; line-height: 40px; height: 37px; background-color: white; color:#a3a3a3;">/</div>
-                                        <div class="input-form full-width normalinput noborder yearcredit nomargin">
-                                            <input type="number" name="year" id="year-value" placeholder="YYYY" maxlength="4" autocomplete="off" data-epayco="card[exp_year]" required>
-                                        </div>
-                                    </div>
-                                    <div class="input-form normalinput cvv_style" id="cvc_">
-                                        <input type="password" placeholder="CVC" class="nomargin binding-input" name="cvc" id="card_cvc" autocomplete="off" maxlength="4" data-epayco="card[cvc]">
-                                        <i class="fa color fa-question-circle pointer" aria-hidden="true" style="right: 10px;padding: 0;top: -5px;font-size: 24px !important;"></i>
-                                    </div>
-                                    <br>
-                                    <div class="clearfix"></div>
-                                    <button class="call_action bgcolor white_font pointer load hidden-print" id="send-form">
-                                        <h2 style="color: white; font-family: 'Poppins'" id="pagar_es">Pagar</h2>
-                                        <h2 style="color: white; font-family: 'Poppins'" id="pagar_en">Pay</h2>
-                                    </button>
-                                </form>
-                            </div>
-                        </div>
+                    <div class="header-modal-text">
+                        <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: black;"><?php echo esc_html($product_name_); ?></h1>
+                        <h2 style="font-size: 12px;margin-bottom:3px;color: #848484;margin: 0.2rem 1.5rem !important;  font-family: Poppins"><?php echo esc_html($shop_name) ?></h2>
+                        <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: #3582b7;font-weight: 900;">$<?php echo esc_html($amount); ?> <?php echo esc_html($currency) ?></h1>
+                    </div>
+                    <div class="color-exit hidden-print closeIcon" id="closeModal">
+                        <div data-close-button class="icon-cancel">&times;</div>
                     </div>
                 </div>
-                <div class="footer-modal hidden-print" id="footer-animated">
-                    <p id="pagar_logo_es">
-                        <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>Pago seguro por
-                        <?php echo wp_get_attachment_image(4, 'full', false, ['height' => '20', 'style' => 'display: inline;']); ?>
-                    </p>
-                    <p id="pagar_logo_en">
-                        <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>Secure payment by
-                        <?php echo wp_get_attachment_image(4, 'full', false, ['height' => '20', 'style' => 'display: inline;']); ?>
-                    </p>
+                <div class="body-modal fix-top-safari">
+                    <div class="bar-option hidden-print">
+                        <div class="dropdown select-pais pointer" id="sample">
+                            <dd>
+                                <ul id="foo"></ul>
+                            </dd>
+                            <p style="position: absolute !important;">
+                                <a class="dropdown-toggle blockd" style="background: none; border: none;" type="button" data-toggle="dropdown">
+                                    <div class="flag flag-icon-background flag-icon-co" data-toggle="dropdown" id="flag"></div>
+
+                                    <div class="estilosContryName" id="countryName">Colombia</div>
+                                    <i class="fa fa-caret-down caret-languaje" id="icon-flecha" aria-hidden="true"></i>
+
+                                </a>
+                            </p>
+                            <ul class="dropdown-menu" id="dropdown-countries"></ul>
+                        </div>
+                        <p style="display: flex; margin: 0px"><span id="result" hidden><?php echo esc_html($str_countryCode) ?></span><a id="esButton" class="languaje pointer" data-es-button data-language="es">ES</a><a id="enButton" class="languaje pointer" data-en-button data-language="en">EN</a></p>
+                    </div>
+                    <div class="wc scroll-content">
+                        <div class="separate">
+                            <h2 class="title-body" style="text-align: left;width: calc(100% - 1.9em);
+                                margin: 0 auto 1em; font-size: 16px; font-weight: 500; color: #3a3a3a;font-family: 'Poppins' " id="info_es">Información de la tarjeta
+                            </h2>
+                            <h2 class="title-body" style="text-align: left;width: calc(100% - 1.5em);
+                                margin: 0 auto 1em; font-size: 16px; font-weight: 500; color: #3a3a3a;font-family: 'Poppins'" id="info_en">Credit card information
+                            </h2>
+                        </div>
+                        <div class="menu-select">
+                            <form id="token-credit" action=" <?php echo esc_html($redirect_url) ?>  " method="post">
+                                <div class="card-js" data-icon-colour="#158CBA">
+                                    <div class="input-form">
+                                        <span class="icon-user color icon-input"><i class="fas fa-user" style="margin-left: -2px;"></i></span>
+                                        <input class="name" id="the-card-name-element" data-epayco="card[name]" name="name" required value="<?php echo esc_html($name_billing) ?>">
+                                    </div>
+                                </div>
+                                <div class="card-js" data-icon-colour="#158CBA">
+                                    <div class="input-form" style="position: relative;">
+                                        <span class="icon-credit-card color icon-input"><i class="far fa-credit-card" style="margin-left: -5px;"></i></span>
+                                        <input class="card-number my-custom-class" data-epayco="card[number]" required id="the-card-number-element" name="card-number2" placeholder="**** **** **** ****" type="tel" maxlength="19" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" style="padding-right: 40px;">
+
+                                        <?php echo wp_get_attachment_image(1, 'full', false, ['class' => 'img-card', 'id' => 'logo_franchise_2', 'style' => 'display: block;position: absolute;right: 12px;top: 41.5%;transform: translateY(-50%);width: 40px;']); ?>
+
+                                    </div>
+                                </div>
+
+                                <div class="input-form" hidden>
+                                    - <span class="icon-credit-card color icon-input"><i class="fas fa-envelope"></i></span>
+                                    <input type="tel" class="binding-input inspectletIgnore" name="card_email" autocomplete="off" hidden="true" data-epayco="card[email]" value="<?php echo esc_html($email_billing) ?>">
+                                </div>
+                                <div class="select-option bordergray vencimiento" style="float:left" id="expiration">
+                                    <div class="input-form full-width noborder monthcredit nomargin">
+                                        <span class="icon-date_range color icon-select"><i class="far fa-calendar-alt"></i></span>
+                                        <input type="number" class="binding-input inspectletIgnore" id="month-value" name="month" placeholder="MM" maxlength="2" autocomplete="off" data-epayco="card[exp_month]" required>
+                                    </div>
+                                    <div class="" style="float:left; width:12%; margin:0; text-align:center; line-height: 40px; height: 37px; background-color: white; color:#a3a3a3;">/</div>
+                                    <div class="input-form full-width normalinput noborder yearcredit nomargin">
+                                        <input type="number" name="year" id="year-value" placeholder="YYYY" maxlength="4" autocomplete="off" data-epayco="card[exp_year]" required>
+                                    </div>
+                                </div>
+                                <div class="input-form normalinput cvv_style" id="cvc_">
+                                    <input type="password" placeholder="CVC" class="nomargin binding-input" name="cvc" id="card_cvc" autocomplete="off" maxlength="4" data-epayco="card[cvc]">
+                                    <i class="fa color fa-question-circle pointer" aria-hidden="true" style="right: 10px;padding: 0;top: -5px;font-size: 24px !important;"></i>
+                                </div>
+                                <br>
+                                <div class="clearfix"></div>
+                                <button class="call_action bgcolor white_font pointer load hidden-print" id="send-form">
+                                    <h2 style="color: white; font-family: 'Poppins'" id="pagar_es">Pagar</h2>
+                                    <h2 style="color: white; font-family: 'Poppins'" id="pagar_en">Pay</h2>
+                                </button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
-            <div id="overlay"></div>
+            <div class="footer-modal hidden-print" id="footer-animated">
+                <p id="pagar_logo_es">
+                    <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>Pago seguro por
+                    <?php echo wp_get_attachment_image(4, 'full', false, ['height' => '20', 'style' => 'display: inline;']); ?>
+                </p>
+                <p id="pagar_logo_en">
+                    <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>Secure payment by
+                    <?php echo wp_get_attachment_image(4, 'full', false, ['height' => '20', 'style' => 'display: inline;']); ?>
+                </p>
+            </div>
         </div>
-        <div id="style_min" hidden><?php echo esc_html($stylemin) ?></div>
+        <div id="overlay"></div>
+    </div>
+    <div id="style_min" hidden><?php echo esc_html($stylemin) ?></div>
     </div>
 </body>
-<script id="movil" hidden><?php echo esc_html($appjs) ?></script>
+<script id="movil" hidden>
+    <?php echo esc_html($appjs) ?>
+</script>
 
 <?php
 // Ensure WordPress functions are available
