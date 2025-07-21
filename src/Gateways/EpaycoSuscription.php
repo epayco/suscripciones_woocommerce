@@ -2207,7 +2207,8 @@ class EpaycoSuscription extends AbstractGateway
     {
         $subs = $this->epaycoSdk->subscriptions->getList();
         $logger = new \WC_Logger();
-
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wc_orders';
         if (!empty($subs->data)) {
             foreach ($subs->data as $epayco_subscription) {
                 $epayco_id = $epayco_subscription->_id ?? null;
@@ -2268,7 +2269,32 @@ class EpaycoSuscription extends AbstractGateway
 
                             if ($desired_status) {
                                 if ($current_status !== $desired_status) {
-                                    $wc_subscription->update_status($desired_status);
+                                    if($current_status === 'pending-cancel' && $desired_status === 'active'){
+                                        try {
+                                            $subscription_id = $wc_subscription->get_id();
+                                            $sql = $wpdb->prepare(
+                                                "UPDATE {$table_name} SET status = %s WHERE id = %d",
+                                                'wc-active',
+                                                $subscription_id
+                                            );
+                                            
+                                            $result = $wpdb->query($sql);
+                            
+                                            if ($result === false) {
+                                                $logger->add(self::LOG_SOURCE, "❌ Error ejecutando la consulta para la suscripción #{$subscription_id}");
+                                            } elseif ($result === 0) {
+                                                $logger->add(self::LOG_SOURCE, "ℹ️ Consulta ejecutada, pero ninguna fila fue actualizada para la suscripción #{$subscription_id}");
+                                            } else {
+                                                $logger->add(self::LOG_SOURCE, "✅ Suscripción #{$subscription_id} actualizada correctamente (filas afectadas: {$result})");
+                                            }
+                            
+                                        } catch (Exception $e) {
+                                            $logger->add(self::LOG_SOURCE, "❗ Excepción al ejecutar la consulta para la suscripción #{$subscription_id}: " . $e->getMessage());
+                                        }
+                                    }else{
+                                        $wc_subscription->update_status($desired_status);
+                                    }
+                                    
                                 } 
                             } 
                         }
