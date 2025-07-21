@@ -536,15 +536,15 @@ img.home-icons {
 }
 
 .loadshield2 {
-  font-size: 30px;
-  position: relative;
-  top: 43.5%;
-  left: 47%;
-  width: 10px;
-  height: 30px;
-  margin-top: 0px;
-  margin-left: 0px;
-  color: gray;
+  font-size: 30px !important;
+  position: relative !important;
+  top: 43.5% !important;
+  left: 45.5% !important;
+  width: 10px !important;
+  height: 30px !important;
+  margin-top: 0px !important;
+  margin-left: 0px !important;
+  color: gray !important;
 }
 
 .loadtext {
@@ -1274,16 +1274,16 @@ input[type="checkbox"]:checked+label:before {
 }
 
 #counterInactivity {
-  margin: 0;
-  position: relative;
-  top: 0px !important;
-  left: 5px;
-  font-size: 48px;
-  font-family: Roboto;
-  font-style: normal;
-  font-weight: 400;
-  line-height: 56px;
-  color: #666;
+  margin: 0 !important;
+  position: relative !important;
+  top: 10px !important;
+  left: 2px !important;
+  font-size: 48px !important;
+  font-family: Roboto !important;
+  font-style: normal !important;
+  font-weight: 400 !important;
+  line-height: 56px !important;
+  color: #666 !important;
 }
 
 .spinner,
