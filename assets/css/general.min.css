@@ -500,7 +500,7 @@ img.home-icons {
 .textLoader {
     margin-top: 10px;
     font-weight: 600;
-    font-size: 24px;
+    font-size: 20px;
     color: black;
 }
 @-webkit-keyframes load8 {
@@ -1355,5 +1355,11 @@ input[type="checkbox"]:checked+label:before {
 @media screen and (max-height: 636px) {
   .modal-expiration-time {
     top: 4px;
+  }
+}
+
+@media screen and (max-width: 768px) {
+  .loaderContainer{
+    top: 20%;
   }
 }
