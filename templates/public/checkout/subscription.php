@@ -322,11 +322,17 @@ if (!defined('ABSPATH')) {
         <div class="middle-xs bg_onpage porcentbody m-0" style="margin: 0">
             <div class="centered" id="centered">
                 <div class="loadoverlay" id="loadoverlay">
-                    <div>
-                        <div class="loader loadimg"></div>
+                    <!--<div class="loader loadimg">
                         <i class="fa fa-lock fa-xs loadshield2" style="color:gray;position:fixed;" aria-hidden="true"></i>
-                        <!--<i class="fa-solid fa-lock fa-xs" style="color: #969292;"></i>-->
-                        <span class="loadtext">Procesando Pago</span>
+                    </div>
+                    <span class="loadtext">Procesando Pago</span>-->
+                    <div class="loaderContainer">
+                        <div class="loader">
+                        </div>
+                        <div style="position:absolute;top:38px" >
+                            <img src="https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png" alt="Loading"/>
+                        </div>
+                        <div class="textLoader">Procesando Pago</div>
                     </div>
                 </div>
                 <div class="onpage relative" id="web-checkout-content">
