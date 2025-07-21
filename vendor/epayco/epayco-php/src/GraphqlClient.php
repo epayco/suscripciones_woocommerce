@@ -113,7 +113,7 @@ class GraphqlClient
     public function canPaginateSchema($action,$pagination,$schema){
         if ($pagination !== null) {
             if ($action === "findOne" && $pagination["limit"] !== null) {
-                throw  new ErrorException("Can't paginate this schema ${schema}, because this query has only one rows to show, please add a valid query and try again.",108);
+                throw  new ErrorException("Can't paginate this schema {$schema}, because this query has only one rows to show, please add a valid query and try again.",108);
             }
         }
     }
