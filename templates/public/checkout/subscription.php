@@ -77,13 +77,21 @@ if (!defined('ABSPATH')) {
                 }
             </style>
             <div class="loading-home op" style="display: none" id="loading_home">
-                <div class="circulo ">
+                <!--<div class="circulo ">
                     <div class="lock">
                         <svg class="svg-inline--fa fa-lock fa-w-14" aria-hidden="true" data-prefix="fa" data-icon="lock" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
                             <path fill="currentColor" d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"></path>
-                        </svg><!-- <i class="fa fa-lock"></i> -->
+                        </svg>
                     </div>
                     Procesando Pago...
+                </div>-->
+                <div class="loaderContainer">
+                    <div class="loader">
+                    </div>
+                    <div style="position:absolute; top:38px">
+                        <img src="https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png" alt="Loading"/>
+                    </div>
+                    <div class="textLoader">Procesando Pago</div>
                 </div>
             </div>
             <section class="modal" hidden id="movil_modal" style="padding-top: 0rem !important;">
@@ -324,9 +332,17 @@ if (!defined('ABSPATH')) {
     <div class="middle-xs bg_onpage porcentbody m-0" style="margin: 0">
         <div class="centered" id="centered">
             <div class="loadoverlay" id="loadoverlay">
-                <div class="loader loadimg"></div>
+                <!--<div class="loader loadimg"></div>
                 <i class="fa fa-lock fa-lg loadshield2" style="color:gray;position:fixed;" aria-hidden="true"></i>
-                <span class="loadtext">Procesando Pago</span>
+                <span class="loadtext">Procesando Pago</span> -->
+                <div class="loaderContainer">
+                    <div class="loader">
+                    </div>
+                    <div style="position:absolute; top:38px">
+                        <img src="https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png" alt="Loading"/>
+                    </div>
+                    <div class="textLoader">Procesando Pago</div>
+                </div>
             </div>
             <div class="onpage relative" id="web-checkout-content">
                 <div class="header-modal hidden-print">
