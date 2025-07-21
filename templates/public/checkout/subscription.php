@@ -322,9 +322,12 @@ if (!defined('ABSPATH')) {
         <div class="middle-xs bg_onpage porcentbody m-0" style="margin: 0">
             <div class="centered" id="centered">
                 <div class="loadoverlay" id="loadoverlay">
-                    <div class="loader loadimg"></div>
-                    <i class="fa fa-lock fa-lg loadshield2" style="color:gray;position:fixed;" aria-hidden="true"></i>
-                    <span class="loadtext">Procesando Pago</span>
+                    <div>
+                        <div class="loader loadimg"></div>
+                        <i class="fa fa-lock fa-xs loadshield2" style="color:gray;position:fixed;" aria-hidden="true"></i>
+                        <!--<i class="fa-solid fa-lock fa-xs" style="color: #969292;"></i>-->
+                        <span class="loadtext">Procesando Pago</span>
+                    </div>
                 </div>
                 <div class="onpage relative" id="web-checkout-content">
                     <div class="header-modal hidden-print">

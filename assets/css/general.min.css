@@ -505,7 +505,7 @@ img.home-icons {
 
 .loadimg {
   position: absolute !important;
-  top: 49% !important;
+  top: 50% !important;
   left: 50% !important;
   width: 80px !important;
   height: 80px !important;
@@ -515,19 +515,16 @@ img.home-icons {
 }
 
 .loadshield2 {
-  font-size: 35px;
-  position: absolute;
-  top: 47.5%;
-  left: 48.5%;
-  width: 20px;
-  height: 40px;
-  margin-top: -20px;
-  /* Half the height */
-  margin-left: -10px;
-  /* Half the width */
-  color: gray;
+    font-size: 30px;
+    position: relative;
+    top: 43.5%;
+    left: 47%;
+    width: 10px;
+    height: 30px;
+    margin-top: 0px;
+    margin-left: 0px;
+    color: gray;
 }
-
 .loadtext {
   font-size: 14px;
   position: absolute;
@@ -1257,7 +1254,7 @@ input[type="checkbox"]:checked+label:before {
 #counterInactivity {
   margin: 0;
   position: relative;
-  top: 5px !important;
+  top: 0px !important;
   left: 5px;
   font-size: 48px;
   font-family: Roboto;
