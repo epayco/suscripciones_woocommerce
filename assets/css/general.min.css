@@ -476,25 +476,39 @@ img.home-icons {
 }
 
 .loader {
-  font-size: 10px;
-  text-indent: -9999em;
-  border-top: 0.5em solid rgba(0, 0, 0, 0.2);
-  border-right: 0.5em solid rgba(0, 0, 0, 0.2);
-  border-bottom: 0.5em solid rgba(0, 0, 0, 0.2);
-  border-left: 0.5em solid #999;
-  -webkit-transform: translateZ(0);
-  -ms-transform: translateZ(0);
-  transform: translateZ(0);
-  -webkit-animation: load8 1.1s cubic-bezier(0.19, 1, 0.22, 1) infinite;
-  animation: load8 1.1s cubic-bezier(0.19, 1, 0.22, 1) infinite;
+  width: 145px;
+  height: 145px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  background:
+    radial-gradient(farthest-side, #000000 94%, #0000) top/1px 18px no-repeat,
+    conic-gradient(#0000 30%, #1f1e1e);
+  -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 18px), #000 0);
+  animation: spin 1s infinite linear;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
 }
 
-/* .textLoader {
+.loader img {
+  width: 68px;
+  height: 68px;
+  position: absolute;
+}
+
+@keyframes spin {
+  100% {
+    transform: rotate(1turn);
+  }
+}
+
+.textLoader {
   margin-top: 10px;
   font-weight: 600;
   font-size: 20px;
   color: black;
-} */
+}
 
 @-webkit-keyframes load8 {
   0% {

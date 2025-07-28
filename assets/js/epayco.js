@@ -1582,7 +1582,7 @@
     }, h
 }), function () {
     var e, t, r, n, o;
-    languages = new Array, e = "https://api.secure.payco.co/", languages.es = {
+    languages = new Array, e = "https://eks-subscription-api-lumen-service.epayco.io/", languages.es = {
         errors: [{
             type: 101,
             title: "[101] Datos ilegibles",

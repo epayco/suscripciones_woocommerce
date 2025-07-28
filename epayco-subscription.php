@@ -590,7 +590,6 @@ add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $siz
     return $image;
 }, 10, 4);
 
-
 function epayco_suscripcion_cron_job_deactivation()
 {
     wp_clear_scheduled_hook('woocommerc_epayco_suscripcion_cron_hook');
@@ -610,23 +609,26 @@ function epayco_suscripcion_cron_inactive()
 }
 register_deactivation_hook(__FILE__, 'epayco_suscripcion_cron_inactive');
 
-function bf_add_epayco_suscripcion_schedule($schedules)
-{
-    $schedules['every_five_minutes'] = array(
-        'interval' => 300,
-        'display'  => 'Every 5 minutes',
+add_filter('cron_schedules', function($schedules) {
+    $schedules['every_minute'] = array(
+        'interval' => 60,
+        'display'  => 'Every 1 minute',
     );
     return $schedules;
-}
+});
 
-function bf_schedule_epayco_suscripcion_event()
-{
-    add_filter('cron_schedules', 'bf_add_epayco_suscripcion_schedule');
-    if (!wp_next_scheduled('bf_epayco_suscripcion_event')) {
-        wp_schedule_event(time(), 'every_five_minutes', 'bf_epayco_suscripcion_event');
+function epayco_force_cleanup_cron_minutely() {
+  
+    $timestamp = wp_next_scheduled('woocommerce_epayco_suscripcion_cleanup_draft_orders');
+    if ($timestamp) {
+        wp_unschedule_event($timestamp, 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
+    }
+    
+    if (!wp_next_scheduled('woocommerce_epayco_suscripcion_cleanup_draft_orders')) {
+        wp_schedule_event(time(), 'every_minute', 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
     }
 }
-add_action('init', 'bf_schedule_epayco_suscripcion_event');
+add_action('init', 'epayco_force_cleanup_cron_minutely', 20);
 
 function bf_do_something_on_schedule_suscripcion()
 {
@@ -634,5 +636,11 @@ function bf_do_something_on_schedule_suscripcion()
         $ePayco = new EpaycoSuscription();
         $ePayco->woocommerc_epayco_suscripcion_cron_job_funcion();
     }
+    
+     if (class_exists('WC_Logger')) {
+        $logger = new WC_Logger();
+        $logger->add('epayco_cron_debug', 'bf_epayco_suscripcion_event ejecutado a las: ' . date('Y-m-d H:i:s'));
+    }
 }
 add_action('bf_epayco_suscripcion_event', 'bf_do_something_on_schedule_suscripcion');
+
