@@ -81,8 +81,8 @@ class EpaycoSuscription extends AbstractGateway
 
         add_action('woocommerce_subscription_status_cancelled', [$this, 'on_wc_subscription_cancelled']);
 
-        add_action('woocommerce_epayco_suscripcion_cleanup_draft_orders', [$this, 'delete_epayco_expired_draft_orders']);
-        add_action('woocommerc_epayco_suscripcion_cron_hook', [$this, 'woocommerc_epayco_suscripcion_cron_job_funcion']);
+        add_action('woocommerce_epayco_suscripcion_cleanup_draft_orders', [$this, 'update_cron_status_suscription']);
+        // add_action('woocommerc_epayco_suscripcion_cron_hook', [$this, 'woocommerc_epayco_suscripcion_cron_job_funcion']);
         add_action('admin_init', [$this, 'install']);
         $this->epaycoSdk = new EpaycoSdk\Epayco(
             [
@@ -103,26 +103,14 @@ class EpaycoSuscription extends AbstractGateway
         $cron_data = $this->cron_data == "yes" ? true : false;
         if ($cron_data) {
             if (function_exists('as_next_scheduled_action') && false === as_next_scheduled_action('woocommerce_epayco_suscripcion_cleanup_draft_orders')) {
-                as_schedule_recurring_action(time() + 3600, 3600, 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
+                as_schedule_recurring_action(time() + 30, 30, 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
             }
         }
     }
 
 
-    public function woocommerc_epayco_suscripcion_cron_job_funcion()
+    public function update_cron_status_suscription()
     {
-
-        if (isset($this->cron_data)) {
-            $cron_data = $this->cron_data == "yes" ? true : false;
-            if ($cron_data) {
-                $this->updateStatusSubscription();
-            }
-        }
-    }
-
-    public function delete_epayco_expired_draft_orders()
-    {
-
         $this->updateStatusSubscription();
     }
 
@@ -2235,6 +2223,7 @@ class EpaycoSuscription extends AbstractGateway
                 foreach ($meta as $row) {
                     $wc_subscription_id = $row->post_id;
                     $wc_subscription = wcs_get_subscription($wc_subscription_id);
+                    
                     if (!$wc_subscription) continue;
 
                     $current_status = $wc_subscription->get_status();
@@ -2250,14 +2239,9 @@ class EpaycoSuscription extends AbstractGateway
 
                     if (!$desired_status || $current_status === $desired_status) continue;
                     try {
-                        if ($wc_subscription->can_be_updated_to($desired_status)) {
-                            $wc_subscription->update_status($desired_status);
-                        } else {
-                            throw new \Exception("No se puede cambiar el estado vía método oficial.");
-                        }
-                    } catch (\Throwable $e) {
-                        // Forzar cambio si el estado es permitido
+                         // estados aceptados para forzar
                         $allowed_force_statuses = ['active', 'cancelled', 'on-hold'];
+                        // validacion
                         if (in_array($desired_status, $allowed_force_statuses)) {
                             $result = wp_update_post([
                                 'ID' => $wc_subscription_id,
@@ -2265,13 +2249,16 @@ class EpaycoSuscription extends AbstractGateway
                             ], true);
 
                             if (is_wp_error($result)) {
-                                $logger->add(self::LOG_SOURCE, "❌ Error al forzar estado con wp_update_post en ID={$wc_subscription_id}: " . $result->get_error_message());
+                                $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post. ID={$wc_subscription_id}: " . $result->get_error_message());
                             } else {
-                              $logger->add(self::LOG_SOURCE, "✅ Estado actualizado");
+                              //$logger->add(self::LOG_SOURCE, "✅ Estado actualizado");
                             }
                         }
-                    }
+                    } catch (\Throwable $e) {
+                    $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción. ID={$wc_subscription_id}: " . $result->get_error_message());
 
+                    }
+                    
                     if ($current_status === 'pending-cancel' && $desired_status === 'active') {
                         try {
                             $sql = $wpdb->prepare(
@@ -2281,7 +2268,7 @@ class EpaycoSuscription extends AbstractGateway
                             );
                             $result = $wpdb->query($sql);
                             if ($result === false) {
-                               // $logger->add(self::LOG_SOURCE, "❌ Error en consulta SQL para ID={$wc_subscription_id}");
+                                $logger->add(self::LOG_SOURCE, "❌ Error en consulta SQL para ID={$wc_subscription_id}");
                             } elseif ($result === 0) {
                                // $logger->add(self::LOG_SOURCE, "ℹ️ SQL ejecutada pero sin cambios en ID={$wc_subscription_id}");
                             } else {

@@ -89,7 +89,7 @@ if (!defined('ABSPATH')) {
                     <div class="loader">
                     </div>
                     <div style="position:absolute; top:38px">
-                        <img src="https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png" alt="Loading" />
+                        <img src="https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png" alt="Loading"/>
                     </div>
                     <div class="textLoader">Procesando Pago</div>
                 </div>
@@ -339,7 +339,7 @@ if (!defined('ABSPATH')) {
                     <div class="loader">
                     </div>
                     <div style="position:absolute; top:38px">
-                        <img src="https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png" alt="Loading" />
+                        <img src="https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png" alt="Loading"/>
                     </div>
                     <div class="textLoader">Procesando Pago</div>
                 </div>

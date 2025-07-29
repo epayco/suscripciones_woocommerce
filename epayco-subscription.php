@@ -592,55 +592,17 @@ add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $siz
 
 function epayco_suscripcion_cron_job_deactivation()
 {
+    //eliminar por completo cualquier tarea programada
     wp_clear_scheduled_hook('woocommerc_epayco_suscripcion_cron_hook');
+    //desprograma la accion
     as_unschedule_action('woocommerce_epayco_suscripcion_cleanup_draft_orders');
+    //se toma el tiempo de la proxima ejecucion
     $timestamp = wp_next_scheduled('woocommerce_epayco_suscripcion_cleanup_draft_orders');
+    // Si se encuentra una hora programada para este evento; la desprograma
     if ($timestamp) {
         wp_unschedule_event($timestamp, 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
     }
 }
 register_deactivation_hook(__FILE__, 'epayco_suscripcion_cron_job_deactivation');
 
-add_action('woocommerc_epayco_suscripcion_order_hook', 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
-
-function epayco_suscripcion_cron_inactive()
-{
-    wp_clear_scheduled_hook('bf_epayco_suscripcion_event');
-}
-register_deactivation_hook(__FILE__, 'epayco_suscripcion_cron_inactive');
-
-add_filter('cron_schedules', function($schedules) {
-    $schedules['every_minute'] = array(
-        'interval' => 60,
-        'display'  => 'Every 1 minute',
-    );
-    return $schedules;
-});
-
-function epayco_force_cleanup_cron_minutely() {
-  
-    $timestamp = wp_next_scheduled('woocommerce_epayco_suscripcion_cleanup_draft_orders');
-    if ($timestamp) {
-        wp_unschedule_event($timestamp, 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
-    }
-    
-    if (!wp_next_scheduled('woocommerce_epayco_suscripcion_cleanup_draft_orders')) {
-        wp_schedule_event(time(), 'every_minute', 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
-    }
-}
-add_action('init', 'epayco_force_cleanup_cron_minutely', 20);
-
-function bf_do_something_on_schedule_suscripcion()
-{
-    if (class_exists('EpaycoSuscription')) {
-        $ePayco = new EpaycoSuscription();
-        $ePayco->woocommerc_epayco_suscripcion_cron_job_funcion();
-    }
-    
-     if (class_exists('WC_Logger')) {
-        $logger = new WC_Logger();
-        $logger->add('epayco_cron_debug', 'bf_epayco_suscripcion_event ejecutado a las: ' . date('Y-m-d H:i:s'));
-    }
-}
-add_action('bf_epayco_suscripcion_event', 'bf_do_something_on_schedule_suscripcion');
 
