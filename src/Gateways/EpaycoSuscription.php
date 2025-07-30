@@ -2247,7 +2247,6 @@ class EpaycoSuscription extends AbstractGateway
 
                                 $wc_subscription->update_status($desired_status);
 
-
                                 $result = wp_update_post([
                                     'ID' => $wc_subscription_id,
                                     'post_status' => 'wc-' . $desired_status,
@@ -2261,7 +2260,7 @@ class EpaycoSuscription extends AbstractGateway
 
                             }
                         } catch (\Throwable $e) {
-                            $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post ");
+                             $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post " . $e );
                         }
 
                         if ($current_status === 'pending-cancel' && $desired_status === 'active') {
