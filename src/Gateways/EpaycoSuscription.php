@@ -225,7 +225,7 @@ class EpaycoSuscription extends AbstractGateway
                     "completed" => "Completado"
                 ),
             ),
-                'cron_data' => array(
+            'cron_data' => array(
                 'title' => __('', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'checkbox',
                 'label' => __('Actualiza automáticamente el estado de las suscripciones  ', 'epayco-subscriptions-for-woocommerce'),
@@ -640,7 +640,7 @@ class EpaycoSuscription extends AbstractGateway
         // subscription_id = $subscriptions[0]->get_id() ?? 0;
         // $subscription = wcs_get_subscription($subscription_id);
 
-       $token = $params['epaycoToken'];
+        $token = $params['epaycoToken'];
         if (is_null($token) || $token == "null") {
             $error = __('Token no generado, por favor intente de nuevo.', 'epayco-subscriptions-for-woocommerce');
             wc_add_notice($error, 'error');
@@ -650,7 +650,7 @@ class EpaycoSuscription extends AbstractGateway
             wp_safe_redirect($redirect_url);
             exit;
         }
- 
+
         $customerName =  $params['name'];
         $customerData = $this->paramsBilling($subscriptions, $order, $customerName);
         $customerData['token_card'] = $token;
@@ -2197,98 +2197,97 @@ class EpaycoSuscription extends AbstractGateway
 
 
 
-  public function updateStatusSubscription()
-{
-    $subs = $this->epaycoSdk->subscriptions->getList();
-    $logger = new \WC_Logger();
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'wc_orders';
+    public function updateStatusSubscription()
+    {
+        $subs = $this->epaycoSdk->subscriptions->getList();
+        $logger = new \WC_Logger();
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wc_orders';
 
-    if (!empty($subs->data)) {
-        foreach ($subs->data as $epayco_subscription) {
-            $epayco_id = $epayco_subscription->_id ?? null;
-            $epayco_status = strtolower($epayco_subscription->status ?? '');
+        if (!empty($subs->data)) {
+            foreach ($subs->data as $epayco_subscription) {
+                $epayco_id = $epayco_subscription->_id ?? null;
+                $epayco_status = strtolower($epayco_subscription->status ?? '');
 
-            if (empty($epayco_id)) continue;
+                if (empty($epayco_id)) continue;
 
-            $meta = $wpdb->get_results(
-                $wpdb->prepare(
-                    "SELECT * FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s",
-                    '_epayco_subscription_id',
-                    strval(trim($epayco_id))
-                )
-            );
+                $meta = $wpdb->get_results(
+                    $wpdb->prepare(
+                        "SELECT * FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s",
+                        '_epayco_subscription_id',
+                        strval(trim($epayco_id))
+                    )
+                );
 
-            if (!empty($meta)) {
-                foreach ($meta as $row) {
-                    $wc_subscription_id = $row->post_id;
-                    $wc_subscription = wcs_get_subscription($wc_subscription_id);
-                    
-                    if (!$wc_subscription) continue;
+                if (!empty($meta)) {
+                    foreach ($meta as $row) {
+                        $wc_subscription_id = $row->post_id;
+                        $wc_subscription = wcs_get_subscription($wc_subscription_id);
 
-                    $current_status = $wc_subscription->get_status();
-                    $desired_status = null;
+                        if (!$wc_subscription) continue;
 
-                    if (in_array($epayco_status, ['inactive', 'cancelled', 'canceled'])) {
-                        $desired_status = 'cancelled';
-                    } elseif ($epayco_status === 'pending') {
-                        $desired_status = 'on-hold';
-                    } elseif ($epayco_status === 'active') {
-                        $desired_status = 'active';
-                    }
+                        $current_status = $wc_subscription->get_status();
+                        $desired_status = null;
 
-                    if (!$desired_status || $current_status === $desired_status) continue;
-                    try {
-                         // estados aceptados para forzar
-                        $allowed_force_statuses = ['active', 'cancelled', 'on-hold'];
-                        // validacion
-                        
-                               $logger->add(self::LOG_SOURCE, "Actualizando estado de la suscripción. ID={$wc_subscription_id}, Estado actual: {$current_status}, Nuevo estado: {$desired_status}");
-                        if (in_array($desired_status, $allowed_force_statuses)) {
-                            // Forzar el cambio de estado usando WooCommerce Subscriptions API
-                            $wc_subscription->update_status($desired_status);
-                        
-                            // También actualiza el post_status por si acaso
-                            $result = wp_update_post([
-                                'ID' => $wc_subscription_id,
-                                'post_status' => 'wc-' . $desired_status,
-                            ], true);
-                        
-                            if (is_wp_error($result)) {
-                                $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post ");
-                            } else {
-                                $logger->add(self::LOG_SOURCE, "✅ Estado actualizado con update_status y wp_update_post. ID={$wc_subscription_id}");
-                            }
-                        
+                        if (in_array($epayco_status, ['inactive', 'cancelled', 'canceled'])) {
+                            $desired_status = 'cancelled';
+                        } elseif ($epayco_status === 'pending') {
+                            $desired_status = 'on-hold';
+                        } elseif ($epayco_status === 'active') {
+                            $desired_status = 'active';
                         }
-                    } catch (\Throwable $e) {
-                           $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post ");
-                    }
-                    
-                    if ($current_status === 'pending-cancel' && $desired_status === 'active') {
+
+                        if (!$desired_status || $current_status === $desired_status) continue;
                         try {
-                            $sql = $wpdb->prepare(
-                                "UPDATE {$table_name} SET status = %s WHERE id = %d",
-                                'wc-active',
-                                $wc_subscription_id
-                            );
-                            $result = $wpdb->query($sql);
-                            if ($result === false) {
-                                $logger->add(self::LOG_SOURCE, "❌ Error en consulta SQL para ID={$wc_subscription_id}");
-                            } elseif ($result === 0) {
-                               // $logger->add(self::LOG_SOURCE, "ℹ️ SQL ejecutada pero sin cambios en ID={$wc_subscription_id}");
-                            } else {
-                                // $logger->add(self::LOG_SOURCE, "✅ Consulta SQL ejecutada correctamente para ID={$wc_subscription_id}.");
+
+                            $allowed_force_statuses = ['active', 'cancelled', 'on-hold'];
+
+                            $logger->add(self::LOG_SOURCE, "Actualizando estado de la suscripción. ID={$wc_subscription_id}, Estado actual: {$current_status}, Nuevo estado: {$desired_status}");
+                            if (in_array($desired_status, $allowed_force_statuses)) {
+
+                                $wc_subscription->update_status($desired_status);
+
+
+                                $result = wp_update_post([
+                                    'ID' => $wc_subscription_id,
+                                    'post_status' => 'wc-' . $desired_status,
+                                ], true);
+
+                                // if (is_wp_error($result)) {
+                                //    // $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post ");
+                                // } else {
+                                //  //   $logger->add(self::LOG_SOURCE, "✅ Estado actualizado con update_status y wp_update_post. ID={$wc_subscription_id}");
+                                // }
+
                             }
                         } catch (\Throwable $e) {
-                            $logger->add(self::LOG_SOURCE, "❗ Excepción en SQL manual para ID={$wc_subscription_id}: " . $e->getMessage());
+                            $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post ");
+                        }
+
+                        if ($current_status === 'pending-cancel' && $desired_status === 'active') {
+                            try {
+                                $sql = $wpdb->prepare(
+                                    "UPDATE {$table_name} SET status = %s WHERE id = %d",
+                                    'wc-active',
+                                    $wc_subscription_id
+                                );
+                                $result = $wpdb->query($sql);
+                                if ($result === false) {
+                                    $logger->add(self::LOG_SOURCE, "❌ Error en consulta SQL para ID={$wc_subscription_id}");
+                                } elseif ($result === 0) {
+                                    // $logger->add(self::LOG_SOURCE, "ℹ️ SQL ejecutada pero sin cambios en ID={$wc_subscription_id}");
+                                } else {
+                                    // $logger->add(self::LOG_SOURCE, "✅ Consulta SQL ejecutada correctamente para ID={$wc_subscription_id}.");
+                                }
+                            } catch (\Throwable $e) {
+                                $logger->add(self::LOG_SOURCE, "❗ Excepción en SQL manual para ID={$wc_subscription_id}: " . $e->getMessage());
+                            }
                         }
                     }
                 }
             }
         }
     }
-}
 
 
     public function on_wc_subscription_cancelled($subscription)
