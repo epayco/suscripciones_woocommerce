@@ -2242,21 +2242,27 @@ class EpaycoSuscription extends AbstractGateway
                          // estados aceptados para forzar
                         $allowed_force_statuses = ['active', 'cancelled', 'on-hold'];
                         // validacion
+                        
+                               $logger->add(self::LOG_SOURCE, "Actualizando estado de la suscripción. ID={$wc_subscription_id}, Estado actual: {$current_status}, Nuevo estado: {$desired_status}");
                         if (in_array($desired_status, $allowed_force_statuses)) {
+                            // Forzar el cambio de estado usando WooCommerce Subscriptions API
+                            $wc_subscription->update_status($desired_status);
+                        
+                            // También actualiza el post_status por si acaso
                             $result = wp_update_post([
                                 'ID' => $wc_subscription_id,
                                 'post_status' => 'wc-' . $desired_status,
                             ], true);
-
+                        
                             if (is_wp_error($result)) {
-                                $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post. ID={$wc_subscription_id}: " . $result->get_error_message());
+                                $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post ");
                             } else {
-                              //$logger->add(self::LOG_SOURCE, "✅ Estado actualizado");
+                                $logger->add(self::LOG_SOURCE, "✅ Estado actualizado con update_status y wp_update_post. ID={$wc_subscription_id}");
                             }
+                        
                         }
                     } catch (\Throwable $e) {
-                    $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción. ID={$wc_subscription_id}: " . $result->get_error_message());
-
+                           $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post ");
                     }
                     
                     if ($current_status === 'pending-cancel' && $desired_status === 'active') {
