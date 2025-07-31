@@ -590,49 +590,19 @@ add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $siz
     return $image;
 }, 10, 4);
 
-
 function epayco_suscripcion_cron_job_deactivation()
 {
+    //eliminar por completo cualquier tarea programada
     wp_clear_scheduled_hook('woocommerc_epayco_suscripcion_cron_hook');
+    //desprograma la accion
     as_unschedule_action('woocommerce_epayco_suscripcion_cleanup_draft_orders');
+    //se toma el tiempo de la proxima ejecucion
     $timestamp = wp_next_scheduled('woocommerce_epayco_suscripcion_cleanup_draft_orders');
+    // Si se encuentra una hora programada para este evento; la desprograma
     if ($timestamp) {
         wp_unschedule_event($timestamp, 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
     }
 }
 register_deactivation_hook(__FILE__, 'epayco_suscripcion_cron_job_deactivation');
 
-add_action('woocommerc_epayco_suscripcion_order_hook', 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
 
-function epayco_suscripcion_cron_inactive()
-{
-    wp_clear_scheduled_hook('bf_epayco_suscripcion_event');
-}
-register_deactivation_hook(__FILE__, 'epayco_suscripcion_cron_inactive');
-
-function bf_add_epayco_suscripcion_schedule($schedules)
-{
-    $schedules['every_five_minutes'] = array(
-        'interval' => 300,
-        'display'  => 'Every 5 minutes',
-    );
-    return $schedules;
-}
-
-function bf_schedule_epayco_suscripcion_event()
-{
-    add_filter('cron_schedules', 'bf_add_epayco_suscripcion_schedule');
-    if (!wp_next_scheduled('bf_epayco_suscripcion_event')) {
-        wp_schedule_event(time(), 'every_five_minutes', 'bf_epayco_suscripcion_event');
-    }
-}
-add_action('init', 'bf_schedule_epayco_suscripcion_event');
-
-function bf_do_something_on_schedule_suscripcion()
-{
-    if (class_exists('EpaycoSuscription')) {
-        $ePayco = new EpaycoSuscription();
-        $ePayco->woocommerc_epayco_suscripcion_cron_job_funcion();
-    }
-}
-add_action('bf_epayco_suscripcion_event', 'bf_do_something_on_schedule_suscripcion');
