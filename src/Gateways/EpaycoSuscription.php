@@ -4,6 +4,7 @@ namespace EpaycoSubscription\Woocommerce\Gateways;
 
 use Exception;
 use Epayco as EpaycoSdk;
+use EpaycoSubscription\Woocommerce\Helpers\Customer;
 
 if (!defined('ABSPATH')) {
     exit;
@@ -40,6 +41,10 @@ class EpaycoSuscription extends AbstractGateway
     public $cron_data;
 
     protected EpaycoSdk\Epayco $epaycoSdk;
+
+    public $logger;
+
+    public $custIdCliente;
 
     /**
      * BasicGateway constructor
@@ -78,6 +83,7 @@ class EpaycoSuscription extends AbstractGateway
         $lang = explode('_', $lang);
         $lang = $lang[0];
         $this->cron_data = $this->get_option('cron_data');
+        $this->custIdCliente =  $this->get_option('custIdCliente');
 
         add_action('woocommerce_subscription_status_cancelled', [$this, 'on_wc_subscription_cancelled']);
 
@@ -92,6 +98,11 @@ class EpaycoSuscription extends AbstractGateway
                 "test" => (bool)$this->get_option('environment')
             ]
         );
+        if (class_exists('WC_Logger') && function_exists('wc_get_logger')) {
+            $this->logger = wc_get_logger();
+        } else {
+            $this->logger = null;
+        }
     }
 
     public function install()
@@ -225,7 +236,7 @@ class EpaycoSuscription extends AbstractGateway
                     "completed" => "Completado"
                 ),
             ),
-                'cron_data' => array(
+            'cron_data' => array(
                 'title' => __('', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'checkbox',
                 'label' => __('Actualiza automáticamente el estado de las suscripciones  ', 'epayco-subscriptions-for-woocommerce'),
@@ -242,10 +253,14 @@ class EpaycoSuscription extends AbstractGateway
 
     public function admin_options()
     {
+        $path  = EPAYCO_PLUGIN_SUSCRIPCIONES_URL . 'assets/images/';
         $validation_url = get_site_url() . "/";
         $validation_url = add_query_arg('wc-api', self::WEBHOOK_API_NAME_VALIDATION, $validation_url);
         //$validation_url = add_query_arg('wc-api', get_class($this) . "Validation", $validation_url);
 ?>
+        <div id="path_plugin" hidden>
+            <?php esc_html_e($path, 'text_domain'); ?>
+        </div>
         <div id="path_validate" hidden>
             <?php esc_html_e($validation_url, 'text_domain'); ?>
         </div>
@@ -263,7 +278,7 @@ class EpaycoSuscription extends AbstractGateway
                 <?php
                 $this->generate_settings_html();
                 ?>
-                <!--<tr valign="top" >
+                <tr valign="top" >
                 <th scope="row" class="titledesc">
                     <label for="woocommerce_epayco_enabled"><?php esc_html_e('Validar llaves', 'epayco-subscriptions-for-woocommerce'); ?></label>
                     <span hidden id="public_key">0</span>
@@ -272,7 +287,7 @@ class EpaycoSuscription extends AbstractGateway
                     <form method="post" action="#">
                         <label for="woocommerce_epayco_enabled">
                         </label>
-                        <input type="button" class="button-primary woocommerce-save-button validar" value="Validar">
+                        <input type="button" id="validar" class="button-primary woocommerce-save-button validar" value="Validar">
                         <p class="description">
                             <?php esc_html_e('Validación de llaves PUBLIC_KEY y PRIVATE_KEY', 'epayco-subscriptions-for-woocommerce'); ?>
                         </p>
@@ -280,19 +295,19 @@ class EpaycoSuscription extends AbstractGateway
                     <br>
                     <div id="myModal" class="modal" >
                         <div class="modal-content">
-                            <span class="close">&times;</span>
+                            <span class="closeEpaycoModal">&times;</span>
                             <center>
-                                <img src="<?php echo EPAYCO_PLUGIN_SUSCRIPCIONES_URL . 'assets/images/logo_warning.png' ?>">
+                                <img id="epaycoModalImg" src="<?php echo $path . 'logo_warning.png' ?>">
                             </center>
-                            <p><strong><?php esc_html_e('Llaves de comercio inválidas', 'epayco-subscriptions-for-woocommerce'); ?></strong> </p>
-                            <p><?php esc_html_e('Las llaves Public Key, Private Key insertadas', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('del comercio son inválidas.', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('Consúltelas en el apartado de integraciones', 'epayco-subscriptions-for-woocommerce'); ?> <br><?php esc_html_e('Llaves API en su Dashboard ePayco.', 'epayco-subscriptions-for-woocommerce'); ?>,</p>
+                            <p id="epaycoCredentialTittle"><strong><?php esc_html_e('Llaves de comercio inválidas', 'epayco-subscriptions-for-woocommerce'); ?></strong> </p>
+                            <p id="epaycoCredentialDescription"><?php esc_html_e('Las llaves Public Key, Private Key insertadas', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('del comercio son inválidas.', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('Consúltelas en el apartado de integraciones', 'epayco-subscriptions-for-woocommerce'); ?> <br><?php esc_html_e('Llaves API en su Dashboard ePayco.', 'epayco-subscriptions-for-woocommerce'); ?>,</p>
                         </div>
                         <span class="loader"></span>
                     </div>
 
                 </td>
                 </th>
-            </tr>-->
+            </tr>
             </tbody>
         </table>
 <?php
@@ -339,7 +354,7 @@ class EpaycoSuscription extends AbstractGateway
     {
         $username = sanitize_text_field($validationData['epayco_publickey']);
         $password = sanitize_text_field($validationData['epayco_privatey']);
-        $response = wp_remote_post('https://apify.epayco.co/login', array(
+        $response = wp_remote_post('https://eks-apify-service.epayco.io/login', array(
             'headers' => array(
                 'Authorization' => 'Basic ' . base64_encode($username . ':' . $password),
             ),
@@ -348,7 +363,7 @@ class EpaycoSuscription extends AbstractGateway
 
         $data = json_decode(wp_remote_retrieve_body($response));
         if ($data->token) {
-            $response = wp_remote_get("https://secure.payco.co/restpagos/validarllaves?public_key=" . trim($username));
+            $response = wp_remote_get("https://eks-rest-pagos-service.epayco.io/restpagos/validarllaves?public_key=" . trim($username));
 
             if (is_wp_error($response)) {
                 error_log('ePayco validation: ' . $response->get_error_message());
@@ -614,13 +629,8 @@ class EpaycoSuscription extends AbstractGateway
 
     public function webhook(): void
     {
-
         global $woocommerce;
         global $wpdb;
-        if (class_exists('WC_Logger')) {
-            $logger = wc_get_logger();
-        }
-
         if (!isset($_REQUEST['_wpnonce']) || !\wp_verify_nonce(\sanitize_text_field(\wp_unslash($_REQUEST['_wpnonce'])), 'epayco_subscription_action')) {
             if (!function_exists('wp_die') || !function_exists('__')) {
                 require_once ABSPATH . 'wp-includes/pluggable.php';
@@ -640,7 +650,7 @@ class EpaycoSuscription extends AbstractGateway
         // subscription_id = $subscriptions[0]->get_id() ?? 0;
         // $subscription = wcs_get_subscription($subscription_id);
 
-       $token = $params['epaycoToken'];
+        $token = $params['epaycoToken'];
         if (is_null($token) || $token == "null") {
             $error = __('Token no generado, por favor intente de nuevo.', 'epayco-subscriptions-for-woocommerce');
             wc_add_notice($error, 'error');
@@ -650,17 +660,16 @@ class EpaycoSuscription extends AbstractGateway
             wp_safe_redirect($redirect_url);
             exit;
         }
- 
+
         $customerName =  $params['name'];
         $customerData = $this->paramsBilling($subscriptions, $order, $customerName);
         $customerData['token_card'] = $token;
-        $this->custIdCliente =  $this->get_option('custIdCliente');
         $cache_key = "epayco_customer_{$this->custIdCliente}_{$customerData['email']}";
         $customerGetData = wp_cache_get($cache_key, 'epayco');
-
-        $customer_id = $this->createOrUpdateCustomer($customerGetData, $customerData, $token);
+        $ePaycoCustomer = new Customer();
+        $customer_id = $ePaycoCustomer->createOrUpdateEpaycoCustomer($customerData, $token, $order_id);
         if (is_null($customer_id)) {
-            $customer = $this->customerCreate($customerData);
+            $customer = $ePaycoCustomer->customerCreate($customerData);
             if ($customer->data->status == 'error' || !$customer->status) {
                 if (class_exists('WC_Logger')) {
 
@@ -678,7 +687,7 @@ class EpaycoSuscription extends AbstractGateway
                     [
                         'id_payco' => $this->custIdCliente,
                         'customer_id' => $customer->data->customerId,
-                        'token_id' => $customerData['token_card'],
+                        //'token_id' => $customerData['token_card'],
                         'email' => $customerData['email']
                     ]
                 );
@@ -2197,92 +2206,96 @@ class EpaycoSuscription extends AbstractGateway
 
 
 
-  public function updateStatusSubscription()
-{
-    $subs = $this->epaycoSdk->subscriptions->getList();
-    $logger = new \WC_Logger();
-    global $wpdb;
-    $table_name = $wpdb->prefix . 'wc_orders';
+    public function updateStatusSubscription()
+    {
+        $subs = $this->epaycoSdk->subscriptions->getList();
+        $logger = new \WC_Logger();
+        global $wpdb;
+        $table_name = $wpdb->prefix . 'wc_orders';
 
-    if (!empty($subs->data)) {
-        foreach ($subs->data as $epayco_subscription) {
-            $epayco_id = $epayco_subscription->_id ?? null;
-            $epayco_status = strtolower($epayco_subscription->status ?? '');
+        if (!empty($subs->data)) {
+            foreach ($subs->data as $epayco_subscription) {
+                $epayco_id = $epayco_subscription->_id ?? null;
+                $epayco_status = strtolower($epayco_subscription->status ?? '');
 
-            if (empty($epayco_id)) continue;
+                if (empty($epayco_id)) continue;
 
-            $meta = $wpdb->get_results(
-                $wpdb->prepare(
-                    "SELECT * FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s",
-                    '_epayco_subscription_id',
-                    strval(trim($epayco_id))
-                )
-            );
+                $meta = $wpdb->get_results(
+                    $wpdb->prepare(
+                        "SELECT * FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s",
+                        '_epayco_subscription_id',
+                        strval(trim($epayco_id))
+                    )
+                );
 
-            if (!empty($meta)) {
-                foreach ($meta as $row) {
-                    $wc_subscription_id = $row->post_id;
-                    $wc_subscription = wcs_get_subscription($wc_subscription_id);
-                    
-                    if (!$wc_subscription) continue;
+                if (!empty($meta)) {
+                    foreach ($meta as $row) {
+                        $wc_subscription_id = $row->post_id;
+                        $wc_subscription = wcs_get_subscription($wc_subscription_id);
 
-                    $current_status = $wc_subscription->get_status();
-                    $desired_status = null;
+                        if (!$wc_subscription) continue;
 
-                    if (in_array($epayco_status, ['inactive', 'cancelled', 'canceled'])) {
-                        $desired_status = 'cancelled';
-                    } elseif ($epayco_status === 'pending') {
-                        $desired_status = 'on-hold';
-                    } elseif ($epayco_status === 'active') {
-                        $desired_status = 'active';
-                    }
+                        $current_status = $wc_subscription->get_status();
+                        $desired_status = null;
 
-                    if (!$desired_status || $current_status === $desired_status) continue;
-                    try {
-                         // estados aceptados para forzar
-                        $allowed_force_statuses = ['active', 'cancelled', 'on-hold'];
-                        // validacion
-                        if (in_array($desired_status, $allowed_force_statuses)) {
-                            $result = wp_update_post([
-                                'ID' => $wc_subscription_id,
-                                'post_status' => 'wc-' . $desired_status,
-                            ], true);
-
-                            if (is_wp_error($result)) {
-                                $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post. ID={$wc_subscription_id}: " . $result->get_error_message());
-                            } else {
-                              //$logger->add(self::LOG_SOURCE, "✅ Estado actualizado");
-                            }
+                        if (in_array($epayco_status, ['inactive', 'cancelled', 'canceled'])) {
+                            $desired_status = 'cancelled';
+                        } elseif ($epayco_status === 'pending') {
+                            $desired_status = 'on-hold';
+                        } elseif ($epayco_status === 'active') {
+                            $desired_status = 'active';
                         }
-                    } catch (\Throwable $e) {
-                    $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción. ID={$wc_subscription_id}: " . $result->get_error_message());
 
-                    }
-                    
-                    if ($current_status === 'pending-cancel' && $desired_status === 'active') {
+                        if (!$desired_status || $current_status === $desired_status) continue;
                         try {
-                            $sql = $wpdb->prepare(
-                                "UPDATE {$table_name} SET status = %s WHERE id = %d",
-                                'wc-active',
-                                $wc_subscription_id
-                            );
-                            $result = $wpdb->query($sql);
-                            if ($result === false) {
-                                $logger->add(self::LOG_SOURCE, "❌ Error en consulta SQL para ID={$wc_subscription_id}");
-                            } elseif ($result === 0) {
-                               // $logger->add(self::LOG_SOURCE, "ℹ️ SQL ejecutada pero sin cambios en ID={$wc_subscription_id}");
-                            } else {
-                                // $logger->add(self::LOG_SOURCE, "✅ Consulta SQL ejecutada correctamente para ID={$wc_subscription_id}.");
+
+                            $allowed_force_statuses = ['active', 'cancelled', 'on-hold'];
+
+                            $logger->add(self::LOG_SOURCE, "Actualizando estado de la suscripción. ID={$wc_subscription_id}, Estado actual: {$current_status}, Nuevo estado: {$desired_status}");
+                            if (in_array($desired_status, $allowed_force_statuses)) {
+
+                                $wc_subscription->update_status($desired_status);
+
+                                $result = wp_update_post([
+                                    'ID' => $wc_subscription_id,
+                                    'post_status' => 'wc-' . $desired_status,
+                                ], true);
+
+                                // if (is_wp_error($result)) {
+                                //    // $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post ");
+                                // } else {
+                                //  //   $logger->add(self::LOG_SOURCE, "✅ Estado actualizado con update_status y wp_update_post. ID={$wc_subscription_id}");
+                                // }
+
                             }
                         } catch (\Throwable $e) {
-                            $logger->add(self::LOG_SOURCE, "❗ Excepción en SQL manual para ID={$wc_subscription_id}: " . $e->getMessage());
+                             $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post " . $e );
+                        }
+
+                        if ($current_status === 'pending-cancel' && $desired_status === 'active') {
+                            try {
+                                $sql = $wpdb->prepare(
+                                    "UPDATE {$table_name} SET status = %s WHERE id = %d",
+                                    'wc-active',
+                                    $wc_subscription_id
+                                );
+                                $result = $wpdb->query($sql);
+                                if ($result === false) {
+                                    $logger->add(self::LOG_SOURCE, "❌ Error en consulta SQL para ID={$wc_subscription_id}");
+                                } elseif ($result === 0) {
+                                    // $logger->add(self::LOG_SOURCE, "ℹ️ SQL ejecutada pero sin cambios en ID={$wc_subscription_id}");
+                                } else {
+                                    // $logger->add(self::LOG_SOURCE, "✅ Consulta SQL ejecutada correctamente para ID={$wc_subscription_id}.");
+                                }
+                            } catch (\Throwable $e) {
+                                $logger->add(self::LOG_SOURCE, "❗ Excepción en SQL manual para ID={$wc_subscription_id}: " . $e->getMessage());
+                            }
                         }
                     }
                 }
             }
         }
     }
-}
 
 
     public function on_wc_subscription_cancelled($subscription)
@@ -2310,203 +2323,6 @@ class EpaycoSuscription extends AbstractGateway
         $clean = preg_replace('/\s+/', "_", $clean);
         $clean = ($anal) ? preg_replace("/[^a-zA-Z0-9]/", "", $clean) : $clean;
         return $clean;
-    }
-
-
-    public function createOrUpdateCustomer($customerGetData, $customerData, $token)
-    {
-        global $wpdb;
-        $table_name = $wpdb->prefix . 'epayco_plans';
-        $table_name_setings = $wpdb->prefix . 'epayco_setings';
-        $logger = wc_get_logger();
-
-
-        if ($customerGetData === false) {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $customerGetData = $wpdb->get_results(
-                $wpdb->prepare(
-                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-                    "SELECT * FROM $table_name_setings WHERE id_payco = %d AND email = %s",
-                    $this->custIdCliente,
-                    $customerData['email']
-                ),
-                ARRAY_A
-            );
-
-            $logger->info("consulta: " .  $customerGetData);
-
-            if (!empty($customerGetData)) {
-                wp_cache_set($cache_key, $customerGetData, 'epayco', 3600); // Cache por 1 hora
-            }
-        }
-
-        if (count($customerGetData) == 0) {
-
-            $customer = $this->customerCreate($customerData);
-            if ($customer->data->status == 'error' || !$customer->status) {
-                if (class_exists('WC_Logger')) {
-
-                    $logger->info("customerCreate: " . json_encode($customer));
-                }
-                $customerJson = json_decode(json_encode($customer), true);
-                $dataError = $customerJson;
-                $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('El token no se puede asociar al cliente, verifique que: el token existe, el cliente no esté asociado y que el token no este asociado a otro cliente.', 'epayco-subscriptions-for-woocommerce'));
-                wc_add_notice($error, 'error');
-                wp_redirect(wc_get_checkout_url());
-                exit;
-            }
-
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $inserCustomer = $wpdb->insert(
-                $table_name_setings,
-                [
-                    'id_payco' => $this->custIdCliente,
-                    'customer_id' => $customer->data->customerId,
-                    'token_id' => $customerData['token_card'],
-                    'email' => $customerData['email']
-                ]
-            );
-
-
-            if (!$inserCustomer) {
-                if (class_exists('WC_Logger')) {
-                    $logger = wc_get_logger();
-                    $logger->info("inserCustomer: " . json_encode($customer));
-                }
-                $customerJson = json_decode(json_encode($customer), true);
-                if (class_exists('WC_Logger')) {
-                    $logger = wc_get_logger();
-                    $logger->info("Error : " . json_encode($customer));
-                }
-                $dataError = $customerJson;
-                $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('No se inserto el registro del cliente en la base de datos.', 'epayco-subscriptions-for-woocommerce'));
-                wc_add_notice($error, 'error');
-                wp_redirect(wc_get_checkout_url());
-                exit;
-            }
-            return $customer->data->customerId;
-        } else {
-            $count_customers = 0;
-            for ($i = 0; $i < count($customerGetData); $i++) {
-                $email = $customerGetData[$i]->email ?? $customerGetData[0]['email'];
-                if ($email == $customerData['email']) {
-                    $count_customers += 1;
-                }
-            }
-
-
-            if ($count_customers == 0) {
-                $customer = $this->customerCreate($customerData);
-                if ($customer->data->status == 'error') {
-                    if (class_exists('WC_Logger')) {
-                        $logger->info("customerCreate: " . json_encode($customer));
-                    }
-                    $customerJson = json_decode(json_encode($customer), true);
-                    if (class_exists('WC_Logger')) {
-                        $logger->info("Error : " . json_encode($customer));
-                    }
-                    $dataError = $customerJson;
-                    $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('El token no se puede asociar al cliente, verifique que: el token existe, el cliente no esté asociado y que el token no este asociado a otro cliente.', 'epayco-subscriptions-for-woocommerce'));
-                    wc_add_notice($error, 'error');
-                    wp_redirect(wc_get_checkout_url());
-                    exit;
-                }
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-                $inserCustomer = $wpdb->insert(
-                    $table_name_setings,
-                    [
-                        'id_payco' => $this->custIdCliente,
-                        'customer_id' => $customer->data->customerId,
-                        'token_id' => $customerData['token_card'],
-                        'email' => $customerData['email']
-                    ]
-                );
-                if (!$inserCustomer) {
-                    $error_message = __('No se insertó el registro del cliente en la base de datos.', 'epayco-subscriptions-for-woocommerce');
-                    wc_add_notice($error_message, 'error');
-                    // Redirigir al mismo receipt page para permitir reintentar el pago sin recargar el checkout
-                    $order = new \WC_Order($order_id);
-                    $redirect_url = $order->get_checkout_payment_url(true);
-                    wp_safe_redirect($redirect_url);
-                    exit;
-                }
-                if (class_exists('WC_Logger')) {
-                    $logger->info("Error : 'No se inserto el registro del cliente en la base de datos.'");
-                }
-                return $customer->data->customerId;
-            } else {
-                for ($i = 0; $i < count($customerGetData); $i++) {
-                    $email = $customerGetData[$i]->email ?? $customerGetData[0]['email'];
-                    $token_id = $customerGetData[$i]->token_id ?? $customerGetData[0]['token_id'];
-                    $customer_id = $customerGetData[$i]->customer_id ?? $customerGetData[0]['customer_id'];
-
-                    if ($email == $customerData['email'] && $token_id != $token) {
-                        if (is_null($customer_id)) {
-                            $customer = $this->customerCreate($customerData);
-
-                            if ($customer->data->status == 'error') {
-                                if (class_exists('WC_Logger')) {
-                                    $logger->info("customerCreate: " . json_encode($customer));
-                                }
-
-                                $customerJson = json_decode(json_encode($customer), true);
-                                $dataError = $customerJson;
-                                $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('El token no se puede asociar al cliente, verifique que: el token existe, el cliente no esté asociado y que el token no este asociado a otro cliente.', 'epayco-subscriptions-for-woocommerce'));
-                                wc_add_notice($error, 'error');
-                                wp_redirect(wc_get_checkout_url());
-                                exit;
-                            }
-                            $customer_id = $customer->data->customerId;
-                        } else {
-                            $isAddedToken = $this->customerAddToken($customer_id, $token);
-                            if (!$isAddedToken->status) {
-                                if (class_exists('WC_Logger')) {
-                                    $logger = wc_get_logger();
-                                    $logger->info("isAddedToken: " . json_encode($isAddedToken));
-                                }
-                                $customerJson = json_decode(json_encode($isAddedToken), true);
-                                $dataError = $customerJson;
-                                $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('Error: El token que desea asociar ya se encuentra asociado a otro customer', 'epayco-subscriptions-for-woocommerce'));
-                                wc_add_notice($error, 'error');
-                                wp_redirect(wc_get_checkout_url());
-                                exit;
-                            }
-                        }
-
-                        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-                        $inserCustomer = $wpdb->update(
-                            $table_name_setings,
-                            [
-                                'id_payco' => $this->custIdCliente,
-                                'customer_id' => $customer_id,
-                                'token_id' => $token
-                            ],
-                            [
-                                'email' => $email
-                            ]
-                        );
-                        if (!$inserCustomer) {
-                            if (class_exists('WC_Logger')) {
-                                $logger = wc_get_logger();
-                                $logger->info("customerCreate" . json_encode($customer));
-                            }
-                            $customerJson = json_decode(json_encode($customer), true);
-                            if (class_exists('WC_Logger')) {
-                                $logger = wc_get_logger();
-                                $logger->info("Error : " . json_encode($customer));
-                            }
-                            $dataError = $customerJson;
-                            $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('No se inserto el registro del cliente en la base de datos.', 'epayco-subscriptions-for-woocommerce'));
-                            wc_add_notice($error, 'error');
-                            wp_redirect(wc_get_checkout_url());
-                            exit;
-                        }
-                        $customerData['token_card'] = $token_id;
-                    }
-                    return $customer_id;
-                }
-            }
-        }
     }
 
 

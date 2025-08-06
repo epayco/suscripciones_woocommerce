@@ -400,7 +400,7 @@
         })
     }(), function () {
         var e = h, t = e.lib, r = t.Base, i = t.WordArray, n = e.algo, o = n.SHA1, a = n.HMAC, c = n.PBKDF2 = r.extend({
-            cfg: r.extend({keySize: 4, hasher: o, iterations: 1}), init: function (e) {
+            cfg: r.extend({ keySize: 4, hasher: o, iterations: 1 }), init: function (e) {
                 this.cfg = this.cfg.extend(e)
             }, compute: function (e, t) {
                 for (var r = this.cfg, n = a.create(r.hasher, e), o = i.create(), c = i.create([1]), s = o.words, l = c.words, h = r.keySize, u = r.iterations; s.length < h;) {
@@ -420,7 +420,7 @@
         }
     }(), function () {
         var e = h, t = e.lib, r = t.Base, i = t.WordArray, n = e.algo, o = n.MD5, a = n.EvpKDF = r.extend({
-            cfg: r.extend({keySize: 4, hasher: o, iterations: 1}), init: function (e) {
+            cfg: r.extend({ keySize: 4, hasher: o, iterations: 1 }), init: function (e) {
                 this.cfg = this.cfg.extend(e)
             }, compute: function (e, t) {
                 for (var r, n = this.cfg, o = n.hasher.create(), a = i.create(), c = a.words, s = n.keySize, l = n.iterations; c.length < s;) {
@@ -489,7 +489,7 @@
             for (var e = 0; e < 25; e++) u[e] = o.create()
         }();
         var f = a.SHA3 = n.extend({
-            cfg: n.cfg.extend({outputLength: 512}), _doReset: function () {
+            cfg: n.cfg.extend({ outputLength: 512 }), _doReset: function () {
                 for (var e = this._state = [], t = 0; t < 25; t++) e[t] = new o.init;
                 this.blockSize = (1600 - 2 * this.cfg.outputLength) / 32
             }, _doProcessBlock: function (e, t) {
@@ -669,7 +669,7 @@
                     e.sigBytes -= t
                 }
             }, y = (r.BlockCipher = l.extend({
-                cfg: l.cfg.extend({mode: d, padding: p}), reset: function () {
+                cfg: l.cfg.extend({ mode: d, padding: p }), reset: function () {
                     var e;
                     l.reset.call(this);
                     var t = this.cfg, r = t.iv, i = t.mode;
@@ -698,7 +698,7 @@
                     })
                 }
             }, v = r.SerializableCipher = i.extend({
-                cfg: i.extend({format: g}), encrypt: function (e, t, r, i) {
+                cfg: i.extend({ format: g }), encrypt: function (e, t, r, i) {
                     i = this.cfg.extend(i);
                     var n = e.createEncryptor(r, i), o = n.finalize(t), a = n.cfg;
                     return y.create({
@@ -719,11 +719,11 @@
             }), _ = (t.kdf = {}).OpenSSL = {
                 execute: function (e, t, r, i) {
                     i || (i = n.random(8));
-                    var o = s.create({keySize: t + r}).compute(e, i), a = n.create(o.words.slice(t), 4 * r);
-                    return o.sigBytes = 4 * t, y.create({key: o, iv: a, salt: i})
+                    var o = s.create({ keySize: t + r }).compute(e, i), a = n.create(o.words.slice(t), 4 * r);
+                    return o.sigBytes = 4 * t, y.create({ key: o, iv: a, salt: i })
                 }
             }, m = r.PasswordBasedCipher = v.extend({
-                cfg: v.cfg.extend({kdf: _}), encrypt: function (e, t, r, i) {
+                cfg: v.cfg.extend({ kdf: _ }), encrypt: function (e, t, r, i) {
                     var n = (i = this.cfg.extend(i)).kdf.execute(r, e.keySize, e.ivSize);
                     i.iv = n.iv;
                     var o = v.encrypt.call(this, e, t, n.key, i);
@@ -801,7 +801,7 @@
                 return e.ciphertext.toString(i)
             }, parse: function (e) {
                 var t = i.parse(e);
-                return r.create({ciphertext: t})
+                return r.create({ ciphertext: t })
             }
         }
     }(), function () {
@@ -1456,7 +1456,7 @@
 
         e.RC4 = t._createHelper(i);
         var o = r.RC4Drop = i.extend({
-            cfg: i.cfg.extend({drop: 192}), _doReset: function () {
+            cfg: i.cfg.extend({ drop: 192 }), _doReset: function () {
                 i._doReset.call(this);
                 for (var e = this.cfg.drop; e > 0; e--) n.call(this)
             }
@@ -1674,50 +1674,50 @@
                 return s
             }, requestUrl: function (e) {
                 (new XMLHttpRequest).withCredentials
-            }, o:function(e, t){
-                 if (e && "undefined" !== t) try {
+            }, o: function (e, t) {
+                if (e && "undefined" !== t) try {
                     return CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(e), t).toString().toString()
                 } catch (r) {
                     return console.log(r), CryptoJS.AES.encrypt(CryptoJS.enc.Utf8.parse(e), CryptoJS.enc.Utf8.parse(t).toString()).toString()
                 } else console.log("hay algunos valores invalidos")
-            }, encryptE: function(t,n,r){
+            }, encryptE: function (t, n, r) {
                 for (var e = [], t = 0; t < r.customer.length; t++) e.push({
                     type: r.customer[t].type,
                     value: ePayco._utils.o(r.customer[t].value, n)
                 });
-                var i = {type: "publicKey", value: ePayco.getPublicKey()},
-                    a = {type: "session", value: localStorage.getItem("keyUserIndex")};
+                var i = { type: "publicKey", value: ePayco.getPublicKey() },
+                    a = { type: "session", value: localStorage.getItem("keyUserIndex") };
                 return e.push(i), e.push(a), e
-            }, createTokenize: function (a,i){
+            }, createTokenize: function (a, i) {
                 $.ajax({
                     type: "POST",
                     url: e + "token/tokenize",
                     crossDomain: !0,
                     dataType: "json",
-                    data: {values: a},
+                    data: { values: a },
                     error: function (e) {
-                        console.log("Error al tokenizar el medio de pago"), 
-                        i(null, e.responseJSON)
+                        console.log("Error al tokenizar el medio de pago"),
+                            i(null, e.responseJSON)
                     }
                 }).done(function (e) {
                     (e.data.status = "created") ? i(e.data.token, null) : i(null, e.data)
                 }).fail(function (e) {
-                    console.log("Error al tokenizar el medio de pago"), 
-                    i(null, e.responseJSON)
+                    console.log("Error al tokenizar el medio de pago"),
+                        i(null, e.responseJSON)
                 })
-            } ,createTokenEncrypt: function (t, r, i) {
+            }, createTokenEncrypt: function (t, r, i) {
                 var n;
                 $.ajax({
                     type: "POST",
                     url: e + "token/encrypt",
                     crossDomain: !0,
                     dataType: "json",
-                    data: {public_key: ePayco.getPublicKey(), session: t}
+                    data: { public_key: ePayco.getPublicKey(), session: t }
                 }).done(function (t) {
                     dump(t), n = t.data.token;
-                    var a = JSON.stringify(ePayco._utils.encryptE(t,n,r));
+                    var a = JSON.stringify(ePayco._utils.encryptE(t, n, r));
                     setTimeout(() => {
-                        ePayco._utils.createTokenize(a,i)
+                        ePayco._utils.createTokenize(a, i)
                     }, 1000);
                 }).fail(function (e) {
                     i(null, e.responseJSON), dump(e)
@@ -1738,19 +1738,19 @@
         for (var t = 0, r = this.length; t < r; t++) if (t in this && this[t] === e) return t;
         return -1
     };
-    t = [{name: "amex", pattern: /^3[47]/, valid_length: [15]}, {
+    t = [{ name: "amex", pattern: /^3[47]/, valid_length: [15] }, {
         name: "diners_club_carte_blanche",
         pattern: /^30[0-5]/,
         valid_length: [14]
-    }, {name: "diners_club_international", pattern: /^36/, valid_length: [14]}, {
+    }, { name: "diners_club_international", pattern: /^36/, valid_length: [14] }, {
         name: "laser",
         pattern: /^(6304|670[69]|6771)/,
         valid_length: [16, 17, 18, 19]
-    }, {name: "visa_electron", pattern: /^(4026|417500|4508|4844|491(3|7))/, valid_length: [16]}, {
+    }, { name: "visa_electron", pattern: /^(4026|417500|4508|4844|491(3|7))/, valid_length: [16] }, {
         name: "visa",
         pattern: /^4/,
         valid_length: [16]
-    }, {name: "mastercard", pattern: /^5[1-5]/, valid_length: [16]}, {
+    }, { name: "mastercard", pattern: /^5[1-5]/, valid_length: [16] }, {
         name: "maestro",
         pattern: /^(5018|5020|5038|6304|6759|676[1-3])/,
         valid_length: [12, 13, 14, 15, 16, 17, 18, 19]
@@ -1791,7 +1791,7 @@
         var r = ePayco._utils.parseForm(e);
         if ("object" == typeof r && ePayco._utils.objectKeys(r).length > 0) if (r.card) {
             var i, n;
-            let expYearDate = r.card.exp_year.length == 2 ? "20"+r.card.exp_year : r.card.exp_year;
+            let expYearDate = r.card.exp_year.length == 2 ? "20" + r.card.exp_year : r.card.exp_year;
             i = {
                 customer: [{
                     type: "name",
@@ -1819,7 +1819,7 @@
                     required: !0,
                     validate: ePayco.card.validateExpirationDate(r.card.exp_month, expYearDate)
                 }]
-            },n = localStorage.getItem("keyUserIndex") ?? (localStorage.setItem("keyUserIndex", ePayco._utils.createGuid()), localStorage.getItem("keyUserIndex"));
+            }, n = localStorage.getItem("keyUserIndex") ?? (localStorage.setItem("keyUserIndex", ePayco._utils.createGuid()), localStorage.getItem("keyUserIndex"));
             for (var o = 0; o < i.customer.length; o++) {
                 var a = i.customer[o];
                 if (a.required && !a.validate) {
