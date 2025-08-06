@@ -8690,7 +8690,7 @@ EpaycoCheckout.require.define({
             }
             var t, n = !1, error = undefined,
             result = undefined,
-            base_url = "https://api.secure.payco.co/";
+            base_url = "https://eks-subscription-api-lumen-service.epayco.io/";
             t = EpaycoCheckout.require("loader/lib/validators"),
             c.exports = {
                 getUrl: function() {
@@ -8881,15 +8881,15 @@ EpaycoCheckout.require.define({
                 createTokenEncrypt : function(id, payment, callback){
                     var key;
                     $.ajax({
-                    type: "POST",
-                    url: base_url + "token/encrypt",
-                    crossDomain: true,
-                    dataType: "json",
-                    data: {
-                        public_key: $("#p_c").text(),
-                        session: id,
-                    },
-                })
+                        type: "POST",
+                        url: base_url + "token/encrypt",
+                        crossDomain: true,
+                        dataType: "json",
+                        data: {
+                            public_key: $("#p_c").text(),
+                            session: id,
+                        },
+                    })
                     .done(function (token) {
                         key = token.data.token;
                         var json = JSON.stringify(util.createCreditCard(payment,key));
