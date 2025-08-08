@@ -290,7 +290,7 @@ jQuery( function( $ ) {
     }
     async function getPosts($form) {
         return await  new Promise(function(resolve, reject) {
-            ePayco.token.create($form, function(error, token) {
+           ePayco.token.create($form, function(error, token) {
                 loading=false;
                 if(!error) {
                     if(error != undefined){
@@ -320,14 +320,6 @@ jQuery( function( $ ) {
                         } catch(e) {
                             reject('No se pudo realizar el pago, por favor reintente nuevamente')
                         } 
-                        /*
-                        let atributte_info = error.replace('El formato es incorrecto o el campo está vacío: ', '');
-                        if(atributte_info.trim() == 'number'){
-                            $("#web-checkout-content").addClass("animated shake");
-                            document.getElementById('the-card-number-element').classList.add('inputerror')
-                            reject('credit card number incorrect or empty')
-                        }
-                    */ 
                     }
                 }
             });

@@ -52,6 +52,7 @@ class ComposerStaticInit29e4698e2f640ef461d5ff51b7c3
         'EpaycoSubscription\\Woocommerce\\Gateways\\AbstractGateway' => __DIR__ . '/../..' . '/src/Gateways/AbstractGateway.php',
         'EpaycoSubscription\\Woocommerce\\Gateways\\EpaycoSuscription' => __DIR__ . '/../..' . '/src/Gateways/EpaycoSuscription.php',
         'EpaycoSubscription\\Woocommerce\\Helpers\\Paths' => __DIR__ . '/../..' . '/src/Helpers/Paths.php',
+        'EpaycoSubscription\\Woocommerce\\Helpers\\Customer' => __DIR__ . '/../..' . '/src/Helpers/Customer.php',
         'EpaycoSubscription\\Woocommerce\\Helpers\\Form' => __DIR__ . '/../..' . '/src/Helpers/Form.php',
         'EpaycoSubscription\\Woocommerce\\Helpers\\Session' => __DIR__ . '/../..' . '/src/Helpers/Session.php',
         'EpaycoSubscription\\Woocommerce\\Helpers\\Strings' => __DIR__ . '/../..' . '/src/Helpers/Strings.php',

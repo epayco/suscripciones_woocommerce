@@ -87,6 +87,8 @@ Yes, an SSL certificate is required to ensure secure transactions and protect cu
 = 6.3 =
 
 = 6.4 =
+
+= 6.5 =
 * Initial release of the ePayco Subscriptions plugin for WooCommerce.
 
 == Additional Info ==

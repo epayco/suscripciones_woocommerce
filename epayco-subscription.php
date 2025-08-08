@@ -7,7 +7,7 @@
  * @wordpress-plugin
  * Plugin Name:       ePayco Subscriptions for WooCommerce
  * Description:       Plugin ePayco Subscription
- * Version:           6.4.4
+ * Version:           6.5.0
  * Author:            ePayco
  * Text Domain:       epayco-subscriptions-for-woocommerce
  * Author URI:
@@ -420,7 +420,7 @@ function activate_subscription_epayco()
             customer_id TEXT NULL,
             token_id TEXT NULL,
             email TEXT NULL,
-            PRIMARY KEY (id) UNIQUE KEY unique_email (email(191))
+            PRIMARY KEY (id)
         ) $charset_collate;";
 
         dbDelta($sql);
