@@ -16,6 +16,7 @@ return array(
     'EpaycoSubscription\\Woocommerce\\Gateways\\AbstractGateway' => $baseDir . '/src/Gateways/AbstractGateway.php',
     'EpaycoSubscription\\Woocommerce\\Gateways\\EpaycoSuscription' => $baseDir . '/src/Gateways/EpaycoSuscription.php',
     'EpaycoSubscription\\Woocommerce\\Helpers' => $baseDir . '/src/Helpers.php',
+    'EpaycoSubscription\\Woocommerce\\Helpers\\Customer' => $baseDir . '/src/Helpers/Customer.php',
     'EpaycoSubscription\\Woocommerce\\Helpers\\Form' => $baseDir . '/src/Helpers/Form.php',
     'EpaycoSubscription\\Woocommerce\\Helpers\\Paths' => $baseDir . '/src/Helpers/Paths.php',
     'EpaycoSubscription\\Woocommerce\\Helpers\\Session' => $baseDir . '/src/Helpers/Session.php',
