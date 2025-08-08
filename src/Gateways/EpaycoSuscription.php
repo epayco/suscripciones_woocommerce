@@ -295,7 +295,7 @@ class EpaycoSuscription extends AbstractGateway
                     <br>
                     <div id="myModal" class="modal" >
                         <div class="modal-content">
-                            <span class="closeEpaycoModal">&times;</span>
+                            <span class="closeEpaycoModal" style="cursor: pointer;">&times;</span>
                             <center>
                                 <img id="epaycoModalImg" src="<?php echo $path . 'logo_warning.png' ?>">
                             </center>
