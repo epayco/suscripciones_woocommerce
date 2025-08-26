@@ -2157,6 +2157,7 @@ class EpaycoSuscription extends AbstractGateway
                             }
                         }
                     } else {
+                        $counter = 3;
                         $message = 'Pago rechazado: ' . $x_ref_payco;
                         if (
                             $current_state == "epayco-failed" ||
@@ -2167,13 +2168,23 @@ class EpaycoSuscription extends AbstractGateway
                             $current_state == "processing" ||
                             $current_state == "completed"
                         ) {
-                            $order->update_status('epayco-cancelled');
-                            $order->add_order_note($message);
-                            $subscription->update_status('on-hold');
+                            if($counter <= 0){
+                                $order->update_status('epayco-cancelled');
+                                $order->add_order_note($message);
+                                $subscription->update_status('on-hold'); 
+                                $counter = 3;
+                            }else{
+                                $counter -=1;
+                            }
                         } else {
-                            $order->update_status('epayco-cancelled');
-                            $order->add_order_note($message);
-                            $subscription->update_status('on-hold');
+                            if($counter <= 0){
+                                $order->update_status('epayco-cancelled');
+                                $order->add_order_note($message);
+                                $subscription->update_status('on-hold'); 
+                                $counter = 3;
+                            }else{
+                                $counter -=1;
+                            }
                             if (
                                 $current_state = "epayco-on-hold" ||
                                 $current_state = "epayco-on-hold"
@@ -2221,6 +2232,7 @@ class EpaycoSuscription extends AbstractGateway
         $logger = new \WC_Logger();
         global $wpdb;
         $table_name = $wpdb->prefix . 'wc_orders';
+        $counter = 10;
 
         if (!empty($subs->data)) {
             foreach ($subs->data as $epayco_subscription) {
@@ -2254,6 +2266,7 @@ class EpaycoSuscription extends AbstractGateway
                         } elseif ($epayco_status === 'active') {
                             $desired_status = 'active';
                         }
+                        
 
                         if (!$desired_status || $current_status === $desired_status) continue;
                         try {
@@ -2262,13 +2275,28 @@ class EpaycoSuscription extends AbstractGateway
 
                             $logger->add(self::LOG_SOURCE, "Actualizando estado de la suscripción. ID={$wc_subscription_id}, Estado actual: {$current_status}, Nuevo estado: {$desired_status}");
                             if (in_array($desired_status, $allowed_force_statuses)) {
+                                if($desired_status == 'cancelled'){
+                                    if($counter <= 0){
+                                       $wc_subscription->update_status($desired_status);
 
-                                $wc_subscription->update_status($desired_status);
+                                        $result = wp_update_post([
+                                            'ID' => $wc_subscription_id,
+                                            'post_status' => 'wc-' . $desired_status,
+                                        ], true); 
+                                        $counter = 10;
+                                    }else{
+                                        $counter -=1;
+                                    }
+                                }else{
+                                    $wc_subscription->update_status($desired_status);
 
-                                $result = wp_update_post([
-                                    'ID' => $wc_subscription_id,
-                                    'post_status' => 'wc-' . $desired_status,
-                                ], true);
+                                    $result = wp_update_post([
+                                        'ID' => $wc_subscription_id,
+                                        'post_status' => 'wc-' . $desired_status,
+                                    ], true);
+                                }
+
+                                
 
                                 // if (is_wp_error($result)) {
                                 //    // $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post ");
