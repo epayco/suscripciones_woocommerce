@@ -38,7 +38,7 @@ class EpaycoSuscription extends AbstractGateway
      */
     public const LOG_SOURCE = 'EpaycoSuscription_Gateway';
 
-    // public $cron_data;
+    public $cron_data;
 
     protected EpaycoSdk\Epayco $epaycoSdk;
 
@@ -82,7 +82,7 @@ class EpaycoSuscription extends AbstractGateway
         $lang = get_locale();
         $lang = explode('_', $lang);
         $lang = $lang[0];
-        // $this->cron_data = $this->get_option('cron_data');
+        $this->cron_data = $this->get_option('cron_data');
         $this->custIdCliente =  $this->get_option('custIdCliente');
 
         add_action('woocommerce_subscription_status_cancelled', [$this, 'on_wc_subscription_cancelled']);
@@ -112,11 +112,10 @@ class EpaycoSuscription extends AbstractGateway
     
       protected function maybe_create_cronjobs()
     {
-        // $cron_data = $this->cron_data == "yes" ? true : false;
-        $intervalo = $this->get_option('cron_interval_30') == "yes" ? 30 : ($this->get_option('cron_interval_60') == "yes" ? 60 : 0);
-        if ($intervalo) {
+        $cron_data = $this->cron_data == "yes" ? true : false;
+        if ($cron_data) {
             if (function_exists('as_next_scheduled_action') && false === as_next_scheduled_action('woocommerce_epayco_suscripcion_cleanup_draft_orders')) {
-                as_schedule_recurring_action(time() + $intervalo, $intervalo, 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
+                as_schedule_recurring_action(time() + 30, 30, 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
             }
         }
     }
@@ -238,18 +237,12 @@ class EpaycoSuscription extends AbstractGateway
                     "completed" => "Completado"
                 ),
             ),
-         
-              'cron_interval_30' => array(
-                'title' => __('Actualiza automáticamente el estado de las suscripciones', 'epayco-subscriptions-for-woocommerce'),
-                'type' => 'checkbox',
-                'label' => __('30 segundos', 'epayco-subscriptions-for-woocommerce'),
-                'default' => 'yes',
-            ),
-            'cron_interval_60' => array(
+            'cron_data' => array(
                 'title' => __('', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('60 segundos', 'epayco-subscriptions-for-woocommerce'),
-                'default' => 'no',
+                'label' => __('Actualiza automáticamente el estado de las suscripciones  ', 'epayco-subscriptions-for-woocommerce'),
+                'description' => __('', 'epayco-subscriptions-for-woocommerce'),
+                'default'     => 'no',
             ),
          
         );
