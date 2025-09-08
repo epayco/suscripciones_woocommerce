@@ -405,7 +405,7 @@ class EpaycoSuscription extends AbstractGateway
     {
         $username = sanitize_text_field($validationData['epayco_publickey']);
         $password = sanitize_text_field($validationData['epayco_privatey']);
-        $response = wp_remote_post('https://eks-rest-pagos-service.epayco.io/login', array(
+        $response = wp_remote_post('https://eks-apify-service.epayco.io/login', array(
             'headers' => array(
                 'Authorization' => 'Basic ' . base64_encode($username . ':' . $password),
             ),
