@@ -72,7 +72,7 @@ class EpaycoSuscription extends AbstractGateway
         $this->epaycosuscription->hooks->gateway->registerGatewayTitle($this);
         //  $this->epaycosuscription->hooks->gateway->registerThankyouPage($this->id, [$this, 'saveOrderPaymentsId']);
         $this->epaycosuscription->hooks->gateway->registerAvailablePaymentGateway();
-        $this->epaycosuscription->hooks->gateway->registerCustomBillingFieldOptions();
+        // $this->epaycosuscription->hooks->gateway->registerCustomBillingFieldOptions();
         $this->epaycosuscription->hooks->gateway->registerGatewayReceiptPage($this->id, [$this, 'receiptPage']);
         $this->epaycosuscription->hooks->checkout->registerReceipt($this->id, [$this, 'renderOrderForm']);
         $this->epaycosuscription->hooks->endpoints->registerApiEndpoint(self::WEBHOOK_API_NAME, [$this, 'webhook']);
@@ -124,7 +124,17 @@ class EpaycoSuscription extends AbstractGateway
 
     public function update_cron_status_suscription()
     {
-        $this->updateStatusSubscription();
+        $count = get_option('epayco_cron_execution_count', 0);
+        $count++;
+        update_option('epayco_cron_execution_count', $count);
+        update_option('epayco_cron_last_run', current_time('mysql'));
+        if (class_exists('WC_Logger')) {
+            $logger = wc_get_logger();
+            $logger->info("Cron ejecutado #{$count} - " . get_option('epayco_cron_last_run'));
+        }
+        if ($count % 3 === 0) {
+            $this->updateStatusSubscription();
+        }
     }
 
 
@@ -140,7 +150,7 @@ class EpaycoSuscription extends AbstractGateway
 
 
     // Get pages
-      function get_pages($title = false, $indent = true)
+    function get_pages($title = false, $indent = true)
     {
         $wp_pages = get_pages('sort_column=menu_order');
         $page_list = array();
@@ -161,7 +171,7 @@ class EpaycoSuscription extends AbstractGateway
         }
         return $page_list;
     }
-    
+
 
     /**
      * Init form fields for checkout configuration
@@ -395,7 +405,7 @@ class EpaycoSuscription extends AbstractGateway
     {
         $username = sanitize_text_field($validationData['epayco_publickey']);
         $password = sanitize_text_field($validationData['epayco_privatey']);
-        $response = wp_remote_post('https://eks-apify-service.epayco.io/login', array(
+        $response = wp_remote_post('https://eks-rest-pagos-service.epayco.io/login', array(
             'headers' => array(
                 'Authorization' => 'Basic ' . base64_encode($username . ':' . $password),
             ),
@@ -791,9 +801,9 @@ class EpaycoSuscription extends AbstractGateway
             wp_redirect($redirect["redirect"]);
         } else {
             WC()->cart->empty_cart();
+            $this->updateStatusSubscription($order_id, $subscriptions, $response_status['status'], $response_status['message'], $response_status['ref_payco'], $response_status['id_payco']);
             $arguments = array();
             $arguments['ref_payco'] = $response_status['ref_payco'];
-            // $redirect_url = $response_status['url'];
             $redirect_url = $this->get_option('epaycosuscription_url_response') ? get_permalink($this->get_option('epaycosuscription_url_response')) : "Pagina no encontrada";
             $redirect_url = add_query_arg($arguments, $redirect_url);
             wp_redirect($redirect_url);
