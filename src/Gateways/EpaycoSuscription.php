@@ -158,14 +158,14 @@ class EpaycoSuscription extends AbstractGateway
                 'title' => __('Titulo', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('Corresponde al titulo que los usuarios visualizan el chekout', 'epayco-subscriptions-for-woocommerce'),
-                'default' => __('Subscription ePayco', 'epayco-subscriptions-for-woocommerce'),
+                 'default' => __('Titulo', 'epayco-subscriptions-for-woocommerce'),
                 'desc_tip' => true,
             ),
             'shop_name' => array(
                 'title' => __('Nombre del comercio', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'text',
                 'description' => __('Corresponde al nombre de la tienda que los usuarios visualizan en el checkout', 'epayco-subscriptions-for-woocommerce'),
-                'default' => __('Subscription ePayco', 'epayco-subscriptions-for-woocommerce'),
+                'default' => __('Tienda de pruebas', 'epayco-subscriptions-for-woocommerce'),
                 'desc_tip' => true,
             ),
             /*'shop_icon' => array(
@@ -179,7 +179,7 @@ class EpaycoSuscription extends AbstractGateway
                 'title' => __('Descripción', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'textarea',
                 'description' => __('Corresponde al descripción de la tienda que los usuarios visualizan en el checkout', 'epayco-subscriptions-for-woocommerce'),
-                'default' => __('Subscription ePayco', 'epayco-subscriptions-for-woocommerce'),
+                'default' => __('Detalle de la suscripción ePayco', 'epayco-subscriptions-for-woocommerce'),
                 'desc_tip' => true,
             ),
             'environment' => array(
@@ -481,8 +481,9 @@ class EpaycoSuscription extends AbstractGateway
 
         $logo_comercio = plugins_url('assets/images/comercio.png', EPS_PLUGIN_FILE);
         //$logo_comercio=$this->get_option('shop_icon');
+        $css_checkout = plugins_url('assets/css/css-suscription.css', EPS_PLUGIN_FILE);
+        $js_suscription = plugins_url('assets/js/js-suscription.js', EPS_PLUGIN_FILE);
         $style = plugins_url('assets/css/style.css', EPS_PLUGIN_FILE);
-        $general = plugins_url('assets/css/general.min.css', EPS_PLUGIN_FILE);
         $card_style = plugins_url('assets/css/card-js.min.css', EPS_PLUGIN_FILE);
         $stylemin = plugins_url('assets/css/style.min.css', EPS_PLUGIN_FILE);
         $cardsjscss = plugins_url('assets/css/cardsjs.min.css', EPS_PLUGIN_FILE);
@@ -617,7 +618,7 @@ class EpaycoSuscription extends AbstractGateway
                 'name_billing' => $name_billing,
                 'str_countryCode' => $str_countryCode,
                 'style' => $style,
-                'general' => $general,
+                 // 'general' => (removido) estilos fusionados en css-suscription.css
                 'card_style' => $card_style,
                 'cardsjscss' => $cardsjscss,
                 'indexjs' => $indexjs,
@@ -630,6 +631,8 @@ class EpaycoSuscription extends AbstractGateway
                 'privateKey' => $this->get_option('privateKey'),
                 'lang' => $lang,
                 'epaycocheckout' => $epaycocheckout,
+                'css_checkout' => $css_checkout,
+                'js_suscription' => $js_suscription,
 
             ]
         );

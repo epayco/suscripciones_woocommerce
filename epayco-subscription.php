@@ -519,7 +519,7 @@ function epayco_enqueue_styles()
     wp_enqueue_style('epayco-fontawesome', $plugin_url_base . 'fontawesome-all.css', array(), '5.15.4');
     wp_enqueue_style('epayco-bootstrap-slider', $plugin_url_base . 'bootstrap-slider.min.css', array(), '10.4.2');
     // wp_enqueue_style('epayco-style', $plugin_url . 'style.css', array(), '1.0');
-    // wp_enqueue_style('epayco-general', $plugin_url . 'general.min.css', array(), '1.0');
+    // Eliminado: wp_enqueue_style('epayco-general', $plugin_url . 'general.min.css', array(), '1.0');
     // wp_enqueue_style('epayco-card-style', $plugin_url . 'card-js.min.css', array(), '1.0');
     // wp_enqueue_style('epayco-cardsjs', $plugin_url . 'cardsjs.min.css', array(), '1.0');
 }
@@ -590,7 +590,16 @@ add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $siz
     return $image;
 }, 10, 4);
 
-function epayco_suscripcion_cron_job_deactivation()
+/*************  ✨ Windsurf Command ⭐  *************/
+/**
+ * Desprograma la tarea programada para la limpieza de pedidos en estado de borrado y cancelado.
+ *
+ * La tarea programada se encarga de eliminar los pedidos en estado de borrado y cancelado con una periodicidad de 1 hora.
+ * Esta funcion se encarga de eliminar por completo cualquier tarea programada para la limpieza de pedidos en estado de borrado y cancelado.
+ *
+ * @since 6.0.0
+ */
+/*******  cd382bf7-19ea-46a7-9232-30c2d451266b  *******/function epayco_suscripcion_cron_job_deactivation()
 {
     //eliminar por completo cualquier tarea programada
     wp_clear_scheduled_hook('woocommerc_epayco_suscripcion_cron_hook');
