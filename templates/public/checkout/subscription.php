@@ -56,71 +56,6 @@ if (!defined('ABSPATH')) {
             </form>
         </section>
     </section>
-    <!-- Modal 1: Cambiar idioma -->
-    <div id="myModal" class="modal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h2>Cambiar idioma</h2>
-                <span class="close">&times;</span>
-            </div>
-            <a id="enButton" class="languaje pointer" data-en-button data-language="en">Inglés</a>
-            <a id="esButton" class="languaje pointer" data-es-button data-language="es">Español</a>
-        </div>
-    </div>
-
-    <!-- Modal 2: Confirmar valor pedido-->
-    <div id="myModal2" class="modal">
-        <div class="modal-content-2">
-            <div class="modal-header">
-                <h2>Detalle del total</h2>
-                <span class="close">&times;</span>
-            </div>
-            <p class="languaje-2 modal-total-display">
-                <span class="modal-total-label">Total a pagar</span>
-                <span class="modal-total-amount">$<?php echo esc_html($amount); ?> <?php echo esc_html($currency); ?></span>
-            </p>
-        </div>
-    </div>
-
-    <!-- Modal 3: Mensaje de éxito -->
-    <div id="myModal3" class="modal">
-        <div id="modal-content-3">
-            <div class="modal-header">
-                <h2>Información</h2>
-                <span class="close">&times;</span>
-            </div>
-            <div class="contact-info">
-                <div class="info-item">
-                    <span class="icon">📞</span>
-                    <div>
-                        <strong>Llámanos</strong><br>
-                        <span class="contact-info-text">+57 3242127691</span>
-                    </div>
-                </div>
-
-                <div class="info-item">
-                    <span class="icon">✉️</span>
-                    <div>
-                        <strong>Escríbenos</strong><br>
-                        <span class="contact-info-text">comercial@somosgom.com</span>
-                    </div>
-                </div>
-
-                <div class="info-item">
-                    <span class="icon">🌐</span>
-                    <div>
-                        <strong>Visítanos</strong><br>
-                        <span class="contact-info-text">somosgom.com</span>
-                    </div>
-                </div>
-            </div>
-
-        </div>
-    </div>
-
-    <!-- Modal 4: Información CVV -->
-
-
     <div class="cancelT-modal dn display-none" id="cancelT_modal">
         <div class="ventana dn">
             <div class="icono">
@@ -189,7 +124,7 @@ if (!defined('ABSPATH')) {
         </button>
     </center>
     <div class="middle-xs bg_onpage porcentbody m-0">
-        <div class="centered" id="centered">
+        <div class="centered" id="centered" style="position: relative;">
             <div class="loadoverlay" id="loadoverlay">
                 <!--<div class="loader loadimg"></div>
                 <i class="fa fa-lock fa-lg loadshield2" style="color:gray;position:fixed;" aria-hidden="true"></i>
@@ -205,7 +140,7 @@ if (!defined('ABSPATH')) {
 
                 <div class="footer-modal hidden-print" id="footer-animated">
                     <p id="pagar_logo_es">
-                        <i class="fa fa-lock fa-lg security-icon-green" aria-hidden="true"></i>Pago seguro por
+                        <span class="security-icon-green" style="font-size: 1.2em; vertical-align: middle;">&#128274;</span> Pago seguro por
                         <?php
                         // Usar plugins_url para generar URL pública correcta
                         $logo_epayco = plugins_url('assets/images/logo-epayco.png', dirname(dirname(dirname(__FILE__))));
@@ -213,12 +148,12 @@ if (!defined('ABSPATH')) {
                         <img src="<?php echo esc_url($logo_epayco); ?>" class="logo-epayco-footer" alt="icono tarjeta" />
                     </p>
                     <p id="pagar_logo_en">
-                        <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>Secure payment by
+                        <span style="color: #2ECC71; font-size: 1.2em; vertical-align: middle;">&#128274;</span> Secure payment by
                         <img src="<?php echo esc_url($logo_epayco); ?>" class="logo-epayco-footer" alt="icono tarjeta" />
                     </p>
                 </div>
             </div>
-            <div class="onpage relative" name="onpage-suscription" id="web-checkout-content">
+            <div class="onpage relative" name="onpage-suscription" id="web-checkout-content" style="display: none;">
                 <div class="form-header">
                     <div class="div-logo">
                         <div class="logo-container">
@@ -240,8 +175,8 @@ if (!defined('ABSPATH')) {
                                 </button>
                             </div>
                             <div class="text-subtitle">
-                                <?php echo esc_html("Tienda de pruebas"); ?>
-                                <!-- <?php echo esc_html($shop_name); ?> -->
+                              
+                                <?php echo esc_html($shop_name); ?>
                             </div>
 
                         </div>
@@ -292,7 +227,7 @@ if (!defined('ABSPATH')) {
                                             <input class="name" id="the-card-name-element" data-epayco="card[name]" name="name" required value="<?php echo esc_html($name_billing) ?>">
                                             <label for="nameInput" id="nameLabel_es">Nombre y Apellidos</label>
                                             <label for="nameInput" id="nameLabel_en" style="display: none;">Full Name</label>
-                                      
+
                                         </div>
                                     </div>
                                     <div class="card-js" data-icon-colour="#158CBA">
@@ -346,7 +281,7 @@ if (!defined('ABSPATH')) {
                                             </div>
                                         </div>
                                     </div> <!-- CARD MINI -->
-                                  
+
                                     <div class="card mini" id="cardContainer">
                                         <!-- Frente -->
                                         <div class="card-face card-front" id="cardFront">
@@ -372,7 +307,7 @@ if (!defined('ABSPATH')) {
                                                 </div>
                                             </div>
                                         </div>
-                                        
+
                                         <!-- Dorso -->
 
                                         <div class="card-face card-back" id="cardBack">
@@ -387,70 +322,138 @@ if (!defined('ABSPATH')) {
                                         </div>
 
                                         <div id="brandLogoBack"></div>
+
+
                                     </div>
-                            </div>
-                        </div>
-                        <div class="form-footer">
-                            <div class="form-row-footer">
-                                <div class="form-row-footer-2">
-                                    <div>
-                                        <div class="form-row-footer-3">
-                                            <div class="form-row-footer-4">
-                                                <span class="spam-total">$<?php echo esc_html($amount); ?></span>
-                                                <span class="spam-currency"> <?php echo esc_html($currency) ?></span>
-                                            </div>
-                                            <div id="openModal2" class="ver-detalle-wrap">
-                                                <a href="#" class="ver-detalle-link" id="verDetalle_es">Ver detalle</a>
-                                                <a href="#" class="ver-detalle-link" id="verDetalle_en" style="display: none;">View details</a>
+                                    <div class="form-footer">
+                                        <div class="form-row-footer">
+                                            <div class="form-row-footer-2">
+                                                <div>
+                                                    <div class="form-row-footer-3">
+                                                        <div class="form-row-footer-4">
+                                                            <span class="spam-total">$<?php echo esc_html($amount); ?></span>
+                                                            <span class="spam-currency"> <?php echo esc_html($currency) ?></span>
+                                                        </div>
+                                                        <div id="openModal2" class="ver-detalle-wrap">
+                                                            <a href="#" class="ver-detalle-link" id="verDetalle_es">Ver detalle</a>
+                                                            <a href="#" class="ver-detalle-link" id="verDetalle_en" style="display: none;">View details</a>
+                                                        </div>
+                                                    </div>
+
+                                                </div>
+                                                <div class="form-row-footer-5">
+                                                    <!-- class="button-pay" -->
+                                                    <button class="button-pay call_action bgcolor white_font pointer load hidden-print" id="send-form">
+                                                        <h2 class="button-pay-text" id="pagar_es">Pagar</h2>
+                                                        <h2 class="button-pay-text" id="pagar_en" style="display: none;">Pay</h2>
+                                                    </button>
+                                                    <div class="container-payment">
+                                                        <span class="text-payment" id="securedBy_es">Protegido por</span>
+                                                        <span class="text-payment" id="securedBy_en" style="display: none;">Secured by</span>
+                                                        <?php
+                                                        // Usar plugins_url para generar URL pública correcta
+                                                        $logo_epayco2 = plugins_url('assets/images/logo-epayco.png', dirname(dirname(dirname(__FILE__))));
+                                                        ?>
+                                                        <img src="<?php echo esc_url($logo_epayco2); ?>" class="epayco-logo-style" alt="icono tarjeta" />
+                                                    </div>
+
+                                                </div>
                                             </div>
                                         </div>
 
+                                        <br>
+                                        <div class="clearfix"></div>
                                     </div>
-                                    <div class="form-row-footer-5">
-                                        <!-- class="button-pay" -->
-                                        <button class="button-pay call_action bgcolor white_font pointer load hidden-print" id="send-form">
-                                            <h2 class="button-pay-text" id="pagar_es">Pagar</h2>
-                                            <h2 class="button-pay-text" id="pagar_en" style="display: none;">Pay</h2>
-                                        </button>
-                                        <div class="container-payment">
-                                            <span class="text-payment" id="securedBy_es">Protegido por</span>
-                                            <span class="text-payment" id="securedBy_en" style="display: none;">Secured by</span>
-                                            <?php
-                                            // Usar plugins_url para generar URL pública correcta
-                                            $logo_epayco = plugins_url('assets/images/logo-epayco.png', dirname(dirname(dirname(__FILE__))));
-                                            ?>
-                                            <img src="<?php echo esc_url($logo_epayco); ?>" class="epayco-logo-style" alt="icono tarjeta" />
-                                        </div>
 
-                                    </div>
-                                </div>
+
+                                </form>
                             </div>
-
-                            <br>
-                            <div class="clearfix"></div>
-
-                            </form>
                         </div>
                     </div>
+
                 </div>
             </div>
         </div>
+
+        <!-- Modal 1: Cambiar idioma -->
+        <div id="myModal" class="modal">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h2>Cambiar idioma</h2>
+                    <span class="close">&times;</span>
+                </div>
+                <a id="enButton" class="languaje pointer" data-en-button data-language="en">Inglés</a>
+                <a id="esButton" class="languaje pointer" data-es-button data-language="es">Español</a>
+            </div>
+        </div>
+
+        <!-- Modal 2: Confirmar valor pedido-->
+        <div id="myModal2" class="modal">
+            <div class="modal-content-2">
+                <div class="modal-header">
+                    <h2>Detalle del total</h2>
+                    <span class="close">&times;</span>
+                </div>
+                <p class="languaje-2 modal-total-display">
+                    <span class="modal-total-label">Total a pagar</span>
+                    <span class="modal-total-amount">$<?php echo esc_html($amount); ?> <?php echo esc_html($currency); ?></span>
+                </p>
+            </div>
+        </div>
+
+        <!-- Modal 3: Mensaje de éxito -->
+        <div id="myModal3" class="modal">
+            <div id="modal-content-3">
+                <div class="modal-header">
+                    <h2>Información</h2>
+                    <span class="close">&times;</span>
+                </div>
+                <div class="contact-info">
+                    <div class="info-item">
+                        <span class="icon">📞</span>
+                        <div>
+                            <strong>Llámanos</strong><br>
+                            <span class="contact-info-text">+57 3242127691</span>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="icon">✉️</span>
+                        <div>
+                            <strong>Escríbenos</strong><br>
+                            <span class="contact-info-text">comercial@somosgom.com</span>
+                        </div>
+                    </div>
+
+                    <div class="info-item">
+                        <span class="icon">🌐</span>
+                        <div>
+                            <strong>Visítanos</strong><br>
+                            <span class="contact-info-text">somosgom.com</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
 
     </div>
     <div id="overlay"></div>
     </div>
 
     </div>
+
 </body>
 
 
 <!-- <?php
-// Ensure WordPress functions are available
-if (function_exists('wp_enqueue_script') && function_exists('esc_url')) {
-    // Enqueue the script properly with a version parameter
-    wp_enqueue_script('epayco-index-js', esc_url($indexjs), array(), '1.0.0', true);
-}
-?> -->
+        // Ensure WordPress functions are available
+        if (function_exists('wp_enqueue_script') && function_exists('esc_url')) {
+            // Enqueue the script properly with a version parameter
+            wp_enqueue_script('epayco-index-js', esc_url($indexjs), array(), '1.0.0', true);
+        }
+        ?> -->
 <?php
 // Ensure WordPress functions are available
 if (function_exists('wp_enqueue_script') && function_exists('esc_url')) {

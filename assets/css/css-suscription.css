@@ -1,3 +1,8 @@
+/* Scroll solo en la sección de campos y tarjeta mini */
+.wc.scroll-content {
+  max-height: 340px;
+  overflow-y: auto;
+}
 body {
   font-family: "Poppins", sans-serif;
   background: #f6f7f9;
@@ -17,40 +22,45 @@ body {
 
 .modal {
   display: none;
-  position: fixed;
+  position: absolute;
   z-index: 999999;
   /* por encima de todo */
   left: 0;
   top: 0;
   width: 100%;
   height: 100%;
-  background: rgba(0, 0, 0, 0.4);
+
 }
 
 /* Contenedor del contenido */
 .modal-content {
-  background: #fff;
-  width: 100% !important;
-  max-width: 450px;
-  margin: 15% auto;
-  border-radius: 10px;
-  overflow: hidden;
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  /* animation: fadeIn 0.3s 
-ease; */
-  transform: translate(0%, 118%);
+background: #fff;
+    width: 100% !important;
+    max-width: 450px;
+    position: absolute;
+    bottom: 20px;
+    left: 50%;
+    transform: translate(-56%, -142%);
+    border-radius: 10px;
+    overflow: hidden;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    animation: slideUpIn 0.3s 
+ease;
 }
+
 
 .modal-content-2 {
   background: #fff;
   width: 100% !important;
   max-width: 450px;
-  margin: 15% auto;
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
   border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
-  animation: fadeIn 0.3s ease;
-  transform: translate(0%, 180%);
+  animation: slideUpIn 0.3s ease;
 }
 
 /* Cabecera del modal */
@@ -145,6 +155,18 @@ ease; */
   to {
     opacity: 1;
     transform: translateY(0);
+  }
+}
+
+@keyframes slideUpIn {
+  from {
+    opacity: 0;
+    transform: translateX(-50%) translateY(30px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
   }
 }
 
@@ -254,6 +276,7 @@ ease; */
   background: radial-gradient(farthest-side, #000000 94%, #0000) top/1px 18px
       no-repeat,
     conic-gradient(#0000 30%, #1f1e1e);
+  mask: radial-gradient(farthest-side, #0000 calc(100% - 18px), #000 0);
   -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 18px), #000 0);
   animation: spin 1s infinite linear;
   display: flex;
@@ -993,40 +1016,37 @@ input.cvvHolder {
 }
 
 /* Backdrop that covers page when sheet is open */
+/* Remove fullscreen overlay: show modal without dimming the page */
 .lang-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(2, 6, 23, 0.45);
-  display: none;
-  z-index: 60;
+  display: none !important;
+  background: transparent !important;
+  pointer-events: none !important;
 }
 
 .lang-backdrop.open {
-  display: block;
+  display: none !important;
 }
 
-/* Bottom-sheet container anchored to bottom but positioned horizontally relative to checkout */
+/* Bottom-sheet container displayed INSIDE the checkout form (no fullscreen) */
 .lang-sheet {
-  position: fixed;
-  bottom: 16px;
-  /* left/width will be calculated by JS to align with checkout; default fallback: centered */
-  left: 19%;
-  transform: translateX(-50%);
-  width: 470px;
-  max-width: calc(100% - 32px);
+  position: absolute; /* anchor to nearest positioned ancestor (form/header) */
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin: 0; /* no viewport margins */
+  transform: none;
+  width: 100%;
+  max-width: 100%;
   background: #fff;
   border-radius: 12px 12px 0 0;
-  box-shadow: 0 -8px 32px rgba(2, 6, 23, 0.25);
+  box-shadow: 0 -6px 18px rgba(2, 6, 23, 0.15);
   display: none;
-  z-index: 70;
-  max-height: 70vh;
+  z-index: 10; /* below header close button, inside form */
+  max-height: 60vh;
   overflow: hidden;
-  margin: 0 16px 190px;
 }
 
-.lang-sheet.open {
-  display: block;
-}
+.lang-sheet.open { display: block; }
 
 /* Header inside sheet */
 .lang-sheet .sheet-header {
@@ -1246,23 +1266,9 @@ input.cvvHolder {
   box-sizing: border-box;
 }
 
-/* Responsive para form-header */
-@media (max-width: 768px) {
-  .form-header {
-    width: 100vw !important;
-    border-radius: 0 !important;
-    padding: 16px 20px;
-    height: auto;
-    min-height: 100px;
-  }
-}
 
-@media (min-width: 769px) and (max-width: 1024px) {
-  .form-header {
-    width: 420px;
-    padding: 20px 16px;
-  }
-}
+
+
 
 .div-logo {
   display: flex;
@@ -1524,36 +1530,7 @@ input.cvvHolder {
   top: -35px;
 }
 
-/* Responsive para form-body */
-@media (max-width: 768px) {
-  .form-body {
-    width: 100vw !important;
-    height: auto !important;
-    min-height: calc(100vh - 200px);
-    padding: 16px 20px !important;
-    left: 0 !important;
-    top: 0 !important;
-    gap: 24px;
-    box-sizing: border-box;
-  }
-}
 
-@media (min-width: 769px) and (max-width: 1024px) {
-  .form-body {
-    width: 420px;
-    height: auto;
-    min-height: 400px;
-    left: -20px;
-  }
-}
-
-@media (max-height: 600px) and (min-width: 769px) {
-  .form-body {
-    height: auto;
-    gap: 20px;
-    padding: 12px 20px;
-  }
-}
 
 .form-row-form {
   width: 403px;
@@ -1661,43 +1638,23 @@ input.cvvHolder {
 }
 
 .form-footer {
-  display: flex;
-  width: 450px;
-  height: 114px;
-
-  align-items: center;
-  position: absolute;
-  left: -24.5px;
-  z-index: 100;
-  border-radius: 0 0 10px 10px;
-  background: var(--Grey-White, #fff);
-  box-shadow: 0 -4px 15px 0 rgba(0, 0, 0, 0.1);
-  margin-bottom: 0;
-  top: 114%;
+display: flex
+;
+    width: 450px;
+    height: 114px;
+    align-items: center;
+    position: absolute;
+    left: -24px;
+    z-index: 100;
+    border-radius: 0 0 10px 10px;
+    background: var(--Grey-White, #fff);
+    box-shadow: 0 -4px 15px 0 rgba(0, 0, 0, 0.1);
+    margin-bottom: 0;
+    top: 91%;
 }
 
-/* Responsive para form-footer */
-@media (max-width: 768px) {
-  .form-footer {
-    width: 100vw !important;
-    left: 0 !important;
-    border-radius: 0 !important;
-    position: fixed !important;
-    bottom: 0 !important;
-    top: auto !important;
-    padding: 16px 20px !important;
-    box-sizing: border-box;
-    height: auto;
-    min-height: 80px;
-  }
-}
 
-@media (min-width: 769px) and (max-width: 1024px) {
-  .form-footer {
-    width: 420px;
-    left: -20px;
-  }
-}
+
 
 .form-row-footer {
   display: flex;
@@ -1713,7 +1670,7 @@ input.cvvHolder {
   height: 114px;
   justify-content: space-between;
   align-items: center;
-  padding: 24px 16px;
+  padding: 16px;
 }
 
 .form-row-footer-3 {
@@ -1876,13 +1833,7 @@ input.cvvHolder {
 }
 
 /* Mejoras de rendimiento */
-.centered,
-.modal-container,
-.form-header,
-.form-body,
-.form-footer {
-  will-change: transform, width, height;
-}
+/* Note: Avoid setting global will-change on containers to prevent blurred text on zoom */
 
 /* Transiciones suaves solo si el usuario no prefiere movimiento reducido */
 @media (prefers-reduced-motion: no-preference) {
@@ -2043,14 +1994,7 @@ a:link {
   box-shadow: 0 1px 10px rgba(0, 0, 0, 0.3);
 }
 
-/* Selecciona cualquier elemento que tenga name="onpage-suscription" */
-[name="onpage-suscription"] {
-  width: 450px;
-  height: 688px;
-  background: transparent;
-  /* Translator position */
-  border-radius: 10px 10px 10px 10px;
-}
+
 
 .footer-modal {
   padding: 22px;
@@ -2375,7 +2319,6 @@ a:link {
 
 .separate .texto {
   display: block;
-  vertical-align: top;
   width: calc((100% - 65px) - 1em);
   flex: 1 0 50%;
 }
@@ -2433,6 +2376,7 @@ img.home-icons {
   background: radial-gradient(farthest-side, #000000 94%, #0000) top/1px 18px
       no-repeat,
     conic-gradient(#0000 30%, #1f1e1e);
+  mask: radial-gradient(farthest-side, #0000 calc(100% - 18px), #000 0);
   -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 18px), #000 0);
   animation: spin 1s infinite linear;
   display: flex;
@@ -2579,6 +2523,7 @@ img.home-icons {
 }
 
 .select {
+  appearance: none;
   -webkit-appearance: none;
   border: none;
   background: white url(img/arrow.png) no-repeat right !important;
@@ -2633,33 +2578,38 @@ input[type="checkbox"]:checked + label:before {
   display: contents;
 }
 
-/* Contenedor principal responsivo - equivalente a tu lógica TypeScript */
+/* Contenedor principal responsivo y centrado en pantalla */
 .centered {
-  /* Desktop: comportamiento original con marco decorativo */
-  margin: 1em 0 2em;
-  height: auto;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  /* Avoid scaling to keep text crisp when zooming */
+  transform: translate(-50%, -50%);
+  opacity: 0;
+  pointer-events: none;
   width: 450px;
   height: 688px;
-  position: fixed;
-  top: -5em;
-  left: 50%;
-  transform: translate(-50%, 0%) scale(0);
-  transition: 200ms ease-in-out;
+  max-width: 95vw;
+  max-height: 95vh;
+  margin: 0;
   z-index: 2;
   border-radius: 10px;
   box-shadow: 0 8px 16px 0 rgba(0, 0, 0, 0.08);
-
-  /* Equivalente a tu max-w-[28.125rem] max-h-[43.125rem] */
-  max-width: 28.125rem;
-  /* 450px */
-  max-height: 43.125rem;
-  /* 690px */
   box-sizing: border-box;
+  background: #fff;
+  transition: 200ms ease-in-out;
 }
 
+/* Responsivo para tablet y móvil */
+
+/* Estado activo: mostrar el contenedor */
 .centered.active {
-  transform: translate(-50%, 8%) scale(1);
+      transform: translate(-40%, -57%);
+  opacity: 1;
+  pointer-events: auto;
 }
+
+
 
 .onpage .centered {
   max-width: 100%;
@@ -2668,86 +2618,7 @@ input[type="checkbox"]:checked + label:before {
 /* Responsive breakpoints - equivalente a tu lógica sm:h-full */
 
 /* Tablets y pantallas medianas */
-@media (min-width: 769px) and (max-width: 1024px) {
-  .centered {
-    width: 420px;
-    height: 640px;
-    max-width: 26.25rem;
-    max-height: 40rem;
-  }
-}
 
-/* Móviles - equivalente a h-screen sm:h-full */
-@media (max-width: 768px) {
-  .centered {
-    /* Pantalla completa como en tu lógica original */
-    width: 100vw !important;
-    height: 100vh !important;
-    max-width: none !important;
-    max-height: none !important;
-
-    /* Posicionamiento fullscreen */
-    position: fixed !important;
-    top: 0 !important;
-    left: 0 !important;
-    margin: 0 !important;
-
-    /* Sin marco ni bordes en móvil */
-    border-radius: 0 !important;
-    box-shadow: none !important;
-
-    /* Transform para móvil */
-    transform: scale(0) !important;
-  }
-
-  .centered.active {
-    transform: scale(1) !important;
-  }
-}
-
-/* Ajustes para pantallas con altura limitada - equivalente a tu viewport height logic */
-@media (max-height: 800px) and (min-width: 769px) {
-  .centered {
-    height: 85vh;
-    max-height: 85vh;
-    top: -2em;
-  }
-
-  .centered.active {
-    transform: translate(-50%, 2%) scale(1);
-  }
-}
-
-/* Pantallas muy pequeñas en altura */
-@media (max-height: 600px) {
-  .centered {
-    height: 95vh !important;
-    max-height: 95vh !important;
-    top: 0 !important;
-  }
-
-  .centered.active {
-    transform: translate(-50%, 2%) scale(1);
-  }
-}
-
-/* Orientación landscape en móviles - ajuste especial */
-@media (orientation: landscape) and (max-height: 500px) and (max-width: 768px) {
-  .centered {
-    height: 100vh !important;
-    max-height: 100vh !important;
-  }
-}
-
-/* Pantallas ultra anchas - mantener dimensiones originales */
-@media (min-width: 1200px) {
-  .centered {
-    width: 450px;
-    height: 688px;
-    max-width: 28.125rem;
-    max-height: 43.125rem;
-  }
-}
 
 .onpage .nombre-comercio {
   width: 54%;
@@ -3240,6 +3111,7 @@ input[type="checkbox"]:checked + label:before {
   background: radial-gradient(farthest-side, #000000 94%, #0000) top/1px 18px
       no-repeat,
     conic-gradient(#0000 30%, #1f1e1e);
+  mask: radial-gradient(farthest-side, #0000 calc(100% - 18px), #000 0);
   -webkit-mask: radial-gradient(farthest-side, #0000 calc(100% - 18px), #000 0);
   animation: spin 1s infinite linear;
   display: flex;
@@ -3334,10 +3206,10 @@ input[type="checkbox"]:checked + label:before {
    ====================================================== */
 
 /* Estilos para el contenido del formulario */
-.content-form {
+/* .content-form {
   background-color: white;
   padding-top: 0rem;
-}
+} */
 
 /* Estilos para spans con información de totales */
 .modal-total-display {
@@ -3599,68 +3471,7 @@ input[type="checkbox"]:checked + label:before {
   z-index: 10;
 }
 
-/* Desktop Grande (>1440px) */
-@media (min-width: 1441px) {
-  #logo_franchise_2 {
-    width: 22px !important;
-    height: 22px !important;
-    transform: translate(14px, -4vh) !important;
-  }
-}
 
-/* Desktop (1025px - 1440px) */
-@media (min-width: 1025px) and (max-width: 1440px) {
-  #logo_franchise_2 {
-    width: 20px !important;
-    height: 20px !important;
-    transform: translate(12px, -5vh) !important;
-  }
-}
-
-/* Tablet (769px - 1024px) */
-@media (min-width: 769px) and (max-width: 1024px) {
-  #logo_franchise_2 {
-    width: 18px !important;
-    height: 18px !important;
-    transform: translate(10px, -3.1vh) !important;
-  }
-}
-
-/* Móvil Grande (481px - 768px) */
-@media (min-width: 481px) and (max-width: 768px) {
-  #logo_franchise_2 {
-    width: 16px !important;
-    height: 16px !important;
-    transform: translate(8px, -3.5vh) !important;
-  }
-}
-
-/* Móvil Pequeño (≤480px) */
-@media (max-width: 480px) {
-  #logo_franchise_2 {
-    width: 14px !important;
-    height: 14px !important;
-    transform: translate(16px, -3.5vh) !important;
-  }
-}
-
-/* Móvil Muy Pequeño (≤360px) */
-@media (max-width: 360px) {
-  #logo_franchise_2 {
-    width: 12px !important;
-    height: 12px !important;
-    transform: translate(4px, -2.5vh) !important;
-  }
-}
-
-/* Landscape móvil - ajuste especial */
-@media (max-width: 768px) and (orientation: landscape) and (max-height: 500px) {
-  #logo_franchise_2 {
-    transform: translate(8px, -2vh) !important;
-    width: 16px !important;
-    height: 16px !important;
-  }
-}
 
 /* Contenedor de fecha y CVV */
 .expiration-cvv-container {
@@ -4005,4 +3816,30 @@ body.lang-es a[id$="_es"] {
 #the-card-name-element.validation-success:focus {
     border-color: inherit !important;
     box-shadow: inherit !important;
+}
+
+/* Estilos para modal posicionado relativamente al formulario */
+#centered {
+    /* min-height: 100vh;
+    overflow: hidden; */
+}
+
+#centered .modal {
+    /* height: 100vh; */
+}
+
+#centered .modal-content,
+#centered .modal-content-2 {
+    max-width: 90%;
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Media queries para dispositivos móviles */
+@media (max-width: 768px) {
+    #centered .modal-content,
+    #centered .modal-content-2 {
+        max-width: 95%;
+        bottom: 10px;
+    }
 }

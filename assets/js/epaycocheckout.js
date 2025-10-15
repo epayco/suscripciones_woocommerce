@@ -128,7 +128,8 @@ if (cardInput && cardNumberEl && logoFranquiciaDiv && cardFront && cardBack) {
 
 if (expInput && cardExpEl) {
   expInput.addEventListener('input', (e) => {
-    let v = e.target.value.replace(/\D/g, '').slice(0, 4);
+    // Permitir MM/AA o MM/YYYY (hasta 6 dígitos + '/').
+    let v = e.target.value.replace(/\D/g, '').slice(0, 6);
     if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2);
     e.target.value = v;
     cardExpEl.textContent = v || 'MM/AA';
@@ -310,6 +311,24 @@ jQuery(document).ready(function ($) {
     const parts = v.split('/');
     $month.val(parts[0] ? parts[0] : '');
     $year.val(parts[1] ? (parts[1].length === 2 ? '20' + parts[1] : parts[1]) : '');
+
+    // Disparar eventos para que otros listeners (ej. habilitar botón Pagar) reaccionen
+    $month.trigger('input');
+    $year.trigger('input');
+
+    // Si el campo está completo (MM/AA o MM/YYYY) y el mes es válido, enfocar automáticamente el CVV
+    const monthStr = parts[0] || '';
+    const yearStr = parts[1] || '';
+    const monthNum = parseInt(monthStr, 10);
+    const isMonthValid = monthStr.length === 2 && monthNum >= 1 && monthNum <= 12;
+    const isYearComplete = yearStr.length === 2 || yearStr.length === 4;
+    if (isMonthValid && isYearComplete) {
+      const cvvEl = document.getElementById('card_cvc');
+      // Solo mover el foco si el usuario está escribiendo en expInput actualmente
+      if (cvvEl && document.activeElement === $expInput[0]) {
+        cvvEl.focus();
+      }
+    }
   });
 
   // Al enviar el formulario, asegurar que los valores estén bien
@@ -399,7 +418,8 @@ document.addEventListener('DOMContentLoaded', function () {
   // Event listener para la fecha de expiración
   if (expInput && cardExpEl) {
     expInput.addEventListener('input', function (e) {
-      let v = e.target.value.replace(/\D/g, '').slice(0, 4);
+      // Permitir MM/AA o MM/YYYY
+      let v = e.target.value.replace(/\D/g, '').slice(0, 6);
       if (v.length >= 3) v = v.slice(0, 2) + '/' + v.slice(2);
       e.target.value = v;
       cardExpEl.textContent = v || 'MM/AA';
@@ -554,7 +574,7 @@ document.addEventListener('DOMContentLoaded', function () {
     function isFormComplete(){
       const nameOk = countLetters(nameEl.value) >= 2;
       const numberOk = (numberEl.value.replace(/\D/g, '').length) >= 15; // mínimo 15 para considerar completo
-      const monthOk = (monthEl.value.replace(/\D/g, '').length) >= 1;
+      const monthOk = (monthEl.value.replace(/\D/g, '').length) >= 2; // exigir 2 dígitos de mes
       const yearOk = (yearEl.value.replace(/\D/g, '').length) >= 2;
       const cvcLen = (cvcEl.value || '').replace(/\D/g, '').length;
       const cvcOk = cvcLen >= 3;

@@ -22,6 +22,11 @@ class Gateways
         $this->store     = $store;
     }
 
+    public function registerThankYouPage(string $id, $callback): void
+    {
+        add_action('woocommerce_thankyou_' . $id, $callback);
+    }
+
     /**
      * Determines if there are currently enabled payment gateways
      *

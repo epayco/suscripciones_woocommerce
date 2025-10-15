@@ -10,11 +10,13 @@ jQuery( function( $ ) {
     var info_lenguage = document.getElementById("info_lenguage")
     const overlay = document.getElementById('overlay')
     const loadoverlay_ = document.getElementById('loadoverlay')
+    const webCheckoutContent = document.getElementById('web-checkout-content')
     const movil = document.getElementById('movil');
     const movil_header = document.getElementById('movil_header');
     const cardjsmincss = document.getElementById('cardjsmincss');
     const style_min = document.getElementById('style_min');
     loadoverlay_.style.display='none'
+    if(webCheckoutContent) webCheckoutContent.style.display='block'
     const mainContainer = document.getElementById('movil_mainContainer')
     const movil_modal = document.getElementById('movil_modal')
     const movil_footer = document.getElementById('movil_footer')
@@ -115,7 +117,7 @@ jQuery( function( $ ) {
             if (epayco_title) epayco_title.hidden = true;
             if (button_epayco) button_epayco.hidden = true;
             let script = document.createElement('script');
-            let scriptSrc =  movil.innerText.replace(/ /g, "");
+         
             script.src = scriptSrc;
             script.async = true;
             movil_header.appendChild(script);
@@ -320,10 +322,12 @@ jQuery( function( $ ) {
                 document.getElementById('the-card-name-element').classList.add('inputerror')
             }
             if( month < 1 ){
-                document.getElementById('expiration').classList.add('inputerror')
+                var expEl = document.getElementById('expInput');
+                if (expEl) expEl.classList.add('inputerror');
             }
             if( year < 2 ){
-                document.getElementById('expiration').classList.add('inputerror')
+                var expEl2 = document.getElementById('expInput');
+                if (expEl2) expEl2.classList.add('inputerror');
             }
             if( cvc < 3 ){
                 document.getElementById('cvc_').classList.add('inputerror')
@@ -331,6 +335,7 @@ jQuery( function( $ ) {
         }else{
             if(!loading){
                 loadoverlay_.style.display='block';
+                if(webCheckoutContent) webCheckoutContent.style.display='none';
                 loading = true;
                 getPosts($form).then(r =>{
                     contador=0;
@@ -350,6 +355,7 @@ jQuery( function( $ ) {
                 }).catch((e) => {
                     console.log('Algo saliò mal!');
                     loadoverlay_.style.display='none';
+                    if(webCheckoutContent) webCheckoutContent.style.display='block';
                     alert(e)
                 });
             }

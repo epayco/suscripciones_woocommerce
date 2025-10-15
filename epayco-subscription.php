@@ -484,7 +484,7 @@ add_action('woocommerce_init', function () {
     woocommerce_register_additional_checkout_field(
         array(
             'id'          => 'epayco/billing_dni',
-            'label'       => __('Ingrese el número de documento', 'epayco-subscriptions-for-woocommerce'),
+            'label'       => __('Número de documento', 'epayco-subscriptions-for-woocommerce'),
             'location'    => 'contact',
             'type'        => 'text',
             'required'    => true,
@@ -501,6 +501,8 @@ add_action('woocommerce_checkout_update_order_meta', function ($order_id) {
         update_post_meta($order_id, '_epayco_billing_dni', sanitize_text_field(wp_unslash($_POST['epayco_billing_dni'])));
     }
 });
+
+
 
 function epayco_enqueue_styles()
 {
@@ -524,6 +526,27 @@ function epayco_enqueue_styles()
     // wp_enqueue_style('epayco-cardsjs', $plugin_url . 'cardsjs.min.css', array(), '1.0');
 }
 add_action('wp_enqueue_scripts', 'epayco_enqueue_styles', 9999);
+
+
+function detalle_pedido() {
+    // Registrar el script externo correctamente
+    wp_register_script(
+        'epayco-script',
+        'https://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js',
+        array('jquery'),
+        '1.0',
+        true
+    );
+    wp_enqueue_script('epayco-script');
+
+    // Log para verificar si ya se registró
+    if (wp_script_is('epayco-script', 'enqueued')) {
+        error_log('El script epayco-script ya fue registrado y encolado.');
+    } else {
+        error_log('El script epayco-script NO fue registrado.');
+    }
+}
+add_action('wp_enqueue_scripts', 'detalle_pedido');
 
 
 // Enqueue the script properly in WordPress
