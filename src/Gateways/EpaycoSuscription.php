@@ -109,17 +109,108 @@ class EpaycoSuscription extends AbstractGateway
     {
         $this->maybe_create_cronjobs();
     }
-    
-      protected function maybe_create_cronjobs()
-    {
-        // $cron_data = $this->cron_data == "yes" ? true : false;
-        $intervalo = $this->get_option('cron_interval_30') == "yes" ? 30 : ($this->get_option('cron_interval_60') == "yes" ? 60 : 0);
-        if ($intervalo) {
-            if (function_exists('as_next_scheduled_action') && false === as_next_scheduled_action('woocommerce_epayco_suscripcion_cleanup_draft_orders')) {
-                as_schedule_recurring_action(time() + $intervalo, $intervalo, 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
+
+        protected function maybe_create_cronjobs()
+        {
+            if (! function_exists('as_schedule_recurring_action')) {
+                return;
+            }
+
+            $nuevo_intervalo = $this->get_option('cron_interval_30') == "yes" ? 30 : ($this->get_option('cron_interval_60') == "yes" ? 60 : 0);
+            $hook = 'woocommerce_epayco_suscripcion_cleanup_draft_orders';
+
+            $prev_intervalo = (int) get_option('epayco_cron_interval_saved', 0);
+
+            if ($nuevo_intervalo === 0) {
+                if ($prev_intervalo > 0) {
+                    $this->epayco_unschedule_recurring_actions($hook);
+                }
+                update_option('epayco_cron_interval_saved', 0);
+                return;
+            }
+
+            if ($nuevo_intervalo !== $prev_intervalo) {
+                $this->epayco_unschedule_recurring_actions($hook);
+
+                as_schedule_recurring_action(time() + $nuevo_intervalo, $nuevo_intervalo, $hook);
+
+                update_option('epayco_cron_interval_saved', $nuevo_intervalo);
+                return;
+            }
+
+            if (false === as_next_scheduled_action($hook)) {
+                as_schedule_recurring_action(time() + $nuevo_intervalo, $nuevo_intervalo, $hook);
             }
         }
-    }
+
+        protected function epayco_unschedule_recurring_actions($hook)
+        {
+            if (! function_exists('as_get_scheduled_actions') || ! function_exists('as_unschedule_action')) {
+                return;
+            }
+
+            $per_page = 100;
+            $page = 1;
+
+            do {
+                $args = array(
+                    'hook'     => $hook,
+                    'per_page' => $per_page,
+                    'status'   => array('pending', 'scheduled', 'retry'),
+                    'paged'    => $page,
+                );
+
+                $actions = as_get_scheduled_actions($args, 'OBJECT');
+
+                if (empty($actions)) {
+                    break;
+                }
+
+                foreach ($actions as $action) {
+                    if (is_object($action)) {
+                        $action_args = method_exists($action, 'get_args') ? $action->get_args() : array();
+
+                        $timestamp = null;
+                        if (method_exists($action, 'get_schedule')) {
+                            $schedule = $action->get_schedule();
+                            if (is_object($schedule) && method_exists($schedule, 'next_run')) {
+                                $timestamp = $schedule->next_run ?? (method_exists($schedule, 'get_next_run') ? $schedule->get_next_run() : null);
+                            } elseif (isset($action->scheduled_date) && $action->scheduled_date instanceof DateTime) {
+                                $timestamp = (int) $action->scheduled_date->getTimestamp();
+                            }
+                        }
+
+                        try {
+                            if ($timestamp) {
+                                as_unschedule_action($hook, $action_args, $timestamp);
+                            } else {
+                                as_unschedule_action($hook, $action_args);
+                            }
+                        } catch (Exception $e) {
+                            error_log('epayco_unschedule_recurring_actions error: ' . $e->getMessage());
+                        }
+                    } elseif (is_array($action)) {
+                        $action_args = isset($action['args']) ? $action['args'] : array();
+                        $timestamp = isset($action['next_run']) ? (int) $action['next_run'] : null;
+
+                        try {
+                            if ($timestamp) {
+                                as_unschedule_action($hook, $action_args, $timestamp);
+                            } else {
+                                as_unschedule_action($hook, $action_args);
+                            }
+                        } catch (Exception $e) {
+                            error_log('epayco_unschedule_recurring_actions error (array): ' . $e->getMessage());
+                        }
+                    }
+                }
+
+                $page++;
+            } while (count($actions) === $per_page);
+        }
+
+
+
 
 
     public function update_cron_status_suscription()
@@ -238,8 +329,8 @@ class EpaycoSuscription extends AbstractGateway
                     "completed" => "Completado"
                 ),
             ),
-         
-              'cron_interval_30' => array(
+
+            'cron_interval_30' => array(
                 'title' => __('Actualiza automáticamente el estado de las suscripciones', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'checkbox',
                 'label' => __('30 segundos', 'epayco-subscriptions-for-woocommerce'),
@@ -251,7 +342,7 @@ class EpaycoSuscription extends AbstractGateway
                 'label' => __('60 segundos', 'epayco-subscriptions-for-woocommerce'),
                 'default' => 'no',
             ),
-         
+
         );
     }
 
@@ -287,36 +378,36 @@ class EpaycoSuscription extends AbstractGateway
                 <?php
                 $this->generate_settings_html();
                 ?>
-                <tr valign="top" >
-                <th scope="row" class="titledesc">
-                    <label for="woocommerce_epayco_enabled"><?php esc_html_e('Validar llaves', 'epayco-subscriptions-for-woocommerce'); ?></label>
-                    <span hidden id="public_key">0</span>
-                    <span hidden id="private_key">0</span>
-                <td class="forminp">
-                    <form method="post" action="#">
-                        <label for="woocommerce_epayco_enabled">
-                        </label>
-                        <input type="button" id="validar" class="button-primary woocommerce-save-button validar" value="Validar">
-                        <p class="description">
-                            <?php esc_html_e('Validación de llaves PUBLIC_KEY y PRIVATE_KEY', 'epayco-subscriptions-for-woocommerce'); ?>
-                        </p>
-                    </form>
-                    <br>
-                    <div id="myModal" class="modal" >
-                        <div class="modal-content">
-                            <span class="closeEpaycoModal" style="cursor: pointer;">&times;</span>
-                            <center>
-                                <img id="epaycoModalImg" src="<?php echo $path . 'logo_warning.png' ?>">
-                            </center>
-                            <p id="epaycoCredentialTittle"><strong><?php esc_html_e('Llaves de comercio inválidas', 'epayco-subscriptions-for-woocommerce'); ?></strong> </p>
-                            <p id="epaycoCredentialDescription"><?php esc_html_e('Las llaves Public Key, Private Key insertadas', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('del comercio son inválidas.', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('Consúltelas en el apartado de integraciones', 'epayco-subscriptions-for-woocommerce'); ?> <br><?php esc_html_e('Llaves API en su Dashboard ePayco.', 'epayco-subscriptions-for-woocommerce'); ?>,</p>
+                <tr valign="top">
+                    <th scope="row" class="titledesc">
+                        <label for="woocommerce_epayco_enabled"><?php esc_html_e('Validar llaves', 'epayco-subscriptions-for-woocommerce'); ?></label>
+                        <span hidden id="public_key">0</span>
+                        <span hidden id="private_key">0</span>
+                    <td class="forminp">
+                        <form method="post" action="#">
+                            <label for="woocommerce_epayco_enabled">
+                            </label>
+                            <input type="button" id="validar" class="button-primary woocommerce-save-button validar" value="Validar">
+                            <p class="description">
+                                <?php esc_html_e('Validación de llaves PUBLIC_KEY y PRIVATE_KEY', 'epayco-subscriptions-for-woocommerce'); ?>
+                            </p>
+                        </form>
+                        <br>
+                        <div id="myModal" class="modal">
+                            <div class="modal-content">
+                                <span class="closeEpaycoModal" style="cursor: pointer;">&times;</span>
+                                <center>
+                                    <img id="epaycoModalImg" src="<?php echo $path . 'logo_warning.png' ?>">
+                                </center>
+                                <p id="epaycoCredentialTittle"><strong><?php esc_html_e('Llaves de comercio inválidas', 'epayco-subscriptions-for-woocommerce'); ?></strong> </p>
+                                <p id="epaycoCredentialDescription"><?php esc_html_e('Las llaves Public Key, Private Key insertadas', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('del comercio son inválidas.', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('Consúltelas en el apartado de integraciones', 'epayco-subscriptions-for-woocommerce'); ?> <br><?php esc_html_e('Llaves API en su Dashboard ePayco.', 'epayco-subscriptions-for-woocommerce'); ?>,</p>
+                            </div>
+                            <span class="loader"></span>
                         </div>
-                        <span class="loader"></span>
-                    </div>
 
-                </td>
-                </th>
-            </tr>
+                    </td>
+                    </th>
+                </tr>
             </tbody>
         </table>
 <?php
@@ -2168,22 +2259,22 @@ class EpaycoSuscription extends AbstractGateway
                             $current_state == "processing" ||
                             $current_state == "completed"
                         ) {
-                            if($counter <= 0){
+                            if ($counter <= 0) {
                                 $order->update_status('epayco-cancelled');
                                 $order->add_order_note($message);
-                                $subscription->update_status('on-hold'); 
+                                $subscription->update_status('on-hold');
                                 $counter = 3;
-                            }else{
-                                $counter -=1;
+                            } else {
+                                $counter -= 1;
                             }
                         } else {
-                            if($counter <= 0){
+                            if ($counter <= 0) {
                                 $order->update_status('epayco-cancelled');
                                 $order->add_order_note($message);
-                                $subscription->update_status('on-hold'); 
+                                $subscription->update_status('on-hold');
                                 $counter = 3;
-                            }else{
-                                $counter -=1;
+                            } else {
+                                $counter -= 1;
                             }
                             if (
                                 $current_state = "epayco-on-hold" ||
@@ -2266,7 +2357,7 @@ class EpaycoSuscription extends AbstractGateway
                         } elseif ($epayco_status === 'active') {
                             $desired_status = 'active';
                         }
-                        
+
 
                         if (!$desired_status || $current_status === $desired_status) continue;
                         try {
@@ -2275,19 +2366,19 @@ class EpaycoSuscription extends AbstractGateway
 
                             $logger->add(self::LOG_SOURCE, "Actualizando estado de la suscripción. ID={$wc_subscription_id}, Estado actual: {$current_status}, Nuevo estado: {$desired_status}");
                             if (in_array($desired_status, $allowed_force_statuses)) {
-                                if($desired_status == 'cancelled'){
-                                    if($counter <= 0){
-                                       $wc_subscription->update_status($desired_status);
+                                if ($desired_status == 'cancelled') {
+                                    if ($counter <= 0) {
+                                        $wc_subscription->update_status($desired_status);
 
                                         $result = wp_update_post([
                                             'ID' => $wc_subscription_id,
                                             'post_status' => 'wc-' . $desired_status,
-                                        ], true); 
+                                        ], true);
                                         $counter = 10;
-                                    }else{
-                                        $counter -=1;
+                                    } else {
+                                        $counter -= 1;
                                     }
-                                }else{
+                                } else {
                                     $wc_subscription->update_status($desired_status);
 
                                     $result = wp_update_post([
@@ -2296,7 +2387,7 @@ class EpaycoSuscription extends AbstractGateway
                                     ], true);
                                 }
 
-                                
+
 
                                 // if (is_wp_error($result)) {
                                 //    // $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post ");
@@ -2306,7 +2397,7 @@ class EpaycoSuscription extends AbstractGateway
 
                             }
                         } catch (\Throwable $e) {
-                             $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post " . $e );
+                            $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post " . $e);
                         }
 
                         if ($current_status === 'pending-cancel' && $desired_status === 'active') {
