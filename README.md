@@ -17,6 +17,7 @@
 * WooCommerce Suscripcion versión 2.6.x o superior.
 * Acceso a las carpetas donde se encuetra instalado WordPress y WooCommerce.
 * Acceso al admin de WordPress.
+* PHP >= 8.2
 
 ## Instalación
 
