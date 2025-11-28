@@ -161,14 +161,20 @@ if (!defined('ABSPATH')) {
                     test: <?php echo $environment ? 'true' : 'false'; ?>
                 });
 
+                <?php
+                    $amount_float = round((float) $amount, 0);
+                    $tax_float = round((float) $tax, 0);
+                    $amount_formatted = number_format($amount_float, 0, '', '.');
+                    $tax_formatted = number_format($tax_float, 0, '', '.');
+                ?>
                 ePaycoCheckoutPlugin.open({
                     invoice: <?php echo htmlspecialchars($invoice); ?>,
-                    amount: <?php echo htmlspecialchars($amount); ?>,
+                    amount: "<?php echo $amount_formatted; ?>",
                     currency: "<?php echo htmlspecialchars($currency); ?>",
-                    description: "<?php echo htmlspecialchars($product_name_); ?>",
+                    description: "<?php echo htmlspecialchars($product_name_); ?> - <?php echo $amount_formatted; ?>",
                     email: "<?php echo htmlspecialchars($email_billing); ?>",
-                    base_tax: <?php echo (float) $amount; ?>,
-                    tax: '<?php echo htmlspecialchars($tax); ?>',
+                    base_tax: "<?php echo $amount_formatted; ?>",
+                    tax: "<?php echo $tax_formatted; ?>",
                     ico: '<?php echo htmlspecialchars($ico); ?>',
                     cellphone: "<?php echo htmlspecialchars($phone_billing); ?>",
                     cellphoneType: "<?php echo htmlspecialchars($str_countryCode); ?>",
