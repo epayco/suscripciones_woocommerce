@@ -1653,7 +1653,7 @@ class EpaycoSuscription extends AbstractGateway
                     $messageStatus['message'] = array_merge($messageStatus['message'], ["estado: {$sub->data->respuesta}"]);
                 }
 
-                // Validar si el pago fue exitoso: cod_respuesta "00" = aprobado, o cod_respuesta 1, o status/success true
+             
                 $is_payment_approved = (
                     $sub->data->cod_respuesta === '00' || 
                     intval($sub->data->cod_respuesta) === 1 || 
@@ -1699,9 +1699,9 @@ class EpaycoSuscription extends AbstractGateway
                         }
                     }
 
-                    if ($logger !== null) {
-                        $logger->info("Intentando actualizar estado de orden a: " . $orderStatus);
-                    }
+                    // if ($logger !== null) {
+                    //     $logger->info("Intentando actualizar estado de orden a: " . $orderStatus);
+                    // }
 
                     $order->update_status($orderStatus);
                     $order->add_order_note($message);
@@ -1723,9 +1723,7 @@ class EpaycoSuscription extends AbstractGateway
                     $subscription->update_status('active'); // Asegurar que la suscripción se marque como activa
                     $subscription->payment_complete();
                     
-                    if ($logger !== null) {
-                        $logger->info("✅ Orden y suscripción actualizadas correctamente - Order ID: " . $order->get_id());
-                    }
+                
                     // $this->restore_order_stock($order->get_id(), "-");
 
 
