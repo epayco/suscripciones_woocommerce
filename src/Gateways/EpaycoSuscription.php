@@ -287,7 +287,7 @@ class EpaycoSuscription extends AbstractGateway
                 <?php
                 $this->generate_settings_html();
                 ?>
-                <tr valign="top" >
+                <tr valign="top" style="display: none;">
                 <th scope="row" class="titledesc">
                     <label for="woocommerce_epayco_enabled"><?php esc_html_e('Validar llaves', 'epayco-subscriptions-for-woocommerce'); ?></label>
                     <span hidden id="public_key">0</span>
@@ -1601,6 +1601,12 @@ class EpaycoSuscription extends AbstractGateway
 
         global $wpdb;
         $table_subscription_epayco = $wpdb->prefix . 'epayco_subscription';
+        
+        // Inicializar logger
+        $logger = null;
+        if (class_exists('WC_Logger')) {
+            $logger = wc_get_logger();
+        }
 
         $count = 0;
         $messageStatus = [];
@@ -1643,11 +1649,22 @@ class EpaycoSuscription extends AbstractGateway
                 $isTestTransaction = $sub->data->enpruebas == 1 ? "yes" : "no";
                 update_option('epayco_order_status', $isTestTransaction);
                 $isTestMode = get_option('epayco_order_status') == "yes" ? "true" : "false";
-                if (isset($sub->data->cod_respuesta) && $sub->data->cod_respuesta === 2 || $sub->data->cod_respuesta === 4) {
+                if (isset($sub->data->cod_respuesta) && (intval($sub->data->cod_respuesta) === 2 || intval($sub->data->cod_respuesta) === 4)) {
                     $messageStatus['message'] = array_merge($messageStatus['message'], ["estado: {$sub->data->respuesta}"]);
                 }
 
-                if (isset($sub->data->cod_respuesta) && $sub->data->cod_respuesta === 1) {
+                // Validar si el pago fue exitoso: cod_respuesta "00" = aprobado, o cod_respuesta 1, o status/success true
+                $is_payment_approved = (
+                    $sub->data->cod_respuesta === '00' || 
+                    intval($sub->data->cod_respuesta) === 1 || 
+                    $sub->data->cod_respuesta === '1' ||
+                    (isset($sub->success) && $sub->success === true) ||
+                    (isset($sub->data->estado) && strtolower($sub->data->estado) === 'aceptada')
+                );
+
+                if (isset($sub->data->cod_respuesta) && $is_payment_approved) {
+                 
+                    
                     if ($isTestMode == "true") {
                         $message = 'Pago exitoso Prueba';
                         switch ($this->get_option('epayco_endorder_state')) {
@@ -1667,30 +1684,52 @@ class EpaycoSuscription extends AbstractGateway
                                     $orderStatus = 'completed_test';
                                 }
                                 break;
+                            default: {
+                                    $orderStatus = 'processing_test'; // Fallback
+                                }
+                                break;
                         }
                     } else {
                         $message = 'Pago exitoso';
                         $orderStatus = $this->get_option('epayco_endorder_state');
+                        
+                        // Fallback si la configuración no retorna nada
+                        if (empty($orderStatus)) {
+                            $orderStatus = 'processing';
+                        }
+                    }
+
+                    if ($logger !== null) {
+                        $logger->info("Intentando actualizar estado de orden a: " . $orderStatus);
                     }
 
                     $order->update_status($orderStatus);
                     $order->add_order_note($message);
 
+                    // Validar que subscription y ref_payco existan
+                    $subscription_id = isset($sub->subscription->_id) ? esc_html($sub->subscription->_id) : $subscription->get_id();
+                    $ref_payco = isset($sub->data->ref_payco) ? esc_html($sub->data->ref_payco) : 'N/A';
+                    
                     $note = sprintf(
 
                         /* translators: %1$s será reemplazado con el ID de la suscripción y %2$s con la referencia de pago */
                         esc_html__('Successful subscription (subscription ID: %1$s), reference (%2$s)', 'epayco-subscriptions-for-woocommerce'),
-                        esc_html($sub->subscription->_id),
-                        esc_html($sub->data->ref_payco)
+                        $subscription_id,
+                        $ref_payco
                     );
 
                     $subscription->add_order_note($note);
                     $messageStatus['ref_payco'] = array_merge($messageStatus['ref_payco'], [$sub->data->ref_payco]);
+                    $subscription->update_status('active'); // Asegurar que la suscripción se marque como activa
                     $subscription->payment_complete();
+                    
+                    if ($logger !== null) {
+                        $logger->info("✅ Orden y suscripción actualizadas correctamente - Order ID: " . $order->get_id());
+                    }
                     // $this->restore_order_stock($order->get_id(), "-");
 
 
-                } elseif (isset($sub->data->cod_respuesta) && $sub->data->cod_respuesta === 3) {
+                } elseif (isset($sub->data->cod_respuesta) && (intval($sub->data->cod_respuesta) === 3 || $sub->data->cod_respuesta === '3')) {
                     if ($isTestMode == "true") {
                         $message = 'Pago pendiente de aprobación Prueba';
                         $orderStatus = "epayco_on_hold";
@@ -1829,7 +1868,8 @@ class EpaycoSuscription extends AbstractGateway
                 $suscriptionId = isset($subsCreated->id) ? $subsCreated->id : null;
                 $this->setPaymentsIdDataForSubscription($subscriptions, $suscriptionId);
                 $planId = isset($subsCreated->data->idClient) ? $subsCreated->data->idClient : null;
-                $validation = !is_null($sub->status) ? $sub->status : $sub->success;
+                // Validar si la transacción fue exitosa - la propiedad es "success" no "status"
+                $validation = isset($sub->success) ? $sub->success : false;
                 if ($validation) {
                     $messageStatus = $this->handleStatusSubscriptions($subs, $subscriptions, $customerData, $order, $customerId, $suscriptionId, $planId);
 

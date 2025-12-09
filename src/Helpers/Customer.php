@@ -156,7 +156,8 @@ class Customer extends EpaycoSuscription
     public function registerEpaycoCustomer($customerData,$order_id, $token) {
         global $wpdb;
         $table_name_setings = $wpdb->prefix . 'epayco_setings';
-        $customerExist = $this->getEpaycoExisting($customerData['customer_id'], $token);
+        $customer_id = isset($customerData['customer_id']) ? $customerData['customer_id'] : null;
+        $customerExist = $this->getEpaycoExisting($customer_id, $token);
         if($customerExist){
             return $customerExist;
         }
