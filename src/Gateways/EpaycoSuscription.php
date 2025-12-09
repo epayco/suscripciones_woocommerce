@@ -1602,12 +1602,6 @@ class EpaycoSuscription extends AbstractGateway
         global $wpdb;
         $table_subscription_epayco = $wpdb->prefix . 'epayco_subscription';
         
-        // Inicializar logger
-        $logger = null;
-        if (class_exists('WC_Logger')) {
-            $logger = wc_get_logger();
-        }
-
         $count = 0;
         $messageStatus = [];
         $messageStatus['status'] = true;
