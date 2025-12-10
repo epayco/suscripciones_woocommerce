@@ -1,6 +1,6 @@
 # epayco-subscriptions-for-woocommerce
 
-**Si usted tiene alguna pregunta o problema, no dude en ponerse en contacto con nuestro soporte técnico: desarrollo@payco.co.**
+**Si usted tiene alguna pregunta o problema, no dude en ponerse en contacto con nuestro soporte técnico: desarrollo@epayco.com.**
 
 ## Tabla de contenido
 
@@ -11,12 +11,13 @@
 
 ## Requisitos
 
-* Tener una cuenta activa en [ePayco](https://pagaycobra.com).
+* Tener una cuenta activa en [ePayco](https://epayco.com/).
 * Tener instalado WordPress versión 5.3.x o superior.
 * WooCommerce versión 7.7.0 =>.
 * WooCommerce Suscripcion versión 2.6.x o superior.
 * Acceso a las carpetas donde se encuetra instalado WordPress y WooCommerce.
 * Acceso al admin de WordPress.
+* PHP >= 8.2
 
 ## Instalación
 

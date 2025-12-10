@@ -43,10 +43,13 @@ class Customer extends EpaycoSuscription
     {
         $customer = false;
         try {
+          
+            
             $customer = $this->epaycoSdk->customer->create(
                 [
                     "token_card" => $data['token_card'],
                     "name" => $data['name'],
+                    "last_name" => $data['last_name'],  
                     "email" => $data['email'],
                     "phone" => $data['phone'],
                     "cell_phone" => $data['phone'],

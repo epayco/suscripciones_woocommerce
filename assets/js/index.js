@@ -10,11 +10,13 @@ jQuery( function( $ ) {
     var info_lenguage = document.getElementById("info_lenguage")
     const overlay = document.getElementById('overlay')
     const loadoverlay_ = document.getElementById('loadoverlay')
+    const webCheckoutContent = document.getElementById('web-checkout-content')
     const movil = document.getElementById('movil');
     const movil_header = document.getElementById('movil_header');
     const cardjsmincss = document.getElementById('cardjsmincss');
     const style_min = document.getElementById('style_min');
     loadoverlay_.style.display='none'
+    if(webCheckoutContent) webCheckoutContent.style.display='block'
     const mainContainer = document.getElementById('movil_mainContainer')
     const movil_modal = document.getElementById('movil_modal')
     const movil_footer = document.getElementById('movil_footer')
@@ -107,12 +109,15 @@ jQuery( function( $ ) {
         // Size of browser viewport.
         let first_widtht = $(window).width();
         if(first_widtht>425){
-            mainContainer.className = "";
+            // In desktop view, mainContainer may not exist (mobile-only). Guard it.
+            if (mainContainer) {
+                mainContainer.className = "";
+            }
         }else{
-            epayco_title.hidden = true;
-            button_epayco.hidden = true;
+            if (epayco_title) epayco_title.hidden = true;
+            if (button_epayco) button_epayco.hidden = true;
             let script = document.createElement('script');
-            let scriptSrc =  movil.innerText.replace(/ /g, "");
+         
             script.src = scriptSrc;
             script.async = true;
             movil_header.appendChild(script);
@@ -129,37 +134,7 @@ jQuery( function( $ ) {
         }
 
         alertar()
-        var url = "https://restcountries.com/v3.1/alpha/"+$("#result")[0].innerText;
-        divFoo = document.getElementById('foo');
-        divSample = document.getElementById('countryName');
-        divResult = document.getElementById('result');
-        divFlag = document.getElementById('flag');
-        $.getJSON(url, function(result){
-            $.each(result, function(i, field){
-                divSample.innerText = field.name.common;
-                divSample.id = field.altSpellings[0];
-                divFlag.innerText = field.flag;
-            });
-        });
-
-        $.getJSON("https://restcountries.com/v3.1/independent?status=true", function(result){
-            $.each(result, function(i, field){
-                newlink = document.createElement('a');
-                li = document.createElement('li');
-                img = document.createElement('img');
-                img.style.width = "23px";
-                img.style.float = "left";
-                img.style.marginTop = "8px";
-                img.style.marginRight = "10px";
-                img.src = field.flags.png;
-                newlink.text = field.name.common;
-                newlink.href = '#';
-                newlink.className = field.flag;
-                newlink.id = field.altSpellings[0];
-                divFoo.appendChild(li).appendChild(newlink).appendChild(img);
-            });
-        });
-
+        // Eliminado: integración con restcountries (fetch de países y banderas)
         idleTimeouts()
 
     });
@@ -169,31 +144,21 @@ jQuery( function( $ ) {
             mdlInactivityTime.style.display='flex'
             cancelT_modal.style.display='flex'
             mdlTimeExpired.style.display='flex'
-            mainContainer.className = "mainContainer";
-            mainContainer.style.position = "fixed";
-            mainContainer.style.top = "-64px;"
-            mainContainer.style.left = "0px";
-            mainContainer.style.height ="100%";
-            mainContainer.style.zIndex= "999999";
+            // mainContainer puede no existir en desktop; validar
+            if (mainContainer) {
+                mainContainer.className = "mainContainer";
+                mainContainer.style.position = "fixed";
+                mainContainer.style.top = "-64px"; // corregido, sin ; en el valor
+                mainContainer.style.left = "0px";
+                mainContainer.style.height ="100%";
+                mainContainer.style.zIndex= "999999";
+            }
             movil_modal.hidden = false;
             movil_footer.hidden = false;
         }, 3000);
     }
 
-    $(".dropdown a").click(function() {
-        $(".dropdown dd ul").toggle();
-    });
-
-    $(".dropdown dd ul").click(function(e) {
-        var $clicked = $(e.target);
-        var texts = $clicked[0].innerText;
-        var id = $clicked[0].id;
-        var flag = $clicked[0].className;
-        divSample.innerText = texts;
-        divSample.id = id;
-        divFlag.innerText = flag;
-        $(".dropdown dd ul").toggle();
-    });
+    // Eliminado: handlers del dropdown asociados a restcountries
 
     if( $("#lang_epayco").text() == 'en')
     {
@@ -341,25 +306,28 @@ jQuery( function( $ ) {
         ePayco.setPublicKey(key);
         ePayco.setLanguage(lang);
         var $form = $(this);
-        var name = document.getElementById('the-card-name-element').value.replace(/[ -]/g, "").length;
+        // Name rule aligned to: mínimo 2 letras (cuenta letras, incluye acentos y ñ/ü)
+        var nameLetters = (document.getElementById('the-card-name-element').value.match(/[A-Za-zÁÉÍÓÚÜÑáéíóúüñ]/g) || []).length;
         var number = document.getElementById('the-card-number-element').value.replace(/[^0-9]/g, "").length;
         var month = document.getElementById('month-value').value.replace(/[^0-9]/g, "").length;
         var year = document.getElementById('year-value').value.replace(/[^0-9]/g, "").length;
         var cvc = document.getElementById('card_cvc').value.replace(/[ -]/g, "").length;
         $("#web-checkout-content").removeClass("animated shake");
-        if( number <= 14 || name <= 5 || month < 1 || year < 2 || cvc < 3 ){
+        if( number <= 14 || nameLetters < 2 || month < 1 || year < 2 || cvc < 3 ){
             $("#web-checkout-content").addClass("animated shake");
             if( number <= 14){
                 document.getElementById('the-card-number-element').classList.add('inputerror')
             }
-            if( name <= 5){
+            if( nameLetters < 2){
                 document.getElementById('the-card-name-element').classList.add('inputerror')
             }
             if( month < 1 ){
-                document.getElementById('expiration').classList.add('inputerror')
+                var expEl = document.getElementById('expInput');
+                if (expEl) expEl.classList.add('inputerror');
             }
             if( year < 2 ){
-                document.getElementById('expiration').classList.add('inputerror')
+                var expEl2 = document.getElementById('expInput');
+                if (expEl2) expEl2.classList.add('inputerror');
             }
             if( cvc < 3 ){
                 document.getElementById('cvc_').classList.add('inputerror')
@@ -367,6 +335,7 @@ jQuery( function( $ ) {
         }else{
             if(!loading){
                 loadoverlay_.style.display='block';
+                if(webCheckoutContent) webCheckoutContent.style.display='none';
                 loading = true;
                 getPosts($form).then(r =>{
                     contador=0;
@@ -386,6 +355,7 @@ jQuery( function( $ ) {
                 }).catch((e) => {
                     console.log('Algo saliò mal!');
                     loadoverlay_.style.display='none';
+                    if(webCheckoutContent) webCheckoutContent.style.display='block';
                     alert(e)
                 });
             }

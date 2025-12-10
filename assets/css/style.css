@@ -5,6 +5,12 @@
 	align-items: center;
 }
 
+.centered-button {
+  text-align: center;
+  margin-top: 20px;
+  margin-bottom: 20px;
+}
+
 .row {
 	box-sizing: border-box;
 	display: -webkit-box;
