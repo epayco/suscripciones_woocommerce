@@ -1598,15 +1598,16 @@ class EpaycoSuscription extends AbstractGateway
 
     public function handleStatusSubscriptions(array $subscriptionsStatus, array $subscriptions, array $customer, $order, $customerId, $suscriptionId, $planId)
     {
+
         global $wpdb;
         $table_subscription_epayco = $wpdb->prefix . 'epayco_subscription';
-        
-        // Inicializar logger
+
+             // Inicializar logger
         $logger = null;
         if (class_exists('WC_Logger')) {
             $logger = wc_get_logger();
         }
-
+        
         $count = 0;
         $messageStatus = [];
         $messageStatus['status'] = true;
@@ -1652,12 +1653,13 @@ class EpaycoSuscription extends AbstractGateway
                     $messageStatus['message'] = array_merge($messageStatus['message'], ["estado: {$sub->data->respuesta}"]);
                 }
 
-                $is_payment_approved = (
+             
+                 $is_payment_approved = (
                     isset($sub->data->estado) ||
                     ($sub->data->status === 'aceptada' || $sub->data->status === 'Aceptada') ||
                     (isset($sub->success) && $sub->success === true)
                 );
-
+                
                 if ($is_payment_approved) {
                  
                     
@@ -1695,9 +1697,9 @@ class EpaycoSuscription extends AbstractGateway
                         }
                     }
 
-                    if ($logger !== null) {
-                        $logger->info("Intentando actualizar estado de orden a: " . $orderStatus);
-                    }
+                    // if ($logger !== null) {
+                    //     $logger->info("Intentando actualizar estado de orden a: " . $orderStatus);
+                    // }
 
                     $order->update_status($orderStatus);
                     $order->add_order_note($message);
@@ -1719,9 +1721,7 @@ class EpaycoSuscription extends AbstractGateway
                     $subscription->update_status('active'); // Asegurar que la suscripción se marque como activa
                     $subscription->payment_complete();
                     
-                    if ($logger !== null) {
-                        $logger->info("✅ Orden y suscripción actualizadas correctamente - Order ID: " . $order->get_id());
-                    }
+                
                     // $this->restore_order_stock($order->get_id(), "-");
 
 
