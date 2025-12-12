@@ -1601,13 +1601,13 @@ class EpaycoSuscription extends AbstractGateway
 
         global $wpdb;
         $table_subscription_epayco = $wpdb->prefix . 'epayco_subscription';
-
-             // Inicializar logger
+        
+        // Inicializar logger
         $logger = null;
         if (class_exists('WC_Logger')) {
             $logger = wc_get_logger();
         }
-        
+
         $count = 0;
         $messageStatus = [];
         $messageStatus['status'] = true;
@@ -1653,16 +1653,13 @@ class EpaycoSuscription extends AbstractGateway
                     $messageStatus['message'] = array_merge($messageStatus['message'], ["estado: {$sub->data->respuesta}"]);
                 }
 
-             
                 $is_payment_approved = (
-                    $sub->data->cod_respuesta === '00' || 
-                    intval($sub->data->cod_respuesta) === 1 || 
-                    $sub->data->cod_respuesta === '1' ||
-                    (isset($sub->success) && $sub->success === true) ||
-                    (isset($sub->data->estado) && strtolower($sub->data->estado) === 'aceptada')
+                    isset($sub->data->estado) ||
+                    ($sub->data->status === 'aceptada' || $sub->data->status === 'Aceptada') ||
+                    (isset($sub->success) && $sub->success === true)
                 );
 
-                if (isset($sub->data->cod_respuesta) && $is_payment_approved) {
+                if ($is_payment_approved) {
                  
                     
                     if ($isTestMode == "true") {
@@ -1699,9 +1696,9 @@ class EpaycoSuscription extends AbstractGateway
                         }
                     }
 
-                    // if ($logger !== null) {
-                    //     $logger->info("Intentando actualizar estado de orden a: " . $orderStatus);
-                    // }
+                    if ($logger !== null) {
+                        $logger->info("Intentando actualizar estado de orden a: " . $orderStatus);
+                    }
 
                     $order->update_status($orderStatus);
                     $order->add_order_note($message);
@@ -1723,7 +1720,9 @@ class EpaycoSuscription extends AbstractGateway
                     $subscription->update_status('active'); // Asegurar que la suscripción se marque como activa
                     $subscription->payment_complete();
                     
-                
+                    if ($logger !== null) {
+                        $logger->info("✅ Orden y suscripción actualizadas correctamente - Order ID: " . $order->get_id());
+                    }
                     // $this->restore_order_stock($order->get_id(), "-");
 
 
