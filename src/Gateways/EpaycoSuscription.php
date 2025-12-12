@@ -1598,7 +1598,6 @@ class EpaycoSuscription extends AbstractGateway
 
     public function handleStatusSubscriptions(array $subscriptionsStatus, array $subscriptions, array $customer, $order, $customerId, $suscriptionId, $planId)
     {
-
         global $wpdb;
         $table_subscription_epayco = $wpdb->prefix . 'epayco_subscription';
         
