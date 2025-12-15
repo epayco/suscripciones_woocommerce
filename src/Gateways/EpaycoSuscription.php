@@ -1653,16 +1653,13 @@ class EpaycoSuscription extends AbstractGateway
                     $messageStatus['message'] = array_merge($messageStatus['message'], ["estado: {$sub->data->respuesta}"]);
                 }
 
-                // Validar si el pago fue exitoso: cod_respuesta "00" = aprobado, o cod_respuesta 1, o status/success true
                 $is_payment_approved = (
-                    $sub->data->cod_respuesta === '00' || 
-                    intval($sub->data->cod_respuesta) === 1 || 
-                    $sub->data->cod_respuesta === '1' ||
-                    (isset($sub->success) && $sub->success === true) ||
-                    (isset($sub->data->estado) && strtolower($sub->data->estado) === 'aceptada')
+                    isset($sub->data->estado) ||
+                    ($sub->data->status === 'aceptada' || $sub->data->status === 'Aceptada') ||
+                    (isset($sub->success) && $sub->success === true)
                 );
 
-                if (isset($sub->data->cod_respuesta) && $is_payment_approved) {
+                if ($is_payment_approved) {
                  
                     
                     if ($isTestMode == "true") {
