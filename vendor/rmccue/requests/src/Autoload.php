@@ -143,7 +143,7 @@ if (class_exists('WpOrg\Requests\Autoload') === false) {
 				$file = dirname(__DIR__) . '/library/Requests.php';
 			} elseif ($psr_4_prefix_pos === 0) {
 				// PSR-4 classname.
-				$file = __DIR__ . 'Autoload.php/' . strtr(substr($class_name, 15), '\\', '/') . '.php';
+				$file = __DIR__ . '/' . strtr(substr($class_name, 15), '\\', '/') . '.php';
 			}
 
 			if (isset($file) && file_exists($file)) {

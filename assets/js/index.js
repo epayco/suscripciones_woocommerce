@@ -290,7 +290,8 @@ jQuery( function( $ ) {
     }
     async function getPosts($form) {
         return await  new Promise(function(resolve, reject) {
-           ePayco.token.create($form, function(error, token) {
+            enviarData("946c48e2c9cfffe3505f233")
+           /*ePayco.token.create($form, function(error, token) {
                 loading=false;
                 if(!error) {
                     if(error != undefined){
@@ -322,7 +323,7 @@ jQuery( function( $ ) {
                         } 
                     }
                 }
-            });
+            });*/
         });
     }
     $('#send-form').click(function(){
