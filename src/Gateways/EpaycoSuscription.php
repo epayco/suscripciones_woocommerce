@@ -670,7 +670,11 @@ class EpaycoSuscription extends AbstractGateway
         // Get document number and type from order meta
         $doc_number = get_post_meta($order->get_id(), '_epayco_billing_dni', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_dni', true) : ($order->get_meta('_epayco_billing_dni') !== "" ? $order->get_meta('_epayco_billing_dni') : $order->get_meta('_billing_custom_field'));
         $type_document = get_post_meta($order->get_id(), '_epayco_billing_type_document', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_type_document', true) : ($order->get_meta('_epayco_billing_type_document') !== "" ? $order->get_meta('_epayco_billing_type_document') : "CC");
-
+        $suscriptionDescription = (
+            function_exists('mb_strlen')
+                ? (mb_strlen($product_name_) > 25 ? mb_substr($product_name_, 0, 25) . '...' : $product_name_)
+                : (strlen($product_name_) > 25 ? substr($product_name_, 0, 25) . '...' : $product_name_)
+        );
         $this->epaycosuscription->hooks->template->getWoocommerceTemplate(
             'public/checkout/subscription.php',
             [
@@ -681,7 +685,7 @@ class EpaycoSuscription extends AbstractGateway
                 'amount' => $amount,
                 'epayco'  => 'epayco subscription',
                 'shop_name' => $this->get_option('shop_name'),
-                'product_name_' => $product_name_,
+                'product_name_' => $suscriptionDescription,
                 'currency' => $currency,
                 'email_billing' => $email_billing,
                 'redirect_url' => $redirect_url,
