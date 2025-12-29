@@ -52,7 +52,7 @@ class Epayco
         $this->lang = $options["lenguage"];
 
         if (!$this->api_key && !$this->private_key && $this->test && $this->lang) {
-            throw new ErrorException($this->lang, 100);
+           // throw new ErrorException($this->lang, 100);
         }
 
         $this->token = new Token($this);

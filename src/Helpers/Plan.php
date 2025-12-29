@@ -36,11 +36,6 @@ class Plan extends EpaycoSuscription
                     $logger = wc_get_logger();
                     $logger->info("getPlans" . $exception->getMessage());
                 }
-                //echo esc_html($exception->getMessage());
-                if (class_exists('WC_Logger')) {
-                    $logger = wc_get_logger();
-                    $logger->info("Error : " . $exception->getMessage());
-                }
                 wc_add_notice($exception->getMessage(), 'error');
                 //wp_redirect(wc_get_checkout_url());
                 $redirect_url = $order->get_checkout_payment_url(true);
@@ -97,16 +92,33 @@ class Plan extends EpaycoSuscription
                 if (class_exists('WC_Logger')) {
                     $logger->info("plansCreate" . $exception->getMessage());
                 }
-                //echo esc_html($exception->getMessage());
-                if (class_exists('WC_Logger')) {
-                    $logger->info("Error : " . $exception->getMessage());
-                }
                 wc_add_notice($exception->getMessage(), 'error');
                 //wp_redirect(wc_get_checkout_url());
                 $redirect_url = $order->get_checkout_payment_url(true);
                 wp_safe_redirect($redirect_url);
                 exit;  
             }
+        }
+    }
+
+    public function plansUpdate($planId, $order, $newPlan)
+    {
+        try {
+            unset($newPlan[0]['id_plan']);
+            return $this->epaycoSdk->plan->update(
+                (string)strtolower($planId['id_plan']),
+                $newPlan[0]
+            );
+        }catch (Exception $exception) {
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info("getPlans" . $exception->getMessage());
+            }
+            wc_add_notice($exception->getMessage(), 'error');
+            //wp_redirect(wc_get_checkout_url());
+            $redirect_url = $order->get_checkout_payment_url(true);
+            wp_safe_redirect($redirect_url);
+            exit;  
         }
     }
 

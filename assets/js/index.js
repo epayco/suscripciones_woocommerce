@@ -160,7 +160,67 @@ jQuery( function( $ ) {
             });
         });
 
-        idleTimeouts()
+        idleTimeouts();
+
+        const monthInput = document.getElementById('month-value');
+        if (monthInput) {
+            // mejor soporte en móviles
+            monthInput.setAttribute('inputmode', 'numeric');
+            monthInput.setAttribute('pattern', '[0-9]*');
+            // input event: elimina no dígitos y trunca a 2
+            monthInput.addEventListener('input', function () {
+                const cleaned = this.value.replace(/\D+/g, '').slice(0, 2);
+                if (this.value !== cleaned) this.value = cleaned;
+            });
+            // evitar pegar texto no numérico
+            monthInput.addEventListener('paste', function (e) {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text');
+                const cleaned = paste.replace(/\D+/g, '').slice(0, 2);
+                document.execCommand('insertText', false, cleaned);
+            });
+            // bloquear teclas no numéricas (permite control/navigation keys)
+            monthInput.addEventListener('keydown', function (e) {
+                const allowed = ['Backspace','Tab','ArrowLeft','ArrowRight','Delete'];
+                if (allowed.indexOf(e.key) !== -1) return;
+                // si es carácter y no es dígito, bloquear
+                if (e.key.length === 1 && /\D/.test(e.key)) e.preventDefault();
+                // evitar superar 2 dígitos cuando no hay selección
+                if (this.value.length >= 2 && this.selectionStart === this.selectionEnd && e.key.length === 1) {
+                    e.preventDefault();
+                }
+            });
+        }
+
+        const yearInput = document.getElementById('year-value');
+        if (yearInput) {
+            // mejor soporte en móviles
+            yearInput.setAttribute('inputmode', 'numeric');
+            yearInput.setAttribute('pattern', '[0-9]*');
+            // input event: elimina no dígitos y trunca a 4
+            yearInput.addEventListener('input', function () {
+                const cleaned = this.value.replace(/\D+/g, '').slice(0, 4);
+                if (this.value !== cleaned) this.value = cleaned;
+            });
+            // evitar pegar texto no numérico
+            yearInput.addEventListener('paste', function (e) {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text');
+                const cleaned = paste.replace(/\D+/g, '').slice(0, 4);
+                document.execCommand('insertText', false, cleaned);
+            });
+            // bloquear teclas no numéricas (permite control/navigation keys)
+            yearInput.addEventListener('keydown', function (e) {
+                const allowed = ['Backspace','Tab','ArrowLeft','ArrowRight','Delete'];
+                if (allowed.indexOf(e.key) !== -1) return;
+                // si es carácter y no es dígito, bloquear
+                if (e.key.length === 1 && /\D/.test(e.key)) e.preventDefault();
+                // evitar superar 4 dígitos cuando no hay selección
+                if (this.value.length >= 4 && this.selectionStart === this.selectionEnd && e.key.length === 1) {
+                    e.preventDefault();
+                }
+            });
+        }
 
     });
 
@@ -290,8 +350,7 @@ jQuery( function( $ ) {
     }
     async function getPosts($form) {
         return await  new Promise(function(resolve, reject) {
-            enviarData("946c48e2c9cfffe3505f233")
-           /*ePayco.token.create($form, function(error, token) {
+           ePayco.token.create($form, function(error, token) {
                 loading=false;
                 if(!error) {
                     if(error != undefined){
@@ -323,7 +382,7 @@ jQuery( function( $ ) {
                         } 
                     }
                 }
-            });*/
+            });
         });
     }
     $('#send-form').click(function(){
