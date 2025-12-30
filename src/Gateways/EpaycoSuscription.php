@@ -695,313 +695,7 @@ class EpaycoSuscription extends AbstractGateway
         }
     }
 
-    public function getPlans(array $plans)
-    {
-        foreach ($plans as $key => $plan) {
-            try {
-                $plan = $this->epaycoSdk->plan->get(strtolower($plans[$key]['id_plan']));
-                if ($plan->status) {
-                    unset($plans[$key]);
-                    return $plan;
-                } else {
-                    return false;
-                }
-            } catch (Exception $exception) {
-                if (class_exists('WC_Logger')) {
-                    $logger = wc_get_logger();
-                    $logger->info("getPlans" . $exception->getMessage());
-                }
-                echo esc_html($exception->getMessage());
-                if (class_exists('WC_Logger')) {
-                    $logger = wc_get_logger();
-                    $logger->info("Error : " . $exception->getMessage());
-                }
-                die();
-            }
-        }
-    }
-
-    public function getPlansList()
-    {
-        try {
-            $plan = $this->epaycoSdk->plan->getList();
-            if ($plan->status) {
-                return $plan;
-            } else {
-                return false;
-            }
-        } catch (Exception $exception) {
-            if (class_exists('WC_Logger')) {
-                $logger = wc_get_logger();
-                $logger->info("getPlansList" . $exception->getMessage());
-            }
-            echo esc_html($exception->getMessage());
-            if (class_exists('WC_Logger')) {
-                $logger = wc_get_logger();
-                $logger->info("Error : " . $exception->getMessage());
-            }
-            die();
-        }
-    }
-
-    public function getPlanById($plan_id)
-    {
-        try {
-            $plan = $this->epaycoSdk->plan->get(strtolower($plan_id));
-            if ($plan->status) {
-                return $plan;
-            } else {
-                return false;
-            }
-        } catch (Exception $exception) {
-            if (class_exists('WC_Logger')) {
-                $logger = wc_get_logger();
-                $logger->info("getPlanById" . $exception->getMessage());
-            }
-            echo esc_html($exception->getMessage());
-            if (class_exists('WC_Logger')) {
-                $logger = wc_get_logger();
-                $logger->info("Error : " . $exception->getMessage());
-            }
-            die();
-        }
-    }
-
-
-
-
-    public function validateNewPlanData($subscriptions, $order_id, $value, $currency, $plans, $customer, $confirm_url, $order)
-    {
-        global $wpdb;
-
-
-        $subsCreated = $this->planUpdate($plans);
-        if ($subsCreated->success) {
-
-            return $this->process_payment_epayco($plans, $customer, $confirm_url, $subscriptions, $order);
-        }
-        die();
-
-        $table_name = $wpdb->prefix . 'epayco_plans';
-        $wc_order_product_lookup = $wpdb->prefix . "wc_order_product_lookup";
-
-        foreach ($subscriptions as $key => $subscription) {
-            $products = $subscription->get_items();
-            $product_plan = $this->getPlan($products);
-            $product_id_ = $product_plan['id'];
-            $porciones = explode("-", $product_id_);
-            $product_id = $porciones[0];
-        }
-        $sql = 'SELECT * FROM ' . $wc_order_product_lookup . ' WHERE order_id =' . intval($order_id);
-        $cache_key = "order_products_{$order_id}";
-        $cached_results = wp_cache_get($cache_key, 'epayco');
-
-        if ($cached_results === false) {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-            $results = $wpdb->get_results(
-                $wpdb->prepare(
-                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-                    "SELECT * FROM {$wc_order_product_lookup} WHERE order_id = %d",
-                    $order_id
-                ),
-                ARRAY_A
-            );
-
-            wp_cache_set($cache_key, $results, 'epayco', 3600); // Caché por 1 hora
-        } else {
-            $results = $cached_results;
-        }
-        $product_id = $results[0]->product_id ? $results[0]->product_id : $product_id;
-        $query = 'SELECT * FROM ' . $table_name . ' WHERE order_id =' . intval($order_id);
-        $cache_key = "order_data_{$order_id}";
-        $cached_order_data = wp_cache_get($cache_key, 'epayco');
-
-        if ($cached_order_data === false) {
-            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-            $orderData = $wpdb->get_row(
-                $wpdb->prepare(
-                    // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-                    "SELECT * FROM {$table_name} WHERE order_id = %d",
-                    $order_id
-                ),
-                ARRAY_A
-            );
-
-            wp_cache_set($cache_key, $orderData, 'epayco', 3600); // Caché por 1 hora
-        } else {
-            $orderData = $cached_order_data;
-        }
-
-        if (count($orderData) == 0) {
-            if ($value) {
-                $savePlanId_ = $this->savePlanId($order_id, $plans, $subscriptions, null, $product_id);
-                if ($savePlanId_) {
-                    $cache_key = "order_data_{$order_id}";
-                    $cached_order_data = wp_cache_get($cache_key, 'epayco');
-
-                    if ($cached_order_data === false) {
-                        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
-                        $orderData = $wpdb->get_row(
-                            $wpdb->prepare(
-                                // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-                                "SELECT * FROM {$table_name} WHERE order_id = %d",
-                                $order_id
-                            ),
-                            ARRAY_A
-                        );
-
-                        wp_cache_set($cache_key, $orderData, 'epayco', 3600); // Caché por 1 hora
-                    } else {
-                        $orderData = $cached_order_data;
-                    }
-
-                    if (count($orderData) == 0) {
-                        return false;
-                    } else {
-                        foreach ($plans as $plan) {
-                            $plan_currency_cart = $plan['currency'];
-                            $plan_interval_cart = $plan['interval'];
-                            $plan_interval_count_cart = $plan['interval_count'];
-                            $plan_trial_days_cart = $plan['trial_days'];
-                            $plan_name = $plan['name'];
-                            $plan_description = $plan['description'];
-                        }
-
-                        $newPlanToCreated[0] = [
-                            "id_plan" => (string)$orderData[0]->plan_id,
-                            "name" => $plan_name,
-                            "description" => $plan_description,
-                            "currency" => $plan_currency_cart,
-                            "trial_days" => intval($plan_trial_days_cart),
-                            "amount" => $orderData[0]->amount,
-                            "interval" => $plan_interval_cart,
-                            "interval_count" => $plan_interval_count_cart,
-                        ];
-
-                        $order = new \WC_Order($order_id);
-                        $newPLan = $this->plansCreate($newPlanToCreated, $order);
-                        if ($newPLan->status) {
-                            $getPlans_ = $this->getPlans($newPlanToCreated);
-                            if ($getPlans_) {
-                                return $this->process_payment_epayco($newPlanToCreated, $customer, $confirm_url, $subscriptions, $order);
-                            }
-                        }
-                    }
-                } else {
-                    return false;
-                }
-            }
-        } else {
-
-            $plan_id_s = $orderData[0]->plan_id;
-            $getPlanById_ = $this->getPlanById($plan_id_s);
-            if ($getPlanById_->status) {
-                $newPlanToCreated_[0] = [
-                    "id_plan" => $getPlanById_->plan->id_plan,
-                    "name" => $getPlanById_->plan->name,
-                    "description" => $getPlanById_->plan->description,
-                    "amount" => $getPlanById_->plan->amount,
-                    "currency" => $getPlanById_->plan->currency,
-                    "interval_count" => $getPlanById_->plan->interval_count,
-                    "interval" => $getPlanById_->plan->interval,
-                    "trial_days" => $getPlanById_->plan->id_plan,
-                ];
-
-                return $this->process_payment_epayco($newPlanToCreated_, $customer, $confirm_url, $subscriptions, $order);
-            }
-        }
-    }
-
-
-
-    public function plansCreate(array $plans,$order)
-    {
-        if (class_exists('WC_Logger')) {
-            $logger = wc_get_logger();
-        }
-        foreach ($plans as $plan) {
-            try {
-                $body = [
-                    "id_plan" => (string)strtolower($plan['id_plan']),
-                    "name" => (string)$plan['name'],
-                    "description" => (string)$plan['description'],
-                    "amount" => $plan['amount'],
-                    "currency" => $plan['currency'],
-                    "interval" => $plan['interval'],
-                    "interval_count" => $plan['interval_count'],
-                    "trial_days" => $plan['trial_days'],
-                    "iva" => $plan['iva'],
-                ];
-                 if($order->get_total() > 0){
-                    $body = array_merge($body,
-                        [
-                            "firstPaymentAdditionalCost" => $plan['firstPaymentAdditionalCost'],
-                            "greetMessage" => "gracias por tu compra con epayco"
-                        ],
-                    );
-                }
-                $plan_ = $this->epaycoSdk->plan->create($body);
-
-                if (class_exists('WC_Logger')) {
-                    //$logger->info(json_encode($plan_));
-                }
-                return $plan_;
-            } catch (Exception $exception) {
-                if (class_exists('WC_Logger')) {
-                    $logger->info("plansCreate" . $exception->getMessage());
-                }
-                echo esc_html($exception->getMessage());
-                if (class_exists('WC_Logger')) {
-                    $logger->info("Error : " . $exception->getMessage());
-                }
-                die();
-            }
-        }
-    }
-
-
-
-
-    
-
-    public function planUpdate(array $plans)
-    {
-        foreach ($plans as $plan) {
-            try {
-                $plan_ = $this->epaycoSdk->plan->update(
-                    (string)strtolower($plan['id_plan']),
-                    [
-                        "name" => (string)$plan['name'],
-                        "description" => (string)$plan['description'],
-                        "amount" => $plan['amount'],
-                        "currency" => $plan['currency'],
-                        "interval" => $plan['interval'],
-                        "interval_count" => $plan['interval_count'],
-                        "trial_days" => $plan['trial_days'],
-                        "iva" => $plan['iva'],
-                    ]
-                );
-
-
-
-                return $plan_;
-            } catch (Exception $exception) {
-                if (class_exists('WC_Logger')) {
-                    $logger = wc_get_logger();
-                    $logger->info("planUpdate" . $exception->getMessage());
-                }
-                echo esc_html($exception->getMessage());
-                if (class_exists('WC_Logger')) {
-                    $logger = wc_get_logger();
-                    $logger->info("Error : " . $exception->getMessage());
-                }
-                die();
-            }
-        }
-    }
-
-
-
+ 
     public function cancelSubscription($subscription_id)
     {
         try {
@@ -1116,17 +810,12 @@ class EpaycoSuscription extends AbstractGateway
             $plans = [];
             foreach ($subscriptions as $key => $subscription) {
                 $mode = $this->detectSubscriptionTaxMode($subscription, $order);
-                $total_discount = $subscription->get_total_discount();
-                $total = $subscription->get_base_data()['total'];
-                $tax = $subscription->get_base_data()['total_tax'] ?? 0;
+                $total_discount = $mode['total_discount'] ?? 0;
+                //$total = $mode['subscription_total'] ?? $order->get_total();
+                $total = $mode['base_total'] ?? $order->get_total();
+                $tax = $mode['subscription_tax'] ?? 0;
 
-                $subtotal = $total - $tax;
-                if ($subtotal > 0 && $tax > 0) {
-                    $tax_percentage = ($tax / $subtotal) * 100;
-                    $tax_percentage = intval($tax_percentage); // Redondear a 2 decimales
-                } else {
-                    $tax_percentage = 0;
-                }
+                $tax_percentage = $mode['tax_percentage'] ?? 0;
                 $order_currency = $subscription->get_currency();
                 $products = $subscription->get_items();
                 $product_plan = $this->getPlan($products);
@@ -1158,16 +847,17 @@ class EpaycoSuscription extends AbstractGateway
                     "ico" => (string)$mode['ico'],
                     "trial_days" => (string)$trial_days,
                 ];
-                if($order->get_total() > 0){
-                    $firstPaymentAdditionalCost = $order->get_total() - $total;
-                    $plans[] = array_merge($plan,
+                $plan = array_merge($plan, $this->intervalAmount($subscription));
+                $firstPaymentAdditionalCost = $mode['signup'] ?? 0;
+                if($firstPaymentAdditionalCost > 0){
+                    $plans = array_merge($plan,
                         [
                             "firstPaymentAdditionalCost" => (string)$firstPaymentAdditionalCost,
+                            "amount" => (string)($total-$firstPaymentAdditionalCost),
                             //"iva" => (string)$iva,
                             //"baseTax" => $base_tax,
                             "greetMessage" => "gracias por tu compra con ePayco"
-                        ],
-                        $this->intervalAmount($subscription)
+                        ]                    
                     );
                 }else{
                     $plans = $plan;
@@ -1209,15 +899,27 @@ class EpaycoSuscription extends AbstractGateway
             }
         }
 
+        $subtotal = $subscription_total - $subscription_tax;
+        if ($subtotal > 0 && $subscription_tax > 0) {
+            $tax_percentage = ($subscription_tax / $subtotal) * 100;
+            $tax_percentage = intval($tax_percentage); // Redondear a 2 decimales
+        } else {
+            $tax_percentage = 0;
+        }
+
         //$iva = $iva !== 0 ? $iva :$order->get_total_tax();
         //$base_tax = ($iva !== 0) ? ($order->get_total() - $order->get_total_tax()): (($ico !== 0) ? ($order->get_total() - $order->get_total_tax()): $order->get_subtotal() );
         $base_tax = $order->get_total() - $iva - $ico;
 
+        $signUp = $this->getSubscriptionSignUpFee($subscription, $order);
         $result = [
             'subscription' => $subscription_includes_tax ? 'included' : 'excluded',
             'store_default' => $store_includes_tax ? 'included' : 'excluded',
             'subscription_total' => $subscription_total,
             'subscription_tax' => $subscription_tax,
+            'total_discount' => $subscription->get_total_discount(),
+            'signup' => $signUp,
+            'tax_percentage' => $tax_percentage,
             'iva' => $iva,
             'ico' => $ico,
             'total' => $order->get_total(),
@@ -1271,6 +973,59 @@ class EpaycoSuscription extends AbstractGateway
         return $result;
     }
 
+    /**
+     * Devuelve el valor del sign-up fee (si existe) para una suscripción.
+     * Si no se encuentra explícitamente, intenta calcularlo como (order_total - recurring_total).
+     *
+     * @param \WC_Subscription $subscription
+     * @param \WC_Order|null $order  (opcional) order vinculada al primer pago
+     * @return float
+     */
+    public function getSubscriptionSignUpFee(\WC_Subscription $subscription, \WC_Order $order = null): float
+    {
+        // 1) buscar en meta de la suscripción
+        $metaKeys = ['_subscription_sign_up_fee', '_sign_up_fee', 'sign_up_fee'];
+        foreach ($metaKeys as $key) {
+            $v = get_post_meta($subscription->get_id(), $key, true);
+            if ($v !== '' && $v !== null) {
+                return round(floatval($v), 2);
+            }
+        }
+
+        // 2) revisar productos/items de la suscripción
+        foreach ($subscription->get_items() as $item) {
+            $product = is_object($item) ? $item->get_product() : (isset($item['product_id']) ? wc_get_product($item['product_id']) : null);
+            if ($product instanceof \WC_Product) {
+                // si la clase del producto expone get_sign_up_fee()
+                if (method_exists($product, 'get_sign_up_fee')) {
+                    $fee = $product->get_sign_up_fee();
+                    if ($fee !== '' && floatval($fee) > 0) {
+                        return round(floatval($fee), 2);
+                    }
+                }
+                // fallback a meta del producto
+                $pm = get_post_meta($product->get_id(), '_sign_up_fee', true);
+                if ($pm !== '' && $pm !== null) {
+                    return round(floatval($pm), 2);
+                }
+            }
+        }
+
+        // 3) fallback: si tenemos la orden del primer pago calcular la diferencia
+        //    entre lo cobrado en la orden y el total recurrente de la suscripción
+        if ($order instanceof \WC_Order) {
+            $order_total = floatval($order->get_total());
+            $recurring_total = floatval(method_exists($subscription, 'get_total') ? $subscription->get_total() : ($subscription->get_base_data()['total'] ?? 0));
+            $signup = $order_total - $recurring_total;
+            if ($signup > 0) {
+                return round($signup, 2);
+            }
+        }
+
+        // 4) no encontrado
+        return 0.0;
+    }
+
     public function getPlan($products)
     {
         $product_plan = [];
@@ -1294,7 +1049,6 @@ class EpaycoSuscription extends AbstractGateway
     {
         return [
             "interval" => $subscription->get_billing_period(),
-            "amount" => $subscription->get_total(),
             "interval_count" => $subscription->get_billing_interval()
         ];
     }

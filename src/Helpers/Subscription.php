@@ -187,4 +187,23 @@ class Subscription extends EpaycoSuscription
         }
     }
 
+    public function cancelSubscription($subscription_id)
+    {
+        try {
+            $result = $this->epaycoSdk->subscriptions->cancel($subscription_id);
+            error_log("ePayco cancel result: " . print_r($result, true));
+        } catch (Exception $exception) {
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
+            }
+            error_log("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
+            }
+            throw $exception;
+        }
+    }
+
 }

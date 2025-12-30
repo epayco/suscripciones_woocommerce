@@ -172,16 +172,15 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
             $plan_amount_cart = $this->planInfo['amount'];
             $plan_id_cart = $this->planInfo['id_plan'];
             $plan_currency_cart = $this->planInfo['currency'];
-            foreach($getPlans as $plan_){
-                $plan_amount_epayco = $plan_['amount'];
-                $plan_id_epayco =$plan_['id_plan'];
-                $plan_currency_epayco = $plan_['currency'];
-            }
+            $plan_amount_epayco = $getPlans['amount'];
+            $plan_id_epayco =$getPlans['id_plan'];
+            $plan_currency_epayco = $getPlans['currency'];
+            
             $this->handlerSubscription['plan'] = $this->planInfo;
             $this->handlerSubscription['customer'] = $this->customerData ?? [];
             if ($plan_id_cart == $plan_id_epayco) {
                 if (
-                    (intval($plan_amount_cart) == $plan_amount_epayco)
+                    ((float)$plan_amount_cart == (float)$plan_amount_epayco)
                     && ( strtolower($plan_currency_cart) == strtolower($plan_currency_epayco) )
                     ) {
                     // Preparar handler para procesar (create)
@@ -250,8 +249,23 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
         }
     }
 
+    public function cancelSubscription($subscription_id)
+    {
+        try {
+            $this->subscription->cancelSubscription($subscription_id);
+        } catch (\Exception $exception) {
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info($exception->getMessage());
+            }
+        }
+    }
+
     public function updatePlan($subscriptions, $plans){
         try{
+            /* 
+            actualizar informacion del producto
+            */
             $updatedPlan = $this->plan->plansUpdate($this->planInfo, $this->orderEpayco, $plans);
             if($updatedPlan->status){
                 //$this->addPlanInfo($updatedPlan->data);
