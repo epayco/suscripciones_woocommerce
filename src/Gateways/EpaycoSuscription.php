@@ -909,7 +909,7 @@ class EpaycoSuscription extends AbstractGateway
 
         //$iva = $iva !== 0 ? $iva :$order->get_total_tax();
         //$base_tax = ($iva !== 0) ? ($order->get_total() - $order->get_total_tax()): (($ico !== 0) ? ($order->get_total() - $order->get_total_tax()): $order->get_subtotal() );
-        $base_tax = $order->get_total() - $iva - $ico;
+        $base_total = $order->get_total() > 0 ? $order->get_total() : $subscription_total ;
 
         $signUp = $this->getSubscriptionSignUpFee($subscription, $order);
         $result = [
@@ -922,8 +922,8 @@ class EpaycoSuscription extends AbstractGateway
             'tax_percentage' => $tax_percentage,
             'iva' => $iva,
             'ico' => $ico,
-            'total' => $order->get_total(),
-            'base_total' => $base_tax, 
+            'total' => $base_total,
+            'base_total' => $base_total -($iva - $ico), 
             'items' => [],
         ];
 
