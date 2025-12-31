@@ -822,7 +822,7 @@ class EpaycoSuscription extends AbstractGateway
                 $quantity = $product_plan['quantity'];
                 $product_name = $product_plan['name'];
                 $product_id = $product_plan['id'];
-                $trial_days = $this->getTrialDays($subscription);
+                $trial_days = $mode['trial_days'];
                 $plan_code = "$product_name-$product_id";
                 $plan_code = $trial_days > 0 ? "$product_name-$product_id-$trial_days" : $plan_code;
                 $plan_code = get_option('woocommerce_currency') !== $order_currency ? "$plan_code-$order_currency" : $plan_code;
@@ -850,10 +850,15 @@ class EpaycoSuscription extends AbstractGateway
                 $plan = array_merge($plan, $this->intervalAmount($subscription));
                 $firstPaymentAdditionalCost = $mode['signup'] ?? 0;
                 if($firstPaymentAdditionalCost > 0){
+                    if(floatval($total) > floatval($firstPaymentAdditionalCost)){
+                        $newPayment =  $total-$firstPaymentAdditionalCost;
+                    }else{
+                        $newPayment =  $firstPaymentAdditionalCost-$total;
+                    }
                     $plans = array_merge($plan,
                         [
                             "firstPaymentAdditionalCost" => (string)$firstPaymentAdditionalCost,
-                            "amount" => (string)($total-$firstPaymentAdditionalCost),
+                            "amount" => (string)($newPayment > 0 ? $newPayment : $total),
                             //"iva" => (string)$iva,
                             //"baseTax" => $base_tax,
                             "greetMessage" => "gracias por tu compra con ePayco"
@@ -912,14 +917,23 @@ class EpaycoSuscription extends AbstractGateway
         $base_total = $order->get_total() > 0 ? $order->get_total() : $subscription_total ;
 
         $signUp = $this->getSubscriptionSignUpFee($subscription, $order);
+        $trial_days = $this->getTrialDays($subscription);
+        if($trial_days > 0 && $subscription_tax > 0){
+            $base_total += $subscription_total;
+            //$iva = $base_total * ($tax_percentage / 100);
+            $iva = $subscription_tax * 2;
+        }
+
         $result = [
             'subscription' => $subscription_includes_tax ? 'included' : 'excluded',
             'store_default' => $store_includes_tax ? 'included' : 'excluded',
             'subscription_total' => $subscription_total,
+            'subscription_subtotal' => $subtotal,
             'subscription_tax' => $subscription_tax,
             'total_discount' => $subscription->get_total_discount(),
             'signup' => $signUp,
             'tax_percentage' => $tax_percentage,
+            "trial_days" => $trial_days,
             'iva' => $iva,
             'ico' => $ico,
             'total' => $base_total,
