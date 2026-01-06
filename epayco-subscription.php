@@ -502,24 +502,6 @@ add_action('woocommerce_checkout_update_order_meta', function ($order_id) {
     }
 });
 
-function enqueue_purchase_detail_script() {
-    wp_register_script(
-        'epayco-script',
-        'https://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js',
-        array('jquery'),
-        '1.0',
-        true
-    );
-    wp_enqueue_script('epayco-script');
-
-    if (wp_script_is('epayco-script', 'enqueued')) {
-        error_log('ePayco DetailPurchase script has been registered and enqueued successfully.');
-    } else {
-        error_log('ePayco DetailPurchase script was NOT registered.');
-    }
-}
-add_action('wp_enqueue_scripts', 'enqueue_purchase_detail_script');
-
 function epayco_enqueue_styles()
 {
     if (!function_exists('plugins_url') || !function_exists('wp_enqueue_style')) {
@@ -562,6 +544,23 @@ function enqueue_epayco_epaycojs_script()
     wp_enqueue_script('epayco-js', esc_url($epaycojs), array(), '1.0.0', true); // Set version to avoid caching issues
 }
 add_action('wp_enqueue_scripts', 'enqueue_epayco_epaycojs_script');
+
+// Enqueue DetailPurchase script from ePayco CDN
+function enqueue_epayco_detail_purchase_script()
+{
+    if (!function_exists('wp_enqueue_script')) {
+        return; // Ensure WordPress functions are available
+    }
+    
+    wp_enqueue_script(
+        'epayco-detail-purchase',
+        'https://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js',
+        array('jquery'),
+        '1.0',
+        true
+    );
+}
+add_action('wp_enqueue_scripts', 'enqueue_epayco_detail_purchase_script');
 
 add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
     if ($attachment_id === 0) {
