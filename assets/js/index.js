@@ -8,6 +8,7 @@ jQuery( function( $ ) {
     const esModalButtons = document.querySelectorAll('[data-es-button]')
     const enModalButtons = document.querySelectorAll('[data-en-button]')
     var info_lenguage = document.getElementById("info_lenguage")
+    var header_modal = document.getElementsByClassName("header-modal")
     const overlay = document.getElementById('overlay')
     const loadoverlay_ = document.getElementById('loadoverlay')
     const movil = document.getElementById('movil');
@@ -293,11 +294,37 @@ jQuery( function( $ ) {
         })
     })
 
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.header-modal');
+      if (btn) {
+        divFoo.style.display = 'none';
+        $("#foo").removeClass("openCountry");
+      }
+    });
+    
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.scroll-content');
+      if (btn) {
+        if(divFoo.style.display == 'block'){
+            $("#foo").addClass("openCountry");
+        }else{
+            $("#foo").removeClass("openCountry");
+        }
+        if(divFoo.style.display == 'block' && 
+            divFoo.className == 'openCountry'
+            ){
+            divFoo.style.display = 'none';
+        }
+        
+      }
+    });
+    
     overlay.addEventListener('click', (button) =>{
-        const modals = button.closest('.centered.active')
-        modals.forEach(modal =>{
-            closeModal(modal)
-        })
+        /*const activeModals = document.querySelectorAll('.centered.active');
+        activeModals.forEach(modal =>{
+            closeModal(modal);
+        });*/
+        divFoo.style.display = "none";
     })
 
     closeModalButtons.forEach(button => {
