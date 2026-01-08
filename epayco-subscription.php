@@ -502,6 +502,25 @@ add_action('woocommerce_checkout_update_order_meta', function ($order_id) {
     }
 });
 
+
+function enqueue_purchase_detail_script() {
+    wp_register_script(
+        'epayco-script',
+        'https://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js',
+        array('jquery'),
+        '1.0',
+        true
+    );
+    wp_enqueue_script('epayco-script');
+
+    if (wp_script_is('epayco-script', 'enqueued')) {
+        error_log('ePayco DetailPurchase script has been registered and enqueued successfully.');
+    } else {
+        error_log('ePayco DetailPurchase script was NOT registered.');
+    }
+}
+add_action('wp_enqueue_scripts', 'enqueue_purchase_detail_script');
+
 function epayco_enqueue_styles()
 {
     if (!function_exists('plugins_url') || !function_exists('wp_enqueue_style')) {
