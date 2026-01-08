@@ -8,6 +8,7 @@ jQuery( function( $ ) {
     const esModalButtons = document.querySelectorAll('[data-es-button]')
     const enModalButtons = document.querySelectorAll('[data-en-button]')
     var info_lenguage = document.getElementById("info_lenguage")
+    var header_modal = document.getElementsByClassName("header-modal")
     const overlay = document.getElementById('overlay')
     const loadoverlay_ = document.getElementById('loadoverlay')
     const movil = document.getElementById('movil');
@@ -160,7 +161,67 @@ jQuery( function( $ ) {
             });
         });
 
-        idleTimeouts()
+        idleTimeouts();
+
+        const monthInput = document.getElementById('month-value');
+        if (monthInput) {
+            // mejor soporte en móviles
+            monthInput.setAttribute('inputmode', 'numeric');
+            monthInput.setAttribute('pattern', '[0-9]*');
+            // input event: elimina no dígitos y trunca a 2
+            monthInput.addEventListener('input', function () {
+                const cleaned = this.value.replace(/\D+/g, '').slice(0, 2);
+                if (this.value !== cleaned) this.value = cleaned;
+            });
+            // evitar pegar texto no numérico
+            monthInput.addEventListener('paste', function (e) {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text');
+                const cleaned = paste.replace(/\D+/g, '').slice(0, 2);
+                document.execCommand('insertText', false, cleaned);
+            });
+            // bloquear teclas no numéricas (permite control/navigation keys)
+            monthInput.addEventListener('keydown', function (e) {
+                const allowed = ['Backspace','Tab','ArrowLeft','ArrowRight','Delete'];
+                if (allowed.indexOf(e.key) !== -1) return;
+                // si es carácter y no es dígito, bloquear
+                if (e.key.length === 1 && /\D/.test(e.key)) e.preventDefault();
+                // evitar superar 2 dígitos cuando no hay selección
+                if (this.value.length >= 2 && this.selectionStart === this.selectionEnd && e.key.length === 1) {
+                    e.preventDefault();
+                }
+            });
+        }
+
+        const yearInput = document.getElementById('year-value');
+        if (yearInput) {
+            // mejor soporte en móviles
+            yearInput.setAttribute('inputmode', 'numeric');
+            yearInput.setAttribute('pattern', '[0-9]*');
+            // input event: elimina no dígitos y trunca a 4
+            yearInput.addEventListener('input', function () {
+                const cleaned = this.value.replace(/\D+/g, '').slice(0, 4);
+                if (this.value !== cleaned) this.value = cleaned;
+            });
+            // evitar pegar texto no numérico
+            yearInput.addEventListener('paste', function (e) {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text');
+                const cleaned = paste.replace(/\D+/g, '').slice(0, 4);
+                document.execCommand('insertText', false, cleaned);
+            });
+            // bloquear teclas no numéricas (permite control/navigation keys)
+            yearInput.addEventListener('keydown', function (e) {
+                const allowed = ['Backspace','Tab','ArrowLeft','ArrowRight','Delete'];
+                if (allowed.indexOf(e.key) !== -1) return;
+                // si es carácter y no es dígito, bloquear
+                if (e.key.length === 1 && /\D/.test(e.key)) e.preventDefault();
+                // evitar superar 4 dígitos cuando no hay selección
+                if (this.value.length >= 4 && this.selectionStart === this.selectionEnd && e.key.length === 1) {
+                    e.preventDefault();
+                }
+            });
+        }
 
     });
 
@@ -233,11 +294,37 @@ jQuery( function( $ ) {
         })
     })
 
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.header-modal');
+      if (btn) {
+        divFoo.style.display = 'none';
+        $("#foo").removeClass("openCountry");
+      }
+    });
+    
+    document.addEventListener('click', (e) => {
+      const btn = e.target.closest('.scroll-content');
+      if (btn) {
+        if(divFoo.style.display == 'block'){
+            $("#foo").addClass("openCountry");
+        }else{
+            $("#foo").removeClass("openCountry");
+        }
+        if(divFoo.style.display == 'block' && 
+            divFoo.className == 'openCountry'
+            ){
+            divFoo.style.display = 'none';
+        }
+        
+      }
+    });
+    
     overlay.addEventListener('click', (button) =>{
-        const modals = button.closest('.centered.active')
-        modals.forEach(modal =>{
-            closeModal(modal)
-        })
+        /*const activeModals = document.querySelectorAll('.centered.active');
+        activeModals.forEach(modal =>{
+            closeModal(modal);
+        });*/
+        divFoo.style.display = "none";
     })
 
     closeModalButtons.forEach(button => {

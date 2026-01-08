@@ -3,8 +3,8 @@
 namespace Epayco;
 
 
-use Epayco\Util;
 use Epayco\Utils\PaycoAes;
+use Epayco\Util;
 use Epayco\Exceptions\ErrorException;
 use WpOrg\Requests\Requests;
 
@@ -15,7 +15,8 @@ class Client extends GraphqlClient
 {
 
     const BASE_URL = "https://eks-subscription-api-lumen-service.epayco.io";
-    const BASE_URL_SECURE = "https://eks-rest-pagos-service.epayco.io/restpagos";
+    const BASE_URL_SECURE = "https://eks-rest-pagos-service.epayco.io";
+    const ENTORNO = "/restpagos";
     const BASE_URL_APIFY = "https://eks-apify-service.epayco.io";
     const IV = "0000000000000000";
     const LENGUAGE = "php";
@@ -49,8 +50,7 @@ class Client extends GraphqlClient
          * Resources ip, traslate keys
          */
         $util = new Util();
-        if (!is_null($data) && is_array($data) && !isset($data['extras_epayco'])) {
-            $data['extras_epayco'] = array();
+        if ($method == "POST" && !is_null($data) && is_array($data) && !isset($data['extras_epayco'])) {
             $data['extras_epayco'] = ["extra5" => "P42"];
         }
         /**
@@ -96,8 +96,9 @@ class Client extends GraphqlClient
         } catch (\Exception $e) {
             $data = array(
                 "status" => false,
-                "message" => $e->getMessage(),
-                "data" => array()
+                "message" => "Error get bearer_token: " ? "No autorizado, revisa tus credenciales" : $e->getMessage(),
+                "status_code" => $e->getCode(),
+                "data" => isset($errors['data']) ? $errors['data'] : [],
             );
             $objectReturnError = (object)$data;
             return $objectReturnError;
@@ -117,31 +118,31 @@ class Client extends GraphqlClient
 
             if ($method == "GET") {
                 if ($apify) {
-                    $_url = Client::BASE_URL_APIFY . $url;
+                    $_url = $this->getEpaycoBaseApify(Client::BASE_URL_APIFY) . $url;
                 } elseif ($switch) {
-                    $_url = Client::BASE_URL_SECURE . $url;
+                    $_url = $this->getEpaycoSecureBaseUrl(Client::BASE_URL_SECURE) . $this->getEpaycoEntorno(Client::ENTORNO) .  $url;
                 } else {
-                    $_url = Client::BASE_URL . $url;
+                    $_url = $this->getEpaycoBaseUrl(Client::BASE_URL) . $url;
                 }
 
                 $response = Requests::get($_url, $headers, $options);
             } elseif ($method == "POST") {
                 if ($apify) {
-                    $response = Requests::post(Client::BASE_URL_APIFY . $url, $headers, json_encode($data), $options);
+                    $response = Requests::post($this->getEpaycoBaseApify(Client::BASE_URL_APIFY) . $url, $headers, json_encode($data), $options);
                 } elseif ($switch) {
                     $data = $util->mergeSet($data, $test, $lang, $private_key, $api_key, $cash);
 
-                    $response = Requests::post(Client::BASE_URL_SECURE . $url, $headers, json_encode($data), $options);
+                    $response = Requests::post($this->getEpaycoSecureBaseUrl(Client::BASE_URL_SECURE) . $this->getEpaycoEntorno(Client::ENTORNO) . $url, $headers, json_encode($data), $options);
                 } else {
 
                     if (!$card) {
                         $data["ip"] = isset($data["ip"]) ? $data["ip"] : getHostByName(getHostName());
                         $data["test"] = $test;
                     }
-                    $response = Requests::post(Client::BASE_URL . $url, $headers, json_encode($data), $options);
+                    $response = Requests::post($this->getEpaycoBaseUrl(Client::BASE_URL) . $url, $headers, json_encode($data), $options);
                 }
             } elseif ($method == "DELETE") {
-                $response = Requests::delete(Client::BASE_URL . $url, $headers, $options);
+                $response = Requests::delete($this->getEpaycoBaseUrl(Client::BASE_URL) . $url, $headers, $options);
             }
         } catch (\Exception $e) {
             throw new ErrorException($e->getMessage(), $e->getCode());
@@ -151,73 +152,77 @@ class Client extends GraphqlClient
                 if ($method == "DELETE") {
                     return $response->status_code == 204 || $response->status_code == 200;
                 }
+                // Return decoded response body instead of $response->data->raw_body
                 return json_decode($response->body);
             }
-            if ($response->status_code >= 400 && $response->status_code < 500) {
+
+            if ($response->status_code >= 400 && $response->status_code < 600) {
                 $body = $response->body;
-                error_log("checkout_error" . json_encode($body));
-                if (class_exists('WC_Logger')) {
-                    $logger = wc_get_logger();
-                    $logger->info("checkout_error" . json_encode($body));
-                }
+
 
                 if (empty($body)) {
                     $responseDataBody = array(
                         "status" => false,
                         "message" => "La respuesta del servidor está vacía o no es válida.",
-                        "data" => []
+                        "data" =>  isset($errors['data']) ? $errors['data'] : [],
+                        
                     );
                     return json_encode($responseDataBody, JSON_PRETTY_PRINT);
                 }
 
-                $decoded = (array)json_decode($body, true);
-                $message = 'Ocurrió un error procesando el pago.';
+                $errors = (array)json_decode($body);
+
 
                 $error = "Ocurrió un error, por favor contactar con soporte.";
 
-                if (is_array($decoded)) {
-                    $message = $decoded['message'] ?? $message;
-                    $errores_listados = [];
-                    if (isset($decoded['data']['errors']) && is_array($decoded['data']['errors'])) {
-                        foreach ($decoded['data']['errors'] as $campo => $mensajes) {
-                            foreach ($mensajes as $msg) {
-                                $errores_listados[] = ucfirst($campo) . ': ' . $msg;
-                            }
-                        }
-                    }
-                    if (isset($decoded['data']->errors) && is_array($decoded['data']->errors)) {
-                        foreach ($decoded['data']->errors as $campo => $mensajes) {
-                            foreach ($mensajes as $msg) {
-                                $errores_listados[] = ucfirst($campo) . ': ' . $msg;
-                            }
-                        }
-                    }
+                switch ($response->status_code) {
+                    case 400:
+                        $error = isset($errors['message'])
+                            ? $errors['message']
+                            : (isset($errors['errors'][0])
+                                ? $errors['errors'][0]
+                                : "Solicitud incorrecta, por favor verifica los datos enviados");
+                        break;
+                    case 401:
+                        $error = isset($errors['message'])
+                            ? $errors['message']
+                            : (isset($errors['errors'][0])
+                                ? $errors['errors'][0]
+                                : "No autorizado, revisa tus credenciales");
+                        break;
+                    case 403:
+                        $error = isset($errors['message'])
+                            ? $errors['message']
+                            : (isset($errors['errors'][0])
+                                ? $errors['errors'][0]
+                                : "Acceso prohibido, no tienes permisos para esta acción");
+                        break;
+                    case 404:
+                        $error = "La ruta en la que estás realizando la petición no existe";
+                        break;
+                    case 405:
+                        $error = isset($errors['message'])
+                            ? $errors['message']
+                            : (isset($errors['errors'][0])
+                                ? $errors['errors'][0]
+                                : "Método no permitido en esta ruta");
+                        break;
+                    default:
+                        $error = "Error inesperado del servidor (HTTP {$response->status_code})";
+                        break;
                 }
-                /*
-                $errors_list = isset($errors['data']['errors']) ? $errors['data']['errors'] :( isset($errors['data']->errors) ? $errors['data']->errors : []);
-                $errorMessages = [];
-                foreach ($errors_list as $field => $messages) {
-                    foreach ($messages as $msg) {
-                        $errorMessages[] = ucfirst($field) . ': ' . $msg;
-                    }
-                }
-                 $errorMessage = $message . ' → ' . implode(' | ', $errorMessages);
-                */
 
-                $errorMessage = $message;
-                if (!empty($errores_listados)) {
-                    $errorMessage .=  implode(' | ', $errores_listados);
-                }
-                return (object)[
+                $responseData = array(
                     "status" => false,
-                    "message" => $errorMessage,
-                    "data" => (object)[]
-                ];
+                    "message" => $error,
+                    "data" => isset($errors['data']) ? $errors['data'] : [],
+                    "status_code" => $response->status_code
+                );
+
+                return json_encode($responseData, JSON_PRETTY_PRINT);
             }
         } catch (\Exception $e) {
             throw new ErrorException($e->getMessage(), $e->getCode());
-        } catch (\Error $error) {
-            throw new ErrorException($error->getMessage(), $error->getCode());
         }
     }
 
@@ -275,19 +280,25 @@ class Client extends GraphqlClient
             $headers["Authorization"] = "Basic " . $token;
             $data = [];
         }
-        $url = $apify ? Client::BASE_URL_APIFY . "/login" : Client::BASE_URL . "/v1/auth/login";
+        $url = $apify ? $this->getEpaycoBaseApify(Client::BASE_URL_APIFY) . "/login" : $this->getEpaycoBaseUrl(Client::BASE_URL) . "/v1/auth/login";
         $response = Requests::post($url, $headers, json_encode($data), $options);
 
         return isset($response->body) ? $response->body : false;
     }
 
+
     protected function getEpaycoSecureBaseUrl($default)
     {
-        return $default;
+        return getenv('BASE_URL_SECURE_SDK') ?: $default;
+    }
+
+    protected function getEpaycoEntorno($default)
+    {
+        return getenv('BASE_URL_ENTORNO_SDK') ?: $default;
     }
 
     protected function getEpaycoBaseApify($default)
     {
-        return $default;
+        return getenv('BASE_APIFY_SDK') ?: $default;
     }
 }

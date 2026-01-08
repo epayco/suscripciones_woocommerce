@@ -1,5 +1,25 @@
 {
+    "name": "epayco/woocmmerce-subscription",
+    "description": "Epayco gateway for Woocommerce subscription processing library",
+    "type": "library",
     "require": {
-        "epayco/epayco-php": "^1.6"
+        "epayco/epayco-php": "dev-develop"
+    },
+    "license": "MIT",
+    "authors": [
+        {
+            "name": "Ricardo Saldarriaga"
+        }
+    ],
+    "minimum-stability": "stable",
+  "autoload": {
+    "psr-4": { 
+        "EpaycoSubscription\\Woocommerce\\" : "src/"    
+    }
+  },
+    "config": {
+        "allow-plugins": {
+            "php-http/discovery": false
+        }
     }
 }
