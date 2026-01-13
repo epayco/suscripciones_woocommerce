@@ -320,10 +320,6 @@ jQuery( function( $ ) {
     });
     
     overlay.addEventListener('click', (button) =>{
-        /*const activeModals = document.querySelectorAll('.centered.active');
-        activeModals.forEach(modal =>{
-            closeModal(modal);
-        });*/
         divFoo.style.display = "none";
     })
 
@@ -496,5 +492,4 @@ jQuery( function( $ ) {
             form.submit();
         }, 3000);
     }
-
 });
