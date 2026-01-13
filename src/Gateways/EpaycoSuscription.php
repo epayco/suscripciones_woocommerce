@@ -675,6 +675,11 @@ class EpaycoSuscription extends AbstractGateway
                 ? (mb_strlen($product_name_) > 25 ? mb_substr($product_name_, 0, 25) . '...' : $product_name_)
                 : (strlen($product_name_) > 25 ? substr($product_name_, 0, 25) . '...' : $product_name_)
         );
+        $shop_name = (
+            function_exists('mb_strlen')
+                ? (mb_strlen($this->get_option('shop_name')) > 25 ? mb_substr($this->get_option('shop_name'), 0, 25) . '...' : $this->get_option('shop_name'))
+                : (strlen($this->get_option('shop_name')) > 25 ? substr($this->get_option('shop_name'), 0, 25) . '...' : $product_name_)
+        );
         $this->epaycosuscription->hooks->template->getWoocommerceTemplate(
             'public/checkout/subscription.php',
             [
@@ -684,7 +689,7 @@ class EpaycoSuscription extends AbstractGateway
                 'address' => $order_data['billing']['address_1'],
                 'amount' => $amount,
                 'epayco'  => 'epayco subscription',
-                'shop_name' => $this->get_option('shop_name'),
+                'shop_name' => $shop_name,
                 'product_name_' => $suscriptionDescription,
                 'currency' => $currency,
                 'email_billing' => $email_billing,
