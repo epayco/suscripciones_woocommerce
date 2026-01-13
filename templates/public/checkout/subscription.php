@@ -318,7 +318,7 @@ if (!defined('ABSPATH')) {
     </p>
     <center>
         <button data-modal-target="#centered" id="button_epayco" style="
-                  background-image: url(https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/botonPagarEpayco.png);
+                  background-image: url(https://multimedia.epayco.co/plugins-sdks/botonPagarEpayco.png);
                   background-repeat:no-repeat;
                   height:39px;
                   width:300px;
