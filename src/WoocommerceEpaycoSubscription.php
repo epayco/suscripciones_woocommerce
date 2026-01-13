@@ -16,9 +16,9 @@ if (!defined('ABSPATH')) {
 
 class WoocommerceEpaycoSubscription
 {
-    private const PLUGIN_VERSION = '6.4.4';
+    private const PLUGIN_VERSION = '6.5.2';
     private const PLATFORM_NAME = 'woocommerce';
-    private const PLUGIN_NAME = 'epayco-subscriptions-for-woocommerce/epayco-subscription.php';
+    private const PLUGIN_NAME = 'suscripciones_woocommerce/epayco-subscription.php';
 
     public WooCommerce $woocommerce;
 
@@ -50,7 +50,7 @@ class WoocommerceEpaycoSubscription
         $textDomain = $this->pluginMetadata('text-domain');
         unload_textdomain($textDomain);
         $locale = explode('_', apply_filters('plugin_locale', get_locale(), $textDomain))[0];
-        load_textdomain($textDomain, Paths::basePath(Paths::join($this->pluginMetadata('domain-path'), "epayco-subscriptions-for-woocommerce-$locale.mo")));
+        load_textdomain($textDomain, Paths::basePath(Paths::join($this->pluginMetadata('domain-path'), "subscription-epayco-$locale.mo")));
     }
 
     /**
@@ -203,7 +203,7 @@ class WoocommerceEpaycoSubscription
         $pluginLinks = [
             [
                 'text'   => 'Configuración',
-                'href'   => 'admin.php?page=wc-settings&tab=checkout&section=epaycosuscription',
+                'href'   => 'admin.php?page=wc-settings&tab=checkout&section=woo-epaycosubscription',
                 'target' => $this->hooks->admin::HREF_TARGET_DEFAULT,
             ],
         ];

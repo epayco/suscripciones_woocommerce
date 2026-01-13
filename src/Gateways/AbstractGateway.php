@@ -178,5 +178,38 @@ abstract class AbstractGateway extends WC_Payment_Gateway implements EpaycoSubsc
         return true;
     }
 
+    protected function errorMessages($dataError){
+        $error = "Ocurrió un error, por favor contactar con soporte.";
+        if (is_array($dataError)) {
+            $message = $dataError['message'] ?? $error;
+            $errores_listados = [];
+            if (isset($dataError['data']['errors']) && is_array($dataError['data']['errors'])) {
+                foreach ($dataError['data']['errors'] as $campo => $mensajes) {
+                    foreach ($mensajes as $msg) {
+                        $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                    }
+                }
+            }
+
+            if (isset($dataError['data']->errors) && is_array($dataError['data']->errors)) {
+                foreach ($dataError['data']->errors as $campo => $mensajes) {
+                    foreach ($mensajes as $msg) {
+                        $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                    }
+                }
+            }
+
+            if(isset($dataError['data']['errors'])){
+                $message = $dataError['data']['errors'];
+            }
+            
+        }
+
+        $errorMessage = $message;
+        if (!empty($errores_listados)) {
+            $errorMessage .=  implode(' | ', $errores_listados);
+        }
+        return $errorMessage;
+    }
 
 }

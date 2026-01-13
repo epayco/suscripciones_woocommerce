@@ -318,14 +318,15 @@ if (!defined('ABSPATH')) {
     </p>
     <center>
         <button data-modal-target="#centered" id="button_epayco" style="
-                  background-image: url(https://multimedia.epayco.co/plugins-sdks/Boton-color-espanol.png);
+                  background-image: url(https://multimedia.epayco.co/plugins-sdks/botonPagarEpayco.png);
                   background-repeat:no-repeat;
                   height:39px;
-                  width:144px;
+                  width:300px;
                   background-position:center;
                   border-color: #28303d;
                   border-radius: 6px;
                   background-color: #28303d;
+                  cursor: pointer;
                   ">
         </button>
     </center>
