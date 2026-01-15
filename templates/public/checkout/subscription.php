@@ -318,7 +318,7 @@ if (!defined('ABSPATH')) {
     </p>
     <center>
         <button data-modal-target="#centered" id="button_epayco" style="
-                  background-image: url(https://multimedia.epayco.co/plugins-sdks/botonPagarEpayco.png);
+                  background-image: url(https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/botonPagarEpayco.png);
                   background-repeat:no-repeat;
                   height:39px;
                   width:300px;
@@ -423,7 +423,7 @@ if (!defined('ABSPATH')) {
                                         <span class="icon-date_range color icon-select"><i class="far fa-calendar-alt"></i></span>
                                         <input type="number" class="binding-input inspectletIgnore" id="month-value" name="month" placeholder="MM" maxlength="2" autocomplete="off" data-epayco="card[exp_month]" required>
                                     </div>
-                                    <div class="" style="float:left; width:12%; margin:0; text-align:center; line-height: 40px; height: 37px; background-color: white; color:#a3a3a3;">/</div>
+                                    <div class="" style="float:left; width:7%; margin:0; text-align:center; line-height: 40px; height: 37px; background-color: white; color:#a3a3a3;">/</div>
                                     <div class="input-form full-width normalinput noborder yearcredit nomargin">
                                         <input type="number" name="year" id="year-value" placeholder="YYYY" maxlength="4" autocomplete="off" data-epayco="card[exp_year]" required>
                                     </div>

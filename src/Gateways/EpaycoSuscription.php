@@ -55,7 +55,7 @@ class EpaycoSuscription extends AbstractGateway
     {
         parent::__construct();
         $this->id        = self::ID;
-        $this->title     = $this->epaycosuscription->storeConfig->getGatewayTitle($this, 'epayco');
+        $this->title     = $this->epaycosuscription->storeConfig->getGatewayTitle($this, 'Paga con ePayco');
         $this->init_form_fields();
         $this->payment_scripts($this->id);
         $this->supports = [
@@ -68,13 +68,13 @@ class EpaycoSuscription extends AbstractGateway
         $this->description        = 'Pagos de suscripciónes con epayco';
         $this->method_title       = 'Suscripciónes ePayco';
         $this->method_description = 'Crea productos de suscripciónes para tus clientes';
-
+        $this->icon = apply_filters('woocommerce_' . $this->id . '_icon', 'https://multimedia.epayco.co/plugins-sdks/PaymentsCreditCards.svg');
         $this->epaycosuscription->hooks->gateway->registerUpdateOptions($this);
         $this->epaycosuscription->hooks->gateway->registerGatewayTitle($this);
         //  $this->epaycosuscription->hooks->gateway->registerThankyouPage($this->id, [$this, 'saveOrderPaymentsId']);
          $this->epaycosuscription->hooks->gateway->registerThankYouPage($this->id, [$this, 'renderThankYouPage']);
         $this->epaycosuscription->hooks->gateway->registerAvailablePaymentGateway();
-        $this->epaycosuscription->hooks->gateway->registerCustomBillingFieldOptions();
+        // $this->epaycosuscription->hooks->gateway->registerCustomBillingFieldOptions();
         $this->epaycosuscription->hooks->gateway->registerGatewayReceiptPage($this->id, [$this, 'receiptPage']);
         $this->epaycosuscription->hooks->checkout->registerReceipt($this->id, [$this, 'renderOrderForm']);
         $this->epaycosuscription->hooks->endpoints->registerApiEndpoint(self::WEBHOOK_API_NAME, [$this, 'webhook']);

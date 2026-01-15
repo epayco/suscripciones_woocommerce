@@ -454,6 +454,65 @@ add_action('woocommerce_set_additional_field_value', function ($key, $value, $gr
     }
 }, 10, 4);
 
+
+//Agregar campos personalizados al checkout de WooCommerce clásico
+// Registro de campos personalizados al checkout clásico
+add_filter('woocommerce_checkout_fields', function ($fields) {
+
+
+    $fields['billing']['epayco_billing_type_document'] = array(
+        'label'       => __('Tipo de documento', 'epayco-subscriptions-for-woocommerce'),
+        'placeholder' => __('Seleccionar tipo de documento', 'epayco-subscriptions-for-woocommerce'),
+        'required'    => true,
+        'clear'       => false,
+        'type'        => 'select',
+        'class'       => ['form-row-wide'],
+        'default'     => 'CC',
+        'options'     => array(
+            ''     => __('Seleccione el tipo de documento', 'epayco-subscriptions-for-woocommerce'),
+            'CC'   => __('Cédula de ciudadanía', 'epayco-subscriptions-for-woocommerce'),
+            'CE'   => __('Cédula de extranjería', 'epayco-subscriptions-for-woocommerce'),
+            'PPN'  => __('Pasaporte', 'epayco-subscriptions-for-woocommerce'),
+            'SSN'  => __('Número de seguridad social', 'epayco-subscriptions-for-woocommerce'),
+            'LIC'  => __('Licencia de conducción', 'epayco-subscriptions-for-woocommerce'),
+            'NIT'  => __('Número de identificación tributaria (NIT)', 'epayco-subscriptions-for-woocommerce'),
+            'TI'   => __('Tarjeta de identidad', 'epayco-subscriptions-for-woocommerce'),
+            'DNI'  => __('Documento nacional de identificación', 'epayco-subscriptions-for-woocommerce')
+        ),
+    );
+
+
+    $fields['billing']['epayco_billing_dni'] = array(
+        'label'       => __('Número de documento', 'epayco-subscriptions-for-woocommerce'),
+        'required'    => true,
+        'class'       => ['form-row-wide'],
+        'clear'       => false,
+        'type'        => 'text',
+    );
+
+    return $fields;
+});
+
+
+
+
+add_action('woocommerce_checkout_create_order', function ($order, $data) {
+    if (isset($_POST['epayco_billing_type_document'])) {
+        $order->update_meta_data(
+            '_epayco_billing_type_document',
+            sanitize_text_field(wp_unslash($_POST['epayco_billing_type_document']))
+        );
+    }
+    if (isset($_POST['epayco_billing_dni'])) {
+        $order->update_meta_data(
+            '_epayco_billing_dni',
+            sanitize_text_field(wp_unslash($_POST['epayco_billing_dni']))
+        );
+    }
+}, 20, 2);
+
+// Agregar campos personalizados al checkout de WooCommerce blocks
+
 add_action('woocommerce_init', function () {
 
     woocommerce_register_additional_checkout_field(
@@ -546,23 +605,7 @@ function enqueue_epayco_epaycojs_script()
 }
 add_action('wp_enqueue_scripts', 'enqueue_epayco_epaycojs_script');
 
-function enqueue_purchase_detail_script() {
-    wp_register_script(
-        'epayco-script',
-        'https://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js',
-        array('jquery'),
-        '1.0',
-        true
-    );
-    wp_enqueue_script('epayco-script');
 
-    if (wp_script_is('epayco-script', 'enqueued')) {
-        error_log('ePayco DetailPurchase script has been registered and enqueued successfully.');
-    } else {
-        error_log('ePayco DetailPurchase script was NOT registered.');
-    }
-}
-add_action('wp_enqueue_scripts', 'enqueue_purchase_detail_script');
 
 add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
     if ($attachment_id === 0) {
@@ -608,6 +651,23 @@ add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $siz
     }
     return $image;
 }, 10, 4);
+
+
+function add_epayco_detail_purchase_script() {
+    // Only load on order received (thank you) page
+    if (!function_exists('is_order_received_page')) {
+        return;
+    }
+    
+    if (!is_order_received_page()) {
+        return;
+    }
+    
+    $script_detail_purchase = 'https://cms.epayco.co/plugin/DetailPurchase.js';
+    
+    wp_enqueue_script('epayco-detail-purchase', $script_detail_purchase, array('jquery'), '1.0', true);
+}
+add_action('wp_enqueue_scripts', 'add_epayco_detail_purchase_script', 20);
 
 function epayco_suscripcion_cron_job_deactivation()
 {
