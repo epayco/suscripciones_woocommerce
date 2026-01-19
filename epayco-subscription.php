@@ -455,8 +455,8 @@ add_action('woocommerce_set_additional_field_value', function ($key, $value, $gr
 }, 10, 4);
 
 
-//Agregar campos personalizados al checkout de WooCommerce clásico
-// Registro de campos personalizados al checkout clásico
+//payment clasic checkout fields
+
 add_filter('woocommerce_checkout_fields', function ($fields) {
 
 
@@ -511,7 +511,7 @@ add_action('woocommerce_checkout_create_order', function ($order, $data) {
     }
 }, 20, 2);
 
-// Agregar campos personalizados al checkout de WooCommerce blocks
+//blocks checkout fields
 
 add_action('woocommerce_init', function () {
 
@@ -663,7 +663,7 @@ function add_epayco_detail_purchase_script() {
         return;
     }
     
-    $script_detail_purchase = 'https://cms.epayco.co/plugin/DetailPurchase.js';
+    $script_detail_purchase = 'https://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js';
     
     wp_enqueue_script('epayco-detail-purchase', $script_detail_purchase, array('jquery'), '1.0', true);
 }
