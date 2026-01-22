@@ -575,7 +575,7 @@ img.home-icons {
   font-size: 22px;
   padding-left: 8px;
   padding-right: 0;
-  line-height: 35px;
+  line-height: 38px;
 }
 
 .margin32 {
@@ -825,7 +825,7 @@ input[type="checkbox"]:checked+label:before {
 }
 
 .onpage .cvv_style {
-  width: 47.5% !important;
+  width: 189px !important;
 }
 
 .onpage .cuotas {

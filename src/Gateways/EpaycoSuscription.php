@@ -55,7 +55,7 @@ class EpaycoSuscription extends AbstractGateway
     {
         parent::__construct();
         $this->id        = self::ID;
-        $this->title     = $this->epaycosuscription->storeConfig->getGatewayTitle($this, 'epayco');
+        $this->title     = $this->epaycosuscription->storeConfig->getGatewayTitle($this, 'Paga con ePayco');
         $this->init_form_fields();
         $this->payment_scripts($this->id);
         $this->supports = [
@@ -68,12 +68,13 @@ class EpaycoSuscription extends AbstractGateway
         $this->description        = 'Pagos de suscripciónes con epayco';
         $this->method_title       = 'Suscripciónes ePayco';
         $this->method_description = 'Crea productos de suscripciónes para tus clientes';
-
+        $this->icon = apply_filters('woocommerce_' . $this->id . '_icon', 'https://multimedia.epayco.co/plugins-sdks/PaymentsCreditCards.svg');
         $this->epaycosuscription->hooks->gateway->registerUpdateOptions($this);
         $this->epaycosuscription->hooks->gateway->registerGatewayTitle($this);
         //  $this->epaycosuscription->hooks->gateway->registerThankyouPage($this->id, [$this, 'saveOrderPaymentsId']);
+         $this->epaycosuscription->hooks->gateway->registerThankYouPage($this->id, [$this, 'renderThankYouPage']);
         $this->epaycosuscription->hooks->gateway->registerAvailablePaymentGateway();
-        $this->epaycosuscription->hooks->gateway->registerCustomBillingFieldOptions();
+        // $this->epaycosuscription->hooks->gateway->registerCustomBillingFieldOptions();
         $this->epaycosuscription->hooks->gateway->registerGatewayReceiptPage($this->id, [$this, 'receiptPage']);
         $this->epaycosuscription->hooks->checkout->registerReceipt($this->id, [$this, 'renderOrderForm']);
         $this->epaycosuscription->hooks->endpoints->registerApiEndpoint(self::WEBHOOK_API_NAME, [$this, 'webhook']);
@@ -111,17 +112,387 @@ class EpaycoSuscription extends AbstractGateway
         $this->maybe_create_cronjobs();
     }
     
-      protected function maybe_create_cronjobs()
+    protected function maybe_create_cronjobs()
     {
-        // $cron_data = $this->cron_data == "yes" ? true : false;
-        $intervalo = $this->get_option('cron_interval_30') == "yes" ? 30 : ($this->get_option('cron_interval_60') == "yes" ? 60 : 0);
-        if ($intervalo) {
-            if (function_exists('as_next_scheduled_action') && false === as_next_scheduled_action('woocommerce_epayco_suscripcion_cleanup_draft_orders')) {
-                as_schedule_recurring_action(time() + $intervalo, $intervalo, 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
+        if (! function_exists('as_schedule_recurring_action')) {
+            return;
+        }
+
+        $nuevo_intervalo = $this->get_option('cron_interval_30') == "yes" ? 30 : ($this->get_option('cron_interval_60') == "yes" ? 60 : 0);
+        $hook = 'woocommerce_epayco_suscripcion_cleanup_draft_orders';
+
+        $prev_intervalo = (int) get_option('epayco_cron_interval_saved', 0);
+
+        if ($nuevo_intervalo === 0) {
+            if ($prev_intervalo > 0) {
+                // Before disabling, save the statistics of the previous interval
+                $this->save_interval_statistics($hook, $prev_intervalo);
+                $this->epayco_unschedule_recurring_actions($hook);
+                $this->log_cron_interval_change($prev_intervalo, 0, true);
             }
+            update_option('epayco_cron_interval_saved', 0);
+            return;
+        }
+
+        if ($nuevo_intervalo !== $prev_intervalo) {
+            // Save statistics of the previous interval BEFORE changing
+            if ($prev_intervalo > 0) {
+                $this->save_interval_statistics($hook, $prev_intervalo);
+            }
+            
+            // Log the interval change (same action, only recurrence change)
+            $this->log_cron_interval_change($prev_intervalo, $nuevo_intervalo, true);
+            
+            // Unschedule the previous action (if exists)
+            if ($prev_intervalo > 0) {
+                $this->epayco_unschedule_recurring_actions($hook);
+            }
+
+            // Create/reschedule the action with the NEW interval
+            as_schedule_recurring_action(time() + $nuevo_intervalo, $nuevo_intervalo, $hook);
+
+            // Save the new interval
+            update_option('epayco_cron_interval_saved', $nuevo_intervalo);
+            return;
+        }
+
+        // If interval hasn't changed, just ensure the action exists
+        if (false === as_next_scheduled_action($hook)) {
+            as_schedule_recurring_action(time() + $nuevo_intervalo, $nuevo_intervalo, $hook);
         }
     }
 
+    /**
+     * Unschedule ALL recurring actions from the hook
+     * (To change recurrence: cancels the previous and creates the new one)
+     * 
+     * @param string $hook The name of the hook
+     */
+    protected function epayco_unschedule_recurring_actions($hook)
+    {
+        if (! function_exists('as_get_scheduled_actions') || ! function_exists('as_unschedule_action')) {
+            return;
+        }
+
+        $per_page = 100;
+        $page = 1;
+
+        do {
+            $args = array(
+                'hook'     => $hook,
+                'per_page' => $per_page,
+                'status'   => array('pending', 'scheduled', 'retry'),
+                'paged'    => $page,
+            );
+
+            $actions = as_get_scheduled_actions($args, 'OBJECT');
+
+            if (empty($actions)) {
+                break;
+            }
+
+            foreach ($actions as $action) {
+                if (is_object($action)) {
+                    $action_args = method_exists($action, 'get_args') ? $action->get_args() : array();
+                    $timestamp = $this->get_action_timestamp($action);
+
+                    try {
+                        if ($timestamp) {
+                            as_unschedule_action($hook, $action_args, $timestamp);
+                        } else {
+                            as_unschedule_action($hook, $action_args);
+                        }
+                    } catch (Exception $e) {
+                        error_log('epayco_unschedule_recurring_actions error: ' . $e->getMessage());
+                    }
+                } elseif (is_array($action)) {
+                    $action_args = isset($action['args']) ? $action['args'] : array();
+                    $timestamp = isset($action['next_run']) ? (int) $action['next_run'] : null;
+
+                    try {
+                        if ($timestamp) {
+                            as_unschedule_action($hook, $action_args, $timestamp);
+                        } else {
+                            as_unschedule_action($hook, $action_args);
+                        }
+                    } catch (Exception $e) {
+                        error_log('epayco_unschedule_recurring_actions error (array): ' . $e->getMessage());
+                    }
+                }
+            }
+
+            $page++;
+        } while (count($actions) === $per_page);
+    }
+
+    /**
+     * Get the timestamp of a scheduled action
+     * 
+     * @param mixed $action Object or array of action
+     * @return int|null Timestamp or null
+     */
+    protected function get_action_timestamp($action)
+    {
+        if (is_object($action)) {
+            if (method_exists($action, 'get_schedule')) {
+                $schedule = $action->get_schedule();
+                if (is_object($schedule) && method_exists($schedule, 'next_run')) {
+                    return $schedule->next_run ?? (method_exists($schedule, 'get_next_run') ? $schedule->get_next_run() : null);
+                } elseif (isset($action->scheduled_date) && $action->scheduled_date instanceof DateTime) {
+                    return (int) $action->scheduled_date->getTimestamp();
+                }
+            }
+        } elseif (is_array($action)) {
+            return isset($action['next_run']) ? (int) $action['next_run'] : null;
+        }
+        return null;
+    }
+
+    /**
+     * Get the recurrence interval of an action
+     * 
+     * @param mixed $action Object or array of action
+     * @return int|null The interval in seconds or null if it cannot be determined
+     */
+    protected function get_action_interval($action)
+    {
+        if (is_object($action)) {
+            if (method_exists($action, 'get_schedule')) {
+                $schedule = $action->get_schedule();
+                if (is_object($schedule) && method_exists($schedule, 'interval')) {
+                    return $schedule->interval ?? null;
+                }
+            }
+        } elseif (is_array($action)) {
+            return isset($action['interval']) ? (int) $action['interval'] : null;
+        }
+        return null;
+    }
+
+    /**
+     * Register interval changes in history
+     * 
+     * @param int $intervalo_anterior The previous interval
+     * @param int $intervalo_nuevo The new interval
+     * @param bool $es_modificacion If true, marks as "recurrence modification"
+     */
+    protected function log_cron_interval_change($intervalo_anterior, $intervalo_nuevo, $es_modificacion = false)
+    {
+        $historial = get_option('epayco_cron_interval_history', array());
+        
+        // Ensure it's an array
+        if (! is_array($historial)) {
+            $historial = array();
+        }
+
+        // Create change entry
+        $cambio = array(
+            'timestamp' => current_time('mysql'),
+            'timestamp_unix' => time(),
+            'hook' => 'woocommerce_epayco_suscripcion_cleanup_draft_orders',
+            'intervalo_anterior' => $intervalo_anterior,
+            'intervalo_nuevo' => $intervalo_nuevo,
+            'tipo' => $es_modificacion ? 'modificacion_recurrencia' : 'cambio',
+            'descripcion' => $es_modificacion 
+                ? sprintf('Recurrencia modificada de %d segundos a %d segundos', $intervalo_anterior, $intervalo_nuevo)
+                : sprintf('Intervalo cambiado de %d segundos a %d segundos', $intervalo_anterior, $intervalo_nuevo),
+            'usuario_id' => get_current_user_id(),
+            'usuario_nombre' => wp_get_current_user()->user_login ?? 'sistema'
+        );
+
+        // Add to the beginning of history (most recent first)
+        array_unshift($historial, $cambio);
+
+        // Keep only the last 100 changes to avoid overloading the database
+        if (count($historial) > 100) {
+            $historial = array_slice($historial, 0, 100);
+        }
+
+        // Save updated history
+        update_option('epayco_cron_interval_history', $historial);
+
+        // Log to error_log for audit
+        if ($es_modificacion) {
+            error_log(sprintf(
+                'Acción "%s" - Recurrencia modificada: %d segundos → %d segundos [Usuario: %s]',
+                'woocommerce_epayco_suscripcion_cleanup_draft_orders',
+                $intervalo_anterior,
+                $intervalo_nuevo,
+                $cambio['usuario_nombre']
+            ));
+        } else {
+            error_log(sprintf(
+                'Acción "%s" desactivada. Intervalo anterior: %d segundos [Usuario: %s]',
+                'woocommerce_epayco_suscripcion_cleanup_draft_orders',
+                $intervalo_anterior,
+                $cambio['usuario_nombre']
+            ));
+        }
+    }
+
+    /**
+     * Save statistics of an interval before changing
+     * Gets only completed or failed actions
+     * 
+     * @param string $hook The name of the hook
+     * @param int $intervalo The interval for which to save statistics
+     */
+    protected function save_interval_statistics($hook, $intervalo)
+    {
+        if (! function_exists('as_get_scheduled_actions')) {
+            return;
+        }
+
+        $estadisticas = array(
+            'intervalo' => $intervalo,
+            'timestamp' => current_time('mysql'),
+            'timestamp_unix' => time(),
+            'completadas' => 0,
+            'fallidas' => 0,
+            'acciones_completadas' => array(),
+            'acciones_fallidas' => array()
+        );
+
+        $per_page = 100;
+        $page = 1;
+
+        // Get ONLY completed and failed actions
+        do {
+            $args = array(
+                'hook'     => $hook,
+                'per_page' => $per_page,
+                'status'   => array('complete', 'failed'),
+                'paged'    => $page,
+            );
+
+            $actions = as_get_scheduled_actions($args, 'OBJECT');
+
+            if (empty($actions)) {
+                break;
+            }
+
+            foreach ($actions as $action) {
+                $action_interval = $this->get_action_interval($action);
+                
+                // Only process actions from the specified interval
+                if ($action_interval === $intervalo) {
+                    $action_status = $this->get_action_status($action);
+                    $action_timestamp = $this->get_action_timestamp($action);
+
+                    $accion_data = array(
+                        'executed' => $action_timestamp,
+                        'timestamp_unix' => is_numeric($action_timestamp) ? $action_timestamp : time()
+                    );
+
+                    if ($action_status === 'complete') {
+                        $estadisticas['completadas']++;
+                        $estadisticas['acciones_completadas'][] = $accion_data;
+                    } elseif ($action_status === 'failed') {
+                        $estadisticas['fallidas']++;
+                        $estadisticas['acciones_fallidas'][] = $accion_data;
+                    }
+                }
+            }
+
+            $page++;
+        } while (count($actions) === $per_page);
+
+        // Save statistics by interval
+        $historial_estadisticas = get_option('epayco_cron_interval_statistics', array());
+        if (! is_array($historial_estadisticas)) {
+            $historial_estadisticas = array();
+        }
+
+        // Add statistics to the beginning of history
+        array_unshift($historial_estadisticas, $estadisticas);
+
+        // Keep only the last 50 statistics records
+        if (count($historial_estadisticas) > 50) {
+            $historial_estadisticas = array_slice($historial_estadisticas, 0, 50);
+        }
+
+        // Save
+        update_option('epayco_cron_interval_statistics', $historial_estadisticas);
+
+        // Log
+        error_log(sprintf(
+            'Estadísticas guardadas para intervalo %d segundos - Completadas: %d, Fallidas: %d',
+            $intervalo,
+            $estadisticas['completadas'],
+            $estadisticas['fallidas']
+        ));
+    }
+
+    /**
+     * Get the status of an action
+     * 
+     * @param mixed $action Object or array of action
+     * @return string|null The status of the action (complete, failed, pending, etc.) or null
+     */
+    protected function get_action_status($action)
+    {
+        if (is_object($action)) {
+            if (method_exists($action, 'get_status')) {
+                return $action->get_status();
+            } elseif (isset($action->status)) {
+                return $action->status;
+            }
+        } elseif (is_array($action)) {
+            return isset($action['status']) ? $action['status'] : null;
+        }
+        return null;
+    }
+
+    /**
+     * Get the history of interval changes
+     * 
+     * @return array Array with the history of changes
+     */
+    public function get_cron_interval_history()
+    {
+        $historial = get_option('epayco_cron_interval_history', array());
+        return is_array($historial) ? $historial : array();
+    }
+
+    /**
+     * Get saved statistics by interval
+     * Only includes completed or failed actions
+     * 
+     * @return array Array with statistics by interval
+     */
+    public function get_cron_interval_statistics()
+    {
+        $estadisticas = get_option('epayco_cron_interval_statistics', array());
+        return is_array($estadisticas) ? $estadisticas : array();
+    }
+
+    /**
+     * Get statistics for a specific interval
+     * 
+     * @param int $intervalo The interval to search for
+     * @return array|null Array with statistics or null if it doesn't exist
+     */
+    public function get_statistics_by_interval($intervalo)
+    {
+        $estadisticas = $this->get_cron_interval_statistics();
+        foreach ($estadisticas as $stat) {
+            if (isset($stat['intervalo']) && $stat['intervalo'] === $intervalo) {
+                return $stat;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Clear the history of interval changes
+     * 
+     * @return bool true if cleared correctly
+     */
+    public function clear_cron_interval_history()
+    {
+        delete_option('epayco_cron_interval_history');
+        return delete_option('epayco_cron_interval_statistics');
+    }
 
     public function update_cron_status_suscription()
     {
@@ -364,7 +735,7 @@ class EpaycoSuscription extends AbstractGateway
     {
         $username = sanitize_text_field($validationData['epayco_publickey']);
         $password = sanitize_text_field($validationData['epayco_privatey']);
-        $response = wp_remote_post('https://apify.epayco.co/login', array(
+        $response = wp_remote_post('https://eks-apify-service.epayco.io/login', array(
             'headers' => array(
                 'Authorization' => 'Basic ' . base64_encode($username . ':' . $password),
             ),
@@ -373,7 +744,7 @@ class EpaycoSuscription extends AbstractGateway
 
         $data = json_decode(wp_remote_retrieve_body($response));
         if ($data->token) {
-            $response = wp_remote_get("https://secure.payco.co/restpagos/validarllaves?public_key=" . trim($username));
+            $response = wp_remote_get("https://eks-rest-pagos-service.epayco.io/restpagos/validarllaves?public_key=" . trim($username));
 
             if (is_wp_error($response)) {
                 error_log('ePayco validation: ' . $response->get_error_message());
@@ -1749,5 +2120,74 @@ class EpaycoSuscription extends AbstractGateway
         ", $id_payco, $customer_id, $token_id, $email);
 
         $wpdb->query($sql);
+    }
+      public function renderThankYouPage($order_id): void
+    {
+        // Validate order id
+        if (empty($order_id)) {
+            return;
+        }
+
+        $order = \wc_get_order($order_id);
+        if (!$order) {
+            return;
+        }
+
+        // Ensure this thank you content is only rendered for this gateway
+        if (method_exists($order, 'get_payment_method') && $order->get_payment_method() !== $this->id) {
+            return;
+        }
+
+        // Build data payload for DetailPurchase.config
+        $request = $_REQUEST; // phpcs:ignore WordPress.Security.NonceVerification
+
+        $get = static function ($key) use ($request) {
+            return isset($request[$key]) ? \sanitize_text_field(\wp_unslash($request[$key])) : null;
+        };
+
+        // Determine ePayco reference from possible request keys
+        $referencePayco = $get('x_ref_payco') ?: $get('ref_payco') ?: $get('referencePayco') ?: $get('refPayco');
+
+
+        //    $subs = $this->epaycoSdk->charge->transaction($referencePayco);
+        // $data = [
+        //     // Prefer gateway-provided response over order status
+        //     'status'           => $get('x_response') ?: (method_exists($order, 'get_status') ? $order->get_status() : null),
+        //     'referencePayco'   => $referencePayco,
+        //     'transactionDate'  => $get('x_transaction_date'),
+        //     'franchise'        => $get('x_franchise'),
+        //     // Prefer invoice id from gateway if available
+        //     'bill'             => $get('x_id_invoice') ?: (method_exists($order, 'get_order_number') ? $order->get_order_number() : (string) $order_id),
+        //     'authorization'    => $get('x_approval_code'),
+        //     'taxBaseClient'    => is_null($get('x_amount_base')) ? null : (float) $get('x_amount_base'),
+        //     'numberCard'       => $get('x_cardnumber'),
+        //     // Prefer transaction description from gateway
+        //     'description'      => $get('x_description') ?: (method_exists($order, 'get_formatted_billing_full_name') ? $order->get_formatted_billing_full_name() : null),
+        //     'ip'               => $get('x_customer_ip') ?: (method_exists($order, 'get_customer_ip_address') ? $order->get_customer_ip_address() : null),
+        //     'response'         => $get('x_response_reason_text'),
+        //     'currency'         => $get('x_currency_code') ?: (method_exists($order, 'get_currency') ? $order->get_currency() : null),
+        //     'amount'           => is_null($get('x_amount')) ? (method_exists($order, 'get_total') ? (float) $order->get_total() : null) : (float) $get('x_amount'),
+        //     'expirationDate'   => $get('x_expiration_date'),
+        //     'codeProject'      => $get('x_code_project'),
+        //     'pin'              => $get('x_pin'),
+        // ];
+
+        // Language and flags
+        $lang = \get_locale();
+        if (is_string($lang) && strpos($lang, '_') !== false) {
+            $parts = explode('_', $lang);
+            $lang = $parts[0];
+        }
+        $sendEmail = true;
+
+        $this->epaycosuscription->hooks->template->getWoocommerceTemplate(
+            'public/checkout/order-received.php',
+            [
+                'referencePayco' => $referencePayco,
+                // 'data' => $data,
+                'lang' => $lang,
+                'sendEmail' => $sendEmail,
+            ]
+        );
     }
 }

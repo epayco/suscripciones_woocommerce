@@ -454,6 +454,65 @@ add_action('woocommerce_set_additional_field_value', function ($key, $value, $gr
     }
 }, 10, 4);
 
+
+//payment clasic checkout fields
+
+add_filter('woocommerce_checkout_fields', function ($fields) {
+
+
+    $fields['billing']['epayco_billing_type_document'] = array(
+        'label'       => __('Tipo de documento', 'epayco-subscriptions-for-woocommerce'),
+        'placeholder' => __('Seleccionar tipo de documento', 'epayco-subscriptions-for-woocommerce'),
+        'required'    => true,
+        'clear'       => false,
+        'type'        => 'select',
+        'class'       => ['form-row-wide'],
+        'default'     => 'CC',
+        'options'     => array(
+            ''     => __('Seleccione el tipo de documento', 'epayco-subscriptions-for-woocommerce'),
+            'CC'   => __('Cédula de ciudadanía', 'epayco-subscriptions-for-woocommerce'),
+            'CE'   => __('Cédula de extranjería', 'epayco-subscriptions-for-woocommerce'),
+            'PPN'  => __('Pasaporte', 'epayco-subscriptions-for-woocommerce'),
+            'SSN'  => __('Número de seguridad social', 'epayco-subscriptions-for-woocommerce'),
+            'LIC'  => __('Licencia de conducción', 'epayco-subscriptions-for-woocommerce'),
+            'NIT'  => __('Número de identificación tributaria (NIT)', 'epayco-subscriptions-for-woocommerce'),
+            'TI'   => __('Tarjeta de identidad', 'epayco-subscriptions-for-woocommerce'),
+            'DNI'  => __('Documento nacional de identificación', 'epayco-subscriptions-for-woocommerce')
+        ),
+    );
+
+
+    $fields['billing']['epayco_billing_dni'] = array(
+        'label'       => __('Número de documento', 'epayco-subscriptions-for-woocommerce'),
+        'required'    => true,
+        'class'       => ['form-row-wide'],
+        'clear'       => false,
+        'type'        => 'text',
+    );
+
+    return $fields;
+});
+
+
+
+
+add_action('woocommerce_checkout_create_order', function ($order, $data) {
+    if (isset($_POST['epayco_billing_type_document'])) {
+        $order->update_meta_data(
+            '_epayco_billing_type_document',
+            sanitize_text_field(wp_unslash($_POST['epayco_billing_type_document']))
+        );
+    }
+    if (isset($_POST['epayco_billing_dni'])) {
+        $order->update_meta_data(
+            '_epayco_billing_dni',
+            sanitize_text_field(wp_unslash($_POST['epayco_billing_dni']))
+        );
+    }
+}, 20, 2);
+
+//blocks checkout fields
+
 add_action('woocommerce_init', function () {
 
     woocommerce_register_additional_checkout_field(
@@ -502,6 +561,7 @@ add_action('woocommerce_checkout_update_order_meta', function ($order_id) {
     }
 });
 
+
 function epayco_enqueue_styles()
 {
     if (!function_exists('plugins_url') || !function_exists('wp_enqueue_style')) {
@@ -544,6 +604,8 @@ function enqueue_epayco_epaycojs_script()
     wp_enqueue_script('epayco-js', esc_url($epaycojs), array(), '1.0.0', true); // Set version to avoid caching issues
 }
 add_action('wp_enqueue_scripts', 'enqueue_epayco_epaycojs_script');
+
+
 
 add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
     if ($attachment_id === 0) {
@@ -589,6 +651,23 @@ add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $siz
     }
     return $image;
 }, 10, 4);
+
+
+function add_epayco_detail_purchase_script() {
+    // Only load on order received (thank you) page
+    if (!function_exists('is_order_received_page')) {
+        return;
+    }
+    
+    if (!is_order_received_page()) {
+        return;
+    }
+    
+    $script_detail_purchase = 'https://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js';
+    
+    wp_enqueue_script('epayco-detail-purchase', $script_detail_purchase, array('jquery'), '1.0', true);
+}
+add_action('wp_enqueue_scripts', 'add_epayco_detail_purchase_script', 20);
 
 function epayco_suscripcion_cron_job_deactivation()
 {

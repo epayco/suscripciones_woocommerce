@@ -1506,13 +1506,13 @@ _:future,
   }
 
   .monthcredit {
-    width: 55% !important;
+    width: 45% !important;
     float: left;
     position: relative
   }
 
   .yearcredit {
-    width: 33% !important;
+    width: 48% !important;
     float: left;
     position: relative
   }
