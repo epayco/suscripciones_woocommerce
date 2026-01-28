@@ -55,7 +55,7 @@ class EpaycoSuscription extends AbstractGateway
     {
         parent::__construct();
         $this->id        = self::ID;
-        $this->title     = $this->epaycosuscription->storeConfig->getGatewayTitle($this, 'epayco');
+        $this->title     = $this->epaycosuscription->storeConfig->getGatewayTitle($this, 'Paga con ePayco');
         $this->init_form_fields();
         $this->payment_scripts($this->id);
         $this->supports = [
@@ -68,12 +68,13 @@ class EpaycoSuscription extends AbstractGateway
         $this->description        = 'Pagos de suscripciónes con epayco';
         $this->method_title       = 'Suscripciónes ePayco';
         $this->method_description = 'Crea productos de suscripciónes para tus clientes';
-
+        $this->icon = apply_filters('woocommerce_' . $this->id . '_icon', 'https://multimedia.epayco.co/plugins-sdks/PaymentsCreditCards.svg');
         $this->epaycosuscription->hooks->gateway->registerUpdateOptions($this);
         $this->epaycosuscription->hooks->gateway->registerGatewayTitle($this);
         //  $this->epaycosuscription->hooks->gateway->registerThankyouPage($this->id, [$this, 'saveOrderPaymentsId']);
+         $this->epaycosuscription->hooks->gateway->registerThankYouPage($this->id, [$this, 'renderThankYouPage']);
         $this->epaycosuscription->hooks->gateway->registerAvailablePaymentGateway();
-        $this->epaycosuscription->hooks->gateway->registerCustomBillingFieldOptions();
+        // $this->epaycosuscription->hooks->gateway->registerCustomBillingFieldOptions();
         $this->epaycosuscription->hooks->gateway->registerGatewayReceiptPage($this->id, [$this, 'receiptPage']);
         $this->epaycosuscription->hooks->checkout->registerReceipt($this->id, [$this, 'renderOrderForm']);
         $this->epaycosuscription->hooks->endpoints->registerApiEndpoint(self::WEBHOOK_API_NAME, [$this, 'webhook']);
@@ -364,7 +365,7 @@ class EpaycoSuscription extends AbstractGateway
     {
         $username = sanitize_text_field($validationData['epayco_publickey']);
         $password = sanitize_text_field($validationData['epayco_privatey']);
-        $response = wp_remote_post('https://apify.epayco.co/login', array(
+        $response = wp_remote_post('https://eks-apify-service.epayco.io/login', array(
             'headers' => array(
                 'Authorization' => 'Basic ' . base64_encode($username . ':' . $password),
             ),
@@ -373,7 +374,7 @@ class EpaycoSuscription extends AbstractGateway
 
         $data = json_decode(wp_remote_retrieve_body($response));
         if ($data->token) {
-            $response = wp_remote_get("https://secure.payco.co/restpagos/validarllaves?public_key=" . trim($username));
+            $response = wp_remote_get("https://eks-rest-pagos-service.epayco.io/restpagos/validarllaves?public_key=" . trim($username));
 
             if (is_wp_error($response)) {
                 error_log('ePayco validation: ' . $response->get_error_message());
@@ -1749,5 +1750,74 @@ class EpaycoSuscription extends AbstractGateway
         ", $id_payco, $customer_id, $token_id, $email);
 
         $wpdb->query($sql);
+    }
+      public function renderThankYouPage($order_id): void
+    {
+        // Validate order id
+        if (empty($order_id)) {
+            return;
+        }
+
+        $order = \wc_get_order($order_id);
+        if (!$order) {
+            return;
+        }
+
+        // Ensure this thank you content is only rendered for this gateway
+        if (method_exists($order, 'get_payment_method') && $order->get_payment_method() !== $this->id) {
+            return;
+        }
+
+        // Build data payload for DetailPurchase.config
+        $request = $_REQUEST; // phpcs:ignore WordPress.Security.NonceVerification
+
+        $get = static function ($key) use ($request) {
+            return isset($request[$key]) ? \sanitize_text_field(\wp_unslash($request[$key])) : null;
+        };
+
+        // Determine ePayco reference from possible request keys
+        $referencePayco = $get('x_ref_payco') ?: $get('ref_payco') ?: $get('referencePayco') ?: $get('refPayco');
+
+
+        //    $subs = $this->epaycoSdk->charge->transaction($referencePayco);
+        // $data = [
+        //     // Prefer gateway-provided response over order status
+        //     'status'           => $get('x_response') ?: (method_exists($order, 'get_status') ? $order->get_status() : null),
+        //     'referencePayco'   => $referencePayco,
+        //     'transactionDate'  => $get('x_transaction_date'),
+        //     'franchise'        => $get('x_franchise'),
+        //     // Prefer invoice id from gateway if available
+        //     'bill'             => $get('x_id_invoice') ?: (method_exists($order, 'get_order_number') ? $order->get_order_number() : (string) $order_id),
+        //     'authorization'    => $get('x_approval_code'),
+        //     'taxBaseClient'    => is_null($get('x_amount_base')) ? null : (float) $get('x_amount_base'),
+        //     'numberCard'       => $get('x_cardnumber'),
+        //     // Prefer transaction description from gateway
+        //     'description'      => $get('x_description') ?: (method_exists($order, 'get_formatted_billing_full_name') ? $order->get_formatted_billing_full_name() : null),
+        //     'ip'               => $get('x_customer_ip') ?: (method_exists($order, 'get_customer_ip_address') ? $order->get_customer_ip_address() : null),
+        //     'response'         => $get('x_response_reason_text'),
+        //     'currency'         => $get('x_currency_code') ?: (method_exists($order, 'get_currency') ? $order->get_currency() : null),
+        //     'amount'           => is_null($get('x_amount')) ? (method_exists($order, 'get_total') ? (float) $order->get_total() : null) : (float) $get('x_amount'),
+        //     'expirationDate'   => $get('x_expiration_date'),
+        //     'codeProject'      => $get('x_code_project'),
+        //     'pin'              => $get('x_pin'),
+        // ];
+
+        // Language and flags
+        $lang = \get_locale();
+        if (is_string($lang) && strpos($lang, '_') !== false) {
+            $parts = explode('_', $lang);
+            $lang = $parts[0];
+        }
+        $sendEmail = true;
+
+        $this->epaycosuscription->hooks->template->getWoocommerceTemplate(
+            'public/checkout/order-received.php',
+            [
+                'referencePayco' => $referencePayco,
+                // 'data' => $data,
+                'lang' => $lang,
+                'sendEmail' => $sendEmail,
+            ]
+        );
     }
 }
