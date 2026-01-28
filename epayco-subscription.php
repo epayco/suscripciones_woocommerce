@@ -663,7 +663,7 @@ function add_epayco_detail_purchase_script() {
         return;
     }
     
-    $script_detail_purchase = 'https://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js';
+    $script_detail_purchase = 'http://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js';
     
     wp_enqueue_script('epayco-detail-purchase', $script_detail_purchase, array('jquery'), '1.0', true);
 }

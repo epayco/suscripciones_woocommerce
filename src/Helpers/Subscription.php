@@ -41,8 +41,20 @@ class Subscription extends EpaycoSuscription
                     $dataError = $planJson;
                     $logger->error('ERROR - Create Subscription Failed: ' . print_r($dataError, true), ['source' => 'EpaycoSubscription_Gateway']);
                     $error = $this->errorMessages($dataError);
-                    // Extraer solo la descripción para mostrar al usuario
-                    $userErrorMsg = isset($dataError['data']['description']) ? $dataError['data']['description'] : $error;
+                    
+                    // Construir mensaje de error con múltiples detalles
+                    $errorParts = array();
+                    if (!empty($dataError['message'])) {
+                        $errorParts[] = $dataError['message'];
+                    }
+                    if (!empty($dataError['data']['description'])) {
+                        $errorParts[] = $dataError['data']['description'];
+                    }
+                    if (!empty($dataError['data']['errors'])) {
+                        $errorParts[] = $dataError['data']['errors'];
+                    }
+                    
+                    $userErrorMsg = !empty($errorParts) ? implode(' - ', $errorParts) : $error;
                     wc_add_notice($userErrorMsg, 'error');
                     $redirect_url = $order->get_checkout_payment_url(true);
                     wp_safe_redirect($redirect_url);
@@ -96,7 +108,20 @@ class Subscription extends EpaycoSuscription
                 }  
                 $dataError = $subscriptionJson;
                 $logger->error('ERROR - Payment Validation Failed: ' . print_r($dataError, true), ['source' => 'EpaycoSubscription_Gateway']);
-                $userErrorMsg = $dataError['data']['description'] ?? 'Error al procesar el pago';
+                
+                // Messaje error construction with multiple details
+                $errorParts = array();
+                if (!empty($dataError['message'])) {
+                    $errorParts[] = $dataError['message'];
+                }
+                if (!empty($dataError['data']['description'])) {
+                    $errorParts[] = $dataError['data']['description'];
+                }
+                if (!empty($dataError['data']['errors'])) {
+                    $errorParts[] = $dataError['data']['errors'];
+                }
+                
+                $userErrorMsg = !empty($errorParts) ? implode(' - ', $errorParts) : 'Error al procesar el pago';
                 wc_add_notice($userErrorMsg, 'error');
                 $redirect_url = $order->get_checkout_payment_url(true);
                 wp_safe_redirect($redirect_url);
