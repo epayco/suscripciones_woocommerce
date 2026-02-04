@@ -27,12 +27,20 @@ class Plan extends EpaycoSuscription
             if ($plan->status) {
                 return $plan;
             } else {
+                $planJson = json_decode(json_encode($plan), true);
+                $dataError = $planJson;
+                $error = $this->errorMessages($dataError);
+                if (class_exists('WC_Logger')) {
+                    $logger = wc_get_logger();
+                    $logger->error('Error de API - Obtener Plan: ' . $error, ['source' => 'EpaycoSubscription_Gateway']);
+                }
+                wc_add_notice($error, 'error');
                 return false;
             }
         } catch (Exception $exception) {
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
-                $logger->info("getPlans" . $exception->getMessage());
+                $logger->error('Excepción - Obtener Plan: ' . $exception->getMessage(), ['source' => 'EpaycoSubscription_Gateway']);
             }
             wc_add_notice($exception->getMessage(), 'error');
             //wp_redirect(wc_get_checkout_url());
@@ -40,11 +48,10 @@ class Plan extends EpaycoSuscription
             wp_safe_redirect($redirect_url);
             exit;  
         }
-        
     }
 
 
-    public function plansCreate($plan,$order)
+    public function plansCreate($plan, $order)
     {
         if (class_exists('WC_Logger')) {
             $logger = wc_get_logger();
@@ -61,16 +68,17 @@ class Plan extends EpaycoSuscription
                 "trial_days" => $plan['trial_days'],
                 "iva" => $plan['iva'],
             ];
+            
             $firstPaymentAdditionalCost = isset($plan['firstPaymentAdditionalCost']) ? $plan['firstPaymentAdditionalCost'] : 0;
-            if((float)$firstPaymentAdditionalCost > 0){
-                $body = array_merge($body,
-                    [
-                        "firstPaymentAdditionalCost" => $firstPaymentAdditionalCost,
-                        "greetMessage" => "gracias por tu compra con epayco"
-                    ],
-                );
+            if ((float)$firstPaymentAdditionalCost > 0) {
+                $body = array_merge($body, [
+                    "firstPaymentAdditionalCost" => $firstPaymentAdditionalCost,
+                    "greetMessage" => "gracias por tu compra con epayco"
+                ]);
             }
+            
             $plan_ = $this->epaycoSdk->plan->create($body);
+            
             if (!$plan_->status) {
                 $planJson = json_decode(json_encode($plan_), true);
                 $dataError = $planJson;
@@ -85,18 +93,19 @@ class Plan extends EpaycoSuscription
             if (class_exists('WC_Logger')) {
                 //$logger->info(json_encode($plan_));
             }
+            
             return $plan_;
         } catch (Exception $exception) {
             if (class_exists('WC_Logger')) {
                 $logger->info("plansCreate" . $exception->getMessage());
             }
+            
             wc_add_notice($exception->getMessage(), 'error');
             //wp_redirect(wc_get_checkout_url());
             $redirect_url = $order->get_checkout_payment_url(true);
             wp_safe_redirect($redirect_url);
-            exit;  
+            exit;
         }
-        
     }
 
     public function plansUpdate($planId, $order, $newPlan)
@@ -109,14 +118,14 @@ class Plan extends EpaycoSuscription
             );
         }catch (Exception $exception) {
             if (class_exists('WC_Logger')) {
-                $logger = wc_get_logger();
-                $logger->info("getPlans" . $exception->getMessage());
+                $logger->error('Excepción - Actualizar Plan: ' . $exception->getMessage(), ['source' => 'EpaycoSubscription_Gateway']);
             }
+            
             wc_add_notice($exception->getMessage(), 'error');
             //wp_redirect(wc_get_checkout_url());
             $redirect_url = $order->get_checkout_payment_url(true);
             wp_safe_redirect($redirect_url);
-            exit;  
+            exit;
         }
     }
 

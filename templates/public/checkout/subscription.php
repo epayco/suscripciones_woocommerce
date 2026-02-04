@@ -157,6 +157,7 @@ if (!defined('ABSPATH')) {
                     background-color: white; padding-top: 0rem;">
                     <div id="content-errors"></div>
                     <form id="form-action" method="post" novalidate="" action="<?php echo esc_html($redirect_url); ?>">
+                        <?php wp_nonce_field('epayco_subscription_action'); ?>
                         <div class="step step-tdc main-steps active" data-group="tdc" active="" style="margin: 0px;">
                             <div class="step-container">
                                 <div class="step-form">
@@ -398,6 +399,7 @@ if (!defined('ABSPATH')) {
                         </div>
                         <div class="menu-select">
                             <form id="token-credit" action=" <?php echo esc_html($redirect_url) ?>  " method="post">
+                                <?php wp_nonce_field('epayco_subscription_action'); ?>
                                 <div class="card-js" data-icon-colour="#158CBA">
                                     <div class="input-form">
                                         <span class="icon-user color icon-input"><i class="fas fa-user" style="margin-left: -2px;"></i></span>

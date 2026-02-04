@@ -58,8 +58,7 @@ class Customer extends EpaycoSuscription
             );
             if ($customer->data->status == 'error' || !$customer->status) {
                 if (class_exists('WC_Logger')) {
-                    $logger = wc_get_logger();
-                    $logger->info("customerCreate" . json_encode($customer));
+                    $logger->error('Respuesta de Error de API: ' . json_encode($customer), ['source' => 'EpaycoSubscription_Gateway']);
                 }
                 $customerJson = json_decode(json_encode($customer), true);
                 $dataError = $customerJson;
@@ -145,7 +144,7 @@ class Customer extends EpaycoSuscription
                 if (!$isAddedToken->status) {
                     if (class_exists('WC_Logger')) {
                         $logger = wc_get_logger();
-                        $logger->info("isAddedToken: " . json_encode($isAddedToken));
+                        $logger->error('Error de API - Agregar Token fallo: ' . json_encode($isAddedToken), ['source' => 'EpaycoSubscription_Gateway']);
                     }
                     $customerJson = json_decode(json_encode($isAddedToken), true);
                     $error = $this->errorMessages($customerJson);                    
@@ -216,7 +215,7 @@ class Customer extends EpaycoSuscription
                     if (!$isAddedToken->status) {
                         if (class_exists('WC_Logger')) {
                             $logger = wc_get_logger();
-                            $logger->info("isAddedToken: " . json_encode($isAddedToken));
+                            $logger->error('Error de API - Token no agregado: ' . json_encode($isAddedToken), ['source' => 'EpaycoSubscription_Gateway']);
                         }
                         return false;
                     }else{

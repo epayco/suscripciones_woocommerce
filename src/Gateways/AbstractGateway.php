@@ -180,35 +180,62 @@ abstract class AbstractGateway extends WC_Payment_Gateway implements EpaycoSubsc
 
     protected function errorMessages($dataError){
         $error = "Ocurrió un error, por favor contactar con soporte.";
+        $message = $error;
+        $errores_listados = [];
+
+        // If it is an array, process the data
         if (is_array($dataError)) {
-            $message = $dataError['message'] ?? $error;
-            $errores_listados = [];
+            // Try to get the main message
+            if (isset($dataError['message']) && !empty($dataError['message'])) {
+                $message = $dataError['message'];
+            }
+
+            // Process nested errors in array format
             if (isset($dataError['data']['errors']) && is_array($dataError['data']['errors'])) {
                 foreach ($dataError['data']['errors'] as $campo => $mensajes) {
-                    foreach ($mensajes as $msg) {
-                        $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                    if (is_array($mensajes)) {
+                        foreach ($mensajes as $msg) {
+                            $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                        }
+                    } else {
+                        $errores_listados[] = ucfirst($campo) . ': ' . $mensajes;
                     }
                 }
             }
 
+            // Process nested errors in object format
             if (isset($dataError['data']->errors) && is_array($dataError['data']->errors)) {
                 foreach ($dataError['data']->errors as $campo => $mensajes) {
-                    foreach ($mensajes as $msg) {
-                        $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                    if (is_array($mensajes)) {
+                        foreach ($mensajes as $msg) {
+                            $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                        }
+                    } else {
+                        $errores_listados[] = ucfirst($campo) . ': ' . $mensajes;
                     }
                 }
             }
 
-            if(isset($dataError['data']['errors'])){
+            // If data.errors is a direct string, use it as the message
+            if (isset($dataError['data']['errors']) && is_string($dataError['data']['errors'])) {
                 $message = $dataError['data']['errors'];
             }
-            
+
+            // If there is no main message but there are listed errors, use the first one
+            if ($message === $error && !empty($errores_listados)) {
+                $message = $errores_listados[0];
+                array_shift($errores_listados);
+            }
+        } elseif (is_string($dataError)) {
+            // If it is a direct string, use it as the message
+            $message = $dataError;
         }
 
         $errorMessage = $message;
         if (!empty($errores_listados)) {
-            $errorMessage .=  implode(' | ', $errores_listados);
+            $errorMessage .= ' | ' . implode(' | ', $errores_listados);
         }
+
         return $errorMessage;
     }
 

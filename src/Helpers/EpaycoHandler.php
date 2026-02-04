@@ -41,7 +41,7 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
         return (array) $data;
     }
 
-    // Fusiona recursivamente (los valores entrantes sobrescriben existentes)
+    // Recursively merges (incoming values override existing ones)
     private function mergeRecursive(array $original, array $incoming): array
     {
         foreach ($incoming as $key => $value) {
@@ -55,7 +55,7 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
     }
 
 
-    // Reemplaza o fusiona datos de customer
+    // Replaces or merges customer data
     public function setCustomer($customerData, bool $merge = false)
     {
         $new = $this->normalizeToArray($customerData);
@@ -66,13 +66,13 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
         }
     }
 
-    // Añade/mergea datos al customer existente
+    // Adds/merges data to existing customer
     public function addCustomerData($customerData)
     {
         $this->setCustomer($customerData, true);
     }
 
-    // Reemplaza o fusiona datos de planInfo
+    // Replaces or merges planInfo data
     public function setPlanInfo($plans, bool $merge = false)
     {
         $new = $this->normalizeToArray($plans);
@@ -93,7 +93,7 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
         }
     }
 
-    // Añade/mergea datos al planInfo existente
+    // Adds/merges data to existing planInfo
     public function addPlanInfo($plans)
     {
         $this->setPlanInfo($plans, false);
@@ -126,15 +126,15 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
                     ]
                 );
                 if (!$inserCustomer) {
-                    $error_message = __('No se insertó el registro del cliente en la base de datos.', 'epayco-subscriptions-for-woocommerce');
+                    $error_message = __('El registro del cliente no se insertó en la base de datos.', 'epayco-subscriptions-for-woocommerce');
                     wc_add_notice($error_message, 'error');
-                    // Redirigir al mismo receipt page para permitir reintentar el pago sin recargar el checkout
+                    // Redirect to the same receipt page to allow retrying payment without reloading checkout
                     $redirect_url = $this->orderEpayco->get_checkout_payment_url(true);
                     wp_safe_redirect($redirect_url);
                     exit;
                 }
                 if (class_exists('WC_Logger')) {
-                    $logger->info("Error : 'No se inserto el registro del cliente en la base de datos.'");
+                    $logger->info("Error : 'El registro del cliente no se insertó en la base de datos.'");
                 }
                 $customerData['customer_id'] = $customer_id;
                 $this->setCustomer($customerData);
@@ -144,13 +144,13 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
             }
         }catch (\Exception $exception) {
             if (class_exists('WC_Logger')) {
-                $logger->info("validateCustomer" . $exception->getMessage());
+                $logger->info("Validar Cliente: " . $exception->getMessage());
             }
             if (class_exists('WC_Logger')) {
-                $logger->info("validateCustomer Error : " . $exception->getMessage());
+                $logger->info("Validar Cliente Error : " . $exception->getMessage());
             }
             wc_add_notice($exception->getMessage(), 'error');
-            // Redirigir al mismo receipt page para permitir reintentar el pago sin recargar el checkout
+            // Redirect to the same receipt page to allow retrying payment without reloading checkout
             $redirect_url = $this->orderEpayco->get_checkout_payment_url(true);
             wp_safe_redirect($redirect_url);
             exit;
@@ -183,18 +183,18 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
                     ((float)$plan_amount_cart == (float)$plan_amount_epayco)
                     && ( strtolower($plan_currency_cart) == strtolower($plan_currency_epayco) )
                     ) {
-                    // Preparar handler para procesar (create)
+                    // Prepare handler to process (create)
                     $this->handlerSubscription['type'] = 'create';
                 } else {
-                    // Preparar handler para validar (validate)
+                    // Prepare handler to validate (validate)
                     $this->handlerSubscription['type'] = 'validate';
                 }
             }else{
                 if (class_exists('WC_Logger')) {
                     $logger = wc_get_logger();
-                    $logger->info("el id del plan creado no concuerda!");
+                    $logger->info("El ID del plan creado no coincide!");
                 }
-                $error = 'el id del plan creado no concuerda!, por favor contacte con soporte';
+                $error = 'El ID del plan creado no coincide!, por favor contacte a soporte';
                 wc_add_notice($error, 'error');
                 //wp_redirect(wc_get_checkout_url());
                 $redirect_url = $this->orderEpayco->get_checkout_payment_url(true);
@@ -218,7 +218,7 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
     public function createSubscription($subscriptions, $plans){
         try{
             if($this->handlerSubscription['type'] == 'create'){
-                // Lógica para crear la suscripción
+                // Logic to create the subscription
                 $subscription = $this->subscription->subscriptionCreate(
                     [$this->planInfo],
                     $this->customerData,
@@ -238,7 +238,7 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
         } catch (\Exception $exception) {
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
-                $logger->info($exception->getMessage());
+              //  $logger->error('ERROR - Crear Suscripción: ' . $exception->getMessage(), ['source' => 'EpaycoSubscription_Gateway']);
             }
             //echo esc_html($exception->getMessage());
             wc_add_notice($exception->getMessage(), 'error');
@@ -264,7 +264,7 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
     public function updatePlan($subscriptions, $plans){
         try{
             /* 
-            actualizar informacion del producto
+            Update product information
             */
             $updatedPlan = $this->plan->plansUpdate($this->planInfo, $this->orderEpayco, $plans);
             if($updatedPlan->status){
@@ -272,7 +272,7 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
                 $this->handlerSubscription['type'] = 'create';
                 $this->createSubscription($subscriptions, $plans);
             }else{
-                wc_add_notice("No se pudo crear el plan, por favor contacta con soporte", 'error');
+                wc_add_notice("No se pudo crear el plan, por favor contacte a soporte", 'error');
                 //wp_redirect(wc_get_checkout_url());
                 $redirect_url = $this->orderEpayco->get_checkout_payment_url(true);
                 wp_safe_redirect($redirect_url);
@@ -329,7 +329,6 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
             die();
         }    
     }
-    // Lógica para procesar el pago con Epayco
 
     public function setPaymentsIdDataForSubscription($subscription, $value): void
     {
@@ -348,11 +347,11 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
 
                         $sub = wcs_get_subscription($sub->get_id());
                     } else {
-                        $logger->add("ePaycoSubscription", "Elemento no es una instancia de WC_Subscription.");
+                        $logger->add("ePaycoSubscription", "El elemento no es una instancia de WC_Subscription.");
                     }
                 }
             } else {
-                $logger->add("ePaycoSubscription", "Objeto no es una instancia de WC_Subscription.");
+                $logger->add("ePaycoSubscription", "El objeto no es una instancia de WC_Subscription.");
             }
         } catch (\Exception $ex) {
             $error_message = "Error al actualizar la suscripción: {$ex->getMessage()}";

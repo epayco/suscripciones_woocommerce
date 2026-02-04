@@ -39,10 +39,9 @@ class Subscription extends EpaycoSuscription
                 if (!$suscriptioncreted->status) {
                     $planJson = json_decode(json_encode($suscriptioncreted), true);
                     $dataError = $planJson;
-                    $logger->error('ERROR - Create Subscription Failed: ' . print_r($dataError, true), ['source' => 'EpaycoSubscription_Gateway']);
+                    $logger->error('ERROR - Crear Suscripción Falló: ' . print_r($dataError, true), ['source' => 'EpaycoSubscription_Gateway']);
                     $error = $this->errorMessages($dataError);
                     
-                    // Construir mensaje de error con múltiples detalles
                     $errorParts = array();
                     if (!empty($dataError['message'])) {
                         $errorParts[] = $dataError['message'];
@@ -63,9 +62,9 @@ class Subscription extends EpaycoSuscription
                 
                 return $suscriptioncreted;
             } catch (Exception $exception) {
-                $logger->error('Exception - Create Subscription: ' . $exception->getMessage(), ['source' => 'EpaycoSubscription_Gateway']);
+                $logger->error('Excepción - Crear Suscripción: ' . $exception->getMessage(), ['source' => 'EpaycoSubscription_Gateway']);
                 wc_add_notice('Error al crear suscripción: ' . $exception->getMessage(), 'error');
-                wc_add_notice('<pre>Detalles: ' . print_r($exception, true) . '</pre>', 'error');
+                // wc_add_notice('<pre>Detalles: ' . print_r($exception, true) . '</pre>', 'error');
                 $redirect_url = $order->get_checkout_payment_url(true);
                 wp_safe_redirect($redirect_url);
                 exit;  
@@ -107,7 +106,7 @@ class Subscription extends EpaycoSuscription
                     $subscriptionJson = json_decode($subscriptionJson, true);
                 }  
                 $dataError = $subscriptionJson;
-                $logger->error('ERROR - Payment Validation Failed: ' . print_r($dataError, true), ['source' => 'EpaycoSubscription_Gateway']);
+                $logger->error('ERROR - Validación de Pago Falló: ' . print_r($dataError, true), ['source' => 'EpaycoSubscription_Gateway']);
                 
                 // Messaje error construction with multiple details
                 $errorParts = array();
@@ -131,7 +130,7 @@ class Subscription extends EpaycoSuscription
             }
             
         } catch (Exception $exception) {
-            $logger->error('Exception - Process Payment: ' . $exception->getMessage(), ['source' => 'EpaycoSubscription_Gateway']);
+            $logger->error('Excepción - Procesar Pago: ' . $exception->getMessage(), ['source' => 'EpaycoSubscription_Gateway']);
             wc_add_notice('Error al procesar el pago: ' . $exception->getMessage(), 'error');
             $redirect_url = $order->get_checkout_payment_url(true);
             wp_safe_redirect($redirect_url);
@@ -144,6 +143,7 @@ class Subscription extends EpaycoSuscription
             $logger = null;
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
+               // $logger->info('Procesando suscripción con estado: ' . ($sub->data->estado ?? $sub->data->status ?? 'DESCONOCIDO'), ['source' => 'EpaycoSubscription_Gateway']);
             }
             
             $refPayco = null;
@@ -178,12 +178,12 @@ class Subscription extends EpaycoSuscription
                     );
                     
                     if ($is_payment_approved) {
-                        $logger->info('Payment Status: APPROVED', ['source' => 'EpaycoSubscription_Gateway']);
+                       // $logger->info('Estado de Pago: APROBADO', ['source' => 'EpaycoSubscription_Gateway']);
                         $this->completedPayment($order,$subscription,$sub);
                         $refPayco = isset($sub->data->ref_payco) ? esc_html($sub->data->ref_payco) : 'N/A';
                     }else{
                         if( $is_payment_rejected ) {
-                            $logger->warning('Payment Status: REJECTED', ['source' => 'EpaycoSubscription_Gateway']);
+                          //  $logger->warning('Estado de Pago: RECHAZADO', ['source' => 'EpaycoSubscription_Gateway']);
                             $response = isset($sub->data->respuesta) ? esc_html($sub->data->respuesta) : 'Rechazada';
                             $errorMsg = "La transacción {$response}, por favor intente de nuevo.";
                             wc_add_notice(__($errorMsg, 'epayco-subscriptions-for-woocommerce'), 'error');
@@ -191,7 +191,7 @@ class Subscription extends EpaycoSuscription
                             exit;
                         }else{
                             if( $is_payment_pending ) {
-                                $logger->info('Payment Status: PENDING', ['source' => 'EpaycoSubscription_Gateway']);
+                                // $logger->info('Estado de Pago: PENDIENTE', ['source' => 'EpaycoSubscription_Gateway']);
                                 $this->pendingPayment($order,$subscription,$sub);
                                 $refPayco = isset($sub->data->ref_payco) ? esc_html($sub->data->ref_payco) : 'N/A';
                             }
@@ -206,9 +206,10 @@ class Subscription extends EpaycoSuscription
             $arguments['ref_payco'] = $refPayco;
             $redirect_url = add_query_arg($arguments, $order->get_checkout_order_received_url());
             wp_redirect($redirect_url);
+            exit;
         } catch (Exception $exception) {
             if (class_exists('WC_Logger')) {
-                $logger->error('Exception - Handle Subscriptions: ' . $exception->getMessage(), ['source' => 'EpaycoSubscription_Gateway']);
+                $logger->error('ERROR - Procesar Suscripciones: ' . $exception->getMessage(), ['source' => 'EpaycoSubscription_Gateway']);
             }
             wc_add_notice('Error al procesar la suscripción: ' . $exception->getMessage(), 'error');
             $redirect_url = $order->get_checkout_payment_url(true);
@@ -224,7 +225,7 @@ class Subscription extends EpaycoSuscription
         } catch (Exception $exception) {
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
-                $logger->error("ERROR - Cancel Subscription: " . $exception->getMessage(), ['source' => 'EpaycoSubscription_Gateway']);
+                $logger->error("ERROR - Cancelar Suscripción: " . $exception->getMessage(), ['source' => 'EpaycoSubscription_Gateway']);
             }
             throw $exception;
         }

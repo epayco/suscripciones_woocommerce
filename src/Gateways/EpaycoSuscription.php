@@ -653,9 +653,8 @@ class EpaycoSuscription extends AbstractGateway
             if (!function_exists('wp_die') || !function_exists('__')) {
                 require_once ABSPATH . 'wp-includes/pluggable.php';
             }
-            // \wp_die(esc_html__('Nonce verification failed', 'epayco-subscriptions-for-woocommerce'));
         }
-        //obtiene los datos de la orden y la suscripcion desde los parametros recibidos
+        
         $params = $_REQUEST;
         $order_id = isset($_REQUEST["order_id"]) ? sanitize_text_field(wp_unslash($_REQUEST["order_id"])) : '';
         $order_id = $params['order_id'];
@@ -670,7 +669,6 @@ class EpaycoSuscription extends AbstractGateway
         if (is_null($token) || $token == "null" || empty($token)) {
             $error = __('Token no generado, por favor intente de nuevo.', 'epayco-subscriptions-for-woocommerce');
             wc_add_notice($error, 'error');
-            // Redirigir al mismo receipt page para permitir reintentar el pago sin recargar el checkout
             $redirect_url = $order->get_checkout_payment_url(true);
             wp_safe_redirect($redirect_url);
             exit;
