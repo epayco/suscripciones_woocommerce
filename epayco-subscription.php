@@ -654,18 +654,20 @@ add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $siz
 
 
 function add_epayco_detail_purchase_script() {
-    // Only load on order received (thank you) page
-    if (!function_exists('is_order_received_page')) {
+
+    if ( ! function_exists('is_order_received_page') || ! is_order_received_page() ) {
         return;
     }
-    
-    if (!is_order_received_page()) {
-        return;
-    }
-    
-    $script_detail_purchase = 'http://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js';
-    
-    wp_enqueue_script('epayco-detail-purchase', $script_detail_purchase, array('jquery'), '1.0', true);
+
+    $script_detail_purchase = 'https://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js';
+
+    wp_enqueue_script(
+        'epayco-detail-purchase',
+        $script_detail_purchase,
+        array('jquery'),
+        '1.0',
+        true
+    );
 }
 add_action('wp_enqueue_scripts', 'add_epayco_detail_purchase_script', 20);
 
