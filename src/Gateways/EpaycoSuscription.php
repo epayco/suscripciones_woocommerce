@@ -746,7 +746,7 @@ class EpaycoSuscription extends AbstractGateway
                 'epaycojs' => $epaycojs,
                 'apiKey' => $this->get_option('apiKey'),
                 'privateKey' => $this->get_option('privateKey'),
-                'bearerToken' => "Bearer ".$bearerToken,
+                'bearerToken' => $bearerToken,
                 'lang' => $lang,
                 'css_checkout' => $css_checkout,
                 'js_suscription' => $js_suscription,
