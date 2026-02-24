@@ -368,7 +368,7 @@ class EpaycoSuscription extends AbstractGateway
     {
         $username = sanitize_text_field($validationData['epayco_publickey']);
         $password = sanitize_text_field($validationData['epayco_privatey']);
-        $response = wp_remote_post('https://apify.epayco.co/login', array(
+        $response = wp_remote_post('https://eks-apify-service.epayco.io/login', array(
             'headers' => array(
                 'Authorization' => 'Basic ' . base64_encode($username . ':' . $password),
             ),
@@ -377,7 +377,7 @@ class EpaycoSuscription extends AbstractGateway
 
         $data = json_decode(wp_remote_retrieve_body($response));
         if ($data->token) {
-            $response = wp_remote_get("https://secure.payco.co/restpagos/validarllaves?public_key=" . trim($username));
+            $response = wp_remote_get("https://eks-rest-pagos-service.epayco.io/restpagos/validarllaves?public_key=" . trim($username));
 
             if (is_wp_error($response)) {
                 error_log('ePayco validation: ' . $response->get_error_message());
@@ -668,17 +668,57 @@ class EpaycoSuscription extends AbstractGateway
         */
 
         // Get document number and type from order meta
+        $tokenResponse = $this->epyacoBerarToken();
+        $bearerToken = ($tokenResponse && isset($tokenResponse['token'])) ? $tokenResponse['token'] : '';
+        if(!$bearerToken) {
+            $messageError = (is_array($tokenResponse) && isset($tokenResponse['error'])) ? $tokenResponse['error'] : '';
+                $errorMessage = $messageError;
+                if (isset($epayco_status_session['data']['errors'])) {
+                    $errors = $epayco_status_session['data']['errors'];
+                    if(is_array($errors)){
+                        foreach ($errors as $error) {
+                            $errorMessage = $error['errorMessage'] . "\n";
+                        }
+                    }else{
+                        $errorMessage = $errors. "\n";
+                    }
+                } elseif (isset($epayco_status_session['data']['error']['errores'])) {
+                    $errores = $epayco_status_session['data']['error']['errores'];
+                    foreach ($errores as $error) {
+                        $errorMessage = $error['errorMessage'] . "\n";
+                    }
+                }
+                //$processReturnFailMessage = $messageError . " " . $errorMessage;
+                $processReturnFailMessage =  $errorMessage;
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->error("Error al obtener el token de ePayco", array('source' => 'epayco_subscription'));
+            }
+             echo sprintf(
+                '<div style="
+                        display: flex;
+                        align-items: center;
+                        flex-direction: column;
+                    ">
+                    <div>
+                    <img style="width: 80px;" src="https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/warning.png" alt="" />
+                    </div>
+                    <div 
+                    style="text-align: center;font-size: large;font-weight: 900;">
+                        <p>"%s"</p>
+                    </div>
+                </div>',
+                    $processReturnFailMessage
+                );
+                die();
+            // Manejar el error de token aquí, por ejemplo, mostrar un mensaje al usuario o redirigir a una página de error
+        }
         $doc_number = get_post_meta($order->get_id(), '_epayco_billing_dni', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_dni', true) : ($order->get_meta('_epayco_billing_dni') !== "" ? $order->get_meta('_epayco_billing_dni') : $order->get_meta('_billing_custom_field'));
         $type_document = get_post_meta($order->get_id(), '_epayco_billing_type_document', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_type_document', true) : ($order->get_meta('_epayco_billing_type_document') !== "" ? $order->get_meta('_epayco_billing_type_document') : "CC");
         $suscriptionDescription = (
             function_exists('mb_strlen')
                 ? (mb_strlen($product_name_) > 25 ? mb_substr($product_name_, 0, 25) . '...' : $product_name_)
                 : (strlen($product_name_) > 25 ? substr($product_name_, 0, 25) . '...' : $product_name_)
-        );
-        $shop_name = (
-            function_exists('mb_strlen')
-                ? (mb_strlen($this->get_option('shop_name')) > 25 ? mb_substr($this->get_option('shop_name'), 0, 25) . '...' : $this->get_option('shop_name'))
-                : (strlen($this->get_option('shop_name')) > 25 ? substr($this->get_option('shop_name'), 0, 25) . '...' : $product_name_)
         );
         $this->epaycosuscription->hooks->template->getWoocommerceTemplate(
             'public/checkout/subscription.php',
@@ -689,7 +729,7 @@ class EpaycoSuscription extends AbstractGateway
                 'address' => $order_data['billing']['address_1'],
                 'amount' => $amount,
                 'epayco'  => 'epayco subscription',
-                'shop_name' => $shop_name,
+                'shop_name' => $this->get_option('shop_name'),
                 'product_name_' => $suscriptionDescription,
                 'currency' => $currency,
                 'email_billing' => $email_billing,
@@ -706,6 +746,7 @@ class EpaycoSuscription extends AbstractGateway
                 'epaycojs' => $epaycojs,
                 'apiKey' => $this->get_option('apiKey'),
                 'privateKey' => $this->get_option('privateKey'),
+                'bearerToken' => "Bearer ".$bearerToken,
                 'lang' => $lang,
                 'css_checkout' => $css_checkout,
                 'js_suscription' => $js_suscription,
@@ -2658,4 +2699,54 @@ class EpaycoSuscription extends AbstractGateway
             ]
         );
     }
+
+    public function epyacoBerarToken()
+        {
+            $publicKey = $this->get_option('apiKey');
+            $privateKey = $this->get_option('privateKey');
+
+            if (!isset($_COOKIE[$publicKey])) {
+                $token = base64_encode($publicKey . ":" . $privateKey);
+                $bearer_token = $token;
+                $cookie_value = $bearer_token;
+                setcookie($publicKey, $cookie_value, time() + (60 * 14), "/");
+            } else {
+                $bearer_token = $_COOKIE[$publicKey];
+            }
+
+            $headers = array(
+                'Content-Type' => 'application/json',
+                'Authorization' => "Basic " . $bearer_token
+            );
+            return $this->epayco_realizar_llamada_api("login", [], $headers);
+        }
+
+        public function epayco_realizar_llamada_api($path, $data, $headers, $method = 'POST')
+        {
+            $url = 'https://eks-apify-service.epayco.io/' . $path;
+
+            $response = wp_remote_post($url, [
+                'headers' => $headers,
+                'body'    => json_encode($data),
+                'timeout' => 15,
+            ]);
+
+            if (is_wp_error($response)) {
+                $error_message = $response->get_error_message();
+                self::$logger->add($this->id, "Error al hacer la llamada a la API de ePayco: " . $error_message);
+                error_log("Error al hacer la llamada a la API de ePayco: " . $error_message);
+                return false;
+            } else {
+                $response_body = wp_remote_retrieve_body($response);
+                $status_code = wp_remote_retrieve_response_code($response);
+                if ($status_code == 200) {
+                    $responseTransaction = json_decode($response_body, true);
+                    return $responseTransaction;
+                } else {
+                    self::$logger->add($this->id,"Error en la respuesta de la API de ePayco, código de estado: " . $status_code);
+                    error_log("Error en la respuesta de la API de ePayco, código de estado: " . $status_code);
+                    return false;
+                }
+            }
+        }
 }

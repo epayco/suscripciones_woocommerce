@@ -17,6 +17,7 @@
  * @var string $stylemin
  * @var string $apiKey
  * @var string $privateKey
+ * @var string $bearerToken
  * @var string $lang
  * @var string $card_unmin
  * @var string $epaycojs
@@ -157,7 +158,7 @@ if (!defined('ABSPATH')) {
                 };
 
                 ePaycoCheckoutPlugin.configure({
-                    publicKey: "<?php echo htmlspecialchars($apiKey); ?>",
+                    bearerToken: "<?php echo htmlspecialchars($bearerToken); ?>",
                     test: <?php echo $environment ? 'true' : 'false'; ?>
                 });
 
