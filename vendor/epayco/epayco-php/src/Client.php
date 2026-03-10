@@ -88,7 +88,10 @@ class Client extends GraphqlClient
                     throw new ErrorException($msj, 422);
                 }
                 $cookie_value = $bearer_token;
-                setcookie($cookie_name, $cookie_value, time() + (60 * 14), "/");
+                if (PHP_SAPI !== 'cli' && !headers_sent()) {
+                    setcookie($cookie_name, $cookie_value, time() + (60 * 14), "/");
+                }
+                $_COOKIE[$cookie_name] = $cookie_value;
                 //  echo "token con login".$bearer_token;
             } else {
                 $bearer_token = $_COOKIE[$cookie_name];
@@ -100,6 +103,7 @@ class Client extends GraphqlClient
                 "data" => array()
             );
             $objectReturnError = (object)$data;
+            error_log("Epayco SDk Error: " . json_encode($objectReturnError));
             return $objectReturnError;
         }
 
