@@ -538,7 +538,8 @@ add_action('wp_enqueue_scripts', 'detalle_pedido');
 function checkout_epayco() {
     wp_register_script(
         'epayco-script-checkout',
-        'https://eks-cms-backend-platforms-service.epayco.io/plugin/ePaycoCheckoutPlugin.js',
+        //'https://eks-cms-backend-platforms-service.epayco.io/plugin/ePaycoCheckoutPlugin.js',
+        'https://eks-subscriptions-landing-plugins.epayco.io/plugin/subscriptions-plugin.js',
         array('jquery'),
         '1.0',
         true
