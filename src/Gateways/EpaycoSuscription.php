@@ -449,7 +449,7 @@ class EpaycoSuscription extends AbstractGateway
             $json_input = json_decode($raw_input, true);
             $dataEpayco = $json_input['data'] ?? null;
         }
-
+        
         if (!is_null($dataEpayco)) {
             $decoded = base64_decode($dataEpayco, true);
             if ($decoded !== false && $decoded !== null) {
@@ -479,7 +479,7 @@ class EpaycoSuscription extends AbstractGateway
                     $logger = wc_get_logger();
                     $logger->info("Token creado exitosamente: " . json_encode($token));
                 }
-                error_log("Epayco createToken request: " . json_encode($token));
+                //error_log("Epayco createToken request: " . json_encode($token));
                 return $token;
             } else {
                 if (class_exists('WC_Logger')) {
@@ -622,6 +622,7 @@ class EpaycoSuscription extends AbstractGateway
                 die();
             // Manejar el error de token aquí, por ejemplo, mostrar un mensaje al usuario o redirigir a una página de error
         }
+
         $doc_number = get_post_meta($order->get_id(), '_epayco_billing_dni', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_dni', true) : ($order->get_meta('_epayco_billing_dni') !== "" ? $order->get_meta('_epayco_billing_dni') : $order->get_meta('_billing_custom_field'));
         $type_document = get_post_meta($order->get_id(), '_epayco_billing_type_document', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_type_document', true) : ($order->get_meta('_epayco_billing_type_document') !== "" ? $order->get_meta('_epayco_billing_type_document') : "CC");
         $suscriptionDescription = (
@@ -2633,11 +2634,11 @@ class EpaycoSuscription extends AbstractGateway
             $token = base64_encode($publicKey . ":" . $privateKey);
             $bearer_token = $token;
             $cookie_value = $bearer_token;
-            setcookie($publicKey, $cookie_value, time() + (60 * 14), "/");
+            setcookie($cookie_name, $cookie_value, time() + (60 * 14), "/");
         } else {
             $bearer_token = $_COOKIE[$cookie_name];
         }
-
+        
         $headers = array(
             'Content-Type' => 'application/json',
             'Authorization' => "Basic " . $bearer_token

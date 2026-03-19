@@ -7,7 +7,7 @@
  * @wordpress-plugin
  * Plugin Name:       ePayco Subscriptions for WooCommerce
  * Description:       Plugin ePayco Subscription
- * Version:           6.5.1
+ * Version:           6.5.2
  * Author:            ePayco
  * Text Domain:       epayco-subscriptions-for-woocommerce
  * Author URI:
@@ -86,6 +86,12 @@ function eps_disable_plugin(): void
 //add_filter('wc_order_statuses', 'add_epayco_suscription_to_order_statuses');
 //add_action('admin_head', 'styling_admin_suscription_order_list');
 //add_action('woocommerce_checkout_update_order_meta', 'some_custom_checkout_field_update_order_meta');
+function epaycosubscription_woocommerce_addon_settings_link( $links ) {
+    array_push( $links, '<a href="admin.php?page=wc-settings&tab=checkout&section=woo-epaycosubscription">' . __( 'Configuración' ) . '</a>' );
+    return $links;
+}
+
+add_filter( "plugin_action_links_".plugin_basename( __FILE__ ),'epaycosubscription_woocommerce_addon_settings_link' );
 
 function register_epayco_suscription_order_status()
 {
@@ -538,7 +544,6 @@ add_action('wp_enqueue_scripts', 'detalle_pedido');
 function checkout_epayco() {
     wp_register_script(
         'epayco-script-checkout',
-        //'https://eks-cms-backend-platforms-service.epayco.io/plugin/ePaycoCheckoutPlugin.js',
         'https://eks-subscriptions-landing-plugins.epayco.io/plugin/subscriptions-plugin.js',
         array('jquery'),
         '1.0',
