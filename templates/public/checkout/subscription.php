@@ -72,13 +72,17 @@ if (!defined('ABSPATH')) {
             - <span class="icon-credit-card color icon-input"><i class="fas fa-envelope"></i></span>
             <input type="tel" class="binding-input inspectletIgnore" name="card_email" autocomplete="off" hidden="true" data-epayco="card[email]" value="<?php echo esc_html($email_billing) ?>">
         </div>
-        <div id="epayco-checkout-plugin"></div>
+        <div style="display:block">
+            <div id="epayco-checkout-plugin"></div>
+        </div>
     </div>
     
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             if (window.ePaycoCheckoutPlugin) {
+                console.log("epayco Subscription checkout script loaded");
                 // Intercepta y envía los datos del checkout al webhook
+                /*
                 const originalXHR = window.XMLHttpRequest;
                 window.XMLHttpRequest = function() {
                     const xhr = new originalXHR();
@@ -156,7 +160,7 @@ if (!defined('ABSPATH')) {
 
                     return xhr;
                 };
-
+                */
                 ePaycoCheckoutPlugin.configure({
                     bearerToken: "<?php echo htmlspecialchars($bearerToken); ?>",
                     test: <?php echo $environment ? 'true' : 'false'; ?>
@@ -188,6 +192,7 @@ if (!defined('ABSPATH')) {
                     lang: "<?php echo htmlspecialchars($lang); ?>",
                     actionUlr: "<?php echo $redirect_url; ?>",
                     paymentMethod: "card", // cash, pse
+                    autoLoad:true
                 });
             } else {
                 console.error("ePaycoCheckoutPlugin no está cargado todavía");

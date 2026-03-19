@@ -81,8 +81,8 @@ class EpaycoSuscription extends AbstractGateway
         $this->epaycosuscription->hooks->gateway->registerGatewayReceiptPage($this->id, [$this, 'receiptPage']);
         $this->epaycosuscription->hooks->checkout->registerReceipt($this->id, [$this, 'renderOrderForm']);
         $this->epaycosuscription->hooks->endpoints->registerApiEndpoint(self::WEBHOOK_API_NAME, [$this, 'webhook']);
-        $this->epaycosuscription->hooks->endpoints->registerApiEndpoint(self::WEBHOOK_API_NAME_VALIDATION, [$this, 'validate_ePayco_request']);
-        $this->epaycosuscription->hooks->gateway->getAdminCredentiaslFields($this, 'ePayco_credentials_validation');
+        $this->epaycosuscription->hooks->endpoints->registerApiEndpoint(self::WEBHOOK_API_NAME_VALIDATION, [$this, 'validate_ePaycoSubscription_request']);
+        $this->epaycosuscription->hooks->gateway->getAdminCredentiaslFields($this, 'ePaycoSubscription_credentials_validation');
 
         $lang = \get_locale();
         $lang = explode('_', $lang);
@@ -364,7 +364,7 @@ class EpaycoSuscription extends AbstractGateway
     /**
      * @param $validationData
      */
-    public function ePayco_credentials_validation($validationData)
+    public function ePaycoSubscription_credentials_validation($validationData)
     {
         $username = sanitize_text_field($validationData['epayco_publickey']);
         $password = sanitize_text_field($validationData['epayco_privatey']);
@@ -442,13 +442,13 @@ class EpaycoSuscription extends AbstractGateway
         }
     }
 
-    public function createToken()
+    public function createToken($dataEpayco = null)
     {
-        $raw_input = file_get_contents('php://input');
-        $json_input = json_decode($raw_input, true);
-        $dataEpayco = $json_input['data'] ?? null;
-
-
+        if (is_null($dataEpayco)) {
+            $raw_input = file_get_contents('php://input');
+            $json_input = json_decode($raw_input, true);
+            $dataEpayco = $json_input['data'] ?? null;
+        }
 
         if (!is_null($dataEpayco)) {
             $decoded = base64_decode($dataEpayco, true);
@@ -477,9 +477,9 @@ class EpaycoSuscription extends AbstractGateway
                 // Log para debugging si es necesario
                 if (class_exists('WC_Logger')) {
                     $logger = wc_get_logger();
-                    $logger->info("Token creado exitosamente: " . ($token->status ? 'SUCCESS' : 'FAILED'), array('source' => 'epayco_subscription'));
+                    $logger->info("Token creado exitosamente: " . json_encode($token));
                 }
-                
+                error_log("Epayco createToken request: " . json_encode($token));
                 return $token;
             } else {
                 if (class_exists('WC_Logger')) {
@@ -498,6 +498,11 @@ class EpaycoSuscription extends AbstractGateway
         return null;
     }
 
+    public function createCustomer($customerData, $token, $order_id){
+        $ePaycoCustomer = new Customer();
+        return $ePaycoCustomer->createOrUpdateEpaycoCustomer($customerData, $token, $order_id);
+    }
+
     /**
      * Render Receipt  page
      *
@@ -512,6 +517,7 @@ class EpaycoSuscription extends AbstractGateway
         $order_data = $order->get_data();
         $name_billing = $subscription->get_billing_first_name() . ' ' . $subscription->get_billing_last_name();
         $email_billing = $subscription->get_billing_email();
+        $str_countryCode = $subscription->get_billing_country();
         $redirect_url = get_site_url() . "/";
         $redirect_url = add_query_arg('wc-api', self::WEBHOOK_API_NAME, $redirect_url);
         $redirect_url = add_query_arg('order_id', $order_id, $redirect_url);
@@ -563,110 +569,13 @@ class EpaycoSuscription extends AbstractGateway
         $lang = explode('_', $lang);
         $lang = $lang[0];
 
-        if (ini_get('allow_url_fopen')) {
-            if (isset($_SERVER['REMOTE_ADDR'])) {
-                $remote_addr = sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR']));
-                $str_arr_ipdat = @json_decode(file_get_contents("http://www.geoplugin.net/json.gp?ip=" . $remote_addr));
-            } else {
-                $str_arr_ipdat = null;
-            }
-        } else {
-            if (\function_exists('wp_remote_get')) {
-                $remote_addr = isset($_SERVER['REMOTE_ADDR']) ? sanitize_text_field(wp_unslash($_SERVER['REMOTE_ADDR'])) : '';
-                $response = \wp_remote_get("http://www.geoplugin.net/json.gp?ip=" . $remote_addr);
-            } else {
-                throw new Exception('WordPress environment not loaded. wp_remote_get function is unavailable.');
-            }
-            if (is_wp_error($response)) {
-                $str_arr_ipdat = null;
-            } else {
-                $contents = wp_remote_retrieve_body($response);
-                $str_arr_ipdat = @json_decode($contents);
-            }
-        }
 
-        if (!empty($str_arr_ipdat) and $str_arr_ipdat->geoplugin_status != 404) {
-            $str_countryCode = $str_arr_ipdat->geoplugin_countryCode;
-        } else {
-            $str_countryCode = "CO";
-        }
-        /*
-                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-                    'wc_epaycosuscription_checkout',
-                    $this->epaycosuscription->helpers->url->getJsAsset('checkouts/suscription/ep-suscription-checkout'),
-                    [
-                        'site_id' => 'epayco',
-                    ]
-                );
-
-                $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-                    'wc_epaycosubscription_style',
-                    $this->epaycosuscription->helpers->url->getCssAsset('style')
-                );
-
-                $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-                    'wc_epaycosubscription_general',
-                    $this->epaycosuscription->helpers->url->getCssAsset('general')
-                );
-
-                $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-                    'wc_epaycosubscription_card-js',
-                    $this->epaycosuscription->helpers->url->getCssAsset('card-js')
-                );
-
-                $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-                    'wc_epaycosubscription_cloudflare',
-                    "https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"
-                );
-
-                $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-                    'wc_epaycosubscription_cardsjs',
-                    $this->epaycosuscription->helpers->url->getCssAsset('cardsjs')
-                );
-
-                $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-                    'wc_epaycosubscription_fontawesome',
-                    "https://use.fontawesome.com/releases/v5.2.0/css/all.css"
-                );
-
-                $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-                    'wc_epaycosubscription_cloudflare',
-                    "https://cdnjs.cloudflare.com/ajax/libs/bootstrap-slider/10.4.2/css/bootstrap-slider.min.css"
-                );
-
-                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-                    'jquery',
-                    "https://code.jquery.com/jquery-1.11.3.min.js"
-                );
-
-                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-                    'app',
-                    $this->epaycosuscription->helpers->url->getJsAsset('app')
-                );
-                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-                    'cardsjs',
-                    $this->epaycosuscription->helpers->url->getJsAsset('cardsjs')
-                );
-                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-                    'epaycocheckout',
-                    $this->epaycosuscription->helpers->url->getJsAsset('epaycocheckout')
-                );
-                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-                    'card-js-unmin',
-                    $this->epaycosuscription->helpers->url->getJsAsset('card-js-unmin')
-                );
-
-                $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
-                    'index',
-                    $this->epaycosuscription->helpers->url->getJsAsset('index')
-                );
-
-                $this->epaycosuscription->hooks->scripts->registerCheckoutStyle(
-                    'wc_epaycosubscription_animate',
-                    $this->epaycosuscription->helpers->url->getCssAsset('animate')
-                );
-        */
-
+        // if (!empty($str_arr_ipdat) and $str_arr_ipdat->geoplugin_status != 404) {
+        //     $str_countryCode = $str_arr_ipdat->geoplugin_countryCode;
+        // } else {
+        //     $str_countryCode = "Colombia";
+        // }
+   
         // Get document number and type from order meta
         $tokenResponse = $this->epyacoBerarToken();
         $bearerToken = ($tokenResponse && isset($tokenResponse['token'])) ? $tokenResponse['token'] : '';
@@ -767,192 +676,187 @@ class EpaycoSuscription extends AbstractGateway
     public function webhook(): void
     {
         // Limpiar cualquier output previo
-        ob_clean();
-        
-        global $woocommerce;
-        global $wpdb;
-        if (!isset($_REQUEST['_wpnonce']) || !\wp_verify_nonce(\sanitize_text_field(\wp_unslash($_REQUEST['_wpnonce'])), 'epayco_subscription_action')) {
-            if (!function_exists('wp_die') || !function_exists('__')) {
-                require_once ABSPATH . 'wp-includes/pluggable.php';
-            }
-            // \wp_die(esc_html__('Nonce verification failed', 'epayco-subscriptions-for-woocommerce'));
-        }
-        //obtiene los datos de la orden y la suscripcion desde los parametros recibidos
-        $params = $_REQUEST;
-
-        // Eliminar debug y retornar JSON para el frontend
-        $return_url = '';
-        if (isset($params['order_id'])) {
-            $order_id = sanitize_text_field($params['order_id']);
-            $order = wc_get_order($order_id);
-            if ($order) {
-                $return_url = $order->get_checkout_order_received_url();
-            }
-        }
-
-
-
-        $order_id = isset($_REQUEST["order_id"]) ? sanitize_text_field(wp_unslash($_REQUEST["order_id"])) : '';
-        $order = new \WC_Order($order_id);
-        $table_name = $wpdb->prefix . 'epayco_plans';
-        $table_name_setings = $wpdb->prefix . 'epayco_setings';
-        $order_id = $params['order_id'];
-        $order = new \WC_Order($order_id);
-
-        $subscriptions = $this->getWooCommerceSubscriptionFromOrderId($order_id);
-        // subscription_id = $subscriptions[0]->get_id() ?? 0;
-        // $subscription = wcs_get_subscription($subscription_id);
-
-        // Obtener el token desde la función createToken()
-        $tokenResponse = $this->createToken();
-        
-      
-        $token = null;
-        if (isset($tokenResponse->status) && $tokenResponse->status === true && isset($tokenResponse->id)) {
-            $token = $tokenResponse->id;
-        } else {
-          
-            if (class_exists('WC_Logger')) {
-                $logger = wc_get_logger();
-                $logger->error("No se pudo extraer el token ID de la respuesta: " . json_encode($tokenResponse), array('source' => 'epayco_subscription'));
-            }
-        }
-
-        if (is_null($token) || $token == "null") {
-            $error = __('Token no generado, por favor intente de nuevo.', 'epayco-subscriptions-for-woocommerce');
+        try {
+            ob_clean();
             
-            // Devolver error en formato JSON para AJAX
-            header('Content-Type: application/json');
-            echo json_encode([
-                'success' => false,
-                'message' => $error,
-                'return_url' => ''
-            ]);
-            exit;
-        }
-
-        $customerName =  $params['name'];
-        $customerData = $this->paramsBilling($subscriptions, $order, $customerName);
-        $customerData['token_card'] = $token;
-      
-        $cache_key = "epayco_customer_{$this->custIdCliente}_{$customerData['email']}";
-        $customerGetData = wp_cache_get($cache_key, 'epayco');
-        $ePaycoCustomer = new Customer();
-        $customer_id = $ePaycoCustomer->createOrUpdateEpaycoCustomer($customerData, $token, $order_id);
-        if (is_null($customer_id)) {
-            $customer = $ePaycoCustomer->customerCreate($customerData);
-            if ($customer->data->status == 'error' || !$customer->status) {
-                if (class_exists('WC_Logger')) {
-
-                    $logger->info("customerCreate: " . json_encode($customer));
+            global $woocommerce;
+            global $wpdb;
+            if (!isset($_REQUEST['_wpnonce']) || !\wp_verify_nonce(\sanitize_text_field(\wp_unslash($_REQUEST['_wpnonce'])), 'epayco_subscription_action')) {
+                if (!function_exists('wp_die') || !function_exists('__')) {
+                    require_once ABSPATH . 'wp-includes/pluggable.php';
                 }
-                $customerJson = json_decode(json_encode($customer), true);
-                $dataError = $customerJson;
-                $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('El token no se puede asociar al cliente, verifique que: el token existe, el cliente no esté asociado y que el token no este asociado a otro cliente.', 'epayco-subscriptions-for-woocommerce'));
-                wc_add_notice($error, 'error');
-                wp_redirect(wc_get_checkout_url());
-                exit;
+                // \wp_die(esc_html__('Nonce verification failed', 'epayco-subscriptions-for-woocommerce'));
+            }
+            //obtiene los datos de la orden y la suscripcion desde los parametros recibidos
+            $params = $_REQUEST;
+
+            // Eliminar debug y retornar JSON para el frontend
+            $return_url = '';
+            if (isset($params['order_id'])) {
+                $order_id = sanitize_text_field($params['order_id']);
+                $order = wc_get_order($order_id);
+                if ($order) {
+                    $return_url = $order->get_checkout_order_received_url();
+                }
+            }
+
+            $order_id = isset($_REQUEST["order_id"]) ? sanitize_text_field(wp_unslash($_REQUEST["order_id"])) : '';
+            $order = new \WC_Order($order_id);
+            $table_name = $wpdb->prefix . 'epayco_plans';
+            $table_name_setings = $wpdb->prefix . 'epayco_setings';
+
+            $subscriptions = $this->getWooCommerceSubscriptionFromOrderId($order_id);
+            // subscription_id = $subscriptions[0]->get_id() ?? 0;
+            // $subscription = wcs_get_subscription($subscription_id);
+
+            // Obtener el token desde la función createToken()
+            $raw_input = file_get_contents('php://input');
+            $json_input = json_decode($raw_input, true);
+            $dataEpayco = $json_input['data'] ?? null;
+            $tokenResponse = $this->createToken($dataEpayco);
+
+            $token = null;
+            if (isset($tokenResponse->status) && $tokenResponse->status === true && isset($tokenResponse->id)) {
+                $token = $tokenResponse->id;
             } else {
-                $inserCustomer = $wpdb->insert(
-                    $table_name_setings,
-                    [
-                        'id_payco' => $this->custIdCliente,
-                        'customer_id' => $customer->data->customerId,
-                        //'token_id' => $customerData['token_card'],
-                        'email' => $customerData['email']
-                    ]
-                );
-                if (!$inserCustomer) {
-                    $error_message = __('No se insertó el registro del cliente en la base de datos.', 'epayco-subscriptions-for-woocommerce');
-                    wc_add_notice($error_message, 'error');
-                    // Redirigir al mismo receipt page para permitir reintentar el pago sin recargar el checkout
-                    $order = new \WC_Order($order_id);
-                    $redirect_url = $order->get_checkout_payment_url(true);
-                    wp_safe_redirect($redirect_url);
+                if (is_null($token) || $token == "null") {
+                    if (class_exists('WC_Logger')) {
+                        $logger = wc_get_logger();
+                        $logger->error("No se pudo extraer el token ID de la respuesta: " . json_encode($tokenResponse), array('source' => 'epayco_subscription'));
+                    }
+                    $error = __('Token no generado, por favor intente de nuevo.', 'epayco-subscriptions-for-woocommerce');   
+                    // Devolver error en formato JSON para AJAX
+                    header('Content-Type: application/json');
+                    echo json_encode([
+                        'success' => false,
+                        'message' => json_encode($tokenResponse),
+                        'return_url' => ''
+                    ]);
                     exit;
                 }
-                if (class_exists('WC_Logger')) {
-                    $logger->info("Error : 'No se inserto el registro del cliente en la base de datos.'");
+            }     
+
+            $customerName =  $params['name'] ?? '';
+            $customerData = $this->paramsBilling($subscriptions, $order, $customerName);
+            $customerData['token_card'] = $token;
+          
+            $cache_key = "epayco_customer_{$this->custIdCliente}_{$customerData['email']}";
+            $customerGetData = wp_cache_get($cache_key, 'epayco');
+            $ePaycoCustomer = new Customer();
+
+            $customer_id = $this->createCustomer($customerData, $token, $order_id);
+
+            if (is_null($customer_id) ) {
+                $customer = $ePaycoCustomer->customerCreate($customerData);
+                if ($customer->data->status == 'error' || !$customer->status) {
+                    if (class_exists('WC_Logger')) {
+
+                        $logger->info("customerCreate: " . json_encode($customer));
+                    }
+                    $customerJson = json_decode(json_encode($customer), true);
+                    $dataError = $customerJson;
+                    $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('El token no se puede asociar al cliente, verifique que: el token existe, el cliente no esté asociado y que el token no este asociado a otro cliente.', 'epayco-subscriptions-for-woocommerce'));
+                    wc_add_notice($error, 'error');
+                    wp_redirect(wc_get_checkout_url());
+                    exit;
+                } else {
+                    $inserCustomer = $wpdb->insert(
+                        $table_name_setings,
+                        [
+                            'id_payco' => $this->custIdCliente,
+                            'customer_id' => $customer->data->customerId,
+                            //'token_id' => $customerData['token_card'],
+                            'email' => $customerData['email']
+                        ]
+                    );
+                    if (!$inserCustomer) {
+                        $error_message = __('No se insertó el registro del cliente en la base de datos.', 'epayco-subscriptions-for-woocommerce');
+                        wc_add_notice($error_message, 'error');
+                        // Redirigir al mismo receipt page para permitir reintentar el pago sin recargar el checkout
+                        $redirect_url = $order->get_checkout_payment_url(true);
+                        wp_safe_redirect($redirect_url);
+                        exit;
+                    }
+                    if (class_exists('WC_Logger')) {
+                        $logger->info("Error : 'No se inserto el registro del cliente en la base de datos.'");
+                    }
+                    $customerData['customer_id'] = $customer->data->customerId;
                 }
-                $customerData['customer_id'] = $customer->data->customerId;
-            }
-        } else {
-            $customerData['customer_id'] = $customer_id;
-        }
-
-        $confirm_url = $this->getUrlNotify($order_id);
-        $plans = $this->getPlansBySubscription($subscriptions);
-        $getPlans = $this->getPlans($plans);
-        //$getPlansList = $this->getPlansList();
-
-        if (!$getPlans) {
-            $validatePlan_ = $this->validatePlan(true, $order_id, $plans, $subscriptions, $customerData, $confirm_url, $order, false, false, null);
-        } else {
-            $validatePlan_ = $this->validatePlan(false, $order_id, $plans, $subscriptions, $customerData, $confirm_url, $order, true, false, $getPlans);
-        }
-
-        if ($validatePlan_) {
-            try {
-                $response_status = $validatePlan_;
-            } catch (Exception $exception) {
-                if (class_exists('WC_Logger')) {
-                    $logger = wc_get_logger();
-                    $logger->info("Error : " . $exception->getMessage());
-                }
-                throw $exception; 
-            }
-        }
-
-        if (!$response_status['status']) {
-            // Error en el procesamiento - devolver JSON para AJAX
-            $order = new \WC_Order($order_id);
-            $redirect_url = '';
-            if (version_compare(WOOCOMMERCE_VERSION, '2.1', '>=')) {
-                $redirect_url = add_query_arg('order-pay', $order->get_id(), add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))));
             } else {
-                $redirect_url = add_query_arg('order', $order->get_id(), add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))));
+                $customerData['customer_id'] = $customer_id['customer_id'];
             }
-            
+
+            $confirm_url = $this->getUrlNotify($order_id);
+            $plans = $this->getPlansBySubscription($subscriptions);
+            $getPlans = $this->getPlans($plans);
+            //$getPlansList = $this->getPlansList();
+
+            if (!$getPlans) {
+                $validatePlan_ = $this->validatePlan(true, $order_id, $plans, $subscriptions, $customerData, $confirm_url, $order, false, false, null);
+            } else {
+                $validatePlan_ = $this->validatePlan(false, $order_id, $plans, $subscriptions, $customerData, $confirm_url, $order, true, false, $getPlans);
+            }
+  
+            $response_status = $validatePlan_;
+
+            if (!$response_status['success']) {
+                // Error en el procesamiento - devolver JSON para AJAX
+                $redirect_url = '';
+                if (version_compare(WOOCOMMERCE_VERSION, '2.1', '>=')) {
+                    $redirect_url = add_query_arg('order-pay', $order->get_id(), add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))));
+                } else {
+                    $redirect_url = add_query_arg('order', $order->get_id(), add_query_arg('key', $order->order_key, get_permalink(woocommerce_get_page_id('pay'))));
+                }
+                
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => false,
+                    'message' => $response_status['message'],
+                    'return_url' => $redirect_url
+                ]);
+                exit;
+            } else {
+                // Éxito - limpiar carrito y preparar redirección
+                WC()->cart->empty_cart();
+                $arguments = array();
+                $arguments['ref_payco'] = $response_status['ref_payco'];
+                $redirect_url = $response_status['url'];
+                $redirect_url = add_query_arg($arguments, $redirect_url);
+                
+                header('Content-Type: application/json');
+                echo json_encode([
+                    'success' => true,
+                    'message' => 'Pago procesado exitosamente',
+                    'return_url' => $redirect_url,
+                    'ref_payco' => isset($response_status['ref_payco']) ? $response_status['ref_payco'] : null,
+                    'orderStatus' => isset($response_status['orderStatus']) ? $response_status['orderStatus'] : null
+                ]);
+                exit;
+            }
+
+            // Fallback - no debería llegar aquí normalmente
             header('Content-Type: application/json');
             echo json_encode([
                 'success' => false,
-                'message' => $response_status['message'],
-                'return_url' => $redirect_url
+                'message' => 'Error inesperado en el procesamiento',
+                'return_url' => isset($return_url) ? $return_url : null
             ]);
             exit;
-        } else {
-            // Éxito - limpiar carrito y preparar redirección
-            WC()->cart->empty_cart();
-            $arguments = array();
-            $arguments['ref_payco'] = $response_status['ref_payco'];
-            $redirect_url = $response_status['url'];
-            $redirect_url = add_query_arg($arguments, $redirect_url);
-            
-            header('Content-Type: application/json');
-            echo json_encode([
-                'success' => true,
-                'message' => 'Pago procesado exitosamente',
-                'return_url' => $redirect_url
-            ]);
-            exit;
+        } catch (Exception $exception) {
+            if (class_exists('WC_Logger')) {
+                $logger = wc_get_logger();
+                $logger->info("Error : " . $exception->getMessage());
+            }
+            throw $exception; 
         }
-
-        // Fallback - no debería llegar aquí normalmente
-        header('Content-Type: application/json');
-        echo json_encode([
-            'success' => false,
-            'message' => 'Error inesperado en el procesamiento',
-            'return_url' => $return_url
-        ]);
-        exit;
     }
 
-    public function validate_ePayco_request(): void
+    public function validate_ePaycoSubscription_request(): void
     {
         @ob_clean();
         if (! empty($_REQUEST)) {
             header('HTTP/1.1 200 OK');
-            do_action("ePayco_init_validation", $_REQUEST);
+            do_action("ePaycoSubscription_init_validation", $_REQUEST);
         } else {
             wp_die('Do not access this page directly (ePayco)');
         }
@@ -1113,11 +1017,16 @@ class EpaycoSuscription extends AbstractGateway
                     $this->validatePlan(true, $order_id, $plans, $subscriptions, $customer, $confirm_url, $order, false, false, null);
                 }
             } else {
-                $newPlanJson = json_decode($newPLan, true);
+                // Corrige error: json_decode espera string, pero puede llegar stdClass
+                if (is_string($newPLan)) {
+                    $newPlanJson = json_decode($newPLan, true);
+                    $dataError = $newPlanJson;
+                } else {
+                    $dataError = $newPLan;
+                }
                 if (class_exists('WC_Logger')) {
                     $logger->info("Error : " . json_encode($newPLan));
                 }
-                $dataError = $newPlanJson;
 
                 if (is_array($dataError)) {
                     $message = $dataError['message'];
@@ -1156,7 +1065,7 @@ class EpaycoSuscription extends AbstractGateway
 
 
                 $response_status = [
-                    'status' => false,
+                    'success' => false,
                     /* translators: %s será reemplazado con el mensaje de error del nuevo plan */
                     'message' => $errorMessage,
                 ];
@@ -1222,8 +1131,12 @@ class EpaycoSuscription extends AbstractGateway
 
             return $this->process_payment_epayco($plans, $customer, $confirm_url, $subscriptions, $order);
         }
-        die();
-
+        error_log("validateNewPlanData: Error" . json_encode($subsCreated));
+        return [
+            "success" => false,
+            "message" => __('Error al actualizar el plan en ePayco, por favor intente de nuevo.', 'epayco-subscriptions-for-woocommerce')
+        ];
+/*
         $table_name = $wpdb->prefix . 'epayco_plans';
         $wc_order_product_lookup = $wpdb->prefix . "wc_order_product_lookup";
 
@@ -1352,6 +1265,7 @@ class EpaycoSuscription extends AbstractGateway
                 return $this->process_payment_epayco($newPlanToCreated_, $customer, $confirm_url, $subscriptions, $order);
             }
         }
+        */
     }
 
 
@@ -1597,10 +1511,6 @@ class EpaycoSuscription extends AbstractGateway
     }
 
 
-
-
-
-
     public function paramsBilling($subscriptions, $order, $customerName)
     {
         $data = [];
@@ -1610,7 +1520,7 @@ class EpaycoSuscription extends AbstractGateway
             $type_document = get_post_meta($order->get_id(), '_epayco_billing_type_document', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_type_document', true) : ($order->get_meta('_epayco_billing_type_document') !== "" ? $order->get_meta('_epayco_billing_type_document')  : "CC");
 
             // Mejorar captura de nombre y apellido
-            $fullName = trim($customerName);
+            $fullName = trim((string) ($customerName ?? ''));
             if (empty($fullName)) {
                 // Si el nombre no viene por parámetro, usar los datos de la orden
                 $firstName = $order->get_billing_first_name();
@@ -1801,7 +1711,6 @@ class EpaycoSuscription extends AbstractGateway
 
     public function handleStatusSubscriptions(array $subscriptionsStatus, array $subscriptions, array $customer, $order, $customerId, $suscriptionId, $planId)
     {
-
         global $wpdb;
         $table_subscription_epayco = $wpdb->prefix . 'epayco_subscription';
         
@@ -1813,17 +1722,20 @@ class EpaycoSuscription extends AbstractGateway
 
         $count = 0;
         $messageStatus = [];
-        $messageStatus['status'] = true;
+        $messageStatus['success'] = true;
         $messageStatus['message'] = [];
         $messageStatus['ref_payco'] = [];
+        $messageStatus['orderStatus'] = [];
+        $messageStatus['date'] = [];
         $quantitySubscriptions = count($subscriptionsStatus);
         $current_state = $order->get_status();
 
         foreach ($subscriptions as $subscription) {
 
             $sub = $subscriptionsStatus[$count];
-            $data = count(get_object_vars($sub->data));
-            if ($data < 10) {
+            $data = count(get_object_vars($sub));
+            
+            if ($data < 10 || ( isset($sub->status) ? $sub->status == 'active' : false)) {
 
                 $isTestTransaction = (bool)$this->get_option('environment') == true ? "yes" : "no";
                 update_option('epayco_order_status', $isTestTransaction);
@@ -1842,11 +1754,12 @@ class EpaycoSuscription extends AbstractGateway
                         // $this->restore_order_stock($order->id, '+');
                     }
                 }
-
-                $order->update_status($orderStatus);
+                
+               // $order->update_status($orderStatus);
+                $order->update_status('on-hold');
                 $order->add_order_note($message);
 
-                $subscription->update_status('on-hold');
+                $subscription->update_status('active');
             } else {
 
                 $isTestTransaction = $sub->data->enpruebas == 1 ? "yes" : "no";
@@ -1923,6 +1836,8 @@ class EpaycoSuscription extends AbstractGateway
 
                     $subscription->add_order_note($note);
                     $messageStatus['ref_payco'] = array_merge($messageStatus['ref_payco'], [$sub->data->ref_payco]);
+                    $messageStatus['orderStatus'] = array_merge($messageStatus['orderStatus'], [$sub->data->estado]);
+                    $messageStatus['date'] = array_merge($messageStatus['date'], [current_time('Y-m-d H:i:s')]);
                     $subscription->update_status('active'); // Asegurar que la suscripción se marque como activa
                     $subscription->payment_complete();
                     
@@ -1961,11 +1876,14 @@ class EpaycoSuscription extends AbstractGateway
                     );
                 }
             }
+            
             $messageStatus['ref_payco'] = array_merge($messageStatus['ref_payco'], [$sub->data->ref_payco]);
+            $messageStatus['orderStatus'] = array_merge($messageStatus['orderStatus'], [$sub->data->estado]);
+            $messageStatus['date'] = array_merge($messageStatus['date'], [current_time('Y-m-d H:i:s')]);
             $count++;
 
             if ($count === $quantitySubscriptions && count($messageStatus['message']) >= $count) {
-                $messageStatus['status'] = false;
+                $messageStatus['success'] = false;
             }
 
             update_post_meta($subscription->get_id(), 'subscription_id', $suscriptionId);
@@ -1975,6 +1893,7 @@ class EpaycoSuscription extends AbstractGateway
             update_post_meta($order->get_id(), 'id_client', $customerId);
             update_post_meta($order->get_id(), 'plan_id', $planId);
         }
+    
         return $messageStatus;
     }
 
@@ -2073,16 +1992,20 @@ class EpaycoSuscription extends AbstractGateway
                 $planId = isset($subsCreated->data->idClient) ? $subsCreated->data->idClient : null;
                 // Validar si la transacción fue exitosa - la propiedad es "success" no "status"
                 $validation = isset($sub->success) ? $sub->success : false;
-                if ($validation) {
+                $active_plan = isset($sub->status) ? $sub->status : false;
+                if ($validation || $active_plan) {
                     $messageStatus = $this->handleStatusSubscriptions($subs, $subscriptions, $customerData, $order, $customerId, $suscriptionId, $planId);
 
                     $response_status = [
                         'ref_payco' => $messageStatus['ref_payco'][0],
-                        'status' => $messageStatus['status'],
+                        'orderStatus' => $messageStatus['orderStatus'][0],
+                        'success' => $messageStatus['success'],
                         'message' => $messageStatus['message'][0],
+                        'date' => $messageStatus['date'][0],
                         'url' => $order->get_checkout_order_received_url()
                     ];
                 } else {
+                    error_log("process_payment_epayco: " . json_encode($sub));
                     $subJson = json_decode(json_encode($sub), true);
                     if (class_exists('WC_Logger')) {
                         $logger = wc_get_logger();
@@ -2116,13 +2039,14 @@ class EpaycoSuscription extends AbstractGateway
 
                     $response_status = [
                         'ref_payco' => null,
-                        'status' => false,
+                        'success' => false,
                         'message' => $errorMessage,
                         'url' => $order->get_checkout_order_received_url()
                     ];
                 }
             }
         } else {
+            error_log("process_payment_epayco error: " . json_encode($subsCreated));
             $subsCreatedJson = json_decode(json_encode($subsCreated), true);
             $dataError = $subsCreatedJson;
             if (class_exists('WC_Logger')) {
@@ -2155,14 +2079,13 @@ class EpaycoSuscription extends AbstractGateway
             }
             $response_status = [
                 'ref_payco' => null,
-                'status' => false,
+                'success' => false,
                 'message' => $errorMessage,
                 'url' => $order->get_checkout_order_received_url()
             ];
         }
         return $response_status;
     }
-
 
 
     public function getIP()
@@ -2273,7 +2196,7 @@ class EpaycoSuscription extends AbstractGateway
             update_post_meta($order->get_id(), 'plan_id', $planId);
             $response_status = [
                 'ref_payco' => null,
-                'status' => true,
+                'success' => true,
                 'message' => null,
                 'url' => $order->get_checkout_order_received_url()
             ];
@@ -2701,52 +2624,54 @@ class EpaycoSuscription extends AbstractGateway
     }
 
     public function epyacoBerarToken()
-        {
-            $publicKey = $this->get_option('apiKey');
-            $privateKey = $this->get_option('privateKey');
-
-            if (!isset($_COOKIE[$publicKey])) {
-                $token = base64_encode($publicKey . ":" . $privateKey);
-                $bearer_token = $token;
-                $cookie_value = $bearer_token;
-                setcookie($publicKey, $cookie_value, time() + (60 * 14), "/");
-            } else {
-                $bearer_token = $_COOKIE[$publicKey];
-            }
-
-            $headers = array(
-                'Content-Type' => 'application/json',
-                'Authorization' => "Basic " . $bearer_token
-            );
-            return $this->epayco_realizar_llamada_api("login", [], $headers);
+    {
+        $publicKey = $this->get_option('apiKey');
+        $privateKey = $this->get_option('privateKey');
+        
+        $cookie_name = $publicKey .  "_apify";
+        if (!isset($_COOKIE[$cookie_name])) {
+            $token = base64_encode($publicKey . ":" . $privateKey);
+            $bearer_token = $token;
+            $cookie_value = $bearer_token;
+            setcookie($publicKey, $cookie_value, time() + (60 * 14), "/");
+        } else {
+            $bearer_token = $_COOKIE[$cookie_name];
         }
 
-        public function epayco_realizar_llamada_api($path, $data, $headers, $method = 'POST')
-        {
-            $url = 'https://eks-apify-service.epayco.io/' . $path;
+        $headers = array(
+            'Content-Type' => 'application/json',
+            'Authorization' => "Basic " . $bearer_token
+        );
+        
+        return $this->epayco_realizar_llamada_api("login", [], $headers);
+    }
 
-            $response = wp_remote_post($url, [
-                'headers' => $headers,
-                'body'    => json_encode($data),
-                'timeout' => 15,
-            ]);
+    public function epayco_realizar_llamada_api($path, $data, $headers, $method = 'POST')
+    {
+        $url = 'https://eks-apify-service.epayco.io/' . $path;
 
-            if (is_wp_error($response)) {
-                $error_message = $response->get_error_message();
-                self::$logger->add($this->id, "Error al hacer la llamada a la API de ePayco: " . $error_message);
-                error_log("Error al hacer la llamada a la API de ePayco: " . $error_message);
+        $response = wp_remote_post($url, [
+            'headers' => $headers,
+            'body'    => json_encode($data),
+            'timeout' => 15,
+        ]);
+
+        if (is_wp_error($response)) {
+            $error_message = $response->get_error_message();
+            //self::$logger->add($this->id, "Error al hacer la llamada a la API de ePayco: " . $error_message);
+            error_log("Error al hacer la llamada a la API de ePayco: " . $error_message);
+            return false;
+        } else {
+            $response_body = wp_remote_retrieve_body($response);
+            $status_code = wp_remote_retrieve_response_code($response);
+            if ($status_code == 200) {
+                $responseTransaction = json_decode($response_body, true);
+                return $responseTransaction;
+            } else {
+                //self::$logger->add($this->id,"Error en la respuesta de la API de ePayco, código de estado: " . $status_code);
+                error_log("Error en la respuesta de la API de ePayco, código de estado: " . $status_code);
                 return false;
-            } else {
-                $response_body = wp_remote_retrieve_body($response);
-                $status_code = wp_remote_retrieve_response_code($response);
-                if ($status_code == 200) {
-                    $responseTransaction = json_decode($response_body, true);
-                    return $responseTransaction;
-                } else {
-                    self::$logger->add($this->id,"Error en la respuesta de la API de ePayco, código de estado: " . $status_code);
-                    error_log("Error en la respuesta de la API de ePayco, código de estado: " . $status_code);
-                    return false;
-                }
             }
         }
+    }
 }
