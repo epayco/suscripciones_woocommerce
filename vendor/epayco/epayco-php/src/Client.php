@@ -95,7 +95,7 @@ class Client extends GraphqlClient
                 //  echo "token con login".$bearer_token;
             } else {
                 $bearer_token = $_COOKIE[$cookie_name];
-            }
+            }          
         } catch (\Exception $e) {
             $data = array(
                 "status" => false,
