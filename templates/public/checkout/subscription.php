@@ -317,18 +317,22 @@ if (!defined('ABSPATH')) {
         <small class="epayco-subtitle"> Si no se cargan automáticamente, de clic en el botón "Pagar con ePayco"</small>
     </p>
     <center>
-        <button data-modal-target="#centered" id="button_epayco" style="
-                  background-image: url(https://multimedia.epayco.co/plugins-sdks/botonPagarEpayco.png);
-                  background-repeat:no-repeat;
-                  height:39px;
-                  width:300px;
-                  background-position:center;
-                  border-color: #28303d;
-                  border-radius: 6px;
-                  background-color: #28303d;
-                  cursor: pointer;
-                  ">
-        </button>
+        <button
+            data-modal-target="#centered"
+            id="button_epayco"
+            style="
+                background-image: url(https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/payBottonEpayco.png);
+                background-repeat: no-repeat;
+                background-position: center;
+                background-size: contain;
+                height: 60px;
+                width: 300px;
+                border-color: #28303d00;
+                border-radius: 6px;
+                background-color: #28303d00;
+                cursor: pointer;
+            ">
+            </button>
     </center>
     <div class="middle-xs bg_onpage porcentbody m-0" style="margin: 0">
         <div class="centered" id="centered">
@@ -409,7 +413,7 @@ if (!defined('ABSPATH')) {
                                         <span class="icon-credit-card color icon-input"><i class="far fa-credit-card" style="margin-left: -5px;"></i></span>
                                         <input class="card-number my-custom-class" data-epayco="card[number]" required id="the-card-number-element" name="card-number2" placeholder="**** **** **** ****" type="tel" maxlength="19" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" style="padding-right: 40px;">
 
-                                        <?php echo wp_get_attachment_image(1, 'full', false, ['class' => 'img-card', 'id' => 'logo_franchise_2', 'style' => 'display: block;position: absolute;right: 12px;top: 41.5%;transform: translateY(-50%);width: 40px;']); ?>
+                                        <?php echo wp_get_attachment_image(1, 'full', false, ['class' => 'img-card', 'id' => 'logo_franchise_2', 'style' => 'display: block;position: absolute;right: 12px;top: 41.5%;transform: translateY(-50%);width: 35px;']); ?>
 
                                     </div>
                                 </div>

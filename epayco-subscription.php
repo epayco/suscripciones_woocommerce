@@ -7,7 +7,7 @@
  * @wordpress-plugin
  * Plugin Name:       ePayco Subscriptions for WooCommerce
  * Description:       Plugin ePayco Subscription
- * Version:           6.5.2
+ * Version:           6.5.3
  * Author:            ePayco
  * Text Domain:       epayco-subscriptions-for-woocommerce
  * Author URI:
@@ -86,6 +86,12 @@ function eps_disable_plugin(): void
 //add_filter('wc_order_statuses', 'add_epayco_suscription_to_order_statuses');
 //add_action('admin_head', 'styling_admin_suscription_order_list');
 //add_action('woocommerce_checkout_update_order_meta', 'some_custom_checkout_field_update_order_meta');
+function epaycosubscription_woocommerce_addon_settings_link( $links ) {
+    array_push( $links, '<a href="admin.php?page=wc-settings&tab=checkout&section=woo-epaycosubscription">' . __( 'Configuración' ) . '</a>' );
+    return $links;
+}
+
+add_filter( "plugin_action_links_".plugin_basename( __FILE__ ),'epaycosubscription_woocommerce_addon_settings_link' );
 
 function register_epayco_suscription_order_status()
 {
@@ -484,7 +490,7 @@ add_action('woocommerce_init', function () {
     woocommerce_register_additional_checkout_field(
         array(
             'id'          => 'epayco/billing_dni',
-            'label'       => __('Ingrese el número de documento', 'epayco-subscriptions-for-woocommerce'),
+            'label'       => __('Número de documento', 'epayco-subscriptions-for-woocommerce'),
             'location'    => 'contact',
             'type'        => 'text',
             'required'    => true,
@@ -505,49 +511,37 @@ add_action('woocommerce_checkout_update_order_meta', function ($order_id) {
 function epayco_enqueue_styles()
 {
     if (!function_exists('plugins_url') || !function_exists('wp_enqueue_style')) {
-        return; // Ensure WordPress functions are available
+        return;
     }
 
-    // Define the base path for plugin assets
     $plugin_url = plugins_url('assets/css/', EPS_PLUGIN_FILE);
-
-    // Enqueue styles with explicit versions to avoid caching issues
     $plugin_url_base = plugins_url('assets/', __FILE__);
-
 
     wp_enqueue_style('epayco-animate', $plugin_url_base . 'animate.min.css', array(), '4.1.1');
     wp_enqueue_style('epayco-fontawesome', $plugin_url_base . 'fontawesome-all.css', array(), '5.15.4');
     wp_enqueue_style('epayco-bootstrap-slider', $plugin_url_base . 'bootstrap-slider.min.css', array(), '10.4.2');
-    // wp_enqueue_style('epayco-style', $plugin_url . 'style.css', array(), '1.0');
-    // wp_enqueue_style('epayco-general', $plugin_url . 'general.min.css', array(), '1.0');
-    // wp_enqueue_style('epayco-card-style', $plugin_url . 'card-js.min.css', array(), '1.0');
-    // wp_enqueue_style('epayco-cardsjs', $plugin_url . 'cardsjs.min.css', array(), '1.0');
 }
 add_action('wp_enqueue_scripts', 'epayco_enqueue_styles', 9999);
 
 
-// Enqueue the script properly in WordPress
 function enqueue_epayco_scripts()
 {
-    wp_enqueue_script('jquery'); // Usa la versión de WordPress
+    wp_enqueue_script('jquery');
 }
 add_action('wp_enqueue_scripts', 'enqueue_epayco_scripts');
 
-
-// Enqueue the script properly in WordPress
 function enqueue_epayco_epaycojs_script()
 {
     if (!function_exists('wp_enqueue_script') || !function_exists('esc_url')) {
-        return; // Ensure WordPress functions are available
+        return;
     }
-    $epaycojs = plugins_url('assets/js/epayco.js', __FILE__); // Define the variable
-    wp_enqueue_script('epayco-js', esc_url($epaycojs), array(), '1.0.0', true); // Set version to avoid caching issues
+    $epaycojs = plugins_url('assets/js/epayco.js', __FILE__);
+    wp_enqueue_script('epayco-js', esc_url($epaycojs), array(), '1.0.0', true);
 }
 add_action('wp_enqueue_scripts', 'enqueue_epayco_epaycojs_script');
 
 add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
     if ($attachment_id === 0) {
-        // URL de la imagen externa
         $external_logo = plugin_dir_url(__FILE__) . 'assets/images/comercio.png';
         return [$external_logo, 90, 90, false];
     }
@@ -556,7 +550,6 @@ add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $siz
 
 add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
     if ($attachment_id === 1) {
-        // URL de la imagen externa
         $external_logo2 = 'https://msecure.epayco.co/img/credit-cards/disable.png';
         return [$external_logo2, 90, 90, false];
     }
@@ -565,7 +558,6 @@ add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $siz
 
 add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
     if ($attachment_id === 2) {
-        // URL de la imagen externa
         $external_logo3 = 'https://multimedia.epayco.co/plugins-sdks/logo-negro-epayco.png';
         return [$external_logo3, 90, 90, false];
     }
@@ -574,7 +566,6 @@ add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $siz
 
 add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
     if ($attachment_id === 3) {
-        // URL de la imagen externa
         $external_logo4 = 'https://msecure.epayco.co/img/reloj.png';
         return [$external_logo4, 60, 60, false];
     }
@@ -583,7 +574,6 @@ add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $siz
 
 add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
     if ($attachment_id === 4) {
-        // URL de la imagen externa
         $external_logo5 = 'https://secure.epayco.co/img/new_epayco_white.png';
         return [$external_logo5, 90, 90, false];
     }
@@ -592,17 +582,11 @@ add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $siz
 
 function epayco_suscripcion_cron_job_deactivation()
 {
-    //eliminar por completo cualquier tarea programada
     wp_clear_scheduled_hook('woocommerc_epayco_suscripcion_cron_hook');
-    //desprograma la accion
     as_unschedule_action('woocommerce_epayco_suscripcion_cleanup_draft_orders');
-    //se toma el tiempo de la proxima ejecucion
     $timestamp = wp_next_scheduled('woocommerce_epayco_suscripcion_cleanup_draft_orders');
-    // Si se encuentra una hora programada para este evento; la desprograma
     if ($timestamp) {
         wp_unschedule_event($timestamp, 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
     }
 }
 register_deactivation_hook(__FILE__, 'epayco_suscripcion_cron_job_deactivation');
-
-

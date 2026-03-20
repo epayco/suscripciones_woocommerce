@@ -461,13 +461,14 @@ img.home-icons {
 }
 
 .loadoverlay {
-  position: absolute;
-  width: 400px;
-  max-width: 100%;
-  min-height: 91%;
-  border-radius: 5px;
-  background: white;
-  z-index: 9999;
+      opacity: unset !important;
+    padding: 1em !important;
+    border-radius: 5px !important;
+    background: #fff !important;
+    max-width: 350px !important;
+    width: 350px !important;
+    margin-top: -20px !important;
+    font-family: 'Poppins';
 }
 
 .loader,

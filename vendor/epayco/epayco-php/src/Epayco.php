@@ -41,6 +41,60 @@ class Epayco
     public $lang;
 
     /**
+     * Token
+     * @var Token
+     */
+    public $token;
+
+    /**
+     * Customer
+     * @var Customers
+     */
+    public $customer;
+    
+    /**
+     * Plan
+     * @var Plan
+     */
+    public $plan;
+
+    /**
+     * Subscriptions
+     * @var Subscriptions
+     */
+    public $subscriptions;
+
+    /**
+     * Bank
+     * @var Bank
+     */
+    public $bank;
+
+    /**
+     * Cash
+     * @var Cash
+     */
+    public $cash;
+
+    /**
+     * Charge
+     * @var Charge
+     */
+    public $charge;
+
+    /**
+     * Daviplata
+     * @var Daviplata
+     */
+    public $daviplata;
+
+    /**
+     * Safetypay
+     * @var Safetypay
+     */
+    public $safetypay;
+
+    /**
      * Constructor methods publics
      * @param array $options
      */
@@ -51,18 +105,19 @@ class Epayco
         $this->test = $options["test"] ? "TRUE" : "FALSE";
         $this->lang = $options["lenguage"];
 
-        if (!$this->api_key && !$this->private_key && $this->test && $this->lang) {
-           // throw new ErrorException($this->lang, 100);
+        if ($this->api_key && $this->private_key) {
+            $this->token = new Token($this);
+            $this->customer = new Customers($this);
+            $this->plan = new Plan($this);
+            $this->subscriptions = new Subscriptions($this);
+            $this->bank = new Bank($this);
+            $this->cash = new Cash($this);
+            $this->charge = new Charge($this);
+            $this->daviplata = new Daviplata($this);
+            $this->safetypay = new Safetypay($this);
+
         }
 
-        $this->token = new Token($this);
-        $this->customer = new Customers($this);
-        $this->plan = new Plan($this);
-        $this->subscriptions = new Subscriptions($this);
-        $this->bank = new Bank($this);
-        $this->cash = new Cash($this);
-        $this->charge = new Charge($this);
-        $this->daviplata = new Daviplata($this);
-        $this->safetypay = new Safetypay($this);
+
     }
 }

@@ -39,14 +39,17 @@ class Customer extends EpaycoSuscription
     /**
      * @param array $data
      */
-    public function customerCreate(array $data,$order_id)
+    public function customerCreate(array $data)
     {
         $customer = false;
         try {
+          
+            
             $customer = $this->epaycoSdk->customer->create(
                 [
                     "token_card" => $data['token_card'],
                     "name" => $data['name'],
+                    "last_name" => $data['last_name'],  
                     "email" => $data['email'],
                     "phone" => $data['phone'],
                     "cell_phone" => $data['phone'],
@@ -56,22 +59,7 @@ class Customer extends EpaycoSuscription
                     "default" => true
                 ]
             );
-            if ($customer->data->status == 'error' || !$customer->status) {
-                if (class_exists('WC_Logger')) {
-                    $logger = wc_get_logger();
-                    $logger->info("customerCreate" . json_encode($customer));
-                }
-                $customerJson = json_decode(json_encode($customer), true);
-                $dataError = $customerJson;
-                $error = $this->errorMessages($dataError);
-                //$error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('El token no se puede asociar al cliente, verifique que: el token existe, el cliente no esté asociado y que el token no este asociado a otro cliente.', 'epayco-subscriptions-for-woocommerce'));
-                wc_add_notice($error, 'error');
-                //wp_redirect(wc_get_checkout_url());
-                $order = new \WC_Order($order_id);
-                $redirect_url = $order->get_checkout_payment_url(true);
-                wp_safe_redirect($redirect_url);
-                exit;
-            }
+
         } catch (Exception $exception) {
             if (!is_null($this->logger)) {
                 $this->logger->info("customerAddToken" . $exception->getMessage());
@@ -123,9 +111,8 @@ class Customer extends EpaycoSuscription
                 $customerData['email']
             ),
             ARRAY_A
-        );
-
-        if (empty($customerGetData)) {               
+        );        
+        if (empty($customerGetData)) {             
             return $this->registerEpaycoCustomer($customerData, $order_id,  $token);
         }else{
             $emailEncontrado = false;
@@ -139,7 +126,8 @@ class Customer extends EpaycoSuscription
             if ($emailEncontrado) {
                 $customerExist = $this->getEpaycoExisting($customer_id,$token);
                 if($customerExist){
-                   return $customerExist;
+                    error_log("createOrUpdateEpaycoCustomer: " . json_encode(["success" => true, "customer_id" => $customerExist]));
+                   return ["success" => true, "customer_id" => $customerExist];
                 }
                 $isAddedToken = $this->customerAddToken($customer_id, $token);
                 if (!$isAddedToken->status) {
@@ -150,13 +138,16 @@ class Customer extends EpaycoSuscription
                     $customerJson = json_decode(json_encode($isAddedToken), true);
                     $error = $this->errorMessages($customerJson);                    
                     wc_add_notice($error, 'error');
+                    error_log("createOrUpdateEpaycoCustomer Error: " . json_encode($isAddedToken));
+                    return ["success" => false, "customer_id" => null, 'message' => $error];
                     //wp_redirect(wc_get_checkout_url());
-                    $order = new \WC_Order($order_id);
+                    /*$order = new \WC_Order($order_id);
                     $redirect_url = $order->get_checkout_payment_url(true);
                     wp_safe_redirect($redirect_url);
-                    exit;
+                    exit;*/
                 }else{
-                    return $customer_id;
+                    error_log("createOrUpdateEpaycoCustomer: " . json_encode(["success" => true, "customer_id" => $customer_id]));
+                    return ["success" => true, "customer_id" => $customer_id];
                 }
                
             }else{
@@ -174,26 +165,40 @@ class Customer extends EpaycoSuscription
         $customer_id = isset($customerData['customer_id']) ? $customerData['customer_id'] : null;
         $customerExist = $this->getEpaycoExisting($customer_id, $token);
         if($customerExist){
-            return $customerExist;
+            return ["success" => true, "customer_id" => $customerExist];
         }
-        $customer = $this->customerCreate($customerData,$order_id);
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
-        $inserCustomer = $wpdb->insert(
-            $table_name_setings,
-            [
-                'id_payco' => $this->custIdCliente,
-                'customer_id' => $customer->data->customerId,
-                //'token_id' => $customerData['token_card'],
-                'email' => $customerData['email']
-            ]
-        );
-        if (!$inserCustomer) {
+        $customer = $this->customerCreate($customerData);
+        if (!is_object($customer) || !isset($customer->status) || !isset($customer->data) || (isset($customer->data->status) && $customer->data->status == 'error') || !$customer->status) {
             if (!is_null($this->logger)) {
-                $this->logger->info('No se insertó el registro del cliente en la base de datos.');
+                $this->logger->info("customerCreate: " . json_encode($customer));
             }
-        }
-        return $customer->data->customerId;
-         
+            $customerJson = json_decode(json_encode($customer), true);
+            $error = $this->errorMessages($customerJson);
+            wc_add_notice($error, 'error');
+            error_log("registerEpaycoCustomer Error: " . json_encode($customer));
+            return ["success" => false, "customer_id" => null, 'message' => $error];
+            //wp_redirect(wc_get_checkout_url());
+            /*$order = new \WC_Order($order_id);
+            $redirect_url = $order->get_checkout_payment_url(true);
+            wp_safe_redirect($redirect_url);
+            exit;*/
+        } else {
+            $inserCustomer = $wpdb->insert(
+                $table_name_setings,
+                [
+                    'id_payco' => $this->custIdCliente,
+                    'customer_id' => $customer->data->customerId,
+                    //'token_id' => $customerData['token_card'],
+                    'email' => $customerData['email']
+                ]
+            );
+            if (!$inserCustomer) {
+                if (!is_null($this->logger)) {
+                    $this->logger->info('No se insertó el registro del cliente en la base de datos.');
+                }
+            }
+            return ["success" => true, "customer_id" => $customer->data->customerId];
+        } 
     }
 
 
@@ -218,6 +223,7 @@ class Customer extends EpaycoSuscription
                             $logger = wc_get_logger();
                             $logger->info("isAddedToken: " . json_encode($isAddedToken));
                         }
+                        error_log("getEpaycoExisting Error: " . json_encode($isAddedToken));
                         return false;
                     }else{
                         return $customer_id;
@@ -227,6 +233,42 @@ class Customer extends EpaycoSuscription
         }else{
            return false; 
         }
+    }
+
+
+    protected function errorMessages($dataError){
+        $error = "Ocurrió un error, por favor contactar con soporte.";
+        $message = $error;
+        $errores_listados = [];
+        if (is_array($dataError)) {
+            $message = $dataError['message'] ?? $error;
+            if (isset($dataError['data']['errors']) && is_array($dataError['data']['errors'])) {
+                foreach ($dataError['data']['errors'] as $campo => $mensajes) {
+                    foreach ($mensajes as $msg) {
+                        $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                    }
+                }
+            }
+
+            if (isset($dataError['data']->errors) && is_array($dataError['data']->errors)) {
+                foreach ($dataError['data']->errors as $campo => $mensajes) {
+                    foreach ($mensajes as $msg) {
+                        $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                    }
+                }
+            }
+
+            if(isset($dataError['data']['errors'])){
+                $message = $dataError['data']['errors'];
+            }
+            
+        }
+
+        $errorMessage = $message;
+        if (!empty($errores_listados)) {
+            $errorMessage .=  implode(' | ', $errores_listados);
+        }
+        return $errorMessage;
     }
 
 

@@ -70,6 +70,14 @@ window.addEventListener("load", (function () {
                         
                     }
                 });
+            }else{
+                updateEpaycoModal(
+                    url_plugin+"logo_success.png",
+                    "Por favor, configure las credenciales",
+                    "!"
+                );  
+                loader.style.display = "none";
+                modalContent.style.display = "block";
             }
         });
         function updateEpaycoModal(newImg, newTitle, newDescription) {
