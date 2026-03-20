@@ -523,6 +523,48 @@ function epayco_enqueue_styles()
 }
 add_action('wp_enqueue_scripts', 'epayco_enqueue_styles', 9999);
 
+function detalle_pedido() {
+    wp_register_script(
+        'epayco-script',
+        'https://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js',
+        array('jquery'),
+        '1.0',
+        true
+    );
+    wp_enqueue_script('epayco-script');
+
+    if (wp_script_is('epayco-script', 'enqueued')) {
+        error_log('El script epayco-script ya fue registrado y encolado.');
+    } else {
+        error_log('El script epayco-script NO fue registrado.');
+    }
+}
+add_action('wp_enqueue_scripts', 'detalle_pedido');
+
+function checkout_epayco() {
+    wp_register_script(
+        'epayco-script-checkout',
+        'https://eks-subscriptions-landing-plugins.epayco.io/plugin/subscriptions-plugin.js',
+        array('jquery'),
+        '1.0',
+        true
+    );
+    wp_enqueue_script('epayco-script-checkout');
+
+    add_filter('script_loader_tag', function($tag, $handle, $src) {
+        if ($handle === 'epayco-script-checkout') {
+            $tag = str_replace('src=', 'defer src=', $tag);
+        }
+        return $tag;
+    }, 10, 3);
+
+    if (wp_script_is('epayco-script-checkout', 'enqueued')) {
+        error_log('El script epayco-script-checkout ya fue registrado y encolado.');
+    } else {
+        error_log('El script epayco-script NO fue registrado.');
+    }
+}
+add_action('wp_enqueue_scripts', 'checkout_epayco');
 
 function enqueue_epayco_scripts()
 {
