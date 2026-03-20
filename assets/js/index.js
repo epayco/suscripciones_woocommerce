@@ -137,6 +137,98 @@ jQuery( function( $ ) {
         // Eliminado: integración con restcountries (fetch de países y banderas)
         idleTimeouts()
 
+        var url = "https://restcountries.com/v3.1/alpha/"+$("#result")[0].innerText;
+        divFoo = document.getElementById('foo');
+        divSample = document.getElementById('countryName');
+        divResult = document.getElementById('result');
+        divFlag = document.getElementById('flag');
+        $.getJSON(url, function(result){
+            $.each(result, function(i, field){
+                divSample.innerText = field.name.common;
+                divSample.id = field.altSpellings[0];
+                divFlag.innerText = field.flag;
+            });
+        });
+
+        $.getJSON("https://restcountries.com/v3.1/independent?status=true", function(result){
+            $.each(result, function(i, field){
+                newlink = document.createElement('a');
+                li = document.createElement('li');
+                img = document.createElement('img');
+                img.style.width = "23px";
+                img.style.float = "left";
+                img.style.marginTop = "8px";
+                img.style.marginRight = "10px";
+                img.src = field.flags.png;
+                newlink.text = field.name.common;
+                newlink.href = '#';
+                newlink.className = field.flag;
+                newlink.id = field.altSpellings[0];
+                divFoo.appendChild(li).appendChild(newlink).appendChild(img);
+            });
+        });
+
+        const monthInput = document.getElementById('month-value');
+        if (monthInput) {
+            // mejor soporte en móviles
+            monthInput.setAttribute('inputmode', 'numeric');
+            monthInput.setAttribute('pattern', '[0-9]*');
+            // input event: elimina no dígitos y trunca a 2
+            monthInput.addEventListener('input', function () {
+                const cleaned = this.value.replace(/\D+/g, '').slice(0, 2);
+                if (this.value !== cleaned) this.value = cleaned;
+            });
+            // evitar pegar texto no numérico
+            monthInput.addEventListener('paste', function (e) {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text');
+                const cleaned = paste.replace(/\D+/g, '').slice(0, 2);
+                document.execCommand('insertText', false, cleaned);
+            });
+            // bloquear teclas no numéricas (permite control/navigation keys)
+            monthInput.addEventListener('keydown', function (e) {
+                const allowed = ['Backspace','Tab','ArrowLeft','ArrowRight','Delete'];
+                if (allowed.indexOf(e.key) !== -1) return;
+                // si es carácter y no es dígito, bloquear
+                if (e.key.length === 1 && /\D/.test(e.key)) e.preventDefault();
+                // evitar superar 2 dígitos cuando no hay selección
+                if (this.value.length >= 2 && this.selectionStart === this.selectionEnd && e.key.length === 1) {
+                    e.preventDefault();
+                }
+            });
+        }
+
+        const yearInput = document.getElementById('year-value');
+        if (yearInput) {
+            // mejor soporte en móviles
+            yearInput.setAttribute('inputmode', 'numeric');
+            yearInput.setAttribute('pattern', '[0-9]*');
+            // input event: elimina no dígitos y trunca a 4
+            yearInput.addEventListener('input', function () {
+                const cleaned = this.value.replace(/\D+/g, '').slice(0, 4);
+                if (this.value !== cleaned) this.value = cleaned;
+            });
+            // evitar pegar texto no numérico
+            yearInput.addEventListener('paste', function (e) {
+                e.preventDefault();
+                const paste = (e.clipboardData || window.clipboardData).getData('text');
+                const cleaned = paste.replace(/\D+/g, '').slice(0, 4);
+                document.execCommand('insertText', false, cleaned);
+            });
+            // bloquear teclas no numéricas (permite control/navigation keys)
+            yearInput.addEventListener('keydown', function (e) {
+                const allowed = ['Backspace','Tab','ArrowLeft','ArrowRight','Delete'];
+                if (allowed.indexOf(e.key) !== -1) return;
+                // si es carácter y no es dígito, bloquear
+                if (e.key.length === 1 && /\D/.test(e.key)) e.preventDefault();
+                // evitar superar 4 dígitos cuando no hay selección
+                if (this.value.length >= 4 && this.selectionStart === this.selectionEnd && e.key.length === 1) {
+                    e.preventDefault();
+                }
+            });
+        }
+
+
     });
 
     function cargarMovil(){
@@ -159,6 +251,20 @@ jQuery( function( $ ) {
     }
 
     // Eliminado: handlers del dropdown asociados a restcountries
+    $(".dropdown a").click(function() {
+        $(".dropdown dd ul").toggle();
+    });
+
+    $(".dropdown dd ul").click(function(e) {
+        var $clicked = $(e.target);
+        var texts = $clicked[0].innerText;
+        var id = $clicked[0].id;
+        var flag = $clicked[0].className;
+        divSample.innerText = texts;
+        divSample.id = id;
+        divFlag.innerText = flag;
+        $(".dropdown dd ul").toggle();
+    });
 
     if( $("#lang_epayco").text() == 'en')
     {
