@@ -175,43 +175,7 @@ class Client extends GraphqlClient
                 }
 
                 $decoded = (array)json_decode($body, true);
-                $message = 'Ocurrió un error procesando el pago.';
-
-                $error = "Ocurrió un error, por favor contactar con soporte.";
-
-                if (is_array($decoded)) {
-                    $message = $decoded['message'] ?? $message;
-                    $errores_listados = [];
-                    if (isset($decoded['data']['errors']) && is_array($decoded['data']['errors'])) {
-                        foreach ($decoded['data']['errors'] as $campo => $mensajes) {
-                            foreach ($mensajes as $msg) {
-                                $errores_listados[] = ucfirst($campo) . ': ' . $msg;
-                            }
-                        }
-                    }
-                    if (isset($decoded['data']->errors) && is_array($decoded['data']->errors)) {
-                        foreach ($decoded['data']->errors as $campo => $mensajes) {
-                            foreach ($mensajes as $msg) {
-                                $errores_listados[] = ucfirst($campo) . ': ' . $msg;
-                            }
-                        }
-                    }
-                }
-                /*
-                $errors_list = isset($errors['data']['errors']) ? $errors['data']['errors'] :( isset($errors['data']->errors) ? $errors['data']->errors : []);
-                $errorMessages = [];
-                foreach ($errors_list as $field => $messages) {
-                    foreach ($messages as $msg) {
-                        $errorMessages[] = ucfirst($field) . ': ' . $msg;
-                    }
-                }
-                 $errorMessage = $message . ' → ' . implode(' | ', $errorMessages);
-                */
-
-                $errorMessage = $message;
-                if (!empty($errores_listados)) {
-                    $errorMessage .=  implode(' | ', $errores_listados);
-                }
+                $errorMessage = $this->errorMessages($decoded);
                 return (object)[
                     "status" => false,
                     "message" => $errorMessage,
@@ -293,5 +257,39 @@ class Client extends GraphqlClient
     protected function getEpaycoBaseApify($default)
     {
         return $default;
+    }
+
+    protected function errorMessages($dataError){
+        $error = "Ocurrió un error, por favor contactar con soporte.";
+        if (is_array($dataError)) {
+            $message = $dataError['message'] ?? $error;
+            $errores_listados = [];
+            if (isset($dataError['data']['errors']) && is_array($dataError['data']['errors'])) {
+                foreach ($dataError['data']['errors'] as $campo => $mensajes) {
+                    foreach ($mensajes as $msg) {
+                        $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                    }
+                }
+            }
+
+            if (isset($dataError['data']->errors) && is_array($dataError['data']->errors)) {
+                foreach ($dataError['data']->errors as $campo => $mensajes) {
+                    foreach ($mensajes as $msg) {
+                        $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                    }
+                }
+            }
+
+            if(isset($dataError['data']['errors'])){
+                $message = $dataError['data']['errors'];
+            }
+            
+        }
+
+        $errorMessage = $message;
+        if (!empty($errores_listados)) {
+            $errorMessage .=  implode(' | ', $errores_listados);
+        }
+        return $errorMessage;
     }
 }
