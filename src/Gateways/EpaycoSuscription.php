@@ -1524,7 +1524,52 @@ class EpaycoSuscription extends AbstractGateway
                 }
                 
                // $order->update_status($orderStatus);
+               $is_payment_approved = (
+                    $sub->data->cod_respuesta === '00' || 
+                    intval($sub->data->cod_respuesta) === 1 || 
+                    $sub->data->cod_respuesta === '1' ||
+                    (isset($sub->success) && $sub->success === true) ||
+                    (isset($sub->data->estado) && strtolower($sub->data->estado) === 'aceptada')
+                );
                 $order->update_status('on-hold');
+                if (isset($sub->data->cod_respuesta) && $is_payment_approved) {
+                    if ($isTestMode == "true") {
+                        $message = 'Pago exitoso Prueba';
+                        switch ($this->get_option('epayco_endorder_state')) {
+                            case 'epayco-processing': {
+                                    $orderStatus = 'epayco_processing';
+                                }
+                                break;
+                            case 'epayco-completed': {
+                                    $orderStatus = 'epayco_completed';
+                                }
+                                break;
+                            case 'processing': {
+                                    $orderStatus = 'processing_test';
+                                }
+                                break;
+                            case 'completed': {
+                                    $orderStatus = 'completed_test';
+                                }
+                                break;
+                            default: {
+                                    $orderStatus = 'processing_test'; // Fallback
+                                }
+                                break;
+                        }
+                    } else {
+                        $message = 'Pago exitoso';
+                        $orderStatus = $this->get_option('epayco_endorder_state');
+                        
+                        // Fallback si la configuración no retorna nada
+                        if (empty($orderStatus)) {
+                            $orderStatus = 'processing';
+                        }
+                    }
+                    $orderStatus = 'processing';
+                    $order->update_status($orderStatus);
+                }
+                
                 $order->add_order_note($message);
 
                 $subscription->update_status('active');
