@@ -22,6 +22,7 @@ With this plugin, you can:
 - **Automate recurring payments** using ePayco's secure payment gateway.
 - **Offer flexible subscription plans** with free trials, discounts, and more.
 - **Manage subscriptions** directly from your WooCommerce dashboard.
+- **TEST**
 
 == Why Choose ePayco Subscriptions? ==
 
