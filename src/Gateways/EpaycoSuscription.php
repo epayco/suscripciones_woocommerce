@@ -307,7 +307,7 @@ class EpaycoSuscription extends AbstractGateway
                             </p>
                         </form>
                         <br>
-                        <div id="myModal" class="modal">
+                        <div id="myModal" class="modal" style="display: none;">
                             <div class="modal-content">
                                 <span class="closeEpaycoModal" style="cursor: pointer;">&times;</span>
                                 <center>
@@ -1504,7 +1504,7 @@ class EpaycoSuscription extends AbstractGateway
             $data = count(get_object_vars($sub));
             
             if ($data < 10 || ( isset($sub->status) ? $sub->status == 'active' : false)) {
-
+                
                 $isTestTransaction = (bool)$this->get_option('environment') == true ? "yes" : "no";
                 update_option('epayco_order_status', $isTestTransaction);
                 $isTestMode = get_option('epayco_order_status') == "yes" ? "true" : "false";
@@ -1525,13 +1525,28 @@ class EpaycoSuscription extends AbstractGateway
                 
                // $order->update_status($orderStatus);
                $is_payment_approved = (
-                    $sub->data->cod_respuesta === '00' || 
+                    $sub->data->cod_respuesta === '1' || 
                     intval($sub->data->cod_respuesta) === 1 || 
                     $sub->data->cod_respuesta === '1' ||
-                    (isset($sub->success) && $sub->success === true) ||
                     (isset($sub->data->estado) && strtolower($sub->data->estado) === 'aceptada')
                 );
-                $order->update_status('on-hold');
+
+                $is_payment_pending = (
+                    intval($sub->data->cod_respuesta) === 3 || 
+                    $sub->data->cod_respuesta === '3' ||
+                    (isset($sub->data->estado) && strtolower($sub->data->estado) === 'pendiente')
+                );
+
+                if($is_payment_pending || $is_payment_approved){
+                    $order->update_status('on-hold');
+                }else{
+                    $messageStatus['ref_payco'] = array_merge($messageStatus['ref_payco'], [$sub->data->ref_payco]);
+                    $messageStatus['orderStatus'] = array_merge($messageStatus['orderStatus'], [$sub->data->estado]);
+                    $messageStatus['message'] = array_merge($messageStatus['message'], ["estado: {$sub->data->respuesta}"]);
+                    $messageStatus['date'] = array_merge($messageStatus['date'], [current_time('Y-m-d H:i:s')]);
+                    $messageStatus['success'] = false;
+                    return $messageStatus;
+                }
                 if (isset($sub->data->cod_respuesta) && $is_payment_approved) {
                     if ($isTestMode == "true") {
                         $message = 'Pago exitoso Prueba';
@@ -1584,12 +1599,27 @@ class EpaycoSuscription extends AbstractGateway
 
                 // Validar si el pago fue exitoso: cod_respuesta "00" = aprobado, o cod_respuesta 1, o status/success true
                 $is_payment_approved = (
-                    $sub->data->cod_respuesta === '00' || 
+                    $sub->data->cod_respuesta === '1' || 
                     intval($sub->data->cod_respuesta) === 1 || 
                     $sub->data->cod_respuesta === '1' ||
-                    (isset($sub->success) && $sub->success === true) ||
                     (isset($sub->data->estado) && strtolower($sub->data->estado) === 'aceptada')
                 );
+                $is_payment_pending = (
+                    intval($sub->data->cod_respuesta) === 3 || 
+                    $sub->data->cod_respuesta === '3' ||
+                    (isset($sub->data->estado) && strtolower($sub->data->estado) === 'pendiente')
+                );
+
+                if($is_payment_pending || $is_payment_approved){
+                    $order->update_status('on-hold');
+                }else{
+                    $messageStatus['ref_payco'] = array_merge($messageStatus['ref_payco'], [$sub->data->ref_payco]);
+                    $messageStatus['orderStatus'] = array_merge($messageStatus['orderStatus'], [$sub->data->estado]);
+                    $messageStatus['message'] = array_merge($messageStatus['message'], ["estado: {$sub->data->respuesta}"]);
+                    $messageStatus['date'] = array_merge($messageStatus['date'], [current_time('Y-m-d H:i:s')]);
+                    $messageStatus['success'] = false;
+                    return $messageStatus;
+                }
 
                 if (isset($sub->data->cod_respuesta) && $is_payment_approved) {
                  
@@ -1786,7 +1816,7 @@ class EpaycoSuscription extends AbstractGateway
     public function process_payment_epayco(array $plans, array $customerData, $confirm_url, $subscriptions, $order)
     {
         $subsCreated = $this->subscriptionCreate($plans, $customerData, $confirm_url);
-  
+        
         if ($subsCreated->status) {
             if (isset($subsCreated->id)) {
                 $epayco_subscription_id = $subsCreated->id;
@@ -1798,6 +1828,7 @@ class EpaycoSuscription extends AbstractGateway
                 }
             }
             $subs = $this->subscriptionCharge($plans, $customerData, $confirm_url, $epayco_subscription_id);
+
             foreach ($subs as $sub) {
                 $customerId = isset($subsCreated->customer->_id) ? $subsCreated->customer->_id : null;
                 $suscriptionId = isset($subsCreated->id) ? $subsCreated->id : null;
@@ -1809,13 +1840,13 @@ class EpaycoSuscription extends AbstractGateway
                 if ($validation || $active_plan) {
                     $messageStatus = $this->handleStatusSubscriptions($subs, $subscriptions, $customerData, $order, $customerId, $suscriptionId, $planId);
                     $response_status = [
-                        'ref_payco' => $messageStatus['ref_payco'][0],
-                        'orderStatus' => $messageStatus['orderStatus'][0],
-                        'success' => $messageStatus['success'],
-                        'message' => $messageStatus['message'][0],
-                        'date' => $messageStatus['date'][0],
-                        'url' => $order->get_checkout_order_received_url()
-                    ];
+                            'ref_payco' => $messageStatus['ref_payco'][0],
+                            'orderStatus' => $messageStatus['orderStatus'][0],
+                            'success' => $messageStatus['success'],
+                            'message' => $messageStatus['message'][0],
+                            'date' => $messageStatus['date'][0],
+                            'url' => $order->get_checkout_order_received_url()
+                        ];
                 } else {
                     error_log("process_payment_epayco: " . json_encode($sub));
                     $subJson = json_decode(json_encode($sub), true);
