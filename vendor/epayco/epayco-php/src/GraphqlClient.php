@@ -92,7 +92,7 @@ class GraphqlClient
     {
         $headers = [
             "Content-Type: application/json",
-            "Accept" => "application/json",
+            "Accept" => "application/json", 
             "type" => "sdk",
             "authorization" => "Basic " . base64_encode($api_key)
         ];
@@ -102,13 +102,7 @@ class GraphqlClient
                 'query' => $query
             ];
 
-            $options = array(
-                'timeout' => 180,
-                'connect_timeout' => 180,
-            );
-
-
-            $response = Requests::post($this->getEpaycoBaseUrl(Client::BASE_URL) . '/graphql', $headers, $body, $options);
+            $response = Requests::post(Client::BASE_URL . '/graphql', $headers, $body);
 
         } catch (\Throwable $th) {
             return $th->getMessage();
@@ -119,7 +113,7 @@ class GraphqlClient
     public function canPaginateSchema($action,$pagination,$schema){
         if ($pagination !== null) {
             if ($action === "findOne" && $pagination["limit"] !== null) {
-                throw  new ErrorException("Can't paginate this schema ${schema}, because this query has only one rows to show, please add a valid query and try again.",108);
+                throw  new ErrorException("Can't paginate this schema {$schema}, because this query has only one rows to show, please add a valid query and try again.",108);
             }
         }
     }
@@ -389,8 +383,5 @@ class GraphqlClient
         return $response;
     }
 
-    protected function getEpaycoBaseUrl($default)
-    {
-        return getenv('BASE_URL_SDK') ?: $default;
-    }
+    
 }

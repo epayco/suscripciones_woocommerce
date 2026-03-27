@@ -49,8 +49,7 @@ $token = $epayco->token->create(array(
     "card[number]" => '4575623182290326',
     "card[exp_year]" => "2017",
     "card[exp_month]" => "07",
-    "card[cvc]" => "123",
-    "hasCvv" => true //hasCvv: validar codigo de seguridad en la transacción
+    "card[cvc]" => "123"
 ));
 ```
 
@@ -82,10 +81,7 @@ $customer = $epayco->customer->get("id_client");
 #### List
 
 ```php
-$customer = $epayco->customer->getList([
-    "page"=>6,
-    "perPage"=>10
-]);
+$customer = $epayco->customer->getList();
 ```
 
 #### Update
@@ -140,20 +136,7 @@ $plan = $epayco->plan->create(array(
      "currency" => "cop",
      "interval" => "month",
      "interval_count" => 1,
-     "trial_days" => 30,
-     "ip" => "127.0.0.1",
-     "iva" => 5700,
-     "ico" => 0,
-     "planLink" => "https://github.com/epayco",
-     "greetMessage" => "discounted react and redux course",
-     "linkExpirationDate" => "2025-03-11",
-     "subscriptionLimit"=> 10, #Subscription limit between 0 and 10000
-      "imgUrl"=>"https://epayco.com/wp-content/uploads/2023/04/logo-blanco.svg",
-      "discountValue"=>5000, #discount value
-      "discountPercentage"=>19, #discount percentage
-      "transactionalLimit"=> 2, #transactional Limit
-      "additionalChargePercentage"=>0.0, #Additional charge percentage limit
-      "firstPaymentAdditionalCost"=>45700  #Installation Cost
+     "trial_days" => 30
 ));
 ```
 
@@ -167,26 +150,6 @@ $plan = $epayco->plan->get("coursereact");
 
 ```php
 $plan = $epayco->plan->getList();
-```
-
-#### Upadte
-
-```php
-$plan = $epayco->plan->update("coursereact",array(
-        "name" => "Course react js",
-        "description" => "Course react and redux",
-        "amount" => 35700,
-        "currency" => "cop",
-        "interval" => "month",
-        "interval_count" => 1,
-        "trial_days" => 30,
-        "ip"=> "127.0.0.1",
-        "iva" => 1900,
-        "ico" => 0,
-        "transactionalLimit"=> 3,
-        "additionalChargePercentage"=>0.0,
-        "afterPayment"=>"message after paying"
-));
 ```
 
 #### Remove
@@ -242,8 +205,7 @@ $sub = $epayco->subscriptions->charge(array(
   "address" => "cr 44 55 66",
   "phone"=> "2550102",
   "cell_phone"=> "3010000001",
-  "ip" => "190.000.000.000",  // This is the client's IP, it is required
-  "idSubscription" => "idSubscription"
+  "ip" => "190.000.000.000"  // This is the client's IP, it is required
 ));
 ```
 
@@ -275,7 +237,6 @@ $pse = $epayco->bank->create(array(
         "last_name" => "PAYCO",
         "email" => "no-responder@payco.co",
         "country" => "CO",
-        "city" => "Bogota",
         "cell_phone" => "3010000001",
         "ip" => "190.000.000.000",  // This is the client's IP, it is required
         "url_response" => "https://ejemplo.com/respuesta.html",
@@ -308,7 +269,7 @@ https://docs.epayco.co/tools/split-payment
 #### Split payment
 use the following attributes in case you need to do a dispersion with one or multiple providers
 ```php
-$split_pay = $epayco->bank->create(array(
+$split_pay = $epayco->charge->create(array(
     //Other customary parameters...
     "splitpayment" => "true",
     "split_app_id" => "P_CUST_ID_CLIENTE APPLICATION",
@@ -343,8 +304,6 @@ $cash = $epayco->cash->create("efecty", array(
     "last_name" => "PAYCO",
     "email" => "test@mailinator.com",
     "cell_phone" => "3010000001",
-    "country" => "CO",
-    "city" => "Bogota",
     "end_date" => "data_max_5_days", // yy-mm-dd
     "ip" => "190.000.000.000",  // This is the client's IP, it is required
     "url_response" => "https://ejemplo.com/respuesta.html",
@@ -390,7 +349,7 @@ https://docs.epayco.co/tools/split-payment
 
 use the following attributes in case you need to do a dispersion with one or multiple providers
 ```php
-$split_pay = $epayco->cash->create(array(
+$split_pay = $epayco->charge->create(array(
     //Other customary parameters...
     "splitpayment" => "true",
     "split_app_id" => "P_CUST_ID_CLIENTE APPLICATION",
@@ -412,8 +371,6 @@ $split_pay = $epayco->cash->create(array(
 
 ```php
 $pay = $epayco->charge->create(array(
-
-    //required 
     "token_card" => $token->id,
     "customer_id" => $customer->data->customerId,
     "doc_type" => "CC",
@@ -421,33 +378,28 @@ $pay = $epayco->charge->create(array(
     "name" => "John",
     "last_name" => "Doe",
     "email" => "example@email.com",
-    "value" => "116000",
-    "currency" => "COP",
-
-    // optional
     "bill" => "OR-1234",
     "description" => "Test Payment",
+    "value" => "116000",
     "tax" => "16000",
     "tax_base" => "100000",
+    "currency" => "COP",
     "dues" => "12",
     "address" => "cr 44 55 66",
-    "city" => "Medellín",
-    "country" => "CO",
     "phone"=> "2550102",
     "cell_phone"=> "3010000001",
     "ip" => "190.000.000.000",  // This is the client's IP, it is required
     "url_response" => "https://tudominio.com/respuesta.php",
-    "url_confirmation" => "https://tudominio.com/confirmacion.php",
-    "method_confirmation" => "GET",
-    "use_default_card_customer" => true,  // if the user wants to be charged with the card that the customer currently has as default = true
-    // Los parámetros "extras" deben ser enviados como cadenas de texto (string). Aunque se agrupen dentro de un array, cada parámetro individual debe ser un string. Si se envían como otro tipo de datos, como arrays anidados, se generará un error.
-	 "extras"=> array(
+    "url_confirmation" => "https://tudominio.com/confirmacion.php",\
+    "method_confirmation" => "Get"
+    
+    "use_default_card_customer" => true,/*if the user wants to be charged with the card that the customer currently has as default = true*/
+    //Los parámetros extras deben ser enviados tipo string, si se envía tipo array generara error.
         "extra1" => "data 1",
         "extra2" => "data 2",
         "extra3" => "data 3",
         "extra4" => "data 4",
         "extra5" => "data 5"
-    )
 ));
 ```
 
@@ -504,14 +456,7 @@ $pay = $epayco->daviplata->create(array(
     "value" => "100",
     "tax" => "0",
     "tax_base" => "0",
-    "method_confirmation" => "POST",
-    "url_confirmation" => "https://tudominio.com/respuesta.php",
-    "url_response" => "https://tudominio.com/respuesta.php",
-    "extra1" => "data 1",
-    "extra2" => "data 2",
-    "extra3" => "data 3",
-    "extra4" => "data 4",
-    "extra5" => "data 5"
+    "method_confirmation" => ""
 ));
 ```
 
@@ -551,13 +496,7 @@ $sp = $epayco->safetypay->create(array(
     "tax" => 0,
     "ico" => 0,
     "tax_base" => 0,
-    "method_confirmation" => "POST",
-    "url_confirmation" => "https://tudominio.com/respuesta.php",
-    "url_response" => "https://tudominio.com/respuesta.php",
-    "extra1" => "data 1",
-    "extra2" => "data 2",
-    "extra3" => "data 3",
-    "extra4" => "data 4",
-    "extra5" => "data 5"
+    "url_confirmation" => "",
+    "method_confirmation" => ""
 ));
 ```

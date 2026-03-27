@@ -204,6 +204,11 @@
     box-shadow: none
 }
 
+
+.card-js.stripe .icon .svg {
+    fill: #559A28
+}
+
 .card-js input.card-number, .card-js input.cvc, .card-js input.name {
     padding-left: 5px  !important;
     width: 95% !important;
@@ -211,10 +216,6 @@
     margin-right: 16% !important;
     /* margin-top: -6px; */
     margin-bottom: 2% !important;
-}
-
-.card-js.stripe .icon .svg {
-    fill: #559A28
 }
 
 .custom-field-class select {

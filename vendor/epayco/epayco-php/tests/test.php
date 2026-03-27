@@ -147,7 +147,7 @@ class AccessSDKTest extends PHPUnit_Framework_TestCase
             "id_plan" => $this->randomString(20),
             "customer" => $data->clientId,
             "doc_type" => 'CC',
-            "doc_number" => rand() . '',
+            "doc_number" => rand() . 'test.php',
             "token_card" => $data->token
         ));
         $this->assertTrue(strlen($sub->data->suscription) > 0);

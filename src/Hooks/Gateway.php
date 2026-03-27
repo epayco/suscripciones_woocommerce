@@ -291,7 +291,7 @@ class Gateway
      */
     public function getAdminCredentiaslFields($class, $callback): void
     {
-        add_action('ePayco_init_validation', array($class, $callback));
+        add_action('ePaycoSubscription_init_validation', array($class, $callback));
     }
     
 
