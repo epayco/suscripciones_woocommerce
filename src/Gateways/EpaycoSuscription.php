@@ -752,6 +752,14 @@ class EpaycoSuscription extends AbstractGateway
             }
             
             $return = $validatePlan_;
+
+
+            if(isset($return['success']) && $return['success'] == false){
+                wc_add_notice($return['message'], 'error');
+                wp_redirect(wc_get_checkout_url());
+                exit;
+            }
+
         } catch (Exception $exception) {
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
