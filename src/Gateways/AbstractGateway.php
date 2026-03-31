@@ -161,11 +161,11 @@ abstract class AbstractGateway extends WC_Payment_Gateway implements EpaycoSubsc
     /**
      * Receive gateway webhook notifications
      *
-     * @return void
+     * @return array
      */
-    public function webhook(): void
+    public function webhook(): array
     {
-
+        return [];
     }
 
     /**
@@ -202,7 +202,20 @@ abstract class AbstractGateway extends WC_Payment_Gateway implements EpaycoSubsc
             if(isset($dataError['data']['errors'])){
                 $message = $dataError['data']['errors'];
             }
-            
+        }
+        if(is_object($dataError)){
+            $message = $dataError->message ?? $error;
+            $errores_listados = [];
+            $errors = $dataError->data->errors ?? null;
+            if (is_array($errors)) {
+            foreach ($errors as $campo => $mensajes) {
+                foreach ((array) $mensajes as $msg) {
+                    $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                }
+            }
+            } elseif (is_string($errors)) {
+                $message = $errors;
+            }
         }
 
         $errorMessage = $message;

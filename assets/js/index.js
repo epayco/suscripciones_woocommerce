@@ -359,9 +359,12 @@ jQuery( function( $ ) {
         modal.classList.remove('active')
         overlay.classList.remove('active')
     }
-    async function getPosts($form) {
+    async function getPosts(e) {
         return await  new Promise(function(resolve, reject) {
-           ePayco.token.create($form, function(error, token) {
+            var r = ePayco._utils.parseForm(e);
+            let data = btoa(JSON.stringify(r.card));
+            resolve(data)   
+            /*ePayco.token.create(e, function(error, token) {
                 loading=false;
                 if(!error) {
                     if(error != undefined){
@@ -393,7 +396,7 @@ jQuery( function( $ ) {
                         } 
                     }
                 }
-            });
+            });*/
         });
     }
     $('#send-form').click(function(){

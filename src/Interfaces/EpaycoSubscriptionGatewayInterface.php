@@ -38,9 +38,9 @@ interface EpaycoSubscriptionGatewayInterface
     public function process_payment($order_id): array;
 
     /**
-     * @return void
+     * @return array
      */
-    public function webhook(): void;
+    public function webhook(): array;
 
     /**
      * @return array
