@@ -7,7 +7,7 @@
  * @wordpress-plugin
  * Plugin Name:       ePayco Subscriptions for WooCommerce
  * Description:       Plugin ePayco Subscription
- * Version:           6.5.2
+ * Version:           6.6.1
  * Author:            ePayco
  * Text Domain:       epayco-subscriptions-for-woocommerce
  * Author URI:
@@ -659,7 +659,7 @@ function add_epayco_detail_purchase_script() {
         return;
     }
 
-    $script_detail_purchase = 'https://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js';
+    $script_detail_purchase = 'https://cms.epayco.co/plugin/DetailPurchase.js';
 
     wp_enqueue_script(
         'epayco-detail-purchase',
