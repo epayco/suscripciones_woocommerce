@@ -58,7 +58,8 @@ class EpaycoSuscription extends AbstractGateway
     {
         parent::__construct();
         $this->id        = self::ID;
-        $this->title     = $this->epaycosuscription->storeConfig->getGatewayTitle($this, 'epayco');
+        $this->icon      = 'https://multimedia.epayco.co/plugins-sdks/PaymentsCreditCards.svg';
+        $this->title     = $this->epaycosuscription->storeConfig->getGatewayTitle($this, 'Paga con ePayco');
         $this->init_form_fields();
         $this->payment_scripts($this->id);
         $this->supports = [
@@ -68,16 +69,16 @@ class EpaycoSuscription extends AbstractGateway
             'subscription_cancellation',
             'multiple_subscriptions'
         ];
-        $this->description        = 'Pagos de suscripciónes con epayco';
-        $this->method_title       = 'Suscripciónes ePayco';
-        $this->method_description = 'Crea productos de suscripciónes para tus clientes';
+        $this->description        = 'Pagos de suscripciones con epayco';
+        $this->method_title       = 'ePayco Suscripciones';
+        $this->method_description = 'Crea productos de suscripciones para tus clientes';
 
         $this->epaycosuscription->hooks->gateway->registerUpdateOptions($this);
         $this->epaycosuscription->hooks->gateway->registerGatewayTitle($this);
         // Register thank you page renderer for this gateway
         $this->epaycosuscription->hooks->gateway->registerThankYouPage($this->id, [$this, 'renderThankYouPage']);
         $this->epaycosuscription->hooks->gateway->registerAvailablePaymentGateway();
-        $this->epaycosuscription->hooks->gateway->registerCustomBillingFieldOptions();
+        // $this->epaycosuscription->hooks->gateway->registerCustomBillingFieldOptions();
         $this->epaycosuscription->hooks->gateway->registerGatewayReceiptPage($this->id, [$this, 'receiptPage']);
         $this->epaycosuscription->hooks->checkout->registerReceipt($this->id, [$this, 'renderOrderForm']);
         $this->epaycosuscription->hooks->endpoints->registerApiEndpoint(self::WEBHOOK_API_NAME, [$this, 'webhook']);
@@ -368,7 +369,7 @@ class EpaycoSuscription extends AbstractGateway
     {
         $username = sanitize_text_field($validationData['epayco_publickey']);
         $password = sanitize_text_field($validationData['epayco_privatey']);
-        $response = wp_remote_post('https://apify.epayco.co/login', array(
+        $response = wp_remote_post('https://eks-apify-service.epayco.io/login', array(
             'headers' => array(
                 'Authorization' => 'Basic ' . base64_encode($username . ':' . $password),
             ),
@@ -377,7 +378,7 @@ class EpaycoSuscription extends AbstractGateway
 
         $data = json_decode(wp_remote_retrieve_body($response));
         if ($data->token) {
-            $response = wp_remote_get("https://secure.payco.co/restpagos/validarllaves?public_key=" . trim($username));
+            $response = wp_remote_get("https://eks-rest-pagos-service.epayco.io/restpagos/validarllaves?public_key=" . trim($username));
 
             if (is_wp_error($response)) {
                 error_log('ePayco validation: ' . $response->get_error_message());
@@ -570,8 +571,9 @@ class EpaycoSuscription extends AbstractGateway
         $lang = explode('_', $lang);
         $lang = $lang[0];
 
-        $doc_number = get_post_meta($order->get_id(), '_epayco_billing_dni', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_dni', true) : ($order->get_meta('_epayco_billing_dni') !== "" ? $order->get_meta('_epayco_billing_dni') : $order->get_meta('_billing_custom_field'));
-        $type_document = get_post_meta($order->get_id(), '_epayco_billing_type_document', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_type_document', true) : ($order->get_meta('_epayco_billing_type_document') !== "" ? $order->get_meta('_epayco_billing_type_document') : "CC");
+        // $doc_number = get_post_meta($order->get_id(), '_epayco_billing_dni', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_dni', true) : ($order->get_meta('_epayco_billing_dni') !== "" ? $order->get_meta('_epayco_billing_dni') : $order->get_meta('_billing_custom_field'));
+        // $type_document = get_post_meta($order->get_id(), '_epayco_billing_type_document', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_type_document', true) : ($order->get_meta('_epayco_billing_type_document') !== "" ? $order->get_meta('_epayco_billing_type_document') : "Documento no encontrado");
+      
         $suscriptionDescription = (
             function_exists('mb_strlen')
                 ? (mb_strlen($product_name_) > 25 ? mb_substr($product_name_, 0, 25) . '...' : $product_name_)
@@ -1312,7 +1314,7 @@ class EpaycoSuscription extends AbstractGateway
         $subscription = end($subscriptions);
         if ($subscription) {
             $doc_number = get_post_meta($order->get_id(), '_epayco_billing_dni', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_dni', true)  : ($order->get_meta('_epayco_billing_dni') !== "" ? $order->get_meta('_epayco_billing_dni') :  $order->get_meta('_billing_custom_field'));
-            $type_document = get_post_meta($order->get_id(), '_epayco_billing_type_document', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_type_document', true) : ($order->get_meta('_epayco_billing_type_document') !== "" ? $order->get_meta('_epayco_billing_type_document')  : "CC");
+            $type_document = get_post_meta($order->get_id(), '_epayco_billing_type_document', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_type_document', true) : ($order->get_meta('_epayco_billing_type_document') !== "" ? $order->get_meta('_epayco_billing_type_document')  : "Documento no encontrado");
 
             // Mejorar captura de nombre y apellido
             $fullName = trim((string) ($customerName ?? ''));
@@ -2485,7 +2487,7 @@ class EpaycoSuscription extends AbstractGateway
 
     public function epayco_realizar_llamada_api($path, $data, $headers, $method = 'POST')
     {
-        $url = 'https://apify.epayco.co/' . $path;
+        $url = 'https://eks-apify-service.epayco.io/' . $path;
 
         $response = wp_remote_post($url, [
             'headers' => $headers,
