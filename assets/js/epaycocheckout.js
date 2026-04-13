@@ -333,12 +333,12 @@ jQuery(document).ready(function ($) {
 
   // Al enviar el formulario, asegurar que los valores estén bien
   $('#token-credit').on('submit', function () {
-    let v = $expInput.val();
-    const parts = v.split('/');
-    $month.val(parts[0] ? parts[0] : '');
-    $year.val(parts[1] ? (parts[1].length === 2 ? '20' + parts[1] : parts[1]) : '');
+      /*let v = $expInput.val();
+      const parts = v.split('/');
+      $month.val(parts[0] ? parts[0] : '');
+      $year.val(parts[1] ? (parts[1].length === 2 ? '20' + parts[1] : parts[1]) : '');
+    });*/
   });
-});
 
 
 // Script adicional para la tarjeta mini - asegurar funcionalidad

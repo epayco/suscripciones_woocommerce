@@ -1,5 +1,13 @@
 {
     "require": {
         "epayco/epayco-php": "^1.6"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^10.0"
+    },
+    "autoload": {
+        "psr-4": {
+            "EpaycoSubscription\\Woocommerce\\": "src/"
+        }
     }
 }
