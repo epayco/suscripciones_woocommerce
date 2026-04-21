@@ -369,7 +369,7 @@ class EpaycoSuscription extends AbstractGateway
     {
         $username = sanitize_text_field($validationData['epayco_publickey']);
         $password = sanitize_text_field($validationData['epayco_privatey']);
-        $response = wp_remote_post('https://eks-apify-service.epayco.io/login', array(
+        $response = wp_remote_post('https://apify.epayco.co/login', array(
             'headers' => array(
                 'Authorization' => 'Basic ' . base64_encode($username . ':' . $password),
             ),
@@ -378,7 +378,7 @@ class EpaycoSuscription extends AbstractGateway
 
         $data = json_decode(wp_remote_retrieve_body($response));
         if ($data->token) {
-            $response = wp_remote_get("https://eks-rest-pagos-service.epayco.io/restpagos/validarllaves?public_key=" . trim($username));
+            $response = wp_remote_get("https://secure.payco.co/restpagos/validarllaves?public_key=" . trim($username));
 
             if (is_wp_error($response)) {
                 error_log('ePayco validation: ' . $response->get_error_message());
@@ -2487,7 +2487,7 @@ class EpaycoSuscription extends AbstractGateway
 
     public function epayco_realizar_llamada_api($path, $data, $headers, $method = 'POST')
     {
-        $url = 'https://eks-apify-service.epayco.io/' . $path;
+        $url = 'https://apify.epayco.co/' . $path;
 
         $response = wp_remote_post($url, [
             'headers' => $headers,
