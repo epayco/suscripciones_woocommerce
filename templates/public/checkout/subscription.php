@@ -359,25 +359,11 @@ if (!defined('ABSPATH')) {
     <div class="loader-container">
         <div class="loading"></div>
     </div>
-    <?php
-
-    if (strtoupper($lang) == 'ES') {
-
-        $button = 'https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/botonPagarEpayco.png';
-        $titulo = 'Cargando métodos de pago';
-        $subtitulo = 'Si no se cargan automáticamente, haz click en el botón "Pagar con ePayco"';
-    } else {
-        $button = 'https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/payBottonEpayco.png';
-        $titulo = 'Loading payment methods';
-        $subtitulo = 'If they do not load automatically, click on the "Pay with ePayco" button';
-    }
-
-
-    ?>
+   
     <p style="text-align: center;" class="epayco-title" id="epayco_title">
-        <span class="animated-points"><?php esc_html_e($titulo, 'epayco-subscriptions-for-woocommerce'); ?></span>
+        <span class="animated-points"><?php echo esc_html($title); ?></span>
         <br>
-        <small class="epayco-subtitle"> <?php esc_html_e($subtitulo, 'epayco-subscriptions-for-woocommerce'); ?></small>
+        <small class="epayco-subtitle"> <?php echo esc_html($subtitle); ?></small>
     </p>
     <center>
 
