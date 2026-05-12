@@ -76,6 +76,54 @@ if (!defined('ABSPATH')) {
                     text-align: center;
                 }
             </style>
+
+            <?php
+            if (strtoupper($lang) == 'ES') {
+
+                $button = 'https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/botonPagarEpayco.png';
+                $title = 'Cargando métodos de pago';
+                $subtitle = 'Si no se cargan automáticamente, haz click en el botón "Pagar con ePayco"';
+                $processing = 'Procesando Pago...';
+                $exit = 'Salir';
+                $save = 'Guardar';
+                $cancel = '¿Estás seguro que deseas cancelar esta transacción?';
+                $cancelTransaction = 'Cancelar Transacción';
+                $expiredSession = 'Tu sesión ha expirado por inactividad';
+                $cancelButton = 'Cancelar';
+                $securePayment = 'Pago seguro por';
+                $warning = 'Advertencia';
+                $sessionExpires = 'Tu sesión vencerá en:';
+                $seconds = 'Segundos';
+                $continue = 'Continuar';
+                $close = 'Cerrar';
+                $return = 'Volver';
+                $logout = 'Cerrar sesión';
+                $clickClose = 'Haz click aquí para cerrar';
+                $payButton = 'Pagar';
+                $cardInfo = 'Ingresa los datos de tu tarjeta para procesar el pago';
+            } else {
+                $button = 'https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/payBottonEpayco.png';
+                $title = 'Loading payment methods';
+                $subtitle = 'If they do not load automatically, click on the "Pay with ePayco" button';
+                $processing = 'Processing Payment...';
+                $exit = 'Exit';
+                $save = 'Save';
+                $cancel = 'Are you sure you want to cancel this transaction?';
+                $cancelTransaction = 'Cancel Transaction';
+                $expiredSession = 'Your session has expired due to inactivity';
+                $cancelButton = 'Cancel';
+                $securePayment = 'Secure payment by';
+                $warning = 'Warning';
+                $sessionExpires = 'Your session will expire in:';
+                $seconds = 'Seconds';
+                $continue = 'Continue';
+                $close = 'Close';
+                $return = 'Return';
+                $logout = 'Log out';
+                $clickClose = 'Click close to return and start a new transaction.';
+                $payButton = 'Pay';
+            }
+            ?>
             <div class="loading-home op" style="display: none" id="loading_home">
                 <!--<div class="circulo ">
                     <div class="lock">
@@ -89,9 +137,9 @@ if (!defined('ABSPATH')) {
                     <div class="loader">
                     </div>
                     <div style="position:absolute; top:38px">
-                        <img src="https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png" alt="Loading"/>
+                        <img src="https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png" alt="Loading" />
                     </div>
-                    <div class="textLoader">Procesando Pago</div>
+                    <div class="textLoader"><?php echo esc_html($processing); ?></div>
                 </div>
             </div>
             <section class="modal" hidden id="movil_modal" style="padding-top: 0rem !important;">
@@ -147,7 +195,7 @@ if (!defined('ABSPATH')) {
                             <div class="volverSalir">
                                 <p class="email ">&nbsp;&nbsp;jhon.doe@epayco.com</p>
                                 <button class="log-out " onclick="goBack();">
-                                    <span class="logout-text">Cerrar sesión</span>
+                                    <span class="logout-text"><?php echo esc_html($logout); ?></span>
                                 </button>
                             </div>
                         </div>
@@ -234,11 +282,11 @@ if (!defined('ABSPATH')) {
         </section>
         <footer class="footer-buttons" hidden id="movil_footer">
             <div class="button-actions" style="display: none;">
-                <button class="action-oneclick cancel-oneclick" id="cancel-d" style="background-color: #D8D8D8">Cancelar</button>
-                <button class="action-oneclick save-oneclik">Guardar</button>
+                <button class="action-oneclick cancel-oneclick" id="cancel-d" style="background-color: #D8D8D8"><?php echo esc_html($cancelButton); ?></button>
+                <button class="action-oneclick save-oneclik"><?php echo esc_html($save); ?></button>
             </div>
             <button id="continue-tdc" class="continue-container text-center btnpay" style="background-color: #3582b7;" type="submit">
-                Pagar
+                <?php echo esc_html($payButton); ?>
                 <!--<svg class="svg-inline--fa fa-angle-right fa-w-8" aria-hidden="true" data-prefix="fas" data-icon="angle-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg="">
                     <path fill="currentColor" d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
                 </svg>--><!-- <i class="fas fa-angle-right"></i> -->
@@ -247,7 +295,7 @@ if (!defined('ABSPATH')) {
                 <p style="color:#1C0E49">
                     <svg class="svg-inline--fa fa-lock fa-w-14 secure" aria-hidden="true" data-prefix="fa" data-icon="lock" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
                         <path fill="currentColor" d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"></path>
-                    </svg><!-- <i class="fa fa-lock secure"></i> --> Pago seguro por
+                    </svg><!-- <i class="fa fa-lock secure"></i> --> <?php echo esc_html($securePayment); ?>
                 </p>
                 <?php echo wp_get_attachment_image(2, 'full', false, ['id' => 'logo_epayco', 'alt' => 'ePayco Logo', 'height' => '15px']); ?>
 
@@ -261,27 +309,27 @@ if (!defined('ABSPATH')) {
                         <path fill="currentColor" d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"></path>
                     </svg>
                 </div>
-                <p>¿Está seguro de Cancelar esta Transacción?</p>
+                <p><?php echo esc_html($cancel); ?></p>
                 <div class="acciones">
-                    <button id="regresa-t">Regresar</button>
-                    <button id="cancel-transaction">Cancelar Transacción</button>
+                    <button id="regresa-t"><?php echo esc_html($return); ?></button>
+                    <button id="cancel-transaction"><?php echo esc_html($cancelTransaction); ?></button>
                 </div>
             </div>
         </div>
         <div class="modal-expiration-time dn" id="mdlInactivityTime" style="display:none">
             <div class="ventana dn" id="mdlInactivityTimeBody">
                 <div class="mdl-expiration-time">
-                    <p class="mdl-expiration-time-title">Cuidado</p>
+                    <p class="mdl-expiration-time-title"><?php echo esc_html($warning); ?></p>
                     <p class="mdl-expiration-time-content padding-10">
-                        Su sesión va a expirar en:
+                        <?php echo esc_html($sessionExpires); ?>
                     </p>
                     <div class="text-center">
                         <span class="spinner"></span>
                         <h1 id="counterInactivity">45</h1>
-                        <p class="mdl-expiration-time-content-time">Segundos</p>
+                        <p class="mdl-expiration-time-content-time"><?php echo esc_html($seconds); ?></p>
                     </div>
                 </div>
-                <button type="button" class="btn btn-primary btn-block">Continuar</button>
+                <button type="button" class="btn btn-primary btn-block"><?php echo esc_html($continue); ?></button>
             </div>
         </div>
         <div class="modal-expiration-time  dn" id="mdlTimeExpired" style="display:none">
@@ -295,11 +343,11 @@ if (!defined('ABSPATH')) {
                         ]); ?>
                     </div>
                 </div>
-                <p class="mdl-expiration-time-title">Su sesión ha expirado por inactividad</p>
+                <p class="mdl-expiration-time-title"><?php echo esc_html($expiredSession); ?></p>
                 <p class="mdl-expiration-time-content text-center">
-                    De clic en cerrar para regresar e iniciar una nueva transacción.
+                    <?php echo esc_html($clickClose); ?>
                 </p>
-                <button type="button" class="btn btn-primary btn-block" id="btnMdlTimeExpired">Cerrar</button>
+                <button type="button" class="btn btn-primary btn-block" id="btnMdlTimeExpired"><?php echo esc_html($close); ?></button>
             </div>
         </div>
     </div>
@@ -311,14 +359,31 @@ if (!defined('ABSPATH')) {
     <div class="loader-container">
         <div class="loading"></div>
     </div>
+    <?php
+
+    if (strtoupper($lang) == 'ES') {
+
+        $button = 'https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/botonPagarEpayco.png';
+        $titulo = 'Cargando métodos de pago';
+        $subtitulo = 'Si no se cargan automáticamente, haz click en el botón "Pagar con ePayco"';
+    } else {
+        $button = 'https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/payBottonEpayco.png';
+        $titulo = 'Loading payment methods';
+        $subtitulo = 'If they do not load automatically, click on the "Pay with ePayco" button';
+    }
+
+
+    ?>
     <p style="text-align: center;" class="epayco-title" id="epayco_title">
-        <span class="animated-points">Cargando métodos de pago</span>
+        <span class="animated-points"><?php esc_html_e($titulo, 'epayco-subscriptions-for-woocommerce'); ?></span>
         <br>
-        <small class="epayco-subtitle"> Si no se cargan automáticamente, de clic en el botón "Pagar con ePayco"</small>
+        <small class="epayco-subtitle"> <?php esc_html_e($subtitulo, 'epayco-subscriptions-for-woocommerce'); ?></small>
     </p>
     <center>
+
+
         <button data-modal-target="#centered" id="button_epayco" style="
-                  background-image: url(https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/payBottonEpayco.png);
+                  background-image: url(<?php echo esc_url($button); ?>);
                   background-repeat:no-repeat;
                   background-size: contain;
                   height:39px;
@@ -341,9 +406,9 @@ if (!defined('ABSPATH')) {
                     <div class="loader">
                     </div>
                     <div style="position:absolute; top:38px">
-                        <img src="https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png" alt="Loading"/>
+                        <img src="https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png" alt="Loading" />
                     </div>
-                    <div class="textLoader">Procesando Pago</div>
+                    <div class="textLoader"><?php echo esc_html($processing); ?></div>
                 </div>
             </div>
             <div class="onpage relative" id="web-checkout-content">
@@ -424,7 +489,7 @@ if (!defined('ABSPATH')) {
                                         <span class="icon-date_range color icon-select"><i class="far fa-calendar-alt"></i></span>
                                         <input type="number" class="binding-input inspectletIgnore" id="month-value" name="month" placeholder="MM" maxlength="2" autocomplete="off" data-epayco="card[exp_month]" required>
                                     </div>
-                                    <div class="" style="float:left; width:12%; margin:0; text-align:center; line-height: 40px; height: 37px; background-color: white; color:#a3a3a3;">/</div>
+                                    <div class="" style="float:left; width:5%; margin:0; text-align:center; line-height: 40px; height: 37px; background-color: white; color:#a3a3a3;">/</div>
                                     <div class="input-form full-width normalinput noborder yearcredit nomargin">
                                         <input type="number" name="year" id="year-value" placeholder="YYYY" maxlength="4" autocomplete="off" data-epayco="card[exp_year]" required>
                                     </div>
@@ -446,11 +511,11 @@ if (!defined('ABSPATH')) {
             </div>
             <div class="footer-modal hidden-print" id="footer-animated">
                 <p id="pagar_logo_es">
-                    <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>Pago seguro por
+                    <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i><?php echo esc_html($securePayment); ?>
                     <?php echo wp_get_attachment_image(4, 'full', false, ['height' => '20', 'style' => 'display: inline;']); ?>
                 </p>
                 <p id="pagar_logo_en">
-                    <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i>Secure payment by
+                    <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i><?php echo esc_html($securePayment); ?>
                     <?php echo wp_get_attachment_image(4, 'full', false, ['height' => '20', 'style' => 'display: inline;']); ?>
                 </p>
             </div>

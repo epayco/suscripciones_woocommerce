@@ -116,11 +116,11 @@ jQuery( function( $ ) {
         }else{
             if (epayco_title) epayco_title.hidden = true;
             if (button_epayco) button_epayco.hidden = true;
-            let script = document.createElement('script');
-         
-            script.src = scriptSrc;
-            script.async = true;
-            movil_header.appendChild(script);
+            // Show the hidden movil script instead of creating a new one
+            const movilScript = document.getElementById('movil');
+            if (movilScript) {
+                movilScript.hidden = false;
+            }
             let link = document.createElement('link');
             let linkValue =  style_min.innerText.replace(/ /g, "");
             link.rel = "stylesheet";

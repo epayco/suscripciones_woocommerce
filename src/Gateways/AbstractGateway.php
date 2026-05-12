@@ -116,12 +116,20 @@ abstract class AbstractGateway extends WC_Payment_Gateway implements EpaycoSubsc
     public function registerCheckoutScripts(): void
     {
         /*
+        // Get language (en or es only)
+        $locale = get_locale();
+        if (is_string($locale) && strpos($locale, '_') !== false) {
+            $parts = explode('_', $locale);
+            $locale = $parts[0];
+        }
+        $lang = ($locale === 'es') ? 'es' : 'en';
+        
         $this->epaycosuscription->hooks->scripts->registerCheckoutScript(
             'wc_epaycosubscription_checkout_components',
             $this->epaycosuscription->helpers->url->getJsAsset('checkouts/ep-plugins-components'),
             [
                 'ep_json_url' => EPS_PLUGIN_URL,
-                'lang' => substr(get_locale(), 0, 2)
+                'lang' => $lang
             ]
         );*/
     }

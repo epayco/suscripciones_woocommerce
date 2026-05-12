@@ -18,15 +18,14 @@ return array(
     'shop_name' => array(
         'title' => __('Nombre del comercio', 'epayco-subscriptions-for-woocommerce'),
         'type' => 'text',
-        'description' => __('Corresponde al nombre de la tienda que los usuarios visualizan en el checkout', 'epayco-subscriptions-for-woocommerce'),
+        'label' => __('Corresponde al nombre de la tienda que los usuarios visualizan en el checkout', 'epayco-subscriptions-for-woocommerce'),
         'default' => __('Nombre de la tienda', 'epayco-subscriptions-for-woocommerce'),
         'desc_tip' => true,
     ),
     'description' => array(
         'title' => __('Description', 'epayco-subscriptions-for-woocommerce'),
         'type' => 'textarea',
-        'description' => __('Corresponde al descripción de la tienda que los usuarios visualizan en el checkout', 'epayco-subscriptions-for-woocommerce'),
-        'default' => __('Detalle de la suscripción ePayco', 'epayco-subscriptions-for-woocommerce'),
+        'label' => __('Corresponde a la descripción de la tienda que los usuarios visualizan en el checkout', 'epayco-subscriptions-for-woocommerce'),
         'desc_tip' => true,
     ),
     'environment' => array(
