@@ -35,31 +35,27 @@ a:link {
 }
 
 .footer-modal {
-  padding-left: 0;
-  font-size: 12px;
-  margin-top: 8px;
-  height: 30px;
-  color: white;
-  text-align: center;
-  line-height: 30px;
+  width: 100%;
   display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  align-content: flex-start;
-  margin: -1.5em 16% 19px !important;
+  justify-content: center; /* centra horizontal */
+  align-items: center;     /* centra vertical */
+  text-align: center;
+  gap: 10px;
+
+  margin: 0 auto !important;
+  padding: 0;
+  height: auto;
+
+  font-size: 12px;
+  color: white;
 }
 
-
 .footer-modal p {
-  vertical-align: middle;
-  margin: 3.5em 5% 15px;
-  flex: 0 0 auto;
+  margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-
+  margin-top: 30px;
 }
 
 .footer-modal p img {
@@ -467,10 +463,11 @@ img.home-icons {
     padding: 1em !important;
     border-radius: 5px !important;
     background: #fff !important;
-    max-width: 350px !important;
-    width: 350px !important;
+/*     max-width: 350px !important; */
+/*     width: 350px !important; */
     margin-top: -20px !important;
     font-family: 'Poppins';
+	margin-bottom: 30px;
 }
 
 .loader,
