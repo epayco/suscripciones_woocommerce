@@ -670,6 +670,28 @@ function enqueue_epayco_epaycojs_script()
 }
 add_action('wp_enqueue_scripts', 'enqueue_epayco_epaycojs_script');
 
+// Enqueue ePayco checkout script for mobile and desktop
+function enqueue_epayco_checkout_script()
+{
+    if (!function_exists('wp_enqueue_script') || !function_exists('esc_url')) {
+        return; // Ensure WordPress functions are available
+    }
+    $epaycocheckout = plugins_url('assets/js/epaycocheckout.js', __FILE__);
+    wp_enqueue_script('epayco-checkout-js', esc_url($epaycocheckout), array('jquery'), '1.0.0', true);
+}
+add_action('wp_enqueue_scripts', 'enqueue_epayco_checkout_script');
+
+// Enqueue index.js for responsive design and modal management
+function enqueue_epayco_index_script()
+{
+    if (!function_exists('wp_enqueue_script') || !function_exists('esc_url')) {
+        return; // Ensure WordPress functions are available
+    }
+    $indexjs = plugins_url('assets/js/index.js', __FILE__);
+    wp_enqueue_script('epayco-index-js', esc_url($indexjs), array('jquery'), '1.0.0', true);
+}
+add_action('wp_enqueue_scripts', 'enqueue_epayco_index_script');
+
 
 add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
     if ($attachment_id === 0) {
@@ -735,7 +757,7 @@ register_deactivation_hook(__FILE__, 'epayco_suscripcion_cron_job_deactivation')
 function enqueue_purchase_detail_script() {
     wp_register_script(
         'epayco-script',
-        'https://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js',
+        'https://cms.epayco.co/plugin/DetailPurchase.js',
         array('jquery'),
         '1.0',
         true

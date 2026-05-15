@@ -240,7 +240,7 @@ jQuery( function( $ ) {
             if (mainContainer) {
                 mainContainer.className = "mainContainer";
                 mainContainer.style.position = "fixed";
-                mainContainer.style.top = "-64px"; // corregido, sin ; en el valor
+                mainContainer.style.top = "0px"; // corregido, sin ; en el valor
                 mainContainer.style.left = "0px";
                 mainContainer.style.height ="100%";
                 mainContainer.style.zIndex= "999999";
@@ -264,6 +264,15 @@ jQuery( function( $ ) {
         divSample.id = id;
         divFlag.innerText = flag;
         $(".dropdown dd ul").toggle();
+    });
+
+    // Cerrar dropdown cuando se hace clic fuera
+    $(document).click(function(e) {
+        var target = e.target;
+        // Si el click no es dentro del dropdown, cerrarlo
+        if (!$(target).closest("#sample").length && !$(target).closest(".dropdown").length) {
+            $(".dropdown dd ul").hide();
+        }
     });
 
     if( $("#lang_epayco").text() == 'en')

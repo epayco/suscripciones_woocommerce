@@ -24,7 +24,7 @@
  * @var string $indexjs
  * @var string $appjs
  * @var string $cardsjs
- *  @var string epaycocheckout
+ *  @var string $epaycocheckout
  * @see \EpaycoSubscription\Woocommerce\Gateways\EpaycoSuscription
  */
 
@@ -59,6 +59,7 @@ if (!defined('ABSPATH')) {
             <style>
                 .form-container .icon {
                     color: #3582b7 !important;
+                    width: 20px !important;
                 }
 
                 .button-container .pay-type {
@@ -84,6 +85,11 @@ if (!defined('ABSPATH')) {
                 $title = 'Cargando métodos de pago';
                 $subtitle = 'Si no se cargan automáticamente, haz click en el botón "Pagar con ePayco"';
                 $processing = 'Procesando Pago...';
+                $name = 'Nombre';
+                $cardNumber = 'Tarjeta';
+                $expiry = 'Vence';
+                $cvc = 'CVV';
+                $infoCard = 'Información de la tarjeta';
                 $exit = 'Salir';
                 $save = 'Guardar';
                 $cancel = '¿Estás seguro que deseas cancelar esta transacción?';
@@ -100,12 +106,20 @@ if (!defined('ABSPATH')) {
                 $logout = 'Cerrar sesión';
                 $clickClose = 'Haz click aquí para cerrar';
                 $payButton = 'Pagar';
-                $cardInfo = 'Ingresa los datos de tu tarjeta para procesar el pago';
+                $cardInfo = 'Ingrese su nombre ';
+                $nameCardPlaceholder = 'Nombre completo';
+                $cardInfoTitle = 'Información de la tarjeta';
+                $pay = 'Pagar';
             } else {
                 $button = 'https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/payBottonEpayco.png';
                 $title = 'Loading payment methods';
                 $subtitle = 'If they do not load automatically, click on the "Pay with ePayco" button';
                 $processing = 'Processing Payment...';
+                $name = 'Name';
+                $cardNumber = 'Card';
+                $expiry = 'Expiry';
+                $cvc = 'CVV';
+                $infoCard = 'Credit card information';
                 $exit = 'Exit';
                 $save = 'Save';
                 $cancel = 'Are you sure you want to cancel this transaction?';
@@ -122,6 +136,10 @@ if (!defined('ABSPATH')) {
                 $logout = 'Log out';
                 $clickClose = 'Click close to return and start a new transaction.';
                 $payButton = 'Pay';
+                $cardInfoTitle = 'Credit card information';
+                $cardInfo = 'Enter the data of your card';
+                $nameCardPlaceholder = 'Full name';
+                $pay = 'Pay';
             }
             ?>
             <div class="loading-home op" style="display: none" id="loading_home">
@@ -160,11 +178,11 @@ if (!defined('ABSPATH')) {
 
                         </div>
                         <div class="col title">
-                            <div class="comercio-name ">
-                                <?php echo esc_html($shop_name); ?>
+                            <div class="comercio-name " style="word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; white-space: normal; line-height: 1.2;">
+                                <?php echo esc_html($product_name_); ?>
                             </div>
                             <div class="description-cont ">
-                                <p><?php echo esc_html($product_name_); ?></p>
+                                <p><?php echo esc_html($shop_name); ?></p>
                                 <strong class="monto">
                                     $<?php echo esc_html($amount); ?>
                                     <input type="hidden" value="<?php echo esc_html($amount); ?>" id="currentAmount">
@@ -179,10 +197,10 @@ if (!defined('ABSPATH')) {
                                 <path fill="currentColor" d="M323.1 441l53.9-53.9c9.4-9.4 9.4-24.5 0-33.9L279.8 256l97.2-97.2c9.4-9.4 9.4-24.5 0-33.9L323.1 71c-9.4-9.4-24.5-9.4-33.9 0L192 168.2 94.8 71c-9.4-9.4-24.5-9.4-33.9 0L7 124.9c-9.4 9.4-9.4 24.5 0 33.9l97.2 97.2L7 353.2c-9.4 9.4-9.4 24.5 0 33.9L60.9 441c9.4 9.4 24.5 9.4 33.9 0l97.2-97.2 97.2 97.2c9.3 9.3 24.5 9.3 33.9 0z"></path>
                             </svg><!-- <i class="fa fa-times"></i> -->
                         </div>
-                        <div class="language-switch">
+                        <!-- <div class="language-switch">
                             <a class="dn set-lang pointer l-es" data-lang="es" id="data_lang_es">ES</a>
                             <a class=" set-lang pointer l-en" data-lang="en" id="data_lang_en">EN</a>
-                        </div>
+                        </div> -->
                     </div>
                     <div id="email-container" class="email-container active">
                         <?php echo esc_html($email_billing); ?>
@@ -215,10 +233,10 @@ if (!defined('ABSPATH')) {
                                             <path fill="#2a7ab7" d="M224 256A128 128 0 1 0 224 0a128 128 0 1 0 0 256zm-45.7 48C79.8 304 0 383.8 0 482.3C0 498.7 13.3 512 29.7 512l388.6 0c16.4 0 29.7-13.3 29.7-29.7C448 383.8 368.2 304 269.7 304l-91.4 0z" />
                                         </svg>
                                         <div class="label-container">
-                                            <label for="card" id="label_name_es" style="display:table-cell">Nombre</label>
+                                            <label for="card" id="label_name_es" style="display:table-cell"><?php echo esc_html($name); ?></label>
                                         </div>
                                         <div class="input-container">
-                                            <input type="text" name="name" placeholder="Nombre propietario de tarjeta" value="<?php echo esc_html($name_billing) ?>" style="margin-left: 16px;">
+                                            <input type="text" name="name" placeholder="<?php echo esc_html($nameCardPlaceholder); ?>" value="<?php echo esc_html($name_billing) ?>" style="margin-left: 16px; text-align: left;">
                                         </div>
                                     </div>
 
@@ -227,18 +245,18 @@ if (!defined('ABSPATH')) {
                                             <path fill="currentColor" d="M0 432c0 26.5 21.5 48 48 48h480c26.5 0 48-21.5 48-48V256H0v176zm192-68c0-6.6 5.4-12 12-12h136c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H204c-6.6 0-12-5.4-12-12v-40zm-128 0c0-6.6 5.4-12 12-12h72c6.6 0 12 5.4 12 12v40c0 6.6-5.4 12-12 12H76c-6.6 0-12-5.4-12-12v-40zM576 80v48H0V80c0-26.5 21.5-48 48-48h480c26.5 0 48 21.5 48 48z"></path>
                                         </svg><!-- <i class="icon fa fa-credit-card"></i> -->
                                         <div class="label-container ">
-                                            <label for="card" id="label_card_es" style="display:table-cell">Tarjeta</label>
+                                            <label for="card" id="label_card_es" style="display:table-cell"><?php echo esc_html($cardNumber); ?></label>
                                         </div>
                                         <div class="input-container">
                                             <div class="card-jss" data-icon-colour="#158CBA">
                                                 <div class="card-number2-wrapper">
-                                                    <input class="card-number2" id="the-card-number2-element"
+                                                    <input class="card-number2" id="the-card-number-element"
                                                         data-epayco="card[number]" required="" name="card-number2"
                                                         placeholder="**** **** **** ****" type="tel" maxlength="19"
                                                         x-autocompletetype="cc-number"
                                                         autocompletetype="cc-number"
                                                         autocorrect="off" spellcheck="off"
-                                                        autocapitalize="off" style="padding-left: 0px; margin-left: -32px;">
+                                                        autocapitalize="off" style="padding-left: 0px; margin-left: -32px; text-align: left;">
                                                 </div>
                                             </div>
                                             <?php echo wp_get_attachment_image(1, 'full', false, ['class' => 'img-card', 'id' => 'logo_franchise']); ?>
@@ -253,10 +271,12 @@ if (!defined('ABSPATH')) {
                                                 <path fill="currentColor" d="M12 192h424c6.6 0 12 5.4 12 12v260c0 26.5-21.5 48-48 48H48c-26.5 0-48-21.5-48-48V204c0-6.6 5.4-12 12-12zm436-44v-36c0-26.5-21.5-48-48-48h-48V12c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v52H160V12c0-6.6-5.4-12-12-12h-40c-6.6 0-12 5.4-12 12v52H48C21.5 64 0 85.5 0 112v36c0 6.6 5.4 12 12 12h424c6.6 0 12-5.4 12-12z"></path>
                                             </svg><!-- <i class="icon fa fa-calendar "></i> -->
                                             <div class="label-cvv-container RO">
-                                                <label for="expiry" id="label_expiry_es" style="display:table-cell">Vence</label>
+                                                <label for="month-value" id="label_expiry_es" style="display:table-cell"><?php echo esc_html($expiry); ?></label>
                                             </div>
-                                            <div class="input-expiry-container">
-                                                <input name="expiry" type="tel" placeholder="MM/YYYY" id="expiry-input" class="">
+                                            <div class="input-expiry-container" style="display: flex !important; gap: 13px !important; flex-wrap: nowrap !important; align-items: center !important; width:50% !important;">
+                                                <input type="number" name="month" id="month-value" placeholder="MM" maxlength="2" autocomplete="off" data-epayco="card[exp_month]" required style="width: 50% !important; flex: 0 0 calc(50% - 9.5px) !important; text-align: left;">
+                                                <span style="display: flex !important; align-items: center !important; flex: 0 0 auto !important; color: gray;">/</span>
+                                                <input type="number" name="year" id="year-value" placeholder="YYYY" maxlength="4" autocomplete="off" data-epayco="card[exp_year]" required style="width: 50% !important; flex: 0 0 calc(50% - 2.5px) !important; text-align: left;">
                                             </div>
                                         </div>
                                         <!-- End Expiry Date -->
@@ -266,10 +286,10 @@ if (!defined('ABSPATH')) {
                                                 <svg class="svg-inline--fa fa-lock fa-w-14 icon" aria-hidden="true" data-prefix="fa" data-icon="lock" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
                                                     <path fill="currentColor" d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"></path>
                                                 </svg><!-- <i class="fa fa-lock icon"></i> -->
-                                                <label for="cvc">CVV</label>
+                                                <label for="card_cvc"><?php echo esc_html($cvc); ?></label>
                                             </div>
                                             <div class="input-cvv-container">
-                                                <input type="password" placeholder="***" maxlength="4" name="cvc" id="cvc-input" class="">
+                                                <input type="password" placeholder="***" maxlength="4" name="cvc" id="card_cvc" autocomplete="off" data-epayco="card[cvc]" style="border-color: transparent !important;box-shadow: none !important; text-align: left;">
                                             </div>
                                         </div>
                                     </div>
@@ -285,7 +305,7 @@ if (!defined('ABSPATH')) {
                 <button class="action-oneclick cancel-oneclick" id="cancel-d" style="background-color: #D8D8D8"><?php echo esc_html($cancelButton); ?></button>
                 <button class="action-oneclick save-oneclik"><?php echo esc_html($save); ?></button>
             </div>
-            <button id="continue-tdc" class="continue-container text-center btnpay" style="background-color: #3582b7;" type="submit">
+            <button id="continue-tdc" class="continue-container text-center btnpay" style="background-color: #3582b7;" type="submit" form="form-action">
                 <?php echo esc_html($payButton); ?>
                 <!--<svg class="svg-inline--fa fa-angle-right fa-w-8" aria-hidden="true" data-prefix="fas" data-icon="angle-right" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 512" data-fa-i2svg="">
                     <path fill="currentColor" d="M224.3 273l-136 136c-9.4 9.4-24.6 9.4-33.9 0l-22.6-22.6c-9.4-9.4-9.4-24.6 0-33.9l96.4-96.4-96.4-96.4c-9.4-9.4-9.4-24.6 0-33.9L54.3 103c9.4-9.4 24.6-9.4 33.9 0l136 136c9.5 9.4 9.5 24.6.1 34z"></path>
@@ -305,9 +325,7 @@ if (!defined('ABSPATH')) {
         <div class="cancelT-modal dn" id="cancelT_modal" style="display:none">
             <div class="ventana dn">
                 <div class="icono">
-                    <svg class="svg-inline--fa fa-exclamation-circle fa-w-16" aria-hidden="true" data-prefix="fa" data-icon="exclamation-circle" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" data-fa-i2svg="">
-                        <path fill="currentColor" d="M504 256c0 136.997-111.043 248-248 248S8 392.997 8 256C8 119.083 119.043 8 256 8s248 111.083 248 248zm-248 50c-25.405 0-46 20.595-46 46s20.595 46 46 46 46-20.595 46-46-20.595-46-46-46zm-43.673-165.346l7.418 136c.347 6.364 5.609 11.346 11.982 11.346h48.546c6.373 0 11.635-4.982 11.982-11.346l7.418-136c.375-6.874-5.098-12.654-11.982-12.654h-63.383c-6.884 0-12.356 5.78-11.981 12.654z"></path>
-                    </svg>
+                 
                 </div>
                 <p><?php echo esc_html($cancel); ?></p>
                 <div class="acciones">
@@ -412,7 +430,7 @@ if (!defined('ABSPATH')) {
                         <!--<?php echo wp_get_attachment_image(0, 'full', false, ['class' => 'img-card', 'id' => 'image-safari', 'style' => 'width: 90%;']); ?> -->
                     </div>
                     <div class="header-modal-text">
-                        <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: black;"><?php echo esc_html($product_name_); ?></h1>
+                        <h1 style="font-size: 17px;margin-bottom:3px;height: auto;margin: 0.2rem  1.5rem !important;color: black; word-wrap: break-word; overflow-wrap: break-word; word-break: break-word; white-space: normal; line-height: 1.2;"><?php echo esc_html($product_name_); ?></h1>
                         <h2 style="font-size: 12px;margin-bottom:3px;color: #848484;margin: 0.2rem 1.5rem !important;  font-family: Poppins"><?php echo esc_html($shop_name) ?></h2>
                         <h1 style="font-size: 17px;margin-bottom:3px;height: 20px;margin: 0.2rem  1.5rem !important;color: #3582b7;font-weight: 900;">$<?php echo esc_html($amount); ?> <?php echo esc_html($currency) ?></h1>
                     </div>
@@ -437,15 +455,15 @@ if (!defined('ABSPATH')) {
                             </p>
                             <ul class="dropdown-menu" id="dropdown-countries"></ul>
                         </div>
-                        <p style="display: flex; margin: 0px"><span id="result" hidden><?php echo esc_html($str_countryCode) ?></span><a id="esButton" class="languaje pointer" data-es-button data-language="es">ES</a><a id="enButton" class="languaje pointer" data-en-button data-language="en">EN</a></p>
+                        <p style="display: flex; margin: 0px; display: none;"><span id="result" hidden><?php echo esc_html($str_countryCode) ?></span><a id="esButton" class="languaje pointer" data-es-button data-language="es">ES</a><a id="enButton" class="languaje pointer" data-en-button data-language="en">EN</a></p>
                     </div>
                     <div class="wc scroll-content">
                         <div class="separate">
                             <h2 class="title-body" style="text-align: left;width: calc(100% - 1.9em);
-                                margin: 0 auto 1em; font-size: 16px; font-weight: 500; color: #3a3a3a;font-family: 'Poppins' " id="info_es">Información de la tarjeta
+                                margin: 0 auto 1em; font-size: 16px; font-weight: 500; color: #3a3a3a;font-family: 'Poppins' " id="info_es"><?php echo esc_html($infoCard); ?>
                             </h2>
                             <h2 class="title-body" style="text-align: left;width: calc(100% - 1.5em);
-                                margin: 0 auto 1em; font-size: 16px; font-weight: 500; color: #3a3a3a;font-family: 'Poppins'" id="info_en">Credit card information
+                                margin: 0 auto 1em; font-size: 16px; font-weight: 500; color: #3a3a3a;font-family: 'Poppins'" id="info_en"><?php echo esc_html($infoCard); ?>
                             </h2>
                         </div>
                         <div class="menu-select">
@@ -453,7 +471,7 @@ if (!defined('ABSPATH')) {
                                 <div class="card-js" data-icon-colour="#158CBA">
                                     <div class="input-form">
                                         <span class="icon-user color icon-input"><i class="fas fa-user" style="margin-left: -2px;"></i></span>
-                                        <input class="name" id="the-card-name-element" data-epayco="card[name]" name="name" required value="<?php echo esc_html($name_billing) ?>">
+                                        <input class="name" id="the-card-name-element" data-epayco="card[name]" placeholder="<?php echo esc_html($nameCardPlaceholder); ?>" name="name" required value="<?php echo esc_html($name_billing) ?>">
                                     </div>
                                 </div>
                                 <div class="card-js" data-icon-colour="#158CBA">
@@ -461,8 +479,8 @@ if (!defined('ABSPATH')) {
                                         <span class="icon-credit-card color icon-input"><i class="far fa-credit-card" style="margin-left: -5px;"></i></span>
                                         <input class="card-number my-custom-class" data-epayco="card[number]" required id="the-card-number-element" name="card-number2" placeholder="**** **** **** ****" type="tel" maxlength="19" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" style="padding-right: 40px;">
 
-                                        <?php echo wp_get_attachment_image(1, 'full', false, ['class' => 'img-card', 'id' => 'logo_franchise_2', 'style' => 'display: block;position: absolute;right: 12px;top: 41.5%;transform: translateY(-50%);width: 40px;']); ?>
-
+                                        <?php echo wp_get_attachment_image(1, 'full', false, ['class' => 'img-card', 'id' => 'logo_franchise', 'style' => 'display: block;position: absolute;right: 12px;top: 41.5%;transform: translateY(-50%);width: 40px;']); ?>
+                                        
                                     </div>
                                 </div>
 
@@ -477,7 +495,7 @@ if (!defined('ABSPATH')) {
                                     </div>
                                     <div class="" style="float:left; width:5%; margin:0; text-align:center; line-height: 40px; height: 37px; background-color: white; color:#a3a3a3;">/</div>
                                     <div class="input-form full-width normalinput noborder yearcredit nomargin">
-                                        <input type="number" name="year" id="year-value" placeholder="YYYY" maxlength="4" autocomplete="off" data-epayco="card[exp_year]" required>
+                                        <input type="number" name="year" id="year-value" placeholder="  YYYY" maxlength="4" autocomplete="off" data-epayco="card[exp_year]" required>
                                     </div>
                                 </div>
                                 <div class="input-form normalinput cvv_style" id="cvc_">
@@ -487,8 +505,8 @@ if (!defined('ABSPATH')) {
                                 <br>
                                 <div class="clearfix"></div>
                                 <button class="call_action bgcolor white_font pointer load hidden-print" id="send-form">
-                                    <h2 style="color: white; font-family: 'Poppins'" id="pagar_es">Pagar</h2>
-                                    <h2 style="color: white; font-family: 'Poppins'" id="pagar_en">Pay</h2>
+                                    <h2 style="color: white; font-family: 'Poppins'" id="pagar_es"><?php echo esc_html($pay); ?></h2>
+                                    <h2 style="color: white; font-family: 'Poppins'" id="pagar_en"><?php echo esc_html($pay); ?></h2>
                                 </button>
                             </form>
                         </div>
@@ -510,10 +528,11 @@ if (!defined('ABSPATH')) {
     </div>
     <div id="style_min" hidden><?php echo esc_html($stylemin) ?></div>
     </div>
+    <script id="movil" hidden>
+        <?php echo $appjs; ?>
+    </script>
 </body>
-<script id="movil" hidden>
-    <?php echo esc_html($appjs) ?>
-</script>
+
 
 <?php
 // Ensure WordPress functions are available

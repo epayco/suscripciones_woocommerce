@@ -382,7 +382,7 @@ class EpaycoSuscription extends AbstractGateway
     {
         $username = sanitize_text_field($validationData['epayco_publickey']);
         $password = sanitize_text_field($validationData['epayco_privatey']);
-        $response = wp_remote_post('https://eks-apify-service.epayco.io/login', array(
+        $response = wp_remote_post('https://apify.epayco.co/login', array(
             'headers' => array(
                 'Authorization' => 'Basic ' . base64_encode($username . ':' . $password),
             ),
@@ -391,7 +391,7 @@ class EpaycoSuscription extends AbstractGateway
 
         $data = json_decode(wp_remote_retrieve_body($response));
         if ($data->token) {
-            $response = wp_remote_get("https://eks-rest-pagos-service.epayco.io/restpagos/validarllaves?public_key=" . trim($username));
+            $response = wp_remote_get("https://secure.payco.co/restpagos/validarllaves?public_key=" . trim($username));
 
             if (is_wp_error($response)) {
                 error_log('ePayco validation: ' . $response->get_error_message());
@@ -555,10 +555,10 @@ class EpaycoSuscription extends AbstractGateway
         } else {
             $product_name = $descripcion;
         }
-        if (strlen($product_name) < 20) {
+        if (strlen($product_name) < 60) {
             $product_name_ = $descripcion;
         } else {
-            $resultado = substr($product_name, 0, 19);
+            $resultado = substr($product_name, 0, 60);
             $product_name_ = $resultado . "...";
         }
 
@@ -666,7 +666,42 @@ class EpaycoSuscription extends AbstractGateway
             // $subscription = wcs_get_subscription($subscription_id);
             $token = isset($params['epaycoToken']) ? sanitize_text_field(wp_unslash($params['epaycoToken'])) : '';
             
-            $token = $this->createToken($token);
+            // Si no hay epaycoToken pero SÍ hay datos crudos de tarjeta, procesar directamente
+            if (empty($token) && isset($params['card-number2'])) {
+                error_log("DEBUG: Procesando tarjeta directamente desde POST mobile");
+                $cardData = [
+                    'number' => sanitize_text_field(wp_unslash($params['card-number2'])),
+                    'exp_month' => sanitize_text_field(wp_unslash($params['month'] ?? '')),
+                    'exp_year' => sanitize_text_field(wp_unslash($params['year'] ?? '')),
+                    'cvc' => sanitize_text_field(wp_unslash($params['cvc'] ?? ''))
+                ];
+                error_log("DEBUG: Card data: " . json_encode([
+                    'number' => substr($cardData['number'], -4),
+                    'month' => $cardData['exp_month'],
+                    'year' => $cardData['exp_year'],
+                    'cvc' => str_repeat('*', strlen($cardData['cvc']))
+                ]));
+                
+                $tokenBody = [
+                    "card[number]" => preg_replace('/\s+/', '', $cardData['number']),
+                    "card[exp_year]" => str_pad($cardData['exp_year'], 4, '20', STR_PAD_LEFT),
+                    "card[exp_month]" => str_pad($cardData['exp_month'], 2, '0', STR_PAD_LEFT),
+                    "card[cvc]" => $cardData['cvc'],
+                    "hasCvv" => true
+                ];
+                error_log("DEBUG: TokenBody: " . json_encode($tokenBody));
+                
+                try {
+                    $token = $this->epaycoSdk->token->create($tokenBody);
+                    error_log("DEBUG: Token creado: " . json_encode($token));
+                } catch (Exception $e) {
+                    error_log("DEBUG: Error creando token: " . $e->getMessage());
+                    $token = null;
+                }
+            } else {
+                $token = $this->createToken($token);
+            }
+            
             $token = is_string($token) ? json_decode($token) : $token;
             if(!$token || !$token->status){
                 $error = $this->errorMessages($token);
@@ -2504,7 +2539,7 @@ class EpaycoSuscription extends AbstractGateway
 
     public function epayco_realizar_llamada_api($path, $data, $headers, $method = 'POST')
     {
-        $url = 'https://eks-apify-service.epayco.io/' . $path;
+        $url = 'https://apify.epayco.co/' . $path;
 
         $response = wp_remote_post($url, [
             'headers' => $headers,
