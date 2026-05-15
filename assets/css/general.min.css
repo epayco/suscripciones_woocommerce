@@ -35,7 +35,7 @@ a:link {
 }
 
 .footer-modal {
-  padding: 0;
+  padding-left: 0;
   font-size: 12px;
   margin-top: 8px;
   height: 30px;
@@ -48,16 +48,18 @@ a:link {
   align-items: center;
   flex-wrap: wrap;
   align-content: flex-start;
+  margin: -1.5em 16% 19px !important;
 }
 
 
 .footer-modal p {
   vertical-align: middle;
-  margin: 0.5em 30% 15px;
+  margin: 3.5em 5% 15px;
   flex: 0 0 auto;
   display: flex;
   align-items: center;
   justify-content: center;
+
 }
 
 .footer-modal p img {
