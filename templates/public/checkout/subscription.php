@@ -236,7 +236,7 @@ if (!defined('ABSPATH')) {
                                             <label for="card" id="label_name_es" style="display:table-cell"><?php echo esc_html($name); ?></label>
                                         </div>
                                         <div class="input-container">
-                                            <input type="text" name="name" placeholder="<?php echo esc_html($nameCardPlaceholder); ?>" value="<?php echo esc_html($name_billing) ?>" style="margin-left: 16px; text-align: left;">
+                                            <input type="text" name="name" placeholder="<?php echo esc_html($nameCardPlaceholder); ?>" value="<?php echo esc_html($name_billing) ?>" style="margin-left: 6px; text-align: left;">
                                         </div>
                                     </div>
 
@@ -256,7 +256,7 @@ if (!defined('ABSPATH')) {
                                                         x-autocompletetype="cc-number"
                                                         autocompletetype="cc-number"
                                                         autocorrect="off" spellcheck="off"
-                                                        autocapitalize="off" style="padding-left: 0px; margin-left: -32px; text-align: left;">
+                                                        autocapitalize="off" style=" margin-left: 3px; text-align: left; padding-right: 20px !important;">
                                                 </div>
                                             </div>
                                             <?php echo wp_get_attachment_image(1, 'full', false, ['class' => 'img-card', 'id' => 'logo_franchise']); ?>
@@ -274,9 +274,9 @@ if (!defined('ABSPATH')) {
                                                 <label for="month-value" id="label_expiry_es" style="display:table-cell"><?php echo esc_html($expiry); ?></label>
                                             </div>
                                             <div class="input-expiry-container" style="display: flex !important; gap: 13px !important; flex-wrap: nowrap !important; align-items: center !important; width:50% !important;">
-                                                <input type="number" name="month" id="month-value" placeholder="MM" maxlength="2" autocomplete="off" data-epayco="card[exp_month]" required style="width: 50% !important; flex: 0 0 calc(50% - 9.5px) !important; text-align: left;">
-                                                <span style="display: flex !important; align-items: center !important; flex: 0 0 auto !important; color: gray;">/</span>
-                                                <input type="number" name="year" id="year-value" placeholder="YYYY" maxlength="4" autocomplete="off" data-epayco="card[exp_year]" required style="width: 50% !important; flex: 0 0 calc(50% - 2.5px) !important; text-align: left;">
+                                                <input type="number" name="month" id="month-value" placeholder="MM" maxlength="2" autocomplete="off" data-epayco="card[exp_month]" required style="width: 50% !important; flex: 0 0 calc(50% - 9.5px) !important; text-align: left;     margin-left: 13px;">
+                                                <span style="display: flex !important; align-items: center !important; flex: 0 0 auto !important; color: gray; margin-left: -6px;">/</span>
+                                                <input type="number" name="year" id="year-value" placeholder="YYYY" maxlength="4" autocomplete="off" data-epayco="card[exp_year]" required style="width: 50% !important; flex: 0 0 calc(50% - -4.5px) !important; text-align: left;">
                                             </div>
                                         </div>
                                         <!-- End Expiry Date -->
