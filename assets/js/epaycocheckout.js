@@ -1,28 +1,17 @@
 
-console.log("Epayco Checkout JS cargado correctamente.");
 //Diseño desktop 
 document.addEventListener('DOMContentLoaded', function () {
-  console.log("=== INICIANDO DETECCIÓN DE TARJETA ===");
   
   // Buscar TODOS los inputs de tarjeta (mobile y desktop)
   const cardInputs = document.querySelectorAll('#the-card-number-element, .card-number, .my-custom-class');
-  console.log("🔍 Inputs de tarjeta encontrados:", cardInputs.length);
   
   cardInputs.forEach((cardInput, index) => {
-    console.log(`\n📌 Input #${index + 1}:`);
-    console.log("   - tagName:", cardInput.tagName);
-    console.log("   - id:", cardInput.id);
-    console.log("   - name:", cardInput.name);
-    console.log("   - parentElement:", cardInput.parentElement?.className);
     
     // Buscar el logo más cercano al input
     let cardLogo = null;
     if (cardInput && cardInput.parentElement) {
-      console.log("   Buscando logo...");
-      
       // Opción 1: Buscar en el mismo contenedor
       cardLogo = cardInput.parentElement.querySelector('#logo_franchise');
-      if (cardLogo) console.log("   ✅ Logo encontrado en contenedor");
       
       // Opción 2: Buscar en hermanos
       if (!cardLogo) {
@@ -34,13 +23,11 @@ document.addEventListener('DOMContentLoaded', function () {
           }
           sibling = sibling.nextElementSibling;
         }
-        if (cardLogo) console.log("   ✅ Logo encontrado en hermano");
       }
       
       // Opción 3: Buscar en padre
       if (!cardLogo && cardInput.parentElement.parentElement) {
         cardLogo = cardInput.parentElement.parentElement.querySelector('#logo_franchise');
-        if (cardLogo) console.log("   ✅ Logo encontrado en padre");
       }
       
       // Opción 4: Buscar en rama más cercana
@@ -48,25 +35,21 @@ document.addEventListener('DOMContentLoaded', function () {
         let parent = cardInput.closest('.input-form, .input-container, .card-js, .form-container');
         if (parent) {
           cardLogo = parent.querySelector('#logo_franchise');
-          if (cardLogo) console.log("   ✅ Logo encontrado en rama");
         }
       }
       
       // Fallback
       if (!cardLogo) {
         cardLogo = document.getElementById('logo_franchise');
-        if (cardLogo) console.log("   ✅ Logo encontrado en documento (fallback)");
       }
     }
     
     // Si encontramos logo, agregar listeners
     if (cardInput && cardLogo) {
-      console.log(`   ✅ Listeners agregados para Input #${index + 1}`);
       
       // Función para actualizar logo
       const updateCardLogo = function() {
         const cardNumber = cardInput.value.replace(/\s+/g, '').replace(/\D/g, '');
-        console.log(`   🔢 Input #${index + 1}: ${cardNumber}`);
 
         // Formatear
         cardInput.value = cardNumber.replace(/(\d{4})(?=\d)/g, '$1 ');
@@ -78,26 +61,21 @@ document.addEventListener('DOMContentLoaded', function () {
         if (/^4[0-9]{6,}$/.test(cardNumber)) {
           logoUrl = 'https://msecure.epayco.co/img/credit-cards/vs.png';
           isCardDetected = true;
-          console.log(`   💳 VISA detectada`);
         } else if (/^5[1-5][0-9]{5,}$/.test(cardNumber)) {
           logoUrl = 'https://msecure.epayco.co/img/credit-cards/mc.png';
           isCardDetected = true;
-          console.log(`   💳 MASTERCARD detectada`);
         } else if (/^3[47][0-9]{3,}$/.test(cardNumber)) {
           logoUrl = 'https://msecure.epayco.co/img/credit-cards/amex.png';
           isCardDetected = true;
-          console.log(`   💳 AMEX detectada`);
         } else if (/^6(?:011|5[0-9]{2})[0-9]{3,}$/.test(cardNumber)) {
           logoUrl = 'https://msecure.epayco.co/img/credit-cards/discover.png';
           isCardDetected = true;
-          console.log(`   💳 DISCOVER detectada`);
         }
 
         if (isCardDetected) {
           cardLogo.src = logoUrl;
           cardLogo.style.display = 'block';
           cardInput.style.paddingRight = '40px';
-          console.log(`   ✅ Logo actualizado`);
         } else {
           cardLogo.src = '';
           cardLogo.style.display = 'none';
@@ -118,7 +96,6 @@ document.addEventListener('DOMContentLoaded', function () {
 //Js Modales 
 // JavaScript para manejar todos los modales
 document.addEventListener('DOMContentLoaded', function () {
-  console.log("=== EPAYCOCHECKOUT: DOMContentLoaded iniciado ===");
   
   // Modal 1 - Idioma
   const modal1 = document.getElementById("myModal");
@@ -153,16 +130,10 @@ document.addEventListener('DOMContentLoaded', function () {
   const formMovil = document.getElementById('form-action');
   const btnPagar = document.getElementById('continue-tdc');
   
-  console.log("📋 Formulario móvil encontrado:", !!formMovil);
-  console.log("🔘 Botón Pagar encontrado:", !!btnPagar);
-  
   if (formMovil) {
-    console.log("📝 Acción del formulario:", formMovil.action);
-    console.log("📝 Método del formulario:", formMovil.method);
     
     // Log cuando se intenta enviar el formulario
     formMovil.addEventListener('submit', function(e) {
-      console.log("🚀 EVENTO SUBMIT DETECTADO EN FORMULARIO");
       
       // Recopilar datos de la tarjeta
       const cardNumber = document.getElementById('the-card-number-element')?.value;
@@ -172,39 +143,26 @@ document.addEventListener('DOMContentLoaded', function () {
       
       // Validar que todos los datos estén presentes
       if (!cardNumber || !cardExp_month || !cardExp_year || !cardCvc) {
-        console.error("❌ FALTAN DATOS DE TARJETA");
         e.preventDefault();
         return false;
       }
       
-      console.log("📊 Datos a enviar:");
-      console.log(`  Tarjeta: ${cardNumber.slice(-4)}`);
-      console.log(`  Mes: ${cardExp_month}`);
-      console.log(`  Año: ${cardExp_year}`);
-      console.log(`  CVV: ***`);
-      
       const formData = new FormData(formMovil);
-      for (let [key, value] of formData.entries()) {
-        console.log(`  ${key}: ${value.toString().substring(0, 50)}`);
-      }
       
       // Mostrar spinner/modal de carga MÓVIL
       const loadingHome = document.getElementById('loading_home');
       const movilModal = document.getElementById('movil_modal');
       if (loadingHome) {
         loadingHome.style.display = 'block';
-        console.log("✅ Mostrando spinner móvil...");
       }
       if (movilModal) {
         movilModal.style.display = 'none';
-        console.log("✅ Ocultando modal del checkout móvil...");
       }
     });
     
     // Log cuando hace click en Pagar
     if (btnPagar) {
       btnPagar.addEventListener('click', function(e) {
-        console.log("🚨 CLICK EN PAGAR DETECTADO");
         
         // Recopilar datos del formulario
         const nombre = document.querySelector('input[name="name"]')?.value;
@@ -213,12 +171,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const ano = document.getElementById('year-value')?.value;
         const cvv = document.getElementById('card_cvc')?.value;
         
-        console.log("📊 Datos del formulario:");
-        console.log("  ✓ Nombre:", nombre ? "✓ " + nombre : "✗ FALTA");
-        console.log("  ✓ Tarjeta:", tarjeta ? `✓ ${tarjeta.slice(-4)}` : "✗ FALTA");
-        console.log("  ✓ Mes:", mes ? "✓ " + mes : "✗ FALTA");
-        console.log("  ✓ Año:", ano ? "✓ " + ano : "✗ FALTA");
-        console.log("  ✓ CVV:", cvv ? "✓ " + cvv : "✗ FALTA");
+        // Recopilar datos del formulario
         
         // Validar campos requeridos
         const camposRequeridos = {
@@ -230,36 +183,26 @@ document.addEventListener('DOMContentLoaded', function () {
         };
         
         const todoCompleto = Object.values(camposRequeridos).every(v => v);
-        console.log("✅ Validación:", todoCompleto ? "TODOS LOS CAMPOS COMPLETADOS" : "CAMPOS INCOMPLETOS");
         
         // Verificar atributo 'required' en inputs
         const inputsRequeridos = formMovil.querySelectorAll('input[required]');
-        console.log("📌 Inputs con atributo required:", inputsRequeridos.length);
-        inputsRequeridos.forEach((input, idx) => {
-          console.log(`  [${idx}] name="${input.name}" value="${input.value}" type="${input.type}"`);
-        });
+
         
         if (todoCompleto) {
-          console.log("✅ Enviando formulario a:", formMovil.action);
-          console.log("🔄 Llamando a formMovil.submit()...");
           
           // Mostrar spinner ANTES de enviar
           const loadingHome = document.getElementById('loading_home');
           const movilModal = document.getElementById('movil_modal');
           if (loadingHome) {
             loadingHome.style.display = 'block';
-            console.log("✅ Mostrando spinner móvil al hacer click...");
           }
           if (movilModal) {
             movilModal.style.display = 'none';
-            console.log("✅ Ocultando modal del checkout móvil al hacer click...");
           }
           
           // Enviar el formulario explícitamente
           formMovil.submit();
         } else {
-          console.log("⚠️ ADVERTENCIA: Formulario incompleto, no se puede enviar");
-          
           // Marcar campos vacíos con clase has-error (MOBILE)
           const campos = {
             nombre: document.querySelector('input[name="name"]'),
@@ -300,17 +243,9 @@ document.addEventListener('DOMContentLoaded', function () {
   const formDesktop = document.getElementById('token-credit');
   const btnPagarDesktop = document.getElementById('send-form');
   
-  console.log("📋 Formulario desktop encontrado:", !!formDesktop);
-  console.log("🔘 Botón Pagar Desktop encontrado:", !!btnPagarDesktop);
-  
   if (formDesktop) {
-    console.log("📝 Acción del formulario desktop:", formDesktop.action);
-    console.log("📝 Método del formulario desktop:", formDesktop.method);
-    
     // Log cuando se intenta enviar el formulario desktop
     formDesktop.addEventListener('submit', function(e) {
-      console.log("🚀 EVENTO SUBMIT DETECTADO EN FORMULARIO DESKTOP");
-      
       // Recopilar datos de la tarjeta
       const cardNumber = document.getElementById('the-card-number-element')?.value;
       const cardExp_month = document.getElementById('month-value')?.value;
@@ -319,39 +254,26 @@ document.addEventListener('DOMContentLoaded', function () {
       
       // Validar que todos los datos estén presentes
       if (!cardNumber || !cardExp_month || !cardExp_year || !cardCvc) {
-        console.error("❌ FALTAN DATOS DE TARJETA EN DESKTOP");
         e.preventDefault();
         return false;
       }
       
-      console.log("📊 Datos a enviar (DESKTOP):");
-      console.log(`  Tarjeta: ${cardNumber.slice(-4)}`);
-      console.log(`  Mes: ${cardExp_month}`);
-      console.log(`  Año: ${cardExp_year}`);
-      console.log(`  CVV: ***`);
-      
       const formData = new FormData(formDesktop);
-      for (let [key, value] of formData.entries()) {
-        console.log(`  ${key}: ${value.toString().substring(0, 50)}`);
-      }
       
       // Mostrar spinner/modal de carga DESKTOP
       const loadOverlay = document.getElementById('loadoverlay');
       const webCheckoutContent = document.getElementById('web-checkout-content');
       if (loadOverlay) {
         loadOverlay.style.display = 'block';
-        console.log("✅ Mostrando spinner desktop...");
       }
       if (webCheckoutContent) {
         webCheckoutContent.style.display = 'none';
-        console.log("✅ Ocultando contenido del checkout desktop...");
       }
     });
     
     // Log cuando hace click en Pagar (Desktop)
     if (btnPagarDesktop) {
       btnPagarDesktop.addEventListener('click', function(e) {
-        console.log("🚨 CLICK EN PAGAR DESKTOP DETECTADO");
         
         // Recopilar datos del formulario DENTRO del contexto del formulario desktop
         const nombre = formDesktop.querySelector('input[name="name"]')?.value;
@@ -359,13 +281,6 @@ document.addEventListener('DOMContentLoaded', function () {
         const mes = formDesktop.querySelector('input[name="month"]')?.value;
         const ano = formDesktop.querySelector('input[name="year"]')?.value;
         const cvv = formDesktop.querySelector('input[name="cvc"]')?.value;
-        
-        console.log("📊 Datos del formulario DESKTOP:");
-        console.log("  ✓ Nombre:", nombre ? "✓ " + nombre : "✗ FALTA");
-        console.log("  ✓ Tarjeta:", tarjeta ? `✓ ${tarjeta.slice(-4)}` : "✗ FALTA");
-        console.log("  ✓ Mes:", mes ? "✓ " + mes : "✗ FALTA");
-        console.log("  ✓ Año:", ano ? "✓ " + ano : "✗ FALTA");
-        console.log("  ✓ CVV:", cvv ? "✓ " + cvv : "✗ FALTA");
         
         // Validar campos requeridos
         const camposRequeridos = {
@@ -377,35 +292,25 @@ document.addEventListener('DOMContentLoaded', function () {
         };
         
         const todoCompleto = Object.values(camposRequeridos).every(v => v);
-        console.log("✅ Validación:", todoCompleto ? "TODOS LOS CAMPOS COMPLETADOS" : "CAMPOS INCOMPLETOS");
         
         // Verificar atributo 'required' en inputs
         const inputsRequeridos = formDesktop.querySelectorAll('input[required]');
-        console.log("📌 Inputs con atributo required:", inputsRequeridos.length);
-        inputsRequeridos.forEach((input, idx) => {
-          console.log(`  [${idx}] name="${input.name}" value="${input.value}" type="${input.type}"`);
-        });
         
         if (todoCompleto) {
-          console.log("✅ Enviando formulario a:", formDesktop.action);
-          console.log("🔄 Llamando a formDesktop.submit()...");
           
           // Mostrar spinner ANTES de enviar
           const loadOverlay = document.getElementById('loadoverlay');
           const webCheckoutContent = document.getElementById('web-checkout-content');
           if (loadOverlay) {
             loadOverlay.style.display = 'block';
-            console.log("✅ Mostrando spinner desktop al hacer click...");
           }
           if (webCheckoutContent) {
             webCheckoutContent.style.display = 'none';
-            console.log("✅ Ocultando contenido del checkout desktop al hacer click...");
           }
           
           // Enviar el formulario explícitamente
           formDesktop.submit();
         } else {
-          console.log("⚠️ ADVERTENCIA: Formulario DESKTOP incompleto, no se puede enviar");
           
           // Marcar campos vacíos con clase has-error
           const campos = {
@@ -900,8 +805,6 @@ document.addEventListener('DOMContentLoaded', function () {
       e.preventDefault();
       e.stopPropagation();
       
-      console.log("✅ Abriendo modal de confirmación");
-      
       // Mostrar modal de confirmación usando las mismas clases que app.js
       $(".cancelT-modal").removeClass("dn");
       setTimeout(function() {
@@ -921,8 +824,6 @@ document.addEventListener('DOMContentLoaded', function () {
     $('#regresa-t').on('click', function(e) {
       e.preventDefault();
       e.stopPropagation();
-      
-      console.log("✅ Cerrando modal de confirmación");
       
       // Ocultar modal de confirmación
       $(".cancelT-modal").find(".ventana").removeClass("subeModal").addClass("dn");
@@ -944,7 +845,6 @@ document.addEventListener('DOMContentLoaded', function () {
       const form = document.getElementById('form-action');
       if (form) {
         const redirectUrl = form.action + (form.action.includes('?') ? '&' : '?') + 'canceled=1';
-        console.log("🔄 Redirigiendo a:", redirectUrl);
         window.location.href = redirectUrl;
       }
       
