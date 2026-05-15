@@ -15,6 +15,9 @@ msgstr ""
 "X-Generator: Loco https://localise.biz/\n"
 "X-Loco-Version: 2.2.1; wp-5.1.1"
 
+
+
+
 #: includes/class-subscription-epayco.php:53
 msgid "An internal error has arisen, try again"
 msgstr ""

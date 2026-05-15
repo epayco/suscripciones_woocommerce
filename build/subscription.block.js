@@ -9,7 +9,7 @@
     var r;
     const m = "mp_checkout_blocks", d = "woo-epaycosubscription",
         i = (0, o.getSetting)("woo-epaycosubscription_data", {}),
-        p = (0, c.decodeEntities)(i.title) || "ePayco", u = t => {
+        p = (0, c.decodeEntities)(i.title) || "Pay with ePayco", u = t => {
             (e => {
                 const {extensionCartUpdate: t} = wc.blocksCheckout, {
                     eventRegistration: o,
@@ -65,7 +65,7 @@
             name: d,
             label: (0, e.createElement)((t => {
             const { PaymentMethodLabel: o } = t.components;
-            const title = (0, c.decodeEntities)(i.title) || "Paga con ePayco";
+            const title = (0, c.decodeEntities)(i.title) || "Pay with ePayco";
             return (0, e.createElement)("div", { 
                 style: { 
                     display: "flex", 

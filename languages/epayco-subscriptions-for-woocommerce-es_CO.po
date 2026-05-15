@@ -1,0 +1,300 @@
+# Translations for WordPress
+# Language: es_CO
+msgid ""
+msgstr ""
+"Project-Id-Version: epayco-subscriptions-for-woocommerce\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2026-05-12 17:44:33+0000\n"
+"PO-Revision-Date: 2026-05-12 17:44:33+0000\n"
+"Last-Translator: ePayco\n"
+"Language-Team: Spanish\n"
+"Language: es_CO\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: generated
+msgid "Settings"
+msgstr "Configuración"
+
+#: generated
+msgid "Enable/Disable"
+msgstr "Habilitar/Deshabilitar"
+
+#: generated
+msgid "Enable ePayco subscription"
+msgstr "Habilitar suscripción ePayco"
+
+#: generated
+msgid "Title"
+msgstr "Título"
+
+#: generated
+msgid "This is the title that users see at checkout"
+msgstr "Este es el título que los usuarios ven en el pago"
+
+#: generated
+msgid "Store Name"
+msgstr "Nombre del comercio"
+
+#: generated
+msgid "This is the store name that users see at checkout"
+msgstr "Este es el nombre del comercio que los usuarios ven en el pago"
+
+#: generated
+msgid "Description"
+msgstr "Descripción"
+
+#: generated
+msgid "This is the description of the store that users see at checkout"
+msgstr "Esta es la descripción del comercio que los usuarios ven en el pago"
+
+#: generated
+msgid "ePayco subscription details"
+msgstr "Detalles de suscripción de ePayco"
+
+#: generated
+msgid "Test Mode"
+msgstr "Modo de Prueba"
+
+#: generated
+msgid "Test/Production mode"
+msgstr "Modo de prueba/producción"
+
+#: generated
+msgid "Production"
+msgstr "Producción"
+
+#: generated
+msgid "Test"
+msgstr "Prueba"
+
+#: generated
+msgid "P_CUST_ID_CLIENTE"
+msgstr "P_CUST_ID_CLIENTE"
+
+#: generated
+msgid "You can find it in the ePayco panel, integrations, API Keys"
+msgstr "Puede encontrarlo en el panel de ePayco, integraciones, Claves de API"
+
+#: generated
+msgid "P_KEY"
+msgstr "P_KEY"
+
+#: generated
+msgid "PUBLIC_KEY"
+msgstr "PUBLIC_KEY"
+
+#: generated
+msgid "PRIVATE_KEY"
+msgstr "PRIVATE_KEY"
+
+#: generated
+msgid "Final Order Status"
+msgstr "Estado Final de la Orden"
+
+#: generated
+msgid "Select the order status to apply when accepting and confirming the order payment"
+msgstr "Seleccione el estado del pedido a aplicar cuando acepte y confirme el pago del pedido"
+
+#: generated
+msgid "ePayco Processing Payment"
+msgstr "ePayco Procesando Pago"
+
+#: generated
+msgid "ePayco Payment Completed"
+msgstr "Pago de ePayco Completado"
+
+#: generated
+msgid "Processing"
+msgstr "Procesando"
+
+#: generated
+msgid "Completed"
+msgstr "Completado"
+
+#: generated
+msgid "Automatically update the status of subscriptions"
+msgstr "Actualizar automáticamente el estado de las suscripciones"
+
+#: generated
+msgid "30 seconds"
+msgstr "30 segundos"
+
+#: generated
+msgid "Update subscription status every 30 seconds"
+msgstr "Actualizar el estado de la suscripción cada 30 segundos"
+
+#: generated
+msgid "60 seconds"
+msgstr "60 segundos"
+
+#: generated
+msgid "Update subscription status every 60 seconds"
+msgstr "Actualizar el estado de la suscripción cada 60 segundos"
+
+#: generated
+msgid "Pay with ePayco"
+msgstr "Pagar con ePayco"
+
+#: generated
+msgid "Subscription payments with ePayco"
+msgstr "Pagos de suscripción con ePayco"
+
+#: generated
+msgid "ePayco Subscriptions"
+msgstr "Suscripciones ePayco"
+
+#: generated
+msgid "Create subscription products for your customers"
+msgstr "Crea productos de suscripción para tus clientes"
+
+#: generated
+msgid "With this module, you can safely accept subscription payments through the ePayco platform."
+msgstr "Con este módulo, puede aceptar de forma segura pagos de suscripción a través de la plataforma ePayco."
+
+#: generated
+msgid "When a customer selects ePayco as the payment method, the order status will change to ePayco Pending Payment."
+msgstr "Cuando un cliente selecciona ePayco como método de pago, el estado del pedido cambiará a Pago Pendiente de ePayco."
+
+#: generated
+msgid "Once the payment is accepted or rejected, ePayco will automatically notify your store and the order status will be updated accordingly."
+msgstr "Una vez que el pago sea aceptado o rechazado, ePayco notificará automáticamente a su tienda y el estado del pedido se actualizará en consecuencia."
+
+#: generated
+msgid "Validate Keys"
+msgstr "Validar Claves"
+
+#: generated
+msgid "Validate"
+msgstr "Validar"
+
+#: generated
+msgid "Validation of PUBLIC_KEY and PRIVATE_KEY"
+msgstr "Validación de PUBLIC_KEY y PRIVATE_KEY"
+
+#: generated
+msgid "Invalid merchant keys"
+msgstr "Claves de comerciante inválidas"
+
+#: generated
+msgid "The Public Key and Private Key inserted"
+msgstr "La Clave Pública y Clave Privada insertadas"
+
+#: generated
+msgid "from the merchant are invalid."
+msgstr "del comerciante son inválidas."
+
+#: generated
+msgid "Check them in the integrations section"
+msgstr "Verificalas en la sección de integraciones"
+
+#: generated
+msgid "API Keys in your ePayco Dashboard."
+msgstr "Claves de API en su Panel de ePayco."
+
+#: generated
+msgid "Tipo de Identificación"
+msgstr "Tipo de Identificación"
+
+#: generated
+msgid "Seleccionar tipo de documento"
+msgstr "Seleccionar tipo de documento"
+
+#: generated
+msgid "Seleccione el tipo de documento"
+msgstr "Seleccione el tipo de documento"
+
+#: generated
+msgid "Número de documento"
+msgstr "Número de documento"
+
+#: generated
+msgid "Type of Identification Document"
+msgstr "Tipo de Documento de Identificación"
+
+#: generated
+msgid "Select document type"
+msgstr "Seleccionar tipo de documento"
+
+#: generated
+msgid "Select the type of document"
+msgstr "Seleccione el tipo de documento"
+
+#: generated
+msgid "Document Number"
+msgstr "Número de Documento"
+
+#: generated
+msgid "Citizenship ID Card"
+msgstr "Cédula de Ciudadanía"
+
+#: generated
+msgid "Foreigner ID Card"
+msgstr "Cédula de Extranjería"
+
+#: generated
+msgid "Passport"
+msgstr "Pasaporte"
+
+#: generated
+msgid "Social Security Number"
+msgstr "Número de Seguridad Social"
+
+#: generated
+msgid "Driver License"
+msgstr "Licencia de Conducción"
+
+#: generated
+msgid "Tax Identification Number (NIT)"
+msgstr "Número de Identificación Tributaria (NIT)"
+
+#: generated
+msgid "Identity Card"
+msgstr "Tarjeta de Identidad"
+
+#: generated
+msgid "National Identification Document"
+msgstr "Documento Nacional de Identificación"
+
+#: generated
+msgid "Cédula de ciudadanía"
+msgstr "Cédula de ciudadanía"
+
+#: generated
+msgid "Cédula de extranjería"
+msgstr "Cédula de extranjería"
+
+#: generated
+msgid "Pasaporte"
+msgstr "Pasaporte"
+
+#: generated
+msgid "Número de seguridad social"
+msgstr "Número de seguridad social"
+
+#: generated
+msgid "Licencia de conducción"
+msgstr "Licencia de conducción"
+
+#: generated
+msgid "Número de identificación tributaria (NIT)"
+msgstr "Número de identificación tributaria (NIT)"
+
+#: generated
+msgid "(NIT) Número de identificación tributaria"
+msgstr "(NIT) Número de identificación tributaria"
+
+#: generated
+msgid "Tarjeta de identidad"
+msgstr "Tarjeta de identidad"
+
+#: generated
+msgid "Documento nacional de identificación"
+msgstr "Documento nacional de identificación"
+
+#: generated
+msgid "Identification Document"
+msgstr "Documento de Identificación"
+

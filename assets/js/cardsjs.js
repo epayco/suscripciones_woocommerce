@@ -1,4 +1,6 @@
+
 function CardJs2(elem) {
+  
     (this.elem = jQuery(elem)),
         (this.captureName = this.elem.data("capture-name") ? this.elem.data("capture-name") : !1),
         (this.iconColour = this.elem.data("icon-colour") ? this.elem.data("icon-colour") : !1),
