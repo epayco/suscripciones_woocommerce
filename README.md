@@ -60,6 +60,7 @@
 <img src="ImgTutorialWooCommerce/tuto-cron-13.png" width="400px"/>
 
 ## Versiones
+* [ePayco plugin WooCommerce v6.6.1](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v6.6.1)
 * [ePayco plugin WooCommerce v6.6.0](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v6.6.0)
 * [ePayco plugin WooCommerce v6.5.3](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v6.5.3)
 * [ePayco plugin WooCommerce v6.5.2](https://github.com/epayco/suscripciones_woocommerce/releases/tag/v6.5.2)
