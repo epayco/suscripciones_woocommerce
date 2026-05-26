@@ -59,7 +59,7 @@ class EpaycoSuscription extends AbstractGateway
         parent::__construct();
         $this->id        = self::ID;
         $this->icon      = 'https://multimedia.epayco.co/plugins-sdks/PaymentsCreditCards.svg';
-        $this->title     = $this->epaycosuscription->storeConfig->getGatewayTitle($this, 'Paga con ePayco');
+        $this->title     = $this->epaycosuscription->storeConfig->getGatewayTitle($this, __('Pay with ePayco', 'epayco-subscriptions-for-woocommerce'));
         $this->init_form_fields();
         $this->payment_scripts($this->id);
         $this->supports = [
@@ -69,9 +69,9 @@ class EpaycoSuscription extends AbstractGateway
             'subscription_cancellation',
             'multiple_subscriptions'
         ];
-        $this->description        = 'Pagos de suscripciones con epayco';
-        $this->method_title       = 'ePayco Suscripciones';
-        $this->method_description = 'Crea productos de suscripciones para tus clientes';
+        $this->description        = __('Subscription payments with ePayco', 'epayco-subscriptions-for-woocommerce');
+        $this->method_title       = __('ePayco Subscriptions', 'epayco-subscriptions-for-woocommerce');
+        $this->method_description = __('Create subscription products for your customers', 'epayco-subscriptions-for-woocommerce');
 
         $this->epaycosuscription->hooks->gateway->registerUpdateOptions($this);
         $this->epaycosuscription->hooks->gateway->registerGatewayTitle($this);
@@ -85,9 +85,7 @@ class EpaycoSuscription extends AbstractGateway
         $this->epaycosuscription->hooks->endpoints->registerApiEndpoint(self::WEBHOOK_API_NAME_VALIDATION, [$this, 'validate_ePaycoSubscription_request']);
         $this->epaycosuscription->hooks->gateway->getAdminCredentiaslFields($this, 'ePaycoSubscription_credentials_validation');
 
-        $lang = \get_locale();
-        $lang = explode('_', $lang);
-        $lang = $lang[0];
+        // Language initialization is now handled by getLanguage() method
         // $this->cron_data = $this->get_option('cron_data');
         $this->custIdCliente =  $this->get_option('custIdCliente');
 
@@ -100,7 +98,7 @@ class EpaycoSuscription extends AbstractGateway
             [
                 "apiKey" => $this->get_option('apiKey'),
                 "privateKey" => $this->get_option('privateKey'),
-                "lenguage" => strtoupper($lang),
+                "lenguage" => strtoupper($this->getLanguage()),
                 "test" => (bool)$this->get_option('environment')
             ]
         );
@@ -109,6 +107,8 @@ class EpaycoSuscription extends AbstractGateway
         } else {
             $this->logger = null;
         }
+        
+      
     }
 
     public function install()
@@ -155,106 +155,109 @@ class EpaycoSuscription extends AbstractGateway
 
         $this->form_fields = array(
             'enabled' => array(
-                'title' => __('Habilitar/Deshabilitar', 'epayco-subscriptions-for-woocommerce'),
+                'title' => __('Enable/Disable', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('Habilitar ePayco suscripción', 'epayco-subscriptions-for-woocommerce'),
+                'label' => __('Enable ePayco subscription', 'epayco-subscriptions-for-woocommerce'),
                 'default' => 'yes'
             ),
             'epayco_title' => array(
-                'title' => __('Titulo', 'epayco-subscriptions-for-woocommerce'),
+                'title' => __('Title', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Corresponde al titulo que los usuarios visualizan el chekout', 'epayco-subscriptions-for-woocommerce'),
-                'default' => __('Titulo', 'epayco-subscriptions-for-woocommerce'),
-                'desc_tip' => true,
+                'description' => __('This is the title that users see at checkout', 'epayco-subscriptions-for-woocommerce'),
+                'default' => __('Title', 'epayco-subscriptions-for-woocommerce'),
+                'desc_tip' => false,
             ),
             'shop_name' => array(
-                'title' => __('Nombre del comercio', 'epayco-subscriptions-for-woocommerce'),
+                'title' => __('Store Name', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Corresponde al nombre de la tienda que los usuarios visualizan en el checkout', 'epayco-subscriptions-for-woocommerce'),
-                'default' => __('Tienda de pruebas', 'epayco-subscriptions-for-woocommerce'),
-                'desc_tip' => true,
+                'description' => __('This is the store name that users see at checkout', 'epayco-subscriptions-for-woocommerce'),
+                'default' => __('Test Store', 'epayco-subscriptions-for-woocommerce'),
+                'desc_tip' => false,
             ),
             /*'shop_icon' => array(
-                'title' => __('Icono del comercio', 'epayco-subscriptions-for-woocommerce'),
+                'title' => __('Store Icon', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('Corresponde al icono de la tienda que los usuarios visualizan en el checkout', 'epayco-subscriptions-for-woocommerce'),
+                'description' => __('This is the store icon that users see at checkout', 'epayco-subscriptions-for-woocommerce'),
                 'default' => __('', 'epayco-subscriptions-for-woocommerce'),
                 'desc_tip' => true,
             ),*/
             'description' => array(
-                'title' => __('Descripción', 'epayco-subscriptions-for-woocommerce'),
+                'title' => __('Description', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'textarea',
-                'description' => __('Corresponde al descripción de la tienda que los usuarios visualizan en el checkout', 'epayco-subscriptions-for-woocommerce'),
-                'default' => __('Detalle de la suscripción ePayco', 'epayco-subscriptions-for-woocommerce'),
-                'desc_tip' => true,
+                'description' => __('This is the description of the store that users see at checkout', 'epayco-subscriptions-for-woocommerce'),
+                'default' => __('ePayco subscription details', 'epayco-subscriptions-for-woocommerce'),
+                'desc_tip' => false,
             ),
             'environment' => array(
-                'title' => __('Modo de pruebas', 'epayco-subscriptions-for-woocommerce'),
+                'title' => __('Test Mode', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'select',
                 'class' => 'wc-enhanced-select',
-                'description' => __('mode prueba/producción', 'epayco-subscriptions-for-woocommerce'),
-                'desc_tip' => true,
+                'description' => __('Test/Production mode', 'epayco-subscriptions-for-woocommerce'),
+                'desc_tip' => false,
                 'default' => true,
                 'options' => array(
-                    false => __('Produción', 'epayco-subscriptions-for-woocommerce'),
-                    true => __('Pruebas', 'epayco-subscriptions-for-woocommerce'),
+                    false => __('Production', 'epayco-subscriptions-for-woocommerce'),
+                    true => __('Test', 'epayco-subscriptions-for-woocommerce'),
                 ),
             ),
             'custIdCliente' => array(
                 'title' => __('P_CUST_ID_CLIENTE', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API', 'epayco-subscriptions-for-woocommerce'),
+                'description' => __('You can find it in the ePayco panel, integrations, API Keys', 'epayco-subscriptions-for-woocommerce'),
                 'default' => '',
-                'desc_tip' => true,
+                'desc_tip' => false,
                 'placeholder' => ''
             ),
             'pKey' => array(
                 'title' => __('P_KEY', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API', 'epayco-subscriptions-for-woocommerce'),
+                'description' => __('You can find it in the ePayco panel, integrations, API Keys', 'epayco-subscriptions-for-woocommerce'),
                 'default' => '',
-                'desc_tip' => true,
+                'desc_tip' => false,
                 'placeholder' => ''
             ),
             'apiKey' => array(
                 'title' => __('PUBLIC_KEY', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API', 'epayco-subscriptions-for-woocommerce'),
+                'description' => __('You can find it in the ePayco panel, integrations, API Keys', 'epayco-subscriptions-for-woocommerce'),
                 'default' => '',
-                'desc_tip' => true,
+                'desc_tip' => false,
                 'placeholder' => ''
             ),
             'privateKey' => array(
                 'title' => __('PRIVATE_KEY', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'text',
-                'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API', 'epayco-subscriptions-for-woocommerce'),
+                'description' => __('You can find it in the ePayco panel, integrations, API Keys', 'epayco-subscriptions-for-woocommerce'),
                 'default' => '',
-                'desc_tip' => true,
+                'desc_tip' => false,
                 'placeholder' => ''
             ),
             'epayco_endorder_state' => array(
-                'title' => __('Estado final del pedido', 'epayco-subscriptions-for-woocommerce'),
+                'title' => __('Final Order Status', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'select',
                 'css' => 'line-height: inherit',
-                'description' => __('Seleccione el estado del pedido que se aplicaría a la hora de aceptar y confirmar el pago de la orden', 'epayco-subscriptions-for-woocommerce'),
+                'description' => __('Select the order status to apply when accepting and confirming the order payment', 'epayco-subscriptions-for-woocommerce'),
                 'options' => array(
-                    'epayco-processing' => "ePayco Procesando Pago",
-                    "epayco-completed" => "ePayco Pago Completado",
-                    'processing' => "Procesando",
-                    "completed" => "Completado"
+                    'epayco-processing' => __('ePayco Processing Payment', 'epayco-subscriptions-for-woocommerce'),
+                    "epayco-completed" => __('ePayco Payment Completed', 'epayco-subscriptions-for-woocommerce'),
+                    'processing' => __('Processing', 'epayco-subscriptions-for-woocommerce'),
+                    "completed" => __('Completed', 'epayco-subscriptions-for-woocommerce')
                 ),
             ),
 
             'cron_interval_30' => array(
-                'title' => __('Actualiza automáticamente el estado de las suscripciones', 'epayco-subscriptions-for-woocommerce'),
+                'title' => __('Automatically update the status of subscriptions', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('30 segundos', 'epayco-subscriptions-for-woocommerce'),
+                'label' => __('30 seconds', 'epayco-subscriptions-for-woocommerce'),
+                'description' => __('Update subscription status every 30 seconds', 'epayco-subscriptions-for-woocommerce'),
+                'desc_tip' => false,
                 'default' => 'yes',
             ),
             'cron_interval_60' => array(
-                'title' => __('', 'epayco-subscriptions-for-woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('60 segundos', 'epayco-subscriptions-for-woocommerce'),
+                'label' => __('60 seconds', 'epayco-subscriptions-for-woocommerce'),
+                'description' => __('Update subscription status every 60 seconds', 'epayco-subscriptions-for-woocommerce'),
+                'desc_tip' => false,
                 'default' => 'no',
             ),
 
@@ -279,13 +282,23 @@ class EpaycoSuscription extends AbstractGateway
         <div id="path_validate" hidden>
             <?php esc_html_e($validation_url, 'text_domain'); ?>
         </div>
-        <img src="<?php echo EPAYCO_PLUGIN_SUSCRIPCIONES_URL . '/assets/images/iconoepayco2025.png' ?>">
+
+        <?php
+        $lang = $this->getLanguage(); // 'en' or 'es' only
+        $logo_url = ($lang === 'en') 
+            ? EPAYCO_PLUGIN_SUSCRIPCIONES_URL . '/assets/images/logo-en-.png'
+            : EPAYCO_PLUGIN_SUSCRIPCIONES_URL . '/assets/images/iconoepayco2025.png';
+        ?>
+
+        <div style="margin-bottom: 20px; text-align: left;">
+            <img src="<?php echo esc_url($logo_url); ?>" alt="ePayco Logo" style="max-width: 290px;">
+        </div>
+
         <div style="color: #31708f; background-color: #d9edf7; border-color: #bce8f1; padding: 10px; border-radius: 5px;">
-            <h2><?php esc_html_e('ePayco Suscripciónes', 'epayco-subscriptions-for-woocommerce'); ?></h2><br>
-            Con este módulo, podrás aceptar pagos de suscripciones de forma segura a través de la plataforma ePayco.
-            <br>Cuando un cliente selecciona ePayco como método de pago, el estado del pedido cambiará a <strong>“ePayco Esperando Pago”</strong>.
-            <br>Una vez que el pago sea aceptado o rechazado, ePayco notificará automáticamente a tu tienda y el estado del pedido se <br>
-            actualizará en consecuencia.
+            <h2><?php esc_html_e('ePayco Subscriptions', 'epayco-subscriptions-for-woocommerce'); ?></h2><br>
+            <?php esc_html_e('With this module, you can safely accept subscription payments through the ePayco platform.', 'epayco-subscriptions-for-woocommerce'); ?>
+            <br><?php esc_html_e('When a customer selects ePayco as the payment method, the order status will change to ePayco Pending Payment.', 'epayco-subscriptions-for-woocommerce'); ?>
+            <br><?php esc_html_e('Once the payment is accepted or rejected, ePayco will automatically notify your store and the order status will be updated accordingly.', 'epayco-subscriptions-for-woocommerce'); ?>
             <br><br>
         </div>
         <table class="form-table">
@@ -295,16 +308,16 @@ class EpaycoSuscription extends AbstractGateway
                 ?>
                 <tr valign="top">
                     <th scope="row" class="titledesc">
-                        <label for="woocommerce_epayco_enabled"><?php esc_html_e('Validar llaves', 'epayco-subscriptions-for-woocommerce'); ?></label>
+                        <label for="woocommerce_epayco_enabled"><?php esc_html_e('Validate Keys', 'epayco-subscriptions-for-woocommerce'); ?></label>
                         <span hidden id="public_key">0</span>
                         <span hidden id="private_key">0</span>
                     <td class="forminp">
                         <form method="post" action="#">
                             <label for="woocommerce_epayco_enabled">
                             </label>
-                            <input type="button" id="validar" class="button-primary woocommerce-save-button validar" value="Validar">
+                            <input type="button" id="validar" class="button-primary woocommerce-save-button validar" value="<?php esc_html_e('Validate', 'epayco-subscriptions-for-woocommerce'); ?>">
                             <p class="description">
-                                <?php esc_html_e('Validación de llaves PUBLIC_KEY y PRIVATE_KEY', 'epayco-subscriptions-for-woocommerce'); ?>
+                                <?php esc_html_e('Validation of PUBLIC_KEY and PRIVATE_KEY', 'epayco-subscriptions-for-woocommerce'); ?>
                             </p>
                         </form>
                         <br>
@@ -314,8 +327,8 @@ class EpaycoSuscription extends AbstractGateway
                                 <center>
                                     <img id="epaycoModalImg" src="<?php echo $path . 'logo_warning.png' ?>">
                                 </center>
-                                <p id="epaycoCredentialTittle"><strong><?php esc_html_e('Llaves de comercio inválidas', 'epayco-subscriptions-for-woocommerce'); ?></strong> </p>
-                                <p id="epaycoCredentialDescription"><?php esc_html_e('Las llaves Public Key, Private Key insertadas', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('del comercio son inválidas.', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('Consúltelas en el apartado de integraciones', 'epayco-subscriptions-for-woocommerce'); ?> <br><?php esc_html_e('Llaves API en su Dashboard ePayco.', 'epayco-subscriptions-for-woocommerce'); ?>,</p>
+                                <p id="epaycoCredentialTittle"><strong><?php esc_html_e('Invalid merchant keys', 'epayco-subscriptions-for-woocommerce'); ?></strong> </p>
+                                <p id="epaycoCredentialDescription"><?php esc_html_e('The Public Key and Private Key inserted', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('from the merchant are invalid.', 'epayco-subscriptions-for-woocommerce'); ?><br><?php esc_html_e('Check them in the integrations section', 'epayco-subscriptions-for-woocommerce'); ?> <br><?php esc_html_e('API Keys in your ePayco Dashboard.', 'epayco-subscriptions-for-woocommerce'); ?>,</p>
                             </div>
                             <span class="loader"></span>
                         </div>
@@ -542,10 +555,10 @@ class EpaycoSuscription extends AbstractGateway
         } else {
             $product_name = $descripcion;
         }
-        if (strlen($product_name) < 20) {
+        if (strlen($product_name) < 60) {
             $product_name_ = $descripcion;
         } else {
-            $resultado = substr($product_name, 0, 19);
+            $resultado = substr($product_name, 0, 60);
             $product_name_ = $resultado . "...";
         }
 
@@ -567,12 +580,8 @@ class EpaycoSuscription extends AbstractGateway
         $epaycocheckout =  plugins_url('assets/js/epaycocheckout.js', EPS_PLUGIN_FILE);
 
 
-        $lang = get_locale();
-        $lang = explode('_', $lang);
-        $lang = $lang[0];
+        $lang = $this->getLanguage(); // 'en' or 'es' only
 
-        // $doc_number = get_post_meta($order->get_id(), '_epayco_billing_dni', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_dni', true) : ($order->get_meta('_epayco_billing_dni') !== "" ? $order->get_meta('_epayco_billing_dni') : $order->get_meta('_billing_custom_field'));
-        // $type_document = get_post_meta($order->get_id(), '_epayco_billing_type_document', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_type_document', true) : ($order->get_meta('_epayco_billing_type_document') !== "" ? $order->get_meta('_epayco_billing_type_document') : "Documento no encontrado");
       
         $suscriptionDescription = (
             function_exists('mb_strlen')
@@ -657,7 +666,42 @@ class EpaycoSuscription extends AbstractGateway
             // $subscription = wcs_get_subscription($subscription_id);
             $token = isset($params['epaycoToken']) ? sanitize_text_field(wp_unslash($params['epaycoToken'])) : '';
             
-            $token = $this->createToken($token);
+            // Si no hay epaycoToken pero SÍ hay datos crudos de tarjeta, procesar directamente
+            if (empty($token) && isset($params['card-number2'])) {
+                error_log("DEBUG: Procesando tarjeta directamente desde POST mobile");
+                $cardData = [
+                    'number' => sanitize_text_field(wp_unslash($params['card-number2'])),
+                    'exp_month' => sanitize_text_field(wp_unslash($params['month'] ?? '')),
+                    'exp_year' => sanitize_text_field(wp_unslash($params['year'] ?? '')),
+                    'cvc' => sanitize_text_field(wp_unslash($params['cvc'] ?? ''))
+                ];
+                error_log("DEBUG: Card data: " . json_encode([
+                    'number' => substr($cardData['number'], -4),
+                    'month' => $cardData['exp_month'],
+                    'year' => $cardData['exp_year'],
+                    'cvc' => str_repeat('*', strlen($cardData['cvc']))
+                ]));
+                
+                $tokenBody = [
+                    "card[number]" => preg_replace('/\s+/', '', $cardData['number']),
+                    "card[exp_year]" => str_pad($cardData['exp_year'], 4, '20', STR_PAD_LEFT),
+                    "card[exp_month]" => str_pad($cardData['exp_month'], 2, '0', STR_PAD_LEFT),
+                    "card[cvc]" => $cardData['cvc'],
+                    "hasCvv" => true
+                ];
+                error_log("DEBUG: TokenBody: " . json_encode($tokenBody));
+                
+                try {
+                    $token = $this->epaycoSdk->token->create($tokenBody);
+                    error_log("DEBUG: Token creado: " . json_encode($token));
+                } catch (Exception $e) {
+                    error_log("DEBUG: Error creando token: " . $e->getMessage());
+                    $token = null;
+                }
+            } else {
+                $token = $this->createToken($token);
+            }
+            
             $token = is_string($token) ? json_decode($token) : $token;
             if(!$token || !$token->status){
                 $error = $this->errorMessages($token);
@@ -1183,7 +1227,8 @@ class EpaycoSuscription extends AbstractGateway
                         "phone" => $customer['phone'],
                         "cell_phone" => $customer['phone'],
                         "ip" => $this->getIP(),
-                        "idSubscription" => $epayco_subscription_id
+                        "idSubscription" => $epayco_subscription_id,
+                        "extras_epayco"=>["extra5"=>"P64"],
                     ]
                 );
             } catch (Exception $exception) {
@@ -1315,6 +1360,8 @@ class EpaycoSuscription extends AbstractGateway
         if ($subscription) {
             $doc_number = get_post_meta($order->get_id(), '_epayco_billing_dni', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_dni', true)  : ($order->get_meta('_epayco_billing_dni') !== "" ? $order->get_meta('_epayco_billing_dni') :  $order->get_meta('_billing_custom_field'));
             $type_document = get_post_meta($order->get_id(), '_epayco_billing_type_document', true) != null ? get_post_meta($order->get_id(), '_epayco_billing_type_document', true) : ($order->get_meta('_epayco_billing_type_document') !== "" ? $order->get_meta('_epayco_billing_type_document')  : "Documento no encontrado");
+
+          
 
             // Mejorar captura de nombre y apellido
             $fullName = trim((string) ($customerName ?? ''));
@@ -1539,13 +1586,13 @@ class EpaycoSuscription extends AbstractGateway
                 $isTestMode = get_option('epayco_order_status') == "yes" ? "true" : "false";
 
                 if ($isTestMode == "true") {
-                    $message = 'Pago pendiente de aprobación Prueba';
+                    $message = __('Pending payment approval test', 'epayco-subscriptions-for-woocommerce');
                     $orderStatus = "epayco_on_hold";
                     if ($current_state != "epayco_on_hold" || $current_state == "pending") {
                         $this->restore_order_stock($order->id, '+');
                     }
                 } else {
-                    $message = 'Pago pendiente de aprobación';
+                    $message = __('Pending payment approval', 'epayco-subscriptions-for-woocommerce');
                     $orderStatus = "epayco-on-hold";
                     if ($current_state != "epayco-on-hold" || $current_state == "pending") {
                         // $this->restore_order_stock($order->id, '+');
@@ -1578,7 +1625,7 @@ class EpaycoSuscription extends AbstractGateway
                 }
                 if (isset($sub->data->cod_respuesta) && $is_payment_approved) {
                     if ($isTestMode == "true") {
-                        $message = 'Pago exitoso Prueba';
+                        $message = __('Successful payment test', 'epayco-subscriptions-for-woocommerce');
                         switch ($this->get_option('epayco_endorder_state')) {
                             case 'epayco-processing': {
                                     $orderStatus = 'epayco_processing';
@@ -1602,7 +1649,7 @@ class EpaycoSuscription extends AbstractGateway
                                 break;
                         }
                     } else {
-                        $message = 'Pago exitoso';
+                        $message = __('Successful payment', 'epayco-subscriptions-for-woocommerce');
                         $orderStatus = $this->get_option('epayco_endorder_state');
                         
                         // Fallback si la configuración no retorna nada
@@ -1654,7 +1701,7 @@ class EpaycoSuscription extends AbstractGateway
                  
                     
                     if ($isTestMode == "true") {
-                        $message = 'Pago exitoso Prueba';
+                        $message = __('Successful payment test', 'epayco-subscriptions-for-woocommerce');
                         switch ($this->get_option('epayco_endorder_state')) {
                             case 'epayco-processing': {
                                     $orderStatus = 'epayco_processing';
@@ -1678,7 +1725,7 @@ class EpaycoSuscription extends AbstractGateway
                                 break;
                         }
                     } else {
-                        $message = 'Pago exitoso';
+                        $message = __('Successful payment', 'epayco-subscriptions-for-woocommerce');
                         $orderStatus = $this->get_option('epayco_endorder_state');
                         
                         // Fallback si la configuración no retorna nada
@@ -1721,13 +1768,13 @@ class EpaycoSuscription extends AbstractGateway
 
                 } elseif (isset($sub->data->cod_respuesta) && (intval($sub->data->cod_respuesta) === 3 || $sub->data->cod_respuesta === '3')) {
                     if ($isTestMode == "true") {
-                        $message = 'Pago pendiente de aprobación Prueba';
+                        $message = __('Pending payment approval test', 'epayco-subscriptions-for-woocommerce');
                         $orderStatus = "epayco_on_hold";
                         if ($current_state != "epayco_on_hold") {
                             $this->restore_order_stock($order->get_id(), "+");
                         }
                     } else {
-                        $message = 'Pago pendiente de aprobación';
+                        $message = __('Pending payment approval', 'epayco-subscriptions-for-woocommerce');
                         $orderStatus = "epayco-on-hold";
                         if ($current_state != "epayco_on_hold") {
                             $this->restore_order_stock($order->get_id(), "+");
@@ -1868,13 +1915,21 @@ class EpaycoSuscription extends AbstractGateway
                 $active_plan = isset($sub->status) ? $sub->status : false;
                 if ($validation || $active_plan) {
                     $messageStatus = $this->handleStatusSubscriptions($subs, $subscriptions, $customerData, $order, $customerId, $suscriptionId, $planId);
+                    
+                    // Obtener ref_payco del response
+                    $ref_payco = isset($sub->data->ref_payco) ? $sub->data->ref_payco : (isset($messageStatus['ref_payco'][0]) ? $messageStatus['ref_payco'][0] : '');
+                    
+                    // Construir URL con ref_payco
+                    $order_url = $order->get_checkout_order_received_url();
+                    $order_url = add_query_arg('ref_payco', urlencode($ref_payco), $order_url);
+                    
                     $response_status = [
                             'ref_payco' => $messageStatus['ref_payco'][0],
                             'orderStatus' => $messageStatus['orderStatus'][0],
                             'success' => $messageStatus['success'],
                             'message' => $messageStatus['message'][0],
                             'date' => $messageStatus['date'][0],
-                            'url' => $order->get_checkout_order_received_url()
+                            'url' => $order_url
                         ];
                 } else {
                     error_log("process_payment_epayco: " . json_encode($sub));
@@ -2051,12 +2106,12 @@ class EpaycoSuscription extends AbstractGateway
                 ) {
                     $subscription->payment_failed();
                     $order->update_status('epayco-cancelled');
-                    $order->add_order_note('Pago fallido');
+                    $order->add_order_note(__('Payment failed', 'epayco-subscriptions-for-woocommerce'));
                 } else {
-                    $message = 'Pago rechazado';
+                    $message = __('Payment rejected', 'epayco-subscriptions-for-woocommerce');
                     $messageClass = 'woocommerce-error';
                     $order->update_status('epayco-cancelled');
-                    $order->add_order_note('Pago fallido');
+                    $order->add_order_note(__('Payment failed', 'epayco-subscriptions-for-woocommerce'));
                     $subscription->payment_failed();
                 }
             }
@@ -2114,7 +2169,7 @@ class EpaycoSuscription extends AbstractGateway
             foreach ($subscriptions as $subscription) {
                 if ($x_cod_transaction_state == 1) {
                     if ($isTestMode == "true") {
-                        $message = 'Pago exitoso Prueba';
+                        $message = __('Successful payment test', 'epayco-subscriptions-for-woocommerce');
                         switch ($this->get_option('epayco_endorder_state')) {
                             case 'epayco-processing': {
                                     $orderStatus = 'epayco_processing';
@@ -2138,7 +2193,7 @@ class EpaycoSuscription extends AbstractGateway
                             // $this->restore_order_stock($order->get_id(), "+");
                         }
                     } else {
-                        $message = 'Pago exitoso';
+                        $message = __('Successful payment', 'epayco-subscriptions-for-woocommerce');
                         $orderStatus = $this->get_option('epayco_endorder_state');
                         if (!($current_state == "epayco-on-hold")) {
                             // $this->restore_order_stock($order->get_id(), "+");
@@ -2170,7 +2225,7 @@ class EpaycoSuscription extends AbstractGateway
                     $x_cod_transaction_state == 11
                 ) {
                     if ($isTestMode == "true") {
-                        $message = 'Pago rechazado Prueba: ' . $x_ref_payco;
+                        $message = sprintf(__('Payment rejected test: %s', 'epayco-subscriptions-for-woocommerce'), $x_ref_payco);
                         if (
                             $current_state == "epayco_failed" ||
                             $current_state == "epayco_cancelled" ||
@@ -2196,7 +2251,7 @@ class EpaycoSuscription extends AbstractGateway
                         }
                     } else {
                         $counter = 3;
-                        $message = 'Pago rechazado: ' . $x_ref_payco;
+                        $message = sprintf(__('Payment rejected: %s', 'epayco-subscriptions-for-woocommerce'), $x_ref_payco);
                         if (
                             $current_state == "epayco-failed" ||
                             $current_state == "epayco-cancelled" ||
@@ -2236,13 +2291,13 @@ class EpaycoSuscription extends AbstractGateway
 
                 if ($x_cod_transaction_state == 3) {
                     if ($isTestMode == "true") {
-                        $message = 'Pago pendiente de aprobación Prueba';
+                        $message = __('Pending payment approval test', 'epayco-subscriptions-for-woocommerce');
                         $orderStatus = "epayco_on_hold";
                         if (!($current_state == "epayco_on_hold")) {
                             $this->restore_order_stock($order->get_id(), "+");
                         }
                     } else {
-                        $message = 'Pago pendiente de aprobación';
+                        $message = __('Pending payment approval', 'epayco-subscriptions-for-woocommerce');
                         $orderStatus = "epayco-on-hold";
                         if (!($current_state == "epayco-on-hold")) {
                             $this->restore_order_stock($order->get_id(), "+");
@@ -2449,22 +2504,19 @@ class EpaycoSuscription extends AbstractGateway
             return isset($request[$key]) ? \sanitize_text_field(\wp_unslash($request[$key])) : null;
         };
 
-        // Determine ePayco reference from possible request keys
-        $referencePayco = $get('x_ref_payco') ?: $get('ref_payco') ?: $get('referencePayco') ?: $get('refPayco');
+        // Capturar ref_payco desde la URL
+        $referencePayco = $get('ref_payco') ?: $get('x_ref_payco') ?: $get('referencePayco') ?: $get('refPayco');
 
-        // Language and flags
-        $lang = \get_locale();
-        if (is_string($lang) && strpos($lang, '_') !== false) {
-            $parts = explode('_', $lang);
-            $lang = $parts[0];
-        }
+        // Language (en or es only)
+        $lang = $this->getLanguage();
         $sendEmail = true;
+
+       
 
         $this->epaycosuscription->hooks->template->getWoocommerceTemplate(
             'public/checkout/order-received.php',
             [
                 'referencePayco' => $referencePayco,
-                // 'data' => $data,
                 'lang' => $lang,
                 'sendEmail' => $sendEmail,
             ]
@@ -2512,5 +2564,28 @@ class EpaycoSuscription extends AbstractGateway
                 return false;
             }
         }
+    }
+
+    /**
+     * Get WordPress language (normalized to 'en' or 'es' only)
+     * 
+     * @return string 'en' or 'es'
+     */
+    private function getLanguage(): string
+    {
+        $locale = \get_locale();
+        
+        // Extract language code (e.g., 'es' from 'es_ES')
+        if (is_string($locale) && strpos($locale, '_') !== false) {
+            $parts = explode('_', $locale);
+            $locale = $parts[0];
+        }
+        
+        // Only allow 'en' or 'es', default to 'en' for other languages
+        if ($locale === 'es') {
+            return 'es';
+        }
+        
+        return 'en'; // Default to English for any other language
     }
 }

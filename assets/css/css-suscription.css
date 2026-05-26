@@ -260,7 +260,7 @@ ease;
   height: 688px;
   border-radius: 5px;
   background: white;
-  z-index: 9999;
+  z-index: 9999 !important;
 }
 
 .loader,
@@ -2683,7 +2683,7 @@ input[type="checkbox"]:checked + label:before {
 #web-checkout-content .estilosContryName {
   text-align: left !important;
   font-size: 15px !important;
-  margin-top: 40px !important;
+  margin-top: 50px !important;
   margin-left: 50px !important;
   padding: unset !important;
 }

@@ -35,29 +35,27 @@ a:link {
 }
 
 .footer-modal {
-  padding: 0;
-  font-size: 12px;
-  margin-top: 8px;
-  height: 30px;
-  color: white;
-  text-align: center;
-  line-height: 30px;
+  width: 100%;
   display: flex;
-  flex-flow: row nowrap;
-  justify-content: space-between;
-  align-items: center;
-  flex-wrap: wrap;
-  align-content: flex-start;
+  justify-content: center; /* centra horizontal */
+  align-items: center;     /* centra vertical */
+  text-align: center;
+  gap: 10px;
+
+  margin: 0 auto !important;
+  padding: 0;
+  height: auto;
+
+  font-size: 12px;
+  color: white;
 }
 
-
 .footer-modal p {
-  vertical-align: middle;
-  margin: 0.5em 30% 15px;
-  flex: 0 0 auto;
+  margin: 0;
   display: flex;
   align-items: center;
   justify-content: center;
+  margin-top: 30px;
 }
 
 .footer-modal p img {
@@ -278,7 +276,7 @@ a:link {
 }
 
 #web-checkout-content .select-pais {
-  width: 84%;
+  width: 100%;
   float: left;
   border-left: 1px solid #e0e0e0;
   border-top: 1px solid #e0e0e0;
@@ -465,10 +463,11 @@ img.home-icons {
     padding: 1em !important;
     border-radius: 5px !important;
     background: #fff !important;
-    max-width: 350px !important;
-    width: 350px !important;
+/*     max-width: 350px !important; */
+/*     width: 350px !important; */
     margin-top: -20px !important;
     font-family: 'Poppins';
+	margin-bottom: 30px;
 }
 
 .loader,
@@ -611,7 +610,7 @@ img.home-icons {
   margin-top: -20px !important;
   /* font-family: "Open Sans", sans-serif !important; */
   /* top: -50px !important; */
-  margin-right: 14px !important;
+  margin-left: 90% !important;
 
 }
 
@@ -763,7 +762,7 @@ input[type="checkbox"]:checked+label:before {
   left: 50%;
   transform: translate(-50%, 0%) scale(0);
   transition: 200ms ease-in-out;
-  z-index: 2;
+  z-index: 99999 !important;
 }
 
 .centered.active {
@@ -826,7 +825,7 @@ input[type="checkbox"]:checked+label:before {
 }
 
 .onpage .cvv_style {
-  width: 47.5% !important;
+  width: 46.5% !important;
 }
 
 .onpage .cuotas {
@@ -879,7 +878,7 @@ input[type="checkbox"]:checked+label:before {
 #web-checkout-content .estilosContryName {
   text-align: left !important;
   font-size: 15px !important;
-  margin-top: 40px !important;
+  margin-top: 50px !important;
   margin-left: 50px !important;
   padding: unset !important;
 }

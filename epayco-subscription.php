@@ -87,7 +87,7 @@ function eps_disable_plugin(): void
 //add_action('admin_head', 'styling_admin_suscription_order_list');
 //add_action('woocommerce_checkout_update_order_meta', 'some_custom_checkout_field_update_order_meta');
 function epaycosubscription_woocommerce_addon_settings_link( $links ) {
-    array_push( $links, '<a href="admin.php?page=wc-settings&tab=checkout&section=woo-epaycosubscription">' . __( 'Configuración' ) . '</a>' );
+    array_push( $links, '<a href="admin.php?page=wc-settings&tab=checkout&section=woo-epaycosubscription">' . __( 'Settings', 'epayco-subscriptions-for-woocommerce' ) . '</a>' );
     return $links;
 }
 
@@ -461,18 +461,39 @@ add_action('woocommerce_set_additional_field_value', function ($key, $value, $gr
 
 
 add_filter('woocommerce_checkout_fields', function ($fields) {
+    // Detectar idioma de WordPress (solo 'en' o 'es')
+    $lang = get_locale();
+    if (is_string($lang) && strpos($lang, '_') !== false) {
+        $parts = explode('_', $lang);
+        $lang = $parts[0];
+    }
+    $is_english = ($lang === 'en'); // True for English, False for Spanish or any other language
 
-
-    $fields['billing']['epayco_billing_type_document'] = array(
-        'label'       => __('Tipo de documento de identidad', 'epayco-subscriptions-for-woocommerce'),
-        'placeholder' => __('Seleccionar tipo de documento', 'epayco-subscriptions-for-woocommerce'),
-        'required'    => true,
-        'clear'       => false,
-        'type'        => 'select',
-        'class'       => ['form-row-wide'],
-        'default'     => 'CC',
-        'options'     => array(
-            ''     => __('Seleccione el tipo de documento', 'epayco-subscriptions-for-woocommerce'),
+    if ($is_english) {
+        $label_type_doc = __('Type of Identification Document', 'epayco-subscriptions-for-woocommerce');
+        $placeholder_type_doc = __('Select document type', 'epayco-subscriptions-for-woocommerce');
+        $select_type_doc = __('Select the type of document', 'epayco-subscriptions-for-woocommerce');
+        $label_dni = __('Document Number', 'epayco-subscriptions-for-woocommerce');
+        
+        $doc_types = array(
+            ''     => $select_type_doc,
+            'CC'   => __('Citizenship ID Card', 'epayco-subscriptions-for-woocommerce'),
+            'CE'   => __('Foreigner ID Card', 'epayco-subscriptions-for-woocommerce'),
+            'PPN'  => __('Passport', 'epayco-subscriptions-for-woocommerce'),
+            'SSN'  => __('Social Security Number', 'epayco-subscriptions-for-woocommerce'),
+            'LIC'  => __('Driver License', 'epayco-subscriptions-for-woocommerce'),
+            'NIT'  => __('Tax Identification Number (NIT)', 'epayco-subscriptions-for-woocommerce'),
+            'TI'   => __('Identity Card', 'epayco-subscriptions-for-woocommerce'),
+            'DNI'  => __('National Identification Document', 'epayco-subscriptions-for-woocommerce')
+        );
+    } else {
+        $label_type_doc = __('Tipo de Identificación', 'epayco-subscriptions-for-woocommerce');
+        $placeholder_type_doc = __('Seleccionar tipo de documento', 'epayco-subscriptions-for-woocommerce');
+        $select_type_doc = __('Seleccione el tipo de documento', 'epayco-subscriptions-for-woocommerce');
+        $label_dni = __('Número de documento', 'epayco-subscriptions-for-woocommerce');
+        
+        $doc_types = array(
+            ''     => $select_type_doc,
             'CC'   => __('Cédula de ciudadanía', 'epayco-subscriptions-for-woocommerce'),
             'CE'   => __('Cédula de extranjería', 'epayco-subscriptions-for-woocommerce'),
             'PPN'  => __('Pasaporte', 'epayco-subscriptions-for-woocommerce'),
@@ -481,12 +502,22 @@ add_filter('woocommerce_checkout_fields', function ($fields) {
             'NIT'  => __('Número de identificación tributaria (NIT)', 'epayco-subscriptions-for-woocommerce'),
             'TI'   => __('Tarjeta de identidad', 'epayco-subscriptions-for-woocommerce'),
             'DNI'  => __('Documento nacional de identificación', 'epayco-subscriptions-for-woocommerce')
-        ),
+        );
+    }
+
+    $fields['billing']['epayco_billing_type_document'] = array(
+        'label'       => $label_type_doc,
+        'placeholder' => $placeholder_type_doc,
+        'required'    => true,
+        'clear'       => false,
+        'type'        => 'select',
+        'class'       => ['form-row-wide'],
+        'default'     => 'CC',
+        'options'     => $doc_types,
     );
 
-
     $fields['billing']['epayco_billing_dni'] = array(
-        'label'       => __('Número de documento', 'epayco-subscriptions-for-woocommerce'),
+        'label'       => $label_dni,
         'required'    => true,
         'class'       => ['form-row-wide'],
         'clear'       => false,
@@ -517,36 +548,64 @@ add_action('woocommerce_checkout_create_order', function ($order, $data) {
 //blocks checkout fields
 
 add_action('woocommerce_init', function () {
+    // Detectar idioma de WordPress (solo 'en' o 'es')
+    $lang = get_locale();
+    if (is_string($lang) && strpos($lang, '_') !== false) {
+        $parts = explode('_', $lang);
+        $lang = $parts[0];
+    }
+    $is_english = ($lang === 'en'); // True for English, False for Spanish or any other language
+
+    if ($is_english) {
+        $label_type_doc = __('Identification Document', 'epayco-subscriptions-for-woocommerce');
+        $placeholder_type_doc = __('Select document type', 'epayco-subscriptions-for-woocommerce');
+        $label_dni = __('Document Number', 'epayco-subscriptions-for-woocommerce');
+        
+        $doc_types_options = [
+            ['value' => 'CC', 'label' => __('Citizenship ID Card', 'epayco-subscriptions-for-woocommerce')],
+            ['value' => 'CE', 'label' => __('Foreigner ID Card', 'epayco-subscriptions-for-woocommerce')],
+            ['value' => 'PPN', 'label' => __('Passport', 'epayco-subscriptions-for-woocommerce')],
+            ['value' => 'SSN', 'label' => __('Social Security Number', 'epayco-subscriptions-for-woocommerce')],
+            ['value' => 'LIC', 'label' => __('Driver License', 'epayco-subscriptions-for-woocommerce')],
+            ['value' => 'NIT', 'label' => __('Tax Identification Number (NIT)', 'epayco-subscriptions-for-woocommerce')],
+            ['value' => 'TI', 'label' => __('Identity Card', 'epayco-subscriptions-for-woocommerce')],
+            ['value' => 'DNI', 'label' => __('National Identification Document', 'epayco-subscriptions-for-woocommerce')]
+        ];
+    } else {
+        $label_type_doc = __('Tipo de Identificación', 'epayco-subscriptions-for-woocommerce');
+        $placeholder_type_doc = __('Seleccionar tipo de documento', 'epayco-subscriptions-for-woocommerce');
+        $label_dni = __('Número de documento', 'epayco-subscriptions-for-woocommerce');
+        
+        $doc_types_options = [
+            ['value' => 'CC', 'label' => __('Cédula de ciudadanía', 'epayco-subscriptions-for-woocommerce')],
+            ['value' => 'CE', 'label' => __('Cédula de extranjería', 'epayco-subscriptions-for-woocommerce')],
+            ['value' => 'PPN', 'label' => __('Pasaporte', 'epayco-subscriptions-for-woocommerce')],
+            ['value' => 'SSN', 'label' => __('Número de seguridad social', 'epayco-subscriptions-for-woocommerce')],
+            ['value' => 'LIC', 'label' => __('Licencia de conducción', 'epayco-subscriptions-for-woocommerce')],
+            ['value' => 'NIT', 'label' => __('(NIT) Número de identificación tributaria', 'epayco-subscriptions-for-woocommerce')],
+            ['value' => 'TI', 'label' => __('Tarjeta de identidad', 'epayco-subscriptions-for-woocommerce')],
+            ['value' => 'DNI', 'label' => __('Documento nacional de identificación', 'epayco-subscriptions-for-woocommerce')]
+        ];
+    }
 
     woocommerce_register_additional_checkout_field(
         array(
             'id'          => 'epayco/billing_type_document',
-            'label'       => __('Tipo de documento', 'epayco-subscriptions-for-woocommerce'), // Corregido
-            'placeholder' => 'Seleccionar tipo de documento',
+            'label'       => $label_type_doc,
+            'placeholder' => $placeholder_type_doc,
             'location'    => 'contact',
             'type'        => 'select',
             'required'    => true,
             'class'       => ['custom-field-class'],
             'default'     => 'CC',
-            'options'     => [
-                // ['value' => 'Seleccionar', 'label' => __('Seleccione el tipo de documento', 'epayco-subscriptions-for-woocommerce')],
-                ['value' => 'CC', 'label' => __('Cédula de ciudadanía', 'epayco-subscriptions-for-woocommerce')], // Corregido
-                ['value' => 'CE', 'label' => __('Cédula de extranjería', 'epayco-subscriptions-for-woocommerce')], // Corregido
-                ['value' => 'PPN', 'label' => __('Pasaporte', 'epayco-subscriptions-for-woocommerce')], // Corregido
-                ['value' => 'SSN', 'label' => __('Número de seguridad social', 'epayco-subscriptions-for-woocommerce')], // Corregido
-                ['value' => 'LIC', 'label' => __('Licencia de conducción', 'epayco-subscriptions-for-woocommerce')], // Corregido
-                ['value' => 'NIT', 'label' => __('(NIT) Número de identificación tributaria', 'epayco-subscriptions-for-woocommerce')], // Corregido
-                ['value' => 'TI', 'label' => __('Tarjeta de identidad', 'epayco-subscriptions-for-woocommerce')], // Corregido
-                ['value' => 'DNI', 'label' => __('Documento nacional de identificación', 'epayco-subscriptions-for-woocommerce')] // Corregido
-            ]
+            'options'     => $doc_types_options
         )
     );
-
 
     woocommerce_register_additional_checkout_field(
         array(
             'id'          => 'epayco/billing_dni',
-            'label'       => __('Ingrese el número de documento', 'epayco-subscriptions-for-woocommerce'),
+            'label'       => $label_dni,
             'location'    => 'contact',
             'type'        => 'text',
             'required'    => true,
@@ -563,6 +622,7 @@ add_action('woocommerce_checkout_update_order_meta', function ($order_id) {
         update_post_meta($order_id, '_epayco_billing_dni', sanitize_text_field(wp_unslash($_POST['epayco_billing_dni'])));
     }
 });
+
 
 
 function epayco_enqueue_styles()
@@ -597,6 +657,8 @@ function enqueue_epayco_scripts()
 add_action('wp_enqueue_scripts', 'enqueue_epayco_scripts');
 
 
+
+
 // Enqueue the script properly in WordPress
 function enqueue_epayco_epaycojs_script()
 {
@@ -607,6 +669,29 @@ function enqueue_epayco_epaycojs_script()
     wp_enqueue_script('epayco-js', esc_url($epaycojs), array(), '1.0.0', true); // Set version to avoid caching issues
 }
 add_action('wp_enqueue_scripts', 'enqueue_epayco_epaycojs_script');
+
+// Enqueue ePayco checkout script for mobile and desktop
+function enqueue_epayco_checkout_script()
+{
+    if (!function_exists('wp_enqueue_script') || !function_exists('esc_url')) {
+        return; // Ensure WordPress functions are available
+    }
+    $epaycocheckout = plugins_url('assets/js/epaycocheckout.js', __FILE__);
+    wp_enqueue_script('epayco-checkout-js', esc_url($epaycocheckout), array('jquery'), '1.0.0', true);
+}
+add_action('wp_enqueue_scripts', 'enqueue_epayco_checkout_script');
+
+// Enqueue index.js for responsive design and modal management
+function enqueue_epayco_index_script()
+{
+    if (!function_exists('wp_enqueue_script') || !function_exists('esc_url')) {
+        return; // Ensure WordPress functions are available
+    }
+    $indexjs = plugins_url('assets/js/index.js', __FILE__);
+    wp_enqueue_script('epayco-index-js', esc_url($indexjs), array('jquery'), '1.0.0', true);
+}
+add_action('wp_enqueue_scripts', 'enqueue_epayco_index_script');
+
 
 add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
     if ($attachment_id === 0) {
@@ -667,3 +752,32 @@ function epayco_suscripcion_cron_job_deactivation()
     }
 }
 register_deactivation_hook(__FILE__, 'epayco_suscripcion_cron_job_deactivation');
+
+
+function enqueue_purchase_detail_script() {
+    wp_register_script(
+        'epayco-script',
+        'https://cms.epayco.co/plugin/DetailPurchase.js',
+        array('jquery'),
+        '1.0',
+        true
+    );
+    wp_enqueue_script('epayco-script');
+    
+    error_log('ePayco DetailPurchase script enqueued on order page.');
+}
+
+// Enqueue script para ocultar campos de documento en todas las páginas
+function enqueue_hide_document_fields_script() {
+    wp_enqueue_script(
+        'epayco-hide-doc-fields',
+        plugins_url('assets/js/hide-document-fields.js', __FILE__),
+        array(),
+        '1.0.0',
+        true
+    );
+}
+add_action('wp_enqueue_scripts', 'enqueue_hide_document_fields_script');
+
+// Solo carga en la página de orden completada
+add_action('woocommerce_thankyou', 'enqueue_purchase_detail_script');

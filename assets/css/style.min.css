@@ -246,9 +246,9 @@
 }
 
 .input-cvv-container {
-    width: 52px;
+    width: 48px;
     height: 40px !important;
-    /* padding-left: 7px !important; */
+     padding-left: 21px !important; 
     display: inline-block !important
 }
 
@@ -1174,18 +1174,18 @@ select {
 }
 
 .langaugeCancelt .cancelPayment, .langaugeCancelt .language-switch {
-    padding: 0;
+ padding: 0px;
     color: #fff;
-    height: 30px;
-    width: 30px;
+    height: 20px;
+    width: 20px;
     -webkit-box-flex: 0;
     -ms-flex: 0 0 30px;
-    flex: 0 0 30px;
-    border-radius: 50%;
-    border: 1px solid rgba(255, 255, 255, .5);
-    text-align: center;
-    line-height: 30px;
-    margin-bottom: .5em
+    flex: 0 0 22px;
+    border-radius: 9%;
+    /* border: 1px solid rgba(255, 255, 255, .5); */
+    /* text-align: center; */
+    margin-bottom: 0.5em;
+    margin-top: 16px
 }
 
 .cancelT-modal, .modal-message-daviplata, .modal-message-pse, .modal-message-tdc {
@@ -2343,7 +2343,8 @@ input {
     -moz-transform: translateY(-50%);
     -ms-transform: translateY(-50%);
     -o-transform: translateY(-50%);
-    -webkit-transform: translateY(-50%)
+    -webkit-transform: translateY(-50%);
+    width: 20px !important;
 }
 
 .form-container .label-container {

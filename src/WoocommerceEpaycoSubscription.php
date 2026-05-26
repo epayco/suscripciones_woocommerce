@@ -36,7 +36,6 @@ class WoocommerceEpaycoSubscription
     public function __construct()
     {
         $this->defineConstants();
-        $this->loadPluginTextDomain();
         $this->registerHooks();
     }
 
@@ -48,9 +47,16 @@ class WoocommerceEpaycoSubscription
     public function loadPluginTextDomain(): void
     {
         $textDomain = $this->pluginMetadata('text-domain');
+        
+        // Use the standard WordPress function for loading plugin text domains
+        // This automatically searches for .mo files in wp-content/languages and the plugin languages directory
+        $domainPath = dirname(plugin_basename(EPS_PLUGIN_FILE)) . '/languages';
+        
+        // Clear any cached translations
         unload_textdomain($textDomain);
-        $locale = explode('_', apply_filters('plugin_locale', get_locale(), $textDomain))[0];
-        load_textdomain($textDomain, Paths::basePath(Paths::join($this->pluginMetadata('domain-path'), "epayco-subscriptions-for-woocommerce-$locale.mo")));
+        
+        // Load the text domain
+        $loaded = load_plugin_textdomain($textDomain, false, $domainPath);
     }
 
     /**
@@ -60,6 +66,8 @@ class WoocommerceEpaycoSubscription
      */
     public function registerHooks(): void
     {
+        // Load text domain FIRST (priority 0) before anything else
+        add_action('plugins_loaded', [$this, 'loadPluginTextDomain'], 0);
         add_action('plugins_loaded', [$this, 'init']);
     }
 

@@ -113,9 +113,25 @@ abstract class AbstractBlock extends AbstractPaymentMethodType implements Epayco
      */
     public function get_payment_method_data(): array
     {
+        $title = $this->get_setting('title');
+        // Si no hay título en settings, usar el del gateway (traducido)
+        if (empty($title) && $this->gateway) {
+            $title = $this->gateway->get_title();
+        }
+        // Fallback final
+        if (empty($title)) {
+            $title = __('Pay with ePayco', 'epayco-subscriptions-for-woocommerce');
+        }
+        
+        $description = $this->get_setting('description');
+        // Si no hay descripción en settings, usar la del gateway
+        if (empty($description) && $this->gateway) {
+            $description = $this->gateway->get_description();
+        }
+        
         return [
-            'title'       => $this->get_setting('title'),
-            'description' => $this->get_setting('description'),
+            'title'       => $title,
+            'description' => $description,
             'supports'    => $this->get_supported_features(),
             'params'      => $this->getScriptParams(),
         ];

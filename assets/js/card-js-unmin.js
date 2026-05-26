@@ -1,3 +1,4 @@
+
 function CardJs(elem) {
     (this.elem = jQuery(elem)),
         (this.captureName = this.elem.data("capture-name") ? this.elem.data("capture-name") : !1),
