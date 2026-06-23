@@ -2920,7 +2920,8 @@ input[type="checkbox"]:checked + label:before {
 
 #web-checkout-content .dropdown dd {
   position: relative;
-  margin-top: -11% !important;
+  /* Evitar que el contenedor se desplace al mostrar el dropdown */
+  margin-top: 0 !important;
 }
 
 #web-checkout-content .dropdown a,
@@ -2945,13 +2946,15 @@ input[type="checkbox"]:checked + label:before {
   display: none;
   left: 0;
   padding: 5px 0;
-  position: inherit;
-  top: 2px;
+  /* Hacer que el dropdown flote sobre el modal */
+  position: absolute;
+  /* Colocar el dropdown justo debajo del trigger sin alterar el flujo */
+  top: calc(100% + 6px);
   min-width: 170px;
   list-style: none;
   height: 225px;
   overflow-y: auto;
-  z-index: 1;
+  z-index: 99999;
 }
 
 #web-checkout-content .dropdown span.value {

@@ -18,7 +18,7 @@ class WoocommerceEpaycoSubscription
 {
     private const PLUGIN_VERSION = '6.4.4';
     private const PLATFORM_NAME = 'woocommerce';
-    private const PLUGIN_NAME = 'epayco-subscriptions-for-woocommerce/epayco-subscription.php';
+    private const PLUGIN_NAME = 'epayco-subscriptions-for-woocommerce';
 
     public WooCommerce $woocommerce;
 
@@ -46,17 +46,10 @@ class WoocommerceEpaycoSubscription
      */
     public function loadPluginTextDomain(): void
     {
-        $textDomain = $this->pluginMetadata('text-domain');
-        
-        // Use the standard WordPress function for loading plugin text domains
-        // This automatically searches for .mo files in wp-content/languages and the plugin languages directory
-        $domainPath = dirname(plugin_basename(EPS_PLUGIN_FILE)) . '/languages';
-        
-        // Clear any cached translations
-        unload_textdomain($textDomain);
-        
-        // Load the text domain
-        $loaded = load_plugin_textdomain($textDomain, false, $domainPath);
+        // As of WordPress 4.6, text domains are automatically loaded by WordPress
+        // for plugins hosted on WordPress.org. Manual loading is no longer necessary.
+        // WordPress will automatically search for .mo files in wp-content/languages
+        // and the plugin languages directory.
     }
 
     /**
@@ -227,12 +220,14 @@ class WoocommerceEpaycoSubscription
      *
      * @return void
      */
+    // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.VariableConstantNameFound
     private function define($name, $value): void
     {
         if (!defined($name)) {
             define($name, $value);
         }
     }
+    // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.VariableConstantNameFound
 
     /**
      * Show woocommerce missing notice
