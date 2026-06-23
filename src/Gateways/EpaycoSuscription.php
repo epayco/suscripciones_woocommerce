@@ -2340,12 +2340,10 @@ class EpaycoSuscription extends AbstractGateway
 
     public function updateStatusSubscription()
     {
-        $subs = $this->epaycoSdk->subscriptions->getList();
+          $subs = $this->epaycoSdk->subscriptions->getList();
         $logger = new \WC_Logger();
         global $wpdb;
         $table_name = $wpdb->prefix . 'wc_orders';
-        // Tabla específica para lookup de clientes/estado de suscripción
-        $customer_lookup_table = $wpdb->prefix . 'wc_customer_lookup';
         $counter = 10;
 
         if (!empty($subs->data)) {
@@ -2355,7 +2353,7 @@ class EpaycoSuscription extends AbstractGateway
 
                 if (empty($epayco_id)) continue;
 
-                // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+                  // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                 $meta = $wpdb->get_results(
                     $wpdb->prepare(
                         "SELECT * FROM {$wpdb->postmeta} WHERE meta_key = %s AND meta_value = %s",
@@ -2410,18 +2408,26 @@ class EpaycoSuscription extends AbstractGateway
                                         'post_status' => 'wc-' . $desired_status,
                                     ], true);
                                 }
+
                             }
                         } catch (\Throwable $e) {
-                            $logger->add(self::LOG_SOURCE, " No se pudo realizar el cambio de estado de la suscripción con wp_update_post " . $e);
+                            $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post " . $e);
                         }
-
                         if ($current_status === 'pending-cancel' && $desired_status === 'active') {
-                            try {
-                                $sql = $wpdb->prepare("UPDATE {$customer_lookup_table} SET status = %s WHERE id = %d", 'wc-active', $wc_subscription_id);
+                             try {
+                                $sql = $wpdb->prepare(
+                                    "UPDATE {$table_name} SET status = %s WHERE id = %d",
+                                    'wc-active',
+                                    $wc_subscription_id
+                                );
                                 // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                                 $result = $wpdb->query($sql);
                                 if ($result === false) {
                                     $logger->add(self::LOG_SOURCE, "Error en consulta SQL para ID={$wc_subscription_id}");
+                                } elseif ($result === 0) {
+                                    // $logger->add(self::LOG_SOURCE, "SQL ejecutada pero sin cambios en ID={$wc_subscription_id}");
+                                } else {
+                                    // $logger->add(self::LOG_SOURCE, "Consulta SQL ejecutada correctamente para ID={$wc_subscription_id}.");
                                 }
                             } catch (\Throwable $e) {
                                 $logger->add(self::LOG_SOURCE, "Excepción en SQL manual para ID={$wc_subscription_id}: " . $e->getMessage());
