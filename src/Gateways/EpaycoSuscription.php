@@ -1779,9 +1779,7 @@ class EpaycoSuscription extends AbstractGateway
                     $subscription->update_status('active');
                     $subscription->payment_complete();
 
-                    // if ($logger !== null) {
-                    //     $logger->info("✅ Orden y suscripción actualizadas correctamente - Order ID: " . $order->get_id());
-                    // }
+                  
                     // $this->restore_order_stock($order->get_id(), "-");
 
 
@@ -2211,8 +2209,7 @@ class EpaycoSuscription extends AbstractGateway
                         $orderStatus = $this->get_option('epayco_endorder_state');
                     }
 
-                    // REDUCIR STOCK UNA SOLA VEZ cuando el pago es aprobado
-                    // El filtro en el constructor previene la reducción automática
+                
                     foreach ($order->get_items() as $item) {
                         $product = $item->get_product();
                         $qty = $item->get_quantity();
@@ -2347,6 +2344,8 @@ class EpaycoSuscription extends AbstractGateway
         $logger = new \WC_Logger();
         global $wpdb;
         $table_name = $wpdb->prefix . 'wc_orders';
+        // Tabla específica para lookup de clientes/estado de suscripción
+        $customer_lookup_table = $wpdb->prefix . 'wc_customer_lookup';
         $counter = 10;
 
         if (!empty($subs->data)) {
@@ -2413,19 +2412,19 @@ class EpaycoSuscription extends AbstractGateway
                                 }
                             }
                         } catch (\Throwable $e) {
-                            $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post " . $e);
+                            $logger->add(self::LOG_SOURCE, " No se pudo realizar el cambio de estado de la suscripción con wp_update_post " . $e);
                         }
 
                         if ($current_status === 'pending-cancel' && $desired_status === 'active') {
                             try {
-                                $sql = $wpdb->prepare("UPDATE " . $wpdb->prefix . "wc_customer_lookup SET status = %s WHERE id = %d", 'wc-active', $wc_subscription_id);
+                                $sql = $wpdb->prepare("UPDATE {$customer_lookup_table} SET status = %s WHERE id = %d", 'wc-active', $wc_subscription_id);
                                 // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                                 $result = $wpdb->query($sql);
                                 if ($result === false) {
                                     $logger->add(self::LOG_SOURCE, "Error en consulta SQL para ID={$wc_subscription_id}");
                                 }
                             } catch (\Throwable $e) {
-                                $logger->add(self::LOG_SOURCE, "❗ Excepción en SQL manual para ID={$wc_subscription_id}: " . $e->getMessage());
+                                $logger->add(self::LOG_SOURCE, "Excepción en SQL manual para ID={$wc_subscription_id}: " . $e->getMessage());
                             }
                         }
                     }
@@ -2474,9 +2473,8 @@ class EpaycoSuscription extends AbstractGateway
         $token_id    = $customerData['token_card'];
         $email       = $customerData['email'];
 
-        // Preparar SQL con ON DUPLICATE KEY
         $sql = $wpdb->prepare(
-            "INSERT INTO " . $wpdb->prefix . "wc_customer_lookup (id_payco, customer_id, token_id, email)
+            "INSERT INTO {$table_name} (id_payco, customer_id, token_id, email)
             VALUES (%s, %s, %s, %s)
             ON DUPLICATE KEY UPDATE
                 id_payco = VALUES(id_payco),
