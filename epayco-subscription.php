@@ -62,8 +62,8 @@ if (!class_exists('WoocommerceEpaycoSubscription')) {
 }
 
 
-register_activation_hook(__FILE__, 'EPAYCO_SFW_eps_register_activate');
-register_deactivation_hook(__FILE__, 'EPAYCO_SFW_eps_disable_plugin');
+register_activation_hook(__FILE__, 'EPAYCO_SFW_register_activate');
+register_deactivation_hook(__FILE__, 'EPAYCO_SFW_disable_plugin');
 add_filter('upgrader_post_install', function (bool $response, array $hookExtra): bool {
     if (($hookExtra['plugin'] ?? '') !== plugin_basename(__FILE__)) {
         return $response;
@@ -72,12 +72,12 @@ add_filter('upgrader_post_install', function (bool $response, array $hookExtra):
     return $response;
 }, 10, 2);
 
-function EPAYCO_SFW_eps_register_activate()
+function EPAYCO_SFW_register_activate()
 {
     update_option('_eps_execute_activate', 1);
 }
 
-function EPAYCO_SFW_eps_disable_plugin(): void
+function EPAYCO_SFW_disable_plugin(): void
 {
     //$GLOBALS['epaycosuscription']->disablePlugin();
 }

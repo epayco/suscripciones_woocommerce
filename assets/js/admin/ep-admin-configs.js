@@ -1,7 +1,7 @@
 window.addEventListener("load", (function () {
     (function ($) {
         console.log("epayco")
-        
+
         // Translation strings
         var i18n = {
             es: {
@@ -29,19 +29,19 @@ window.addEventListener("load", (function () {
                 invalidCredentials: "Credentials are not valid"
             }
         };
-        
+
         // Get current language from wp_localize_script
-        var currentLang = (typeof wc_epaycosuscription_admin_components_params !== 'undefined' && wc_epaycosuscription_admin_components_params.is_english) 
-            ? 'en' 
+        var currentLang = (typeof wc_epaycosuscription_admin_components_params !== 'undefined' && wc_epaycosuscription_admin_components_params.is_english)
+            ? 'en'
             : 'es';
-        
+
         var msgs = i18n[currentLang];
-        
+
         var modal = document.getElementById("myModal");
         var modalContent = document.getElementsByClassName("modal-content")[0];
         var span = document.getElementsByClassName("closeEpaycoModal")[0];
         var loader = document.getElementsByClassName("loader")[0];
-        span.onclick = function() {
+        span.onclick = function () {
             modal.style.display = "none";
             modalContent.style.display = "none";
         }
@@ -50,15 +50,14 @@ window.addEventListener("load", (function () {
         var shop_icon = document.getElementById("woocommerce_woo-epaycosubscription_shop_icon")
         shop_icon.closest('tr').style.display = "none";
         */
-        $(".validar").on("click", function() {
+        $(".validar").on("click", function () {
             loader.style.display = "block";
             modal.style.display = "block";
             var url_validate = $("#path_validate")[0].innerHTML.trim();
             var url_plugin = $("#path_plugin")[0].innerHTML.trim();
-            
-            const epayco_publickey = $("input:text[name=woocommerce_woo-epaycosubscription_apiKey]").val().replace(/\s/g,"");
-            
-            console.log('DEBUG: Public key length:', epayco_publickey.length);
+
+            const epayco_publickey = $("input:text[name=woocommerce_woo-epaycosubscription_apiKey]").val().replace(/\s/g, "");
+
             if (epayco_publickey !== "") {
                 var formData = new FormData();
                 formData.append("epayco_publickey", epayco_publickey);
@@ -69,14 +68,13 @@ window.addEventListener("load", (function () {
                     contentType: false,
                     processData: false,
                     dataType: 'json',
-                    success: function(response) {
-                        console.log('Response from ePayco API:', response);
+                    success: function (response) {
                         loader.style.display = "none";
-                        
+
                         // Handle success response from ePayco API
                         if (response && response.success === true) {
                             updateEpaycoModal(
-                                url_plugin+"check.png",
+                                url_plugin + "check.png",
                                 msgs.validationSuccess,
                                 msgs.validationSuccessDesc
                             );
@@ -84,27 +82,26 @@ window.addEventListener("load", (function () {
                             // Handle error response
                             const errorMsg = response.message || msgs.invalidCredentials;
                             updateEpaycoModal(
-                                url_plugin+"logo_warning.png",
+                                url_plugin + "logo_warning.png",
                                 msgs.validationError,
                                 errorMsg
                             );
                         } else {
                             // Handle unexpected response format
                             updateEpaycoModal(
-                                url_plugin+"logo_warning.png",
+                                url_plugin + "logo_warning.png",
                                 msgs.unexpectedError,
                                 msgs.unexpectedErrorDesc
                             );
                         }
                         modalContent.style.display = "block";
                     },
-                    error: function(xhr, status, error) {
-                        console.error('AJAX Error:', error, xhr.responseText);
+                    error: function (xhr, status, error) {
+
                         loader.style.display = "none";
-                        
-                        // Handle AJAX request errors
+
                         updateEpaycoModal(
-                            url_plugin+"logo_warning.png",
+                            url_plugin + "logo_warning.png",
                             msgs.connectionError,
                             msgs.connectionErrorDesc
                         );
@@ -113,10 +110,10 @@ window.addEventListener("load", (function () {
                 });
             } else {
                 updateEpaycoModal(
-                    url_plugin+"logo_warning.png",
+                    url_plugin + "logo_warning.png",
                     msgs.fieldRequired,
                     msgs.fieldRequiredDesc
-                );  
+                );
                 loader.style.display = "none";
                 modalContent.style.display = "block";
             }

@@ -86,9 +86,9 @@ abstract class AbstractGateway extends WC_Payment_Gateway implements EpaycoSubsc
      */
     public function registerAdminScripts()
     {
-        // Get WordPress locale (e.g., 'en_US', 'es_CO')
+  
         $wp_locale = get_locale();
-        $is_english = strpos($wp_locale, 'en') === 0; // true if starts with 'en'
+        $is_english = strpos($wp_locale, 'en') === 0;
         
         $this->epaycosuscription->hooks->scripts->registerAdminScript(
             'wc_epaycosuscription_admin_components',

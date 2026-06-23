@@ -108,11 +108,10 @@ class EpaycoSuscription extends AbstractGateway
             $this->logger = null;
         }
 
-        // Prevenir que WooCommerce reduzca stock automáticamente para órdenes de ePayco
-        // Nosotros lo haremos manualmente una sola vez en subscription_epayco_confirm()
+        // Prevenir que WooCommerce reduzca stock automáticamente se hace una sola vez en subscription_epayco_confirm()
         add_filter('woocommerce_order_should_reduce_stock_levels', function ($should_reduce, $order) {
             if ($order->get_payment_method() === self::ID) {
-                return false;  // NO reducir automáticamente
+                return false;
             }
             return $should_reduce;
         }, 10, 2);
@@ -671,25 +670,14 @@ class EpaycoSuscription extends AbstractGateway
 
             // Si no hay epaycoToken pero SÍ hay datos crudos de tarjeta, procesar directamente
             if (empty($token) && isset($params['card-number2'])) {
-                if (defined('WP_DEBUG') && WP_DEBUG) {
-                    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                    error_log("DEBUG: Procesando tarjeta directamente desde POST mobile");
-                }
+
                 $cardData = [
                     'number' => sanitize_text_field(wp_unslash($params['card-number2'])),
                     'exp_month' => sanitize_text_field(wp_unslash($params['month'] ?? '')),
                     'exp_year' => sanitize_text_field(wp_unslash($params['year'] ?? '')),
                     'cvc' => sanitize_text_field(wp_unslash($params['cvc'] ?? ''))
                 ];
-                if (defined('WP_DEBUG') && WP_DEBUG) {
-                    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                    error_log("DEBUG: Card data: " . json_encode([
-                        'number' => substr($cardData['number'], -4),
-                        'month' => $cardData['exp_month'],
-                        'year' => $cardData['exp_year'],
-                        'cvc' => str_repeat('*', strlen($cardData['cvc']))
-                    ]));
-                }
+
 
                 $tokenBody = [
                     "card[number]" => preg_replace('/\s+/', '', $cardData['number']),
@@ -698,17 +686,10 @@ class EpaycoSuscription extends AbstractGateway
                     "card[cvc]" => $cardData['cvc'],
                     "hasCvv" => true
                 ];
-                if (defined('WP_DEBUG') && WP_DEBUG) {
-                    // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                    error_log("DEBUG: TokenBody: " . json_encode($tokenBody));
-                }
+
 
                 try {
                     $token = $this->epaycoSdk->token->create($tokenBody);
-                    if (defined('WP_DEBUG') && WP_DEBUG) {
-                        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                        error_log("DEBUG: Token creado: " . json_encode($token));
-                    }
                 } catch (Exception $e) {
                     if (defined('WP_DEBUG') && WP_DEBUG) {
                         // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
@@ -884,7 +865,7 @@ class EpaycoSuscription extends AbstractGateway
                 [
                     "token_card" => $data['token_card'],
                     "name" => $data['name'],
-                    "last_name" => $data['last_name'], // Este parámetro es opcional según tu ejemplo
+                    "last_name" => $data['last_name'],
                     "email" => $data['email'],
                     "phone" => $data['phone'],
                     "cell_phone" => $data['phone'],
@@ -901,8 +882,8 @@ class EpaycoSuscription extends AbstractGateway
                 $logger->info("customerCreate" . $exception->getMessage());
                 $logger->info("Error : " . $exception->getMessage());
             }
-            // No usar echo aquí ya que interfiere con JSON response
-            throw $exception; // Re-lanzar para manejo superior
+
+            throw $exception; 
         }
 
         return $customer;
@@ -1275,9 +1256,9 @@ class EpaycoSuscription extends AbstractGateway
                 throw $exception; // Re-lanzar para manejo superior
             }
         }
-        if (class_exists('WC_Logger')) {
-            $logger->info("subscriptionCharge : " . json_encode($subs));
-        }
+        // if (class_exists('WC_Logger')) {
+        //     $logger->info("subscriptionCharge : " . json_encode($subs));
+        // }
         return $subs;
     }
 
@@ -1453,7 +1434,7 @@ class EpaycoSuscription extends AbstractGateway
             $subtotal = $total - $tax;
             if ($subtotal > 0 && $tax > 0) {
                 $tax_percentage = ($tax / $subtotal) * 100;
-                $tax_percentage = intval($tax_percentage); // Redondear a 2 decimales
+                $tax_percentage = intval($tax_percentage);
             } else {
                 $tax_percentage = 0;
             }
@@ -1795,12 +1776,12 @@ class EpaycoSuscription extends AbstractGateway
                     $messageStatus['ref_payco'] = array_merge($messageStatus['ref_payco'], [$sub->data->ref_payco]);
                     $messageStatus['orderStatus'] = array_merge($messageStatus['orderStatus'], [$sub->data->estado]);
                     $messageStatus['date'] = array_merge($messageStatus['date'], [current_time('Y-m-d H:i:s')]);
-                    $subscription->update_status('active'); // Asegurar que la suscripción se marque como activa
+                    $subscription->update_status('active');
                     $subscription->payment_complete();
 
-                    if ($logger !== null) {
-                        $logger->info("✅ Orden y suscripción actualizadas correctamente - Order ID: " . $order->get_id());
-                    }
+                    // if ($logger !== null) {
+                    //     $logger->info("✅ Orden y suscripción actualizadas correctamente - Order ID: " . $order->get_id());
+                    // }
                     // $this->restore_order_stock($order->get_id(), "-");
 
 
@@ -1955,10 +1936,8 @@ class EpaycoSuscription extends AbstractGateway
                 if ($validation || $active_plan) {
                     $messageStatus = $this->handleStatusSubscriptions($subs, $subscriptions, $customerData, $order, $customerId, $suscriptionId, $planId);
 
-                    // Obtener ref_payco del response
                     $ref_payco = isset($sub->data->ref_payco) ? $sub->data->ref_payco : (isset($messageStatus['ref_payco'][0]) ? $messageStatus['ref_payco'][0] : '');
 
-                    // Construir URL con ref_payco
                     $order_url = $order->get_checkout_order_received_url();
                     $order_url = add_query_arg('ref_payco', urlencode($ref_payco), $order_url);
 
@@ -1971,7 +1950,6 @@ class EpaycoSuscription extends AbstractGateway
                         'url' => $order_url
                     ];
                 } else {
-                    // error_log("process_payment_epayco: " . json_encode($sub));
                     $subJson = json_decode(json_encode($sub), true);
                     if (class_exists('WC_Logger')) {
                         $logger = wc_get_logger();
@@ -2012,7 +1990,6 @@ class EpaycoSuscription extends AbstractGateway
                 }
             }
         } else {
-            // error_log("process_payment_epayco error: " . json_encode($subsCreated));
             $subsCreatedJson = json_decode(json_encode($subsCreated), true);
             $dataError = $subsCreatedJson;
             if (class_exists('WC_Logger')) {
@@ -2434,15 +2411,6 @@ class EpaycoSuscription extends AbstractGateway
                                         'post_status' => 'wc-' . $desired_status,
                                     ], true);
                                 }
-
-
-
-                                // if (is_wp_error($result)) {
-                                //    // $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post ");
-                                // } else {
-                                //  //   $logger->add(self::LOG_SOURCE, "✅ Estado actualizado con update_status y wp_update_post. ID={$wc_subscription_id}");
-                                // }
-
                             }
                         } catch (\Throwable $e) {
                             $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post " . $e);
@@ -2454,11 +2422,7 @@ class EpaycoSuscription extends AbstractGateway
                                 // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                                 $result = $wpdb->query($sql);
                                 if ($result === false) {
-                                    $logger->add(self::LOG_SOURCE, "❌ Error en consulta SQL para ID={$wc_subscription_id}");
-                                } elseif ($result === 0) {
-                                    // $logger->add(self::LOG_SOURCE, "ℹ️ SQL ejecutada pero sin cambios en ID={$wc_subscription_id}");
-                                } else {
-                                    // $logger->add(self::LOG_SOURCE, "✅ Consulta SQL ejecutada correctamente para ID={$wc_subscription_id}.");
+                                    $logger->add(self::LOG_SOURCE, "Error en consulta SQL para ID={$wc_subscription_id}");
                                 }
                             } catch (\Throwable $e) {
                                 $logger->add(self::LOG_SOURCE, "❗ Excepción en SQL manual para ID={$wc_subscription_id}: " . $e->getMessage());
@@ -2628,17 +2592,16 @@ class EpaycoSuscription extends AbstractGateway
     {
         $locale = \get_locale();
 
-        // Extract language code (e.g., 'es' from 'es_ES')
+       
         if (is_string($locale) && strpos($locale, '_') !== false) {
             $parts = explode('_', $locale);
             $locale = $parts[0];
         }
 
-        // Only allow 'en' or 'es', default to 'en' for other languages
         if ($locale === 'es') {
             return 'es';
         }
 
-        return 'en'; // Default to English for any other language
+        return 'en'; 
     }
 }
