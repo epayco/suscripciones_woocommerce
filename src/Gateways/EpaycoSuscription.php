@@ -705,14 +705,15 @@ class EpaycoSuscription extends AbstractGateway
             if (!$token || !$token->status) {
                 $error = $this->errorMessages($token);
                 wc_add_notice($error, 'error');
-                wp_safe_redirect(wc_get_checkout_url());
+                $redirect_url = isset($order) && is_object($order) ? $order->get_checkout_payment_url(true) : wc_get_checkout_url();
+                wp_safe_redirect($redirect_url);
                 exit;
                 header('Content-Type: application/json');
                 $return = [
                     'success' => false,
                     'result'   => 'error',
                     'message' =>  $error,
-                    'url' => wc_get_checkout_url(),
+                    'url' => $redirect_url,
                 ];
                 //echo json_encode( $return);
                 //exit;
@@ -736,14 +737,15 @@ class EpaycoSuscription extends AbstractGateway
                     $dataError = $customerJson;
                     $error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('El token no se puede asociar al cliente, verifique que: el token existe, el cliente no esté asociado y que el token no este asociado a otro cliente.', 'epayco-subscriptions-for-woocommerce'));
                     wc_add_notice($error, 'error');
-                    wp_safe_redirect(wc_get_checkout_url());
+                    $redirect_url = isset($order) && is_object($order) ? $order->get_checkout_payment_url(true) : wc_get_checkout_url();
+                    wp_safe_redirect($redirect_url);
                     exit;
                     header('Content-Type: application/json');
                     $return = [
                         'success' => false,
                         'result'   => 'error',
                         'message' =>  $error,
-                        'url' => wc_get_checkout_url(),
+                        'url' => $redirect_url,
                     ];
                     //echo json_encode($return);
                     //exit;
@@ -800,7 +802,8 @@ class EpaycoSuscription extends AbstractGateway
 
             if (isset($return['success']) && $return['success'] == false) {
                 wc_add_notice($return['message'], 'error');
-                wp_safe_redirect(wc_get_checkout_url());
+                $redirect_url = isset($order) && is_object($order) ? $order->get_checkout_payment_url(true) : wc_get_checkout_url();
+                wp_safe_redirect($redirect_url);
                 exit;
             }
         } catch (Exception $exception) {
