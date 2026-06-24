@@ -111,7 +111,9 @@ class Gateway
             }
 
             $optionKey       = $gateway->get_option_key();
+            // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
             $sanitizedFields = apply_filters('woocommerce_settings_api_sanitized_fields_' . $gateway->id, $gateway->settings);
+            // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound
             update_option($optionKey, $sanitizedFields);
 
         });

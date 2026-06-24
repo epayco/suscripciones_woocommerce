@@ -6,7 +6,7 @@ use Automattic\WooCommerce\Blocks\Payments\Integrations\AbstractPaymentMethodTyp
  *
  * @since 1.0.3
  */
-final class CustomBlock extends AbstractPaymentMethodType {
+final class Epayco_CustomBlock extends AbstractPaymentMethodType {
 
 	/**
 	 * Payment method name/id/slug.

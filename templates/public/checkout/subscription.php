@@ -44,12 +44,10 @@ if (!defined('ABSPATH')) {
     echo '<link rel="stylesheet" type="text/css" href="' . esc_html($general) . '">';
 
     // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
-    echo '<link rel="stylesheet" id="cardjsmincss" type="text/css" href="' . esc_html($card_style) . '">';
+    echo '<link rel="stylesheet" id="cardjsmincss" type="text/css" href="' . esc_html($card_style) . '">'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
 
-    // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
-    echo '<link rel="stylesheet" type="text/css" href="' . esc_html($cardsjscss) . '">';
+    echo '<link rel="stylesheet" type="text/css" href="' . esc_html($cardsjscss) . '">'; // phpcs:ignore WordPress.WP.EnqueuedResources.NonEnqueuedStylesheet
     ?>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins&display=swap" rel="stylesheet">
 </head>
 
 
@@ -79,8 +77,10 @@ if (!defined('ABSPATH')) {
             </style>
 
             <?php
+            // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template local variables defined within this file and passed from controller
             if (strtoupper($lang) == 'ES') {
-
+  
+                $loader = 'https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png';
                 $button = 'https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/botonPagarEpayco.png';
                 $title = 'Cargando métodos de pago';
                 $subtitle = 'Si no se cargan automáticamente, haz click en el botón "Pagar con ePayco"';
@@ -111,6 +111,7 @@ if (!defined('ABSPATH')) {
                 $cardInfoTitle = 'Información de la tarjeta';
                 $pay = 'Pagar';
             } else {
+                $loader = 'https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png';
                 $button = 'https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/payBottonEpayco.png';
                 $title = 'Loading payment methods';
                 $subtitle = 'If they do not load automatically, click on the "Pay with ePayco" button';
@@ -141,6 +142,7 @@ if (!defined('ABSPATH')) {
                 $nameCardPlaceholder = 'Full name';
                 $pay = 'Pay';
             }
+            // phpcs:enable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound
             ?>
             <div class="loading-home op" style="display: none" id="loading_home">
                 <!--<div class="circulo ">
@@ -155,7 +157,9 @@ if (!defined('ABSPATH')) {
                     <div class="loader">
                     </div>
                     <div style="position:absolute; top:38px">
-                        <img src="https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png" alt="Loading" />
+                        <?php // phpcs:ignore PluginCheck.CodeAnalysis.Offloading.OffloadedContent 
+                        ?>
+                        <img src="<?php echo esc_html($loader); ?>" alt="Loading" />
                     </div>
                     <div class="textLoader"><?php echo esc_html($processing); ?></div>
                 </div>
@@ -325,7 +329,7 @@ if (!defined('ABSPATH')) {
         <div class="cancelT-modal dn" id="cancelT_modal" style="display:none">
             <div class="ventana dn">
                 <div class="icono">
-                 
+
                 </div>
                 <p><?php echo esc_html($cancel); ?></p>
                 <div class="acciones">
@@ -377,7 +381,7 @@ if (!defined('ABSPATH')) {
     <div class="loader-container">
         <div class="loading"></div>
     </div>
-   
+
     <p style="text-align: center;" class="epayco-title" id="epayco_title">
         <span class="animated-points"><?php echo esc_html($title); ?></span>
         <br>
@@ -410,7 +414,9 @@ if (!defined('ABSPATH')) {
                     <div class="loader">
                     </div>
                     <div style="position:absolute; top:38px">
-                        <img src="https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png" alt="Loading" />
+                        <?php // phpcs:ignore PluginCheck.CodeAnalysis.Offloading.OffloadedContent 
+                        ?>
+                        <img src="<?php echo esc_html($loader); ?>" alt="Loading" />
                     </div>
                     <div class="textLoader"><?php echo esc_html($processing); ?></div>
                 </div>
@@ -480,7 +486,7 @@ if (!defined('ABSPATH')) {
                                         <input class="card-number my-custom-class" data-epayco="card[number]" required id="the-card-number-element" name="card-number2" placeholder="**** **** **** ****" type="tel" maxlength="19" x-autocompletetype="cc-number" autocompletetype="cc-number" autocorrect="off" spellcheck="off" autocapitalize="off" style="padding-right: 40px;">
 
                                         <?php echo wp_get_attachment_image(1, 'full', false, ['class' => 'img-card', 'id' => 'logo_franchise', 'style' => 'display: block;position: absolute;right: 12px;top: 41.5%;transform: translateY(-50%);width: 40px;']); ?>
-                                        
+
                                     </div>
                                 </div>
 
@@ -528,8 +534,12 @@ if (!defined('ABSPATH')) {
     </div>
     <div id="style_min" hidden><?php echo esc_html($stylemin) ?></div>
     </div>
+
     <script id="movil" hidden>
-        <?php echo $appjs; ?>
+        <?php
+        // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- JavaScript generated internally by the plugin.
+        echo $appjs;
+        ?>
     </script>
 </body>
 

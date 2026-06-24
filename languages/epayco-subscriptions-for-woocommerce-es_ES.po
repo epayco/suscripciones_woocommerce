@@ -114,6 +114,31 @@ msgstr "Procesando"
 msgid "Completed"
 msgstr "Completado"
 
+
+#: generated
+msgid "Successful payment test"
+msgstr "Pago exitoso de prueba"
+
+#: generated
+msgid "Successful payment"
+msgstr "Pago exitoso"
+
+#: src/Gateways/EpaycoSuscription.php:1770
+msgid "Successful subscription (subscription ID: %1$s), reference (%2$s)"
+msgstr "Suscripción exitosa (ID de suscripción: %1$s), referencia (%2$s)"
+
+#: generated
+msgid "Pending payment approval test"
+msgstr "Prueba de aprobación de pago pendiente"
+
+#: src/Gateways/EpaycoSuscription.php:2133
+msgid "Payment failed"
+msgstr "Pago fallido"
+
+#: src/Gateways/EpaycoSuscription.php:2134
+msgid "Payment rejected"
+msgstr "Pago rechazado"
+
 #: generated
 msgid "Automatically update the status of subscriptions"
 msgstr "Actualizar automáticamente el estado de las suscripciones"

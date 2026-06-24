@@ -7,7 +7,7 @@
  * @wordpress-plugin
  * Plugin Name:       ePayco Subscriptions for WooCommerce
  * Description:       Plugin ePayco Subscription
- * Version:           6.6.0
+ * Version:           6.6.1
  * Author:            ePayco
  * Text Domain:       epayco-subscriptions-for-woocommerce
  * Author URI:
@@ -62,8 +62,8 @@ if (!class_exists('WoocommerceEpaycoSubscription')) {
 }
 
 
-register_activation_hook(__FILE__, 'eps_register_activate');
-register_deactivation_hook(__FILE__, 'eps_disable_plugin');
+register_activation_hook(__FILE__, 'EPAYCO_SFW_register_activate');
+register_deactivation_hook(__FILE__, 'EPAYCO_SFW_disable_plugin');
 add_filter('upgrader_post_install', function (bool $response, array $hookExtra): bool {
     if (($hookExtra['plugin'] ?? '') !== plugin_basename(__FILE__)) {
         return $response;
@@ -72,27 +72,28 @@ add_filter('upgrader_post_install', function (bool $response, array $hookExtra):
     return $response;
 }, 10, 2);
 
-function eps_register_activate()
+function EPAYCO_SFW_register_activate()
 {
     update_option('_eps_execute_activate', 1);
 }
 
-function eps_disable_plugin(): void
+function EPAYCO_SFW_disable_plugin(): void
 {
     //$GLOBALS['epaycosuscription']->disablePlugin();
 }
 
-//add_action('plugins_loaded', 'register_epayco_suscription_order_status');
-//add_filter('wc_order_statuses', 'add_epayco_suscription_to_order_statuses');
-//add_action('admin_head', 'styling_admin_suscription_order_list');
-//add_action('woocommerce_checkout_update_order_meta', 'some_custom_checkout_field_update_order_meta');
-function epaycosubscription_woocommerce_addon_settings_link( $links ) {
-    array_push( $links, '<a href="admin.php?page=wc-settings&tab=checkout&section=woo-epaycosubscription">' . __( 'Settings', 'epayco-subscriptions-for-woocommerce' ) . '</a>' );
+//add_action('plugins_loaded', 'EPAYCO_SFW_register_epayco_suscription_order_status');
+//add_filter('wc_order_statuses', 'EPAYCO_SFW_add_epayco_suscription_to_order_statuses');
+//add_action('admin_head', 'EPAYCO_SFW_styling_admin_suscription_order_list');
+//add_action('woocommerce_checkout_update_order_meta', 'EPAYCO_SFW_some_custom_checkout_field_update_order_meta');
+function epaycosubscription_woocommerce_addon_settings_link($links)
+{
+    array_push($links, '<a href="admin.php?page=wc-settings&tab=checkout&section=woo-epaycosubscription">' . __('Settings', 'epayco-subscriptions-for-woocommerce') . '</a>');
     return $links;
 }
 
-add_filter( "plugin_action_links_".plugin_basename( __FILE__ ),'epaycosubscription_woocommerce_addon_settings_link' );
-function register_epayco_suscription_order_status()
+add_filter("plugin_action_links_" . plugin_basename(__FILE__), 'epaycosubscription_woocommerce_addon_settings_link');
+function EPAYCO_SFW_register_epayco_suscription_order_status()
 {
     register_post_status('wc-epayco-failed', array(
         'label' => 'ePayco Pago Fallido',
@@ -267,7 +268,7 @@ function register_epayco_suscription_order_status()
     ));
 }
 
-function add_epayco_suscription_to_order_statuses($order_statuses)
+function EPAYCO_SFW_add_epayco_suscription_to_order_statuses($order_statuses)
 {
     $new_order_statuses = array();
     $epayco_order = get_option('epayco_order_status');
@@ -329,7 +330,7 @@ function add_epayco_suscription_to_order_statuses($order_statuses)
     return $new_order_statuses;
 }
 
-function styling_admin_suscription_order_list()
+function EPAYCO_SFW_styling_admin_suscription_order_list()
 {
     global $pagenow, $post;
     if ($pagenow != 'edit.php') return; // Exit
@@ -397,7 +398,7 @@ function styling_admin_suscription_order_list()
 <?php
 }
 
-function activate_subscription_epayco()
+function EPAYCO_SFW_activate_subscription_epayco()
 {
     global $wpdb;
 
@@ -408,8 +409,8 @@ function activate_subscription_epayco()
 
 
 
-    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-    if ($wpdb->get_var("SHOW TABLES LIKE '{$table_subscription_epayco}'") !== $table_subscription_epayco) {
+    // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
+    if ( $wpdb->get_var( $wpdb->prepare( 'SHOW TABLES LIKE %s', $table_subscription_epayco ) ) !== $table_subscription_epayco ) {
         require_once ABSPATH . 'wp-admin/includes/upgrade.php';
 
         $sql = "CREATE TABLE {$table_subscription_epayco} (
@@ -436,7 +437,7 @@ function activate_subscription_epayco()
     add_option('subscription_epayco_se_redirect', true);
 }
 
-function some_custom_checkout_field_update_order_meta($order_id)
+function EPAYCO_SFW_some_custom_checkout_field_update_order_meta($order_id)
 {
 
 
@@ -448,7 +449,7 @@ function some_custom_checkout_field_update_order_meta($order_id)
     }
 }
 
-register_activation_hook(__FILE__, 'activate_subscription_epayco');
+register_activation_hook(__FILE__, 'EPAYCO_SFW_activate_subscription_epayco');
 
 add_action('woocommerce_set_additional_field_value', function ($key, $value, $group, $wc_object) {
     if ('epayco/billing_type_document' === $key) {
@@ -474,7 +475,7 @@ add_filter('woocommerce_checkout_fields', function ($fields) {
         $placeholder_type_doc = __('Select document type', 'epayco-subscriptions-for-woocommerce');
         $select_type_doc = __('Select the type of document', 'epayco-subscriptions-for-woocommerce');
         $label_dni = __('Document Number', 'epayco-subscriptions-for-woocommerce');
-        
+
         $doc_types = array(
             ''     => $select_type_doc,
             'CC'   => __('Citizenship ID Card', 'epayco-subscriptions-for-woocommerce'),
@@ -491,7 +492,7 @@ add_filter('woocommerce_checkout_fields', function ($fields) {
         $placeholder_type_doc = __('Seleccionar tipo de documento', 'epayco-subscriptions-for-woocommerce');
         $select_type_doc = __('Seleccione el tipo de documento', 'epayco-subscriptions-for-woocommerce');
         $label_dni = __('Número de documento', 'epayco-subscriptions-for-woocommerce');
-        
+
         $doc_types = array(
             ''     => $select_type_doc,
             'CC'   => __('Cédula de ciudadanía', 'epayco-subscriptions-for-woocommerce'),
@@ -529,21 +530,35 @@ add_filter('woocommerce_checkout_fields', function ($fields) {
 
 
 
+// WooCommerce validates the checkout nonce before this hook is executed.
+// phpcs:disable WordPress.Security.NonceVerification.Missing
 
-add_action('woocommerce_checkout_create_order', function ($order, $data) {
-    if (isset($_POST['epayco_billing_type_document'])) {
-        $order->update_meta_data(
-            '_epayco_billing_type_document',
-            sanitize_text_field(wp_unslash($_POST['epayco_billing_type_document']))
-        );
-    }
-    if (isset($_POST['epayco_billing_dni'])) {
-        $order->update_meta_data(
-            '_epayco_billing_dni',
-            sanitize_text_field(wp_unslash($_POST['epayco_billing_dni']))
-        );
-    }
-}, 20, 2);
+add_action(
+    'woocommerce_checkout_create_order',
+    function ($order, $data) {
+        if (isset($_POST['epayco_billing_type_document'])) {
+            $order->update_meta_data(
+                '_epayco_billing_type_document',
+                sanitize_text_field(
+                    wp_unslash($_POST['epayco_billing_type_document'])
+                )
+            );
+        }
+
+        if (isset($_POST['epayco_billing_dni'])) {
+            $order->update_meta_data(
+                '_epayco_billing_dni',
+                sanitize_text_field(
+                    wp_unslash($_POST['epayco_billing_dni'])
+                )
+            );
+        }
+    },
+    20,
+    2
+);
+
+// phpcs:enable WordPress.Security.NonceVerification.Missing
 
 //blocks checkout fields
 
@@ -560,7 +575,7 @@ add_action('woocommerce_init', function () {
         $label_type_doc = __('Identification Document', 'epayco-subscriptions-for-woocommerce');
         $placeholder_type_doc = __('Select document type', 'epayco-subscriptions-for-woocommerce');
         $label_dni = __('Document Number', 'epayco-subscriptions-for-woocommerce');
-        
+
         $doc_types_options = [
             ['value' => 'CC', 'label' => __('Citizenship ID Card', 'epayco-subscriptions-for-woocommerce')],
             ['value' => 'CE', 'label' => __('Foreigner ID Card', 'epayco-subscriptions-for-woocommerce')],
@@ -575,7 +590,7 @@ add_action('woocommerce_init', function () {
         $label_type_doc = __('Tipo de Identificación', 'epayco-subscriptions-for-woocommerce');
         $placeholder_type_doc = __('Seleccionar tipo de documento', 'epayco-subscriptions-for-woocommerce');
         $label_dni = __('Número de documento', 'epayco-subscriptions-for-woocommerce');
-        
+
         $doc_types_options = [
             ['value' => 'CC', 'label' => __('Cédula de ciudadanía', 'epayco-subscriptions-for-woocommerce')],
             ['value' => 'CE', 'label' => __('Cédula de extranjería', 'epayco-subscriptions-for-woocommerce')],
@@ -641,6 +656,13 @@ function epayco_enqueue_styles()
     wp_enqueue_style('epayco-animate', $plugin_url_base . 'animate.min.css', array(), '4.1.1');
     wp_enqueue_style('epayco-fontawesome', $plugin_url_base . 'fontawesome-all.css', array(), '5.15.4');
     wp_enqueue_style('epayco-bootstrap-slider', $plugin_url_base . 'bootstrap-slider.min.css', array(), '10.4.2');
+    // phpcs:ignore WordPress.WP.EnqueuedResourceParameters.MissingVersion -- loading from Google Fonts, version intentionally omitted
+    wp_enqueue_style(
+        'epayco-google-fonts',
+        'https://fonts.googleapis.com/css2?family=Poppins&display=swap',
+        [],
+        '1.0.0'
+    );
     // wp_enqueue_style('epayco-style', $plugin_url . 'style.css', array(), '1.0');
     // wp_enqueue_style('epayco-general', $plugin_url . 'general.min.css', array(), '1.0');
     // wp_enqueue_style('epayco-card-style', $plugin_url . 'card-js.min.css', array(), '1.0');
@@ -650,17 +672,17 @@ add_action('wp_enqueue_scripts', 'epayco_enqueue_styles', 9999);
 
 
 // Enqueue the script properly in WordPress
-function enqueue_epayco_scripts()
+function EPAYCO_SFW_enqueue_epayco_scripts()
 {
     wp_enqueue_script('jquery'); // Usa la versión de WordPress
 }
-add_action('wp_enqueue_scripts', 'enqueue_epayco_scripts');
+add_action('wp_enqueue_scripts', 'EPAYCO_SFW_enqueue_epayco_scripts');
 
 
 
 
 // Enqueue the script properly in WordPress
-function enqueue_epayco_epaycojs_script()
+function EPAYCO_SFW_enqueue_epayco_epaycojs_script()
 {
     if (!function_exists('wp_enqueue_script') || !function_exists('esc_url')) {
         return; // Ensure WordPress functions are available
@@ -668,10 +690,10 @@ function enqueue_epayco_epaycojs_script()
     $epaycojs = plugins_url('assets/js/epayco.js', __FILE__); // Define the variable
     wp_enqueue_script('epayco-js', esc_url($epaycojs), array(), '1.0.0', true); // Set version to avoid caching issues
 }
-add_action('wp_enqueue_scripts', 'enqueue_epayco_epaycojs_script');
+add_action('wp_enqueue_scripts', 'EPAYCO_SFW_enqueue_epayco_epaycojs_script');
 
 // Enqueue ePayco checkout script for mobile and desktop
-function enqueue_epayco_checkout_script()
+function EPAYCO_SFW_enqueue_epayco_checkout_script()
 {
     if (!function_exists('wp_enqueue_script') || !function_exists('esc_url')) {
         return; // Ensure WordPress functions are available
@@ -679,10 +701,10 @@ function enqueue_epayco_checkout_script()
     $epaycocheckout = plugins_url('assets/js/epaycocheckout.js', __FILE__);
     wp_enqueue_script('epayco-checkout-js', esc_url($epaycocheckout), array('jquery'), '1.0.0', true);
 }
-add_action('wp_enqueue_scripts', 'enqueue_epayco_checkout_script');
+add_action('wp_enqueue_scripts', 'EPAYCO_SFW_enqueue_epayco_checkout_script');
 
 // Enqueue index.js for responsive design and modal management
-function enqueue_epayco_index_script()
+function EPAYCO_SFW_enqueue_epayco_index_script()
 {
     if (!function_exists('wp_enqueue_script') || !function_exists('esc_url')) {
         return; // Ensure WordPress functions are available
@@ -690,7 +712,7 @@ function enqueue_epayco_index_script()
     $indexjs = plugins_url('assets/js/index.js', __FILE__);
     wp_enqueue_script('epayco-index-js', esc_url($indexjs), array('jquery'), '1.0.0', true);
 }
-add_action('wp_enqueue_scripts', 'enqueue_epayco_index_script');
+add_action('wp_enqueue_scripts', 'EPAYCO_SFW_enqueue_epayco_index_script');
 
 
 add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
@@ -754,7 +776,8 @@ function epayco_suscripcion_cron_job_deactivation()
 register_deactivation_hook(__FILE__, 'epayco_suscripcion_cron_job_deactivation');
 
 
-function enqueue_purchase_detail_script() {
+function EPAYCO_SFW_enqueue_purchase_detail_script()
+{
     wp_register_script(
         'epayco-script',
         'https://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js',
@@ -763,12 +786,13 @@ function enqueue_purchase_detail_script() {
         true
     );
     wp_enqueue_script('epayco-script');
-    
-    error_log('ePayco DetailPurchase script enqueued on order page.');
+
+    //error_log('ePayco DetailPurchase script enqueued on order page.');
 }
 
 // Enqueue script para ocultar campos de documento en todas las páginas
-function enqueue_hide_document_fields_script() {
+function EPAYCO_SFW_enqueue_hide_document_fields_script()
+{
     wp_enqueue_script(
         'epayco-hide-doc-fields',
         plugins_url('assets/js/hide-document-fields.js', __FILE__),
@@ -777,7 +801,7 @@ function enqueue_hide_document_fields_script() {
         true
     );
 }
-add_action('wp_enqueue_scripts', 'enqueue_hide_document_fields_script');
+add_action('wp_enqueue_scripts', 'EPAYCO_SFW_enqueue_hide_document_fields_script');
 
 // Solo carga en la página de orden completada
-add_action('woocommerce_thankyou', 'enqueue_purchase_detail_script');
+add_action('woocommerce_thankyou', 'EPAYCO_SFW_enqueue_purchase_detail_script');

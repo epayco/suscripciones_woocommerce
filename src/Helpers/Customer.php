@@ -102,11 +102,10 @@ class Customer extends EpaycoSuscription
         global $wpdb;
         $table_name_setings = $wpdb->prefix . 'epayco_setings';
 
-        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery
+        // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
         $customerGetData = $wpdb->get_results(
             $wpdb->prepare(
-                // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared
-                "SELECT * FROM $table_name_setings WHERE id_payco = %d AND email = %s",
+                "SELECT * FROM " . esc_sql($table_name_setings) . " WHERE id_payco = %d AND email = %s",
                 $this->custIdCliente,
                 $customerData['email']
             ),
@@ -126,7 +125,10 @@ class Customer extends EpaycoSuscription
             if ($emailEncontrado) {
                 $customerExist = $this->getEpaycoExisting($customer_id,$token);
                 if($customerExist){
-                    error_log("createOrUpdateEpaycoCustomer: " . json_encode(["success" => true, "customer_id" => $customerExist]));
+                    if (defined('WP_DEBUG') && WP_DEBUG) {
+                        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+                        error_log("createOrUpdateEpaycoCustomer: " . json_encode(["success" => true, "customer_id" => $customerExist]));
+                    }
                    return ["success" => true, "customer_id" => $customerExist];
                 }
                 $isAddedToken = $this->customerAddToken($customer_id, $token);
@@ -138,7 +140,10 @@ class Customer extends EpaycoSuscription
                     $customerJson = json_decode(json_encode($isAddedToken), true);
                     $error = $this->errorMessages($customerJson);                    
                     wc_add_notice($error, 'error');
-                    error_log("createOrUpdateEpaycoCustomer Error: " . json_encode($isAddedToken));
+                    if (defined('WP_DEBUG') && WP_DEBUG) {
+                        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+                        error_log("createOrUpdateEpaycoCustomer Error: " . json_encode($isAddedToken));
+                    }
                     return ["success" => false, "customer_id" => null, 'message' => $error];
                     //wp_redirect(wc_get_checkout_url());
                     /*$order = new \WC_Order($order_id);
@@ -146,7 +151,10 @@ class Customer extends EpaycoSuscription
                     wp_safe_redirect($redirect_url);
                     exit;*/
                 }else{
-                    error_log("createOrUpdateEpaycoCustomer: " . json_encode(["success" => true, "customer_id" => $customer_id]));
+                    if (defined('WP_DEBUG') && WP_DEBUG) {
+                        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+                        error_log("createOrUpdateEpaycoCustomer: " . json_encode(["success" => true, "customer_id" => $customer_id]));
+                    }
                     return ["success" => true, "customer_id" => $customer_id];
                 }
                
@@ -175,20 +183,18 @@ class Customer extends EpaycoSuscription
             $customerJson = json_decode(json_encode($customer), true);
             $error = $this->errorMessages($customerJson);
             wc_add_notice($error, 'error');
-            error_log("registerEpaycoCustomer Error: " . json_encode($customer));
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+                error_log("registerEpaycoCustomer Error: " . json_encode($customer));
+            }
             return ["success" => false, "customer_id" => null, 'message' => $error];
-            //wp_redirect(wc_get_checkout_url());
-            /*$order = new \WC_Order($order_id);
-            $redirect_url = $order->get_checkout_payment_url(true);
-            wp_safe_redirect($redirect_url);
-            exit;*/
         } else {
+            // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
             $inserCustomer = $wpdb->insert(
-                $table_name_setings,
+                esc_sql($table_name_setings),
                 [
                     'id_payco' => $this->custIdCliente,
                     'customer_id' => $customer->data->customerId,
-                    //'token_id' => $customerData['token_card'],
                     'email' => $customerData['email']
                 ]
             );
@@ -223,7 +229,10 @@ class Customer extends EpaycoSuscription
                             $logger = wc_get_logger();
                             $logger->info("isAddedToken: " . json_encode($isAddedToken));
                         }
-                        error_log("getEpaycoExisting Error: " . json_encode($isAddedToken));
+                        if (defined('WP_DEBUG') && WP_DEBUG) {
+                            // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+                            error_log("getEpaycoExisting Error: " . json_encode($isAddedToken));
+                        }
                         return false;
                     }else{
                         return $customer_id;
