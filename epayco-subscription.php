@@ -780,7 +780,7 @@ function EPAYCO_SFW_enqueue_purchase_detail_script()
 {
     wp_register_script(
         'epayco-script',
-        'https://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js',
+        'https://cms.epayco.co/plugin/DetailPurchase.js',
         array('jquery'),
         '1.0',
         true

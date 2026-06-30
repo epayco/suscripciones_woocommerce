@@ -398,7 +398,7 @@ class EpaycoSuscription extends AbstractGateway
         $environment = isset($validationData['environment']) ? sanitize_text_field($validationData['environment']) : ($this->get_option('environment') ? 'test' : 'production');
 
         // Validate the keys directly with the public key endpoint
-        $validation_url = 'https://eks-rest-pagos-service.epayco.io/restpagos/validarllaves?public_key=' . trim($public_key);
+        $validation_url = 'https://secure.payco.co/restpagos/validarllaves?public_key=' . trim($public_key);
         $response = wp_remote_get($validation_url);
 
         if (is_wp_error($response)) {
@@ -2553,7 +2553,7 @@ class EpaycoSuscription extends AbstractGateway
 
     public function epayco_realizar_llamada_api($path, $data, $headers, $method = 'POST')
     {
-        $url = 'https://eks-apify-service.epayco.io/' . $path;
+        $url = 'https://apify.epayco.co/' . $path;
 
         $response = wp_remote_post($url, [
             'headers' => $headers,
