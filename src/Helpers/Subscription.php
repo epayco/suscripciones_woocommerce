@@ -156,7 +156,8 @@ class Subscription extends EpaycoSuscription
                     }else{
                         if( $is_payment_rejected ) {
                             $response = isset($sub->data->respuesta) ? esc_html($sub->data->respuesta) : 'Rechazada';
-                            wc_add_notice(__("La transacción {$response}, por favor intente de nuevo.", 'epayco-subscriptions-for-woocommerce'), 'error');
+                            /* translators: %s es la respuesta de la transacción de ePayco */
+                            wc_add_notice(sprintf(__('La transacción %s, por favor intente de nuevo.', 'epayco-subscriptions-for-woocommerce'), $response), 'error');
                             //wp_redirect(wc_get_checkout_url());
                             wp_safe_redirect($order->get_checkout_payment_url(true));
                             exit;
@@ -175,7 +176,7 @@ class Subscription extends EpaycoSuscription
             $arguments = array();
             $arguments['ref_payco'] = $refPayco;
             $redirect_url = add_query_arg($arguments, $order->get_checkout_order_received_url());
-            wp_redirect($redirect_url);
+            wp_safe_redirect($redirect_url);
         } catch (Exception $exception) {
             if (class_exists('WC_Logger')) {
                 $logger->info("handleSubscriptions" . $exception->getMessage());
@@ -191,13 +192,19 @@ class Subscription extends EpaycoSuscription
     {
         try {
             $result = $this->epaycoSdk->subscriptions->cancel($subscription_id);
-            error_log("ePayco cancel result: " . print_r($result, true));
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_print_r
+                error_log("ePayco cancel result: " . print_r($result, true));
+            }
         } catch (Exception $exception) {
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
                 $logger->info("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
             }
-            error_log("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
+            if (defined('WP_DEBUG') && WP_DEBUG) {
+                // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
+                error_log("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
+            }
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
                 $logger->info("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());

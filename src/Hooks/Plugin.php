@@ -12,9 +12,9 @@ class Plugin
 
     public const LOADED_PLUGIN_ACTION = 'epaycosubscription_main_plugin_loaded';
 
-    public const ENABLE_CREDITS_ACTION = 'ep_enable_credits_action';
+    public const ENABLE_CREDITS_ACTION = 'epaycosubscription_enable_credits_action';
 
-    public const EXECUTE_ACTIVATE_PLUGIN = 'ep_execute_activate';
+    public const EXECUTE_ACTIVATE_PLUGIN = 'epaycosubscription_execute_activate';
 
     /**
      * Register to plugin update event
@@ -72,7 +72,7 @@ class Plugin
      */
     public function registerEnableCreditsAction($callback)
     {
-        add_action(self::ENABLE_CREDITS_ACTION, $callback);
+        add_action(self::ENABLE_CREDITS_ACTION, $callback); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
     }
 
     /**
@@ -82,7 +82,7 @@ class Plugin
      */
     public function executeCreditsAction(): void
     {
-        do_action(self::ENABLE_CREDITS_ACTION);
+        do_action(self::ENABLE_CREDITS_ACTION); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
     }
 
     /**
@@ -92,7 +92,7 @@ class Plugin
      */
     public function executePluginLoadedAction(): void
     {
-        do_action(self::LOADED_PLUGIN_ACTION);
+        do_action(self::LOADED_PLUGIN_ACTION); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
     }
 
     /**
@@ -102,7 +102,7 @@ class Plugin
      */
     public function executeUpdateCredentialAction(): void
     {
-        do_action(self::UPDATE_CREDENTIALS_ACTION);
+        do_action(self::UPDATE_CREDENTIALS_ACTION); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
     }
 
     /**
@@ -112,7 +112,7 @@ class Plugin
      */
     public function executeUpdateStoreInfoAction(): void
     {
-        do_action(self::UPDATE_STORE_INFO_ACTION);
+        do_action(self::UPDATE_STORE_INFO_ACTION); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
     }
 
     /**
@@ -122,7 +122,7 @@ class Plugin
      */
     public function executeUpdateTestModeAction(): void
     {
-        do_action(self::UPDATE_TEST_MODE_ACTION);
+        do_action(self::UPDATE_TEST_MODE_ACTION); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
     }
 
     /**
@@ -133,7 +133,7 @@ class Plugin
      */
     public function registerActivatePlugin($callback)
     {
-        add_action(self::EXECUTE_ACTIVATE_PLUGIN, $callback);
+        add_action(self::EXECUTE_ACTIVATE_PLUGIN, $callback); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
     }
 
     /**
@@ -143,6 +143,6 @@ class Plugin
      */
     public function executeActivatePluginAction(): void
     {
-        do_action(self::EXECUTE_ACTIVATE_PLUGIN);
+        do_action(self::EXECUTE_ACTIVATE_PLUGIN); // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.DynamicHooknameFound
     }
 }

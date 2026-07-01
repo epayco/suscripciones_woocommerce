@@ -147,6 +147,30 @@ msgid "ePayco Subscriptions"
 msgstr "Suscripciones ePayco"
 
 #: generated
+msgid "Successful payment test"
+msgstr "Pago exitoso de prueba"
+
+#: generated
+msgid "Successful payment"
+msgstr "Pago exitoso"
+
+#: src/Gateways/EpaycoSuscription.php:1770
+msgid "Successful subscription (subscription ID: %1$s), reference (%2$s)"
+msgstr "Suscripción exitosa (ID de suscripción: %1$s), referencia (%2$s)"
+
+#: generated
+msgid "Pending payment approval test"
+msgstr "Pago pendiente de aprobación"
+
+#: src/Gateways/EpaycoSuscription.php:2133
+msgid "Payment failed"
+msgstr "Pago fallido"
+
+#: src/Gateways/EpaycoSuscription.php:2134
+msgid "Payment rejected"
+msgstr "Pago rechazado"
+
+#: generated
 msgid "Create subscription products for your customers"
 msgstr "Crea productos de suscripción para tus clientes"
 

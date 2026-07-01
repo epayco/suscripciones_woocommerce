@@ -1,12 +1,12 @@
 === ePayco Subscriptions for WooCommerce ===
 Plugin Name: ePayco Subscriptions for WooCommerce
-Contributors: ePayco Team
+Contributors: epayco
 Donate link: https://epayco.com/
 Tags: e-commerce, checkout, epayco, subscriptions, recurring-payments
 Requires at least: 5.5
-Tested up to: 6.8
+Tested up to: 7.0
 Requires PHP: 8.2 
-Stable tag: 6.4.4
+Stable tag: 6.6.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 

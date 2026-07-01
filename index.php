@@ -1,5 +1,9 @@
 <?php
 
+if (!defined('ABSPATH')) {
+    exit;
+}
+
 /**
  * Part of Woo EpaycoSubscription Module
  * Author - EpaycoSubscription
