@@ -1,4 +1,4 @@
-# epayco-subscriptions-for-woocommerce
+# suscripciones_woocommerce
 
 **Si usted tiene alguna pregunta o problema, no dude en ponerse en contacto con nuestro soporte técnico: desarrollo@epayco.com.**
 

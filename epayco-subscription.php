@@ -2,14 +2,14 @@
 
 /**
  * @since             1.0.0
- * @package           epayco-subscriptions-for-woocommerce
+ * @package           suscripciones_woocommerce
  *
  * @wordpress-plugin
  * Plugin Name:       ePayco Subscriptions for WooCommerce
  * Description:       Plugin ePayco Subscription
  * Version:           6.6.2
  * Author:            ePayco
- * Text Domain:       epayco-subscriptions-for-woocommerce
+ * Text Domain:       suscripciones_woocommerce
  * Author URI:
  * License:           GPLv2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
@@ -88,7 +88,7 @@ function EPAYCO_SFW_disable_plugin(): void
 //add_action('woocommerce_checkout_update_order_meta', 'EPAYCO_SFW_some_custom_checkout_field_update_order_meta');
 function epaycosubscription_woocommerce_addon_settings_link($links)
 {
-    array_push($links, '<a href="admin.php?page=wc-settings&tab=checkout&section=woo-epaycosubscription">' . __('Settings', 'epayco-subscriptions-for-woocommerce') . '</a>');
+    array_push($links, '<a href="admin.php?page=wc-settings&tab=checkout&section=woo-epaycosubscription">' . __('Settings', 'suscripciones_woocommerce') . '</a>');
     return $links;
 }
 
@@ -105,7 +105,7 @@ function EPAYCO_SFW_register_epayco_suscription_order_status()
         'label_count' => _n_noop(
             'ePayco Pago Fallido <span class="count">(%s)</span>',
             'ePayco Pago Fallido <span class="count">(%s)</span>',
-            'epayco-subscriptions-for-woocommerce'
+            'suscripciones_woocommerce'
         )
     ));
 
@@ -119,7 +119,7 @@ function EPAYCO_SFW_register_epayco_suscription_order_status()
         'label_count' => _n_noop(
             'ePayco Pago Fallido Prueba <span class="count">(%s)</span>',
             'ePayco Pago Fallido Prueba <span class="count">(%s)</span>',
-            'epayco-subscriptions-for-woocommerce'
+            'suscripciones_woocommerce'
         )
     ));
 
@@ -133,7 +133,7 @@ function EPAYCO_SFW_register_epayco_suscription_order_status()
         'label_count' => _n_noop(
             'ePayco Pago Cancelado <span class="count">(%s)</span>',
             'ePayco Pago Cancelado <span class="count">(%s)</span>',
-            'epayco-subscriptions-for-woocommerce'
+            'suscripciones_woocommerce'
         )
     ));
 
@@ -147,7 +147,7 @@ function EPAYCO_SFW_register_epayco_suscription_order_status()
         'label_count' => _n_noop(
             'ePayco Pago Cancelado Prueba <span class="count">(%s)</span>',
             'ePayco Pago Cancelado Prueba <span class="count">(%s)</span>',
-            'epayco-subscriptions-for-woocommerce'
+            'suscripciones_woocommerce'
         )
     ));
 
@@ -161,7 +161,7 @@ function EPAYCO_SFW_register_epayco_suscription_order_status()
         'label_count' => _n_noop(
             'ePayco Pago Pendiente <span class="count">(%s)</span>',
             'ePayco Pago Pendiente <span class="count">(%s)</span>',
-            'epayco-subscriptions-for-woocommerce'
+            'suscripciones_woocommerce'
         )
     ));
 
@@ -175,7 +175,7 @@ function EPAYCO_SFW_register_epayco_suscription_order_status()
         'label_count' => _n_noop(
             'ePayco Pago Pendiente Prueba <span class="count">(%s)</span>',
             'ePayco Pago Pendiente Prueba <span class="count">(%s)</span>',
-            'epayco-subscriptions-for-woocommerce'
+            'suscripciones_woocommerce'
         )
     ));
 
@@ -189,7 +189,7 @@ function EPAYCO_SFW_register_epayco_suscription_order_status()
         'label_count' => _n_noop(
             'ePayco Procesando Pago <span class="count">(%s)</span>',
             'ePayco Procesando Pago <span class="count">(%s)</span>',
-            'epayco-subscriptions-for-woocommerce'
+            'suscripciones_woocommerce'
         )
     ));
 
@@ -203,7 +203,7 @@ function EPAYCO_SFW_register_epayco_suscription_order_status()
         'label_count' => _n_noop(
             'ePayco Procesando Pago Prueba<span class="count">(%s)</span>',
             'ePayco Procesando Pago Prueba<span class="count">(%s)</span>',
-            'epayco-subscriptions-for-woocommerce'
+            'suscripciones_woocommerce'
         )
     ));
 
@@ -214,7 +214,7 @@ function EPAYCO_SFW_register_epayco_suscription_order_status()
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Cancelado Prueba" */
-        'label_count' => _n_noop('Procesando<span class="count">(%s)</span>', 'Procesando<span class="count">(%s)</span>', 'epayco-subscriptions-for-woocommerce')
+        'label_count' => _n_noop('Procesando<span class="count">(%s)</span>', 'Procesando<span class="count">(%s)</span>', 'suscripciones_woocommerce')
     ));
 
     register_post_status('wc-processing_test', array(
@@ -224,7 +224,7 @@ function EPAYCO_SFW_register_epayco_suscription_order_status()
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "Procesando Prueba" */
-        'label_count' => _n_noop('Procesando Prueba<span class="count">(%s)</span>', 'Procesando Prueba<span class="count">(%s)</span>', 'epayco-subscriptions-for-woocommerce')
+        'label_count' => _n_noop('Procesando Prueba<span class="count">(%s)</span>', 'Procesando Prueba<span class="count">(%s)</span>', 'suscripciones_woocommerce')
     ));
 
     register_post_status('wc-epayco-completed', array(
@@ -234,7 +234,7 @@ function EPAYCO_SFW_register_epayco_suscription_order_status()
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Completado" */
-        'label_count' => _n_noop('ePayco Pago Completado <span class="count">(%s)</span>', 'ePayco Pago Completado <span class="count">(%s)</span>', 'epayco-subscriptions-for-woocommerce')
+        'label_count' => _n_noop('ePayco Pago Completado <span class="count">(%s)</span>', 'ePayco Pago Completado <span class="count">(%s)</span>', 'suscripciones_woocommerce')
     ));
 
     register_post_status('wc-epayco_completed', array(
@@ -244,7 +244,7 @@ function EPAYCO_SFW_register_epayco_suscription_order_status()
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "ePayco Pago Completado Prueba" */
-        'label_count' => _n_noop('ePayco Pago Completado Prueba <span class="count">(%s)</span>', 'ePayco Pago Completado Prueba <span class="count">(%s)</span>', 'epayco-subscriptions-for-woocommerce')
+        'label_count' => _n_noop('ePayco Pago Completado Prueba <span class="count">(%s)</span>', 'ePayco Pago Completado Prueba <span class="count">(%s)</span>', 'suscripciones_woocommerce')
     ));
 
     register_post_status('wc-completed', array(
@@ -254,7 +254,7 @@ function EPAYCO_SFW_register_epayco_suscription_order_status()
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "Completado" */
-        'label_count' => _n_noop('Completado<span class="count">(%s)</span>', 'Completado<span class="count">(%s)</span>', 'epayco-subscriptions-for-woocommerce')
+        'label_count' => _n_noop('Completado<span class="count">(%s)</span>', 'Completado<span class="count">(%s)</span>', 'suscripciones_woocommerce')
     ));
 
     register_post_status('wc-completed_test', array(
@@ -264,7 +264,7 @@ function EPAYCO_SFW_register_epayco_suscription_order_status()
         'show_in_admin_all_list' => true,
         'exclude_from_search' => false,
         /* translators: %s representa la cantidad de pedidos con estado "Completado Prueba" */
-        'label_count' => _n_noop('Completado Prueba<span class="count">(%s)</span>', 'Completado Prueba<span class="count">(%s)</span>', 'epayco-subscriptions-for-woocommerce')
+        'label_count' => _n_noop('Completado Prueba<span class="count">(%s)</span>', 'Completado Prueba<span class="count">(%s)</span>', 'suscripciones_woocommerce')
     ));
 }
 
@@ -471,38 +471,38 @@ add_filter('woocommerce_checkout_fields', function ($fields) {
     $is_english = ($lang === 'en'); // True for English, False for Spanish or any other language
 
     if ($is_english) {
-        $label_type_doc = __('Type of Identification Document', 'epayco-subscriptions-for-woocommerce');
-        $placeholder_type_doc = __('Select document type', 'epayco-subscriptions-for-woocommerce');
-        $select_type_doc = __('Select the type of document', 'epayco-subscriptions-for-woocommerce');
-        $label_dni = __('Document Number', 'epayco-subscriptions-for-woocommerce');
+        $label_type_doc = __('Type of Identification Document', 'suscripciones_woocommerce');
+        $placeholder_type_doc = __('Select document type', 'suscripciones_woocommerce');
+        $select_type_doc = __('Select the type of document', 'suscripciones_woocommerce');
+        $label_dni = __('Document Number', 'suscripciones_woocommerce');
 
         $doc_types = array(
             ''     => $select_type_doc,
-            'CC'   => __('Citizenship ID Card', 'epayco-subscriptions-for-woocommerce'),
-            'CE'   => __('Foreigner ID Card', 'epayco-subscriptions-for-woocommerce'),
-            'PPN'  => __('Passport', 'epayco-subscriptions-for-woocommerce'),
-            'SSN'  => __('Social Security Number', 'epayco-subscriptions-for-woocommerce'),
-            'LIC'  => __('Driver License', 'epayco-subscriptions-for-woocommerce'),
-            'NIT'  => __('Tax Identification Number (NIT)', 'epayco-subscriptions-for-woocommerce'),
-            'TI'   => __('Identity Card', 'epayco-subscriptions-for-woocommerce'),
-            'DNI'  => __('National Identification Document', 'epayco-subscriptions-for-woocommerce')
+            'CC'   => __('Citizenship ID Card', 'suscripciones_woocommerce'),
+            'CE'   => __('Foreigner ID Card', 'suscripciones_woocommerce'),
+            'PPN'  => __('Passport', 'suscripciones_woocommerce'),
+            'SSN'  => __('Social Security Number', 'suscripciones_woocommerce'),
+            'LIC'  => __('Driver License', 'suscripciones_woocommerce'),
+            'NIT'  => __('Tax Identification Number (NIT)', 'suscripciones_woocommerce'),
+            'TI'   => __('Identity Card', 'suscripciones_woocommerce'),
+            'DNI'  => __('National Identification Document', 'suscripciones_woocommerce')
         );
     } else {
-        $label_type_doc = __('Tipo de Identificación', 'epayco-subscriptions-for-woocommerce');
-        $placeholder_type_doc = __('Seleccionar tipo de documento', 'epayco-subscriptions-for-woocommerce');
-        $select_type_doc = __('Seleccione el tipo de documento', 'epayco-subscriptions-for-woocommerce');
-        $label_dni = __('Número de documento', 'epayco-subscriptions-for-woocommerce');
+        $label_type_doc = __('Tipo de Identificación', 'suscripciones_woocommerce');
+        $placeholder_type_doc = __('Seleccionar tipo de documento', 'suscripciones_woocommerce');
+        $select_type_doc = __('Seleccione el tipo de documento', 'suscripciones_woocommerce');
+        $label_dni = __('Número de documento', 'suscripciones_woocommerce');
 
         $doc_types = array(
             ''     => $select_type_doc,
-            'CC'   => __('Cédula de ciudadanía', 'epayco-subscriptions-for-woocommerce'),
-            'CE'   => __('Cédula de extranjería', 'epayco-subscriptions-for-woocommerce'),
-            'PPN'  => __('Pasaporte', 'epayco-subscriptions-for-woocommerce'),
-            'SSN'  => __('Número de seguridad social', 'epayco-subscriptions-for-woocommerce'),
-            'LIC'  => __('Licencia de conducción', 'epayco-subscriptions-for-woocommerce'),
-            'NIT'  => __('Número de identificación tributaria (NIT)', 'epayco-subscriptions-for-woocommerce'),
-            'TI'   => __('Tarjeta de identidad', 'epayco-subscriptions-for-woocommerce'),
-            'DNI'  => __('Documento nacional de identificación', 'epayco-subscriptions-for-woocommerce')
+            'CC'   => __('Cédula de ciudadanía', 'suscripciones_woocommerce'),
+            'CE'   => __('Cédula de extranjería', 'suscripciones_woocommerce'),
+            'PPN'  => __('Pasaporte', 'suscripciones_woocommerce'),
+            'SSN'  => __('Número de seguridad social', 'suscripciones_woocommerce'),
+            'LIC'  => __('Licencia de conducción', 'suscripciones_woocommerce'),
+            'NIT'  => __('Número de identificación tributaria (NIT)', 'suscripciones_woocommerce'),
+            'TI'   => __('Tarjeta de identidad', 'suscripciones_woocommerce'),
+            'DNI'  => __('Documento nacional de identificación', 'suscripciones_woocommerce')
         );
     }
 
@@ -572,34 +572,34 @@ add_action('woocommerce_init', function () {
     $is_english = ($lang === 'en'); // True for English, False for Spanish or any other language
 
     if ($is_english) {
-        $label_type_doc = __('Identification Document', 'epayco-subscriptions-for-woocommerce');
-        $placeholder_type_doc = __('Select document type', 'epayco-subscriptions-for-woocommerce');
-        $label_dni = __('Document Number', 'epayco-subscriptions-for-woocommerce');
+        $label_type_doc = __('Identification Document', 'suscripciones_woocommerce');
+        $placeholder_type_doc = __('Select document type', 'suscripciones_woocommerce');
+        $label_dni = __('Document Number', 'suscripciones_woocommerce');
 
         $doc_types_options = [
-            ['value' => 'CC', 'label' => __('Citizenship ID Card', 'epayco-subscriptions-for-woocommerce')],
-            ['value' => 'CE', 'label' => __('Foreigner ID Card', 'epayco-subscriptions-for-woocommerce')],
-            ['value' => 'PPN', 'label' => __('Passport', 'epayco-subscriptions-for-woocommerce')],
-            ['value' => 'SSN', 'label' => __('Social Security Number', 'epayco-subscriptions-for-woocommerce')],
-            ['value' => 'LIC', 'label' => __('Driver License', 'epayco-subscriptions-for-woocommerce')],
-            ['value' => 'NIT', 'label' => __('Tax Identification Number (NIT)', 'epayco-subscriptions-for-woocommerce')],
-            ['value' => 'TI', 'label' => __('Identity Card', 'epayco-subscriptions-for-woocommerce')],
-            ['value' => 'DNI', 'label' => __('National Identification Document', 'epayco-subscriptions-for-woocommerce')]
+            ['value' => 'CC', 'label' => __('Citizenship ID Card', 'suscripciones_woocommerce')],
+            ['value' => 'CE', 'label' => __('Foreigner ID Card', 'suscripciones_woocommerce')],
+            ['value' => 'PPN', 'label' => __('Passport', 'suscripciones_woocommerce')],
+            ['value' => 'SSN', 'label' => __('Social Security Number', 'suscripciones_woocommerce')],
+            ['value' => 'LIC', 'label' => __('Driver License', 'suscripciones_woocommerce')],
+            ['value' => 'NIT', 'label' => __('Tax Identification Number (NIT)', 'suscripciones_woocommerce')],
+            ['value' => 'TI', 'label' => __('Identity Card', 'suscripciones_woocommerce')],
+            ['value' => 'DNI', 'label' => __('National Identification Document', 'suscripciones_woocommerce')]
         ];
     } else {
-        $label_type_doc = __('Tipo de Identificación', 'epayco-subscriptions-for-woocommerce');
-        $placeholder_type_doc = __('Seleccionar tipo de documento', 'epayco-subscriptions-for-woocommerce');
-        $label_dni = __('Número de documento', 'epayco-subscriptions-for-woocommerce');
+        $label_type_doc = __('Tipo de Identificación', 'suscripciones_woocommerce');
+        $placeholder_type_doc = __('Seleccionar tipo de documento', 'suscripciones_woocommerce');
+        $label_dni = __('Número de documento', 'suscripciones_woocommerce');
 
         $doc_types_options = [
-            ['value' => 'CC', 'label' => __('Cédula de ciudadanía', 'epayco-subscriptions-for-woocommerce')],
-            ['value' => 'CE', 'label' => __('Cédula de extranjería', 'epayco-subscriptions-for-woocommerce')],
-            ['value' => 'PPN', 'label' => __('Pasaporte', 'epayco-subscriptions-for-woocommerce')],
-            ['value' => 'SSN', 'label' => __('Número de seguridad social', 'epayco-subscriptions-for-woocommerce')],
-            ['value' => 'LIC', 'label' => __('Licencia de conducción', 'epayco-subscriptions-for-woocommerce')],
-            ['value' => 'NIT', 'label' => __('(NIT) Número de identificación tributaria', 'epayco-subscriptions-for-woocommerce')],
-            ['value' => 'TI', 'label' => __('Tarjeta de identidad', 'epayco-subscriptions-for-woocommerce')],
-            ['value' => 'DNI', 'label' => __('Documento nacional de identificación', 'epayco-subscriptions-for-woocommerce')]
+            ['value' => 'CC', 'label' => __('Cédula de ciudadanía', 'suscripciones_woocommerce')],
+            ['value' => 'CE', 'label' => __('Cédula de extranjería', 'suscripciones_woocommerce')],
+            ['value' => 'PPN', 'label' => __('Pasaporte', 'suscripciones_woocommerce')],
+            ['value' => 'SSN', 'label' => __('Número de seguridad social', 'suscripciones_woocommerce')],
+            ['value' => 'LIC', 'label' => __('Licencia de conducción', 'suscripciones_woocommerce')],
+            ['value' => 'NIT', 'label' => __('(NIT) Número de identificación tributaria', 'suscripciones_woocommerce')],
+            ['value' => 'TI', 'label' => __('Tarjeta de identidad', 'suscripciones_woocommerce')],
+            ['value' => 'DNI', 'label' => __('Documento nacional de identificación', 'suscripciones_woocommerce')]
         ];
     }
 

@@ -40,7 +40,7 @@ class Subscription extends EpaycoSuscription
                     $planJson = json_decode(json_encode($suscriptioncreted), true);
                     $dataError = $planJson;
                     $error = $this->errorMessages($dataError);
-                    //$error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('El token no se puede asociar al cliente, verifique que: el token existe, el cliente no esté asociado y que el token no este asociado a otro cliente.', 'epayco-subscriptions-for-woocommerce'));
+                    //$error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('El token no se puede asociar al cliente, verifique que: el token existe, el cliente no esté asociado y que el token no este asociado a otro cliente.', 'suscripciones_woocommerce'));
                     wc_add_notice($error, 'error');
                     //wp_redirect(wc_get_checkout_url());
                     $redirect_url = $order->get_checkout_payment_url(true);
@@ -92,7 +92,7 @@ class Subscription extends EpaycoSuscription
                 $subscriptionJson = json_decode(json_encode($sub), true);
                 $dataError = $subscriptionJson;
                 $error = $this->errorMessages($dataError);
-                //$error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('El token no se puede asociar al cliente, verifique que: el token existe, el cliente no esté asociado y que el token no este asociado a otro cliente.', 'epayco-subscriptions-for-woocommerce'));
+                //$error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('El token no se puede asociar al cliente, verifique que: el token existe, el cliente no esté asociado y que el token no este asociado a otro cliente.', 'suscripciones_woocommerce'));
                 wc_add_notice($error, 'error');
                 //wp_redirect(wc_get_checkout_url());
                 $redirect_url = $order->get_checkout_payment_url(true);
@@ -157,7 +157,7 @@ class Subscription extends EpaycoSuscription
                         if( $is_payment_rejected ) {
                             $response = isset($sub->data->respuesta) ? esc_html($sub->data->respuesta) : 'Rechazada';
                             /* translators: %s es la respuesta de la transacción de ePayco */
-                            wc_add_notice(sprintf(__('La transacción %s, por favor intente de nuevo.', 'epayco-subscriptions-for-woocommerce'), $response), 'error');
+                            wc_add_notice(sprintf(__('La transacción %s, por favor intente de nuevo.', 'suscripciones_woocommerce'), $response), 'error');
                             //wp_redirect(wc_get_checkout_url());
                             wp_safe_redirect($order->get_checkout_payment_url(true));
                             exit;
@@ -170,7 +170,7 @@ class Subscription extends EpaycoSuscription
                     }
                 }
             }else{
-                throw new Exception(__('Objeto no es una instancia de WC_Subscription.', 'epayco-subscriptions-for-woocommerce'));
+                throw new Exception(__('Objeto no es una instancia de WC_Subscription.', 'suscripciones_woocommerce'));
             }
             WC()->cart->empty_cart();
             $arguments = array();
