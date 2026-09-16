@@ -75,7 +75,7 @@ class Plan extends EpaycoSuscription
                 $planJson = json_decode(json_encode($plan_), true);
                 $dataError = $planJson;
                 $error = $this->errorMessages($dataError);
-                //$error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('El token no se puede asociar al cliente, verifique que: el token existe, el cliente no esté asociado y que el token no este asociado a otro cliente.', 'epayco-subscriptions-for-woocommerce'));
+                //$error = isset($dataError['message']) ? $dataError['message'] : (isset($dataError["message"]) ? $dataError["message"] : __('El token no se puede asociar al cliente, verifique que: el token existe, el cliente no esté asociado y que el token no este asociado a otro cliente.', 'suscripciones_woocommerce'));
                 wc_add_notice($error, 'error');
                 //wp_redirect(wc_get_checkout_url());
                 $redirect_url = $order->get_checkout_payment_url(true);

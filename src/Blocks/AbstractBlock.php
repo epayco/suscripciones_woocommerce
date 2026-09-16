@@ -120,7 +120,7 @@ abstract class AbstractBlock extends AbstractPaymentMethodType implements Epayco
         }
         // Fallback final
         if (empty($title)) {
-            $title = __('Pay with ePayco', 'epayco-subscriptions-for-woocommerce');
+            $title = __('Pay with ePayco', 'suscripciones_woocommerce');
         }
         
         $description = $this->get_setting('description');
