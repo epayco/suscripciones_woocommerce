@@ -80,8 +80,8 @@ if (!defined('ABSPATH')) {
             // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template local variables defined within this file and passed from controller
             if (strtoupper($lang) == 'ES') {
   
-                $loader = 'https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png';
-                $button = 'https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/botonPagarEpayco.png';
+                $loader = 'https://multimedia.epayco.io/plugins-sdks/loader.png';
+                $button = 'https://multimedia.epayco.io/plugins-sdks/botonPagarEpayco.png';
                 $title = 'Cargando métodos de pago';
                 $subtitle = 'Si no se cargan automáticamente, haz click en el botón "Pagar con ePayco"';
                 $processing = 'Procesando Pago...';
@@ -111,8 +111,8 @@ if (!defined('ABSPATH')) {
                 $cardInfoTitle = 'Información de la tarjeta';
                 $pay = 'Pagar';
             } else {
-                $loader = 'https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/loader.png';
-                $button = 'https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/payBottonEpayco.png';
+                $loader = 'https://multimedia.epayco.io/plugins-sdks/loader.png';
+                $button = 'https://multimedia.epayco.io/plugins-sdks/payBottonEpayco.png';
                 $title = 'Loading payment methods';
                 $subtitle = 'If they do not load automatically, click on the "Pay with ePayco" button';
                 $processing = 'Processing Payment...';
