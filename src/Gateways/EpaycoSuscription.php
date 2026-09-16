@@ -886,7 +886,7 @@ class EpaycoSuscription extends AbstractGateway
                 $logger->info("Error : " . $exception->getMessage());
             }
 
-            throw $exception; 
+            throw $exception;
         }
 
         return $customer;
@@ -2346,8 +2346,21 @@ class EpaycoSuscription extends AbstractGateway
 
     public function updateStatusSubscription()
     {
-        $subs = $this->epaycoSdk->subscriptions->getList();
         $logger = new \WC_Logger();
+
+        if (empty($this->epaycoSdk) || empty($this->epaycoSdk->subscriptions)) {
+            $logger->add(self::LOG_SOURCE, "No se puede ejecutar getList(). Revisar inicialización del SDK/credenciales.");
+            return;
+        }
+
+        try {
+            $subs = $this->epaycoSdk->subscriptions->getList();
+        } catch (\Throwable $e) {
+            $logger->add(self::LOG_SOURCE, "Excepción al llamar getList(): " . $e->getMessage());
+            return;
+        }
+
+
         global $wpdb;
         $table_name = $wpdb->prefix . 'wc_orders';
         $counter = 10;
@@ -2434,6 +2447,8 @@ class EpaycoSuscription extends AbstractGateway
                     }
                 }
             }
+        } else {
+            $logger->add(self::LOG_SOURCE, "No se encontraron suscripciones");
         }
     }
 
@@ -2595,7 +2610,7 @@ class EpaycoSuscription extends AbstractGateway
     {
         $locale = \get_locale();
 
-       
+
         if (is_string($locale) && strpos($locale, '_') !== false) {
             $parts = explode('_', $locale);
             $locale = $parts[0];
@@ -2605,6 +2620,6 @@ class EpaycoSuscription extends AbstractGateway
             return 'es';
         }
 
-        return 'en'; 
+        return 'en';
     }
 }
