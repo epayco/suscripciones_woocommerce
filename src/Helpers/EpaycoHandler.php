@@ -126,7 +126,7 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
                     ]
                 );
                 if (!$inserCustomer) {
-                    $error_message = __('No se insertó el registro del cliente en la base de datos.', 'epayco-subscriptions-for-woocommerce');
+                    $error_message = __('No se insertó el registro del cliente en la base de datos.', 'suscripciones_woocommerce');
                     wc_add_notice($error_message, 'error');
                     // Redirigir al mismo receipt page para permitir reintentar el pago sin recargar el checkout
                     $redirect_url = $this->orderEpayco->get_checkout_payment_url(true);

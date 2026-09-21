@@ -6,7 +6,7 @@
         s=window.wp.htmlEntities,
         a=window.wc.wcSettings,
         l=(0,a.getSetting)("epayco_data",{}),
-        o=(0,t.__)("Pay with ePayco","epayco-subscriptions-for-woocommerce"),
+        o=(0,t.__)("Pay with ePayco","suscripciones_woocommerce"),
         c=(0,s.decodeEntities)(l.title)||o,
         w=()=>(0,s.decodeEntities)(l.description||""),
         y={

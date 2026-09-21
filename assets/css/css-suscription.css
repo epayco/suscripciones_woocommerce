@@ -3284,7 +3284,7 @@ input[type="checkbox"]:checked + label:before {
 
 /* Estilos para el botón de ePayco */
 .button-epayco {
-  background-image: url(https://multimedia-epayco-preprod.s3.us-east-1.amazonaws.com/plugins-sdks/botonPagarEpayco.png);
+  background-image: url(https://multimedia.epayco.io/plugins-sdks/botonPagarEpayco.png);
   background-repeat: no-repeat;
   height: 35px;
   width: 312px;

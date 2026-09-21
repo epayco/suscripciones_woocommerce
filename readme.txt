@@ -6,7 +6,7 @@ Tags: e-commerce, checkout, epayco, subscriptions, recurring-payments
 Requires at least: 5.5
 Tested up to: 7.0
 Requires PHP: 8.2 
-Stable tag: 6.6.2
+Stable tag: 6.6.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
