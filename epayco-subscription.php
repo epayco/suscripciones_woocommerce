@@ -37,7 +37,7 @@ if ( ! defined( 'DAVIPAY_ROUTE_IMAGES_S3' ) ) {
     define( 'DAVIPAY_ROUTE_IMAGES_S3', 'http://multimedia.epayco.io/plugins-sdks/' );
 }
 if ( ! defined( 'CMS_ROUTE_IMAGES_S3' ) ) {
-    define( 'CMS_ROUTE_IMAGES_S3', 'https://cms.epayco.co/imagenes/' );
+    define( 'CMS_ROUTE_IMAGES_S3', 'https://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js/imagenes/' );
 }
 
 defined('EPS_PLUGIN_FILE') || define('EPS_PLUGIN_FILE', __FILE__);
@@ -790,7 +790,7 @@ function EPAYCO_SFW_enqueue_purchase_detail_script()
 {
     wp_register_script(
         'epayco-script',
-        'https://cms.epayco.co/plugin/DetailPurchase.js',
+        'https://eks-cms-backend-platforms-service.epayco.io/plugin/DetailPurchase.js/plugin/DetailPurchase.js',
         array('jquery'),
         '1.0',
         true
