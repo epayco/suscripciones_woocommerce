@@ -24,7 +24,9 @@
  * @var string $indexjs
  * @var string $appjs
  * @var string $cardsjs
- *  @var string $epaycocheckout
+ * @var string $epaycocheckout
+ * 
+ * 
  * @see \EpaycoSubscription\Woocommerce\Gateways\EpaycoSuscription
  */
 
@@ -80,10 +82,10 @@ if (!defined('ABSPATH')) {
             // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template local variables defined within this file and passed from controller
             if (strtoupper($lang) == 'ES') {
   
-                $loader = 'https://multimedia.epayco.io/plugins-sdks/loader.png';
-                $button = 'https://multimedia.epayco.io/plugins-sdks/botonPagarEpayco.png';
+                $loader =  DAVIPAY_ROUTE_IMAGES_S3 . 'checkout/checkout-button/logo-checkout-payment-loader.svg';
+                $button = DAVIPAY_ROUTE_IMAGES_S3 . 'checkout/checkout-button/logo-checkout-payment-button-es.png';
                 $title = 'Cargando métodos de pago';
-                $subtitle = 'Si no se cargan automáticamente, haz click en el botón "Pagar con ePayco"';
+                $subtitle = 'Si no se cargan automáticamente, haz click en el botón "Pagar con Davipay"';
                 $processing = 'Procesando Pago...';
                 $name = 'Nombre';
                 $cardNumber = 'Tarjeta';
@@ -96,7 +98,7 @@ if (!defined('ABSPATH')) {
                 $cancelTransaction = 'Cancelar Transacción';
                 $expiredSession = 'Tu sesión ha expirado por inactividad';
                 $cancelButton = 'Cancelar';
-                $securePayment = 'Pago seguro por';
+                $Davipay = 'Pago seguro por';
                 $warning = 'Advertencia';
                 $sessionExpires = 'Tu sesión vencerá en:';
                 $seconds = 'Segundos';
@@ -111,10 +113,10 @@ if (!defined('ABSPATH')) {
                 $cardInfoTitle = 'Información de la tarjeta';
                 $pay = 'Pagar';
             } else {
-                $loader = 'https://multimedia.epayco.io/plugins-sdks/loader.png';
-                $button = 'https://multimedia.epayco.io/plugins-sdks/payBottonEpayco.png';
+                $loader =  DAVIPAY_ROUTE_IMAGES_S3 . 'checkout/checkout-button/logo-checkout-payment-loader.svg';
+                $button = DAVIPAY_ROUTE_IMAGES_S3 . 'checkout/checkout-button/logo-checkout-payment-button-ing.png';
                 $title = 'Loading payment methods';
-                $subtitle = 'If they do not load automatically, click on the "Pay with ePayco" button';
+                $subtitle = 'If they do not load automatically, click on the "Pay with Davipay" button';
                 $processing = 'Processing Payment...';
                 $name = 'Name';
                 $cardNumber = 'Card';
@@ -127,7 +129,7 @@ if (!defined('ABSPATH')) {
                 $cancelTransaction = 'Cancel Transaction';
                 $expiredSession = 'Your session has expired due to inactivity';
                 $cancelButton = 'Cancel';
-                $securePayment = 'Secure payment by';
+                $Davipay = 'Secure payment by';
                 $warning = 'Warning';
                 $sessionExpires = 'Your session will expire in:';
                 $seconds = 'Seconds';
@@ -215,7 +217,7 @@ if (!defined('ABSPATH')) {
                                 </svg><!-- <button class="fa fa-angle-left" ></button> -->
                             </div>
                             <div class="volverSalir">
-                                <p class="email ">&nbsp;&nbsp;jhon.doe@epayco.com</p>
+                                <p class="email ">&nbsp;&nbsp;jhon.doe@davipay.com</p>
                                 <button class="log-out " onclick="goBack();">
                                     <span class="logout-text"><?php echo esc_html($logout); ?></span>
                                 </button>
@@ -319,9 +321,9 @@ if (!defined('ABSPATH')) {
                 <p style="color:#1C0E49">
                     <svg class="svg-inline--fa fa-lock fa-w-14 secure" aria-hidden="true" data-prefix="fa" data-icon="lock" role="img" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 448 512" data-fa-i2svg="">
                         <path fill="currentColor" d="M400 224h-24v-72C376 68.2 307.8 0 224 0S72 68.2 72 152v72H48c-26.5 0-48 21.5-48 48v192c0 26.5 21.5 48 48 48h352c26.5 0 48-21.5 48-48V272c0-26.5-21.5-48-48-48zm-104 0H152v-72c0-39.7 32.3-72 72-72s72 32.3 72 72v72z"></path>
-                    </svg><!-- <i class="fa fa-lock secure"></i> --> <?php echo esc_html($securePayment); ?>
+                    </svg><!-- <i class="fa fa-lock secure"></i> --> <?php echo esc_html($Davipay); ?>
                 </p>
-                <?php echo wp_get_attachment_image(2, 'full', false, ['id' => 'logo_epayco', 'alt' => 'ePayco Logo', 'height' => '15px']); ?>
+                <?php echo wp_get_attachment_image(2, 'full', false, ['id' => 'logo_epayco', 'alt' => 'Davipay Logo', 'height' => '15px']); ?>
 
             </div>
         </footer>
@@ -521,11 +523,11 @@ if (!defined('ABSPATH')) {
             </div>
             <div class="footer-modal hidden-print" id="footer-animated">
                 <p id="pagar_logo_es">
-                    <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i><?php echo esc_html($securePayment); ?>
+                    <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i><?php echo esc_html($Davipay); ?>
                     <?php echo wp_get_attachment_image(4, 'full', false, ['height' => '20', 'style' => 'display: inline;']); ?>
                 </p>
                 <p id="pagar_logo_en">
-                    <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i><?php echo esc_html($securePayment); ?>
+                    <i class="fa fa-lock fa-lg" style="color: #2ECC71" aria-hidden="true"></i><?php echo esc_html($Davipay); ?>
                     <?php echo wp_get_attachment_image(4, 'full', false, ['height' => '20', 'style' => 'display: inline;']); ?>
                 </p>
             </div>

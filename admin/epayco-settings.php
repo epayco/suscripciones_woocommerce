@@ -10,7 +10,7 @@ return array(
     'enabled' => array(
         'title' => __('Habilitar/Deshabilitar', 'suscripciones_woocommerce'),
         'type' => 'checkbox',
-        'label' => __('Habilitar ePayco Checkout Suscripción', 'suscripciones_woocommerce'),
+        'label' => __('Habilitar Davipay Checkout Suscripción', 'suscripciones_woocommerce'),
         'default' => 'yes'
     ),
     'epayco_title' => array(
@@ -48,7 +48,7 @@ return array(
     'custIdCliente' => array(
         'title' => __('P_CUST_ID_CLIENTE', 'suscripciones_woocommerce'),
         'type' => 'text',
-        'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API', 'suscripciones_woocommerce'),
+        'description' => __('La encuentra en el panel de Davipay, integraciones, Llaves API', 'suscripciones_woocommerce'),
         'default' => '',
         'desc_tip' => true,
         'placeholder' => ''
@@ -56,7 +56,7 @@ return array(
     'pKey' => array(
         'title' => __('P_KEY', 'suscripciones_woocommerce'),
         'type' => 'text',
-        'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API', 'suscripciones_woocommerce'),
+        'description' => __('La encuentra en el panel de Davipay, integraciones, Llaves API', 'suscripciones_woocommerce'),
         'default' => '',
         'desc_tip' => true,
         'placeholder' => ''
@@ -64,7 +64,7 @@ return array(
     'apiKey' => array(
         'title' => __('PUBLIC_KEY', 'suscripciones_woocommerce'),
         'type' => 'text',
-        'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API', 'suscripciones_woocommerce'),
+        'description' => __('La encuentra en el panel de Davipay, integraciones, Llaves API', 'suscripciones_woocommerce'),
         'default' => '',
         'desc_tip' => true,
         'placeholder' => ''
@@ -72,7 +72,7 @@ return array(
     'privateKey' => array(
         'title' => __('PRIVATE_KEY', 'suscripciones_woocommerce'),
         'type' => 'password',
-        'description' => __('La encuentra en el panel de ePayco, integraciones, Llaves API', 'suscripciones_woocommerce'),
+        'description' => __('La encuentra en el panel de Davipay, integraciones, Llaves API', 'suscripciones_woocommerce'),
         'default' => '',
         'desc_tip' => true,
         'placeholder' => ''
@@ -83,8 +83,8 @@ return array(
         'css' => 'line-height: inherit',
         'description' => __('Seleccione el estado del pedido que se aplicaría a la hora de aceptar y confirmar el pago de la orden', 'suscripciones_woocommerce'),
         'options' => array(
-            'epayco-processing' => "ePayco Procesando Pago",
-            "epayco-completed" => "ePayco Pago Completado",
+            'epayco-processing' => "Davipay Procesando Pago",
+            "epayco-completed" => "Davipay Pago Completado",
             'processing' => "Procesando",
             "completed" => "Completado"
         ),

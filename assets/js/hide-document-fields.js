@@ -9,7 +9,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var additionalFieldsWrapper = document.querySelector('.wp-block-woocommerce-order-confirmation-additional-fields-wrapper');
     if (additionalFieldsWrapper) {
         additionalFieldsWrapper.style.display = 'none';
-        console.log('[ePayco] Hidden: wp-block-woocommerce-order-confirmation-additional-fields-wrapper');
+        console.log('[Davipay] Hidden: wp-block-woocommerce-order-confirmation-additional-fields-wrapper');
     }
     
     // Ocultar la sección de "Additional information" en mi-cuenta
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function() {
     var sections = document.querySelectorAll('section.wc-block-order-confirmation-additional-fields-wrapper');
     sections.forEach(function(section) {
         section.style.display = 'none';
-        console.log('[ePayco] Hidden: wc-block-order-confirmation-additional-fields-wrapper section');
+        console.log('[Davipay] Hidden: wc-block-order-confirmation-additional-fields-wrapper section');
     });
     
     // Alternativa: ocultar por el contenedor de lista de definiciones
@@ -31,7 +31,7 @@ document.addEventListener('DOMContentLoaded', function() {
             var section = list.closest('section');
             if (section) {
                 section.style.display = 'none';
-                console.log('[ePayco] Hidden: section containing additional fields list');
+                console.log('[Davipay] Hidden: section containing additional fields list');
             }
         }
     });

@@ -1,12 +1,12 @@
 window.addEventListener("load", (function () {
     (function ($) {
-        console.log("epayco")
+        console.log("Davipay")
 
         // Translation strings
         var i18n = {
             es: {
                 validationSuccess: "✓ Llaves validadas correctamente",
-                validationSuccessDesc: "Las credenciales API fueron verificadas exitosamente.<br>Ya puedes usar ePayco con normalidad.",
+                validationSuccessDesc: "Las credenciales API fueron verificadas exitosamente.<br>Ya puedes usar Davipay con normalidad.",
                 validationError: "✗ Error en validación",
                 connectionError: "Error de conexión",
                 connectionErrorDesc: "No se pudo conectar con el servidor. Verifica tu conexión e intenta nuevamente.",
@@ -18,7 +18,7 @@ window.addEventListener("load", (function () {
             },
             en: {
                 validationSuccess: "✓ Keys validated successfully",
-                validationSuccessDesc: "API credentials were verified successfully.<br>You can now use ePayco normally.",
+                validationSuccessDesc: "API credentials were verified successfully.<br>You can now use Davipay normally.",
                 validationError: "✗ Validation error",
                 connectionError: "Connection error",
                 connectionErrorDesc: "Could not connect to the server. Check your connection and try again.",
@@ -54,8 +54,7 @@ window.addEventListener("load", (function () {
             loader.style.display = "block";
             modal.style.display = "block";
             var url_validate = $("#path_validate")[0].innerHTML.trim();
-            var url_plugin = $("#path_plugin")[0].innerHTML.trim();
-
+            var url_davipay_s3 = $("#path_davipay_s3")[0].innerHTML.trim();
             const epayco_publickey = $("input:text[name=woocommerce_woo-epaycosubscription_apiKey]").val().replace(/\s/g, "");
 
             if (epayco_publickey !== "") {
@@ -74,7 +73,7 @@ window.addEventListener("load", (function () {
                         // Handle success response from ePayco API
                         if (response && response.success === true) {
                             updateEpaycoModal(
-                                url_plugin + "check.png",
+                                url_davipay_s3 + "admin/credentials/logos/check/logo-credentials-check.png",
                                 msgs.validationSuccess,
                                 msgs.validationSuccessDesc
                             );
@@ -82,14 +81,14 @@ window.addEventListener("load", (function () {
                             // Handle error response
                             const errorMsg = response.message || msgs.invalidCredentials;
                             updateEpaycoModal(
-                                url_plugin + "logo_warning.png",
+                                url_davipay_s3 + "admin/credentials/logos/warning/logo-credentials-warning.png",
                                 msgs.validationError,
                                 errorMsg
                             );
                         } else {
                             // Handle unexpected response format
                             updateEpaycoModal(
-                                url_plugin + "logo_warning.png",
+                                url_davipay_s3 + "admin/credentials/logos/warning/logo-credentials-warning.png",
                                 msgs.unexpectedError,
                                 msgs.unexpectedErrorDesc
                             );
@@ -101,7 +100,7 @@ window.addEventListener("load", (function () {
                         loader.style.display = "none";
 
                         updateEpaycoModal(
-                            url_plugin + "logo_warning.png",
+                            url_davipay_s3 + "admin/credentials/logos/warning/logo-credentials-warning.png",
                             msgs.connectionError,
                             msgs.connectionErrorDesc
                         );
@@ -110,7 +109,7 @@ window.addEventListener("load", (function () {
                 });
             } else {
                 updateEpaycoModal(
-                    url_plugin + "logo_warning.png",
+                    url_davipay_s3 + "admin/credentials/logos/warning/logo-credentials-warning.png",
                     msgs.fieldRequired,
                     msgs.fieldRequiredDesc
                 );

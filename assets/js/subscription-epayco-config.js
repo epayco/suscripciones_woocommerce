@@ -20,16 +20,16 @@
             success: (r) =>{
                 if (r.status){
                     swal.fire({
-                        title: 'Se han activado exitosamente',
-                        text: 'redireccionando a configuraciones...',
+                        title: 'Successfully activated',
+                        text: 'redirecting to settings...',
                         type: 'success',
                         showConfirmButton: false
                     });
                     window.location.replace(subscriptionepayco.urlConfig);
                 }else{
                     swal.fire({
-                        title: 'Error al instalar',
-                        text: 'No se ha podido descargar y activar el plugin "WooCommerce Subscriptions", intenta de nuevo o hazlo manualmente',
+                        title: 'Installation error',
+                        text: 'The "WooCommerce Subscriptions" plugin could not be downloaded and activated, please try again or do it manually',
                         type: 'warning'
                     });
                 }

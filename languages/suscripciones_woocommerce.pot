@@ -1,8 +1,8 @@
-# Copyright (C) 2026 ePayco
+# Copyright (C) 2026 Davipay
 # This file is distributed under the GPLv2 or later.
 msgid ""
 msgstr ""
-"Project-Id-Version: ePayco Subscriptions for WooCommerce 6.6.3\n"
+"Project-Id-Version: Davipay Subscriptions for WooCommerce 6.6.3\n"
 "Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/suscripciones_woocommerce\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -16,17 +16,17 @@ msgstr ""
 
 #. Plugin Name of the plugin
 #: epayco-subscription.php
-msgid "ePayco Subscriptions for WooCommerce"
+msgid "Davipay Subscriptions for WooCommerce"
 msgstr ""
 
 #. Description of the plugin
 #: epayco-subscription.php
-msgid "Plugin ePayco Subscription"
+msgid "Plugin Davipay Subscription"
 msgstr ""
 
 #. Author of the plugin
 #: epayco-subscription.php
-msgid "ePayco"
+msgid "Davipay"
 msgstr ""
 
 #: admin/epayco-settings.php:11
@@ -34,7 +34,7 @@ msgid "Habilitar/Deshabilitar"
 msgstr ""
 
 #: admin/epayco-settings.php:13
-msgid "Habilitar ePayco Checkout Suscripción"
+msgid "Habilitar Davipay Checkout Suscripción"
 msgstr ""
 
 #: admin/epayco-settings.php:17
@@ -94,7 +94,7 @@ msgstr ""
 #: admin/epayco-settings.php:59
 #: admin/epayco-settings.php:67
 #: admin/epayco-settings.php:75
-msgid "La encuentra en el panel de ePayco, integraciones, Llaves API"
+msgid "La encuentra en el panel de Davipay, integraciones, Llaves API"
 msgstr ""
 
 #: admin/epayco-settings.php:57
@@ -124,71 +124,71 @@ msgstr ""
 msgid "Settings"
 msgstr ""
 
-#. translators: %s representa la cantidad de pedidos con estado "ePayco Pago Fallido"
+#. translators: %s representa la cantidad de pedidos con estado "Davipay Pago Fallido"
 #: epayco-subscription.php:105
 #, php-format
-msgid "ePayco Pago Fallido <span class=\"count\">(%s)</span>"
-msgid_plural "ePayco Pago Fallido <span class=\"count\">(%s)</span>"
+msgid "Davipay Pago Fallido <span class=\"count\">(%s)</span>"
+msgid_plural "Davipay Pago Fallido <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#. translators: %s representa la cantidad de pedidos con estado "ePayco Pago Fallido Prueba"
+#. translators: %s representa la cantidad de pedidos con estado "Davipay Pago Fallido Prueba"
 #: epayco-subscription.php:119
 #, php-format
-msgid "ePayco Pago Fallido Prueba <span class=\"count\">(%s)</span>"
-msgid_plural "ePayco Pago Fallido Prueba <span class=\"count\">(%s)</span>"
+msgid "Davipay Pago Fallido Prueba <span class=\"count\">(%s)</span>"
+msgid_plural "Davipay Pago Fallido Prueba <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#. translators: %s representa la cantidad de pedidos con estado "ePayco Pago Cancelado"
+#. translators: %s representa la cantidad de pedidos con estado "Davipay Pago Cancelado"
 #: epayco-subscription.php:133
 #, php-format
-msgid "ePayco Pago Cancelado <span class=\"count\">(%s)</span>"
-msgid_plural "ePayco Pago Cancelado <span class=\"count\">(%s)</span>"
+msgid "Davipay Pago Cancelado <span class=\"count\">(%s)</span>"
+msgid_plural "Davipay Pago Cancelado <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#. translators: %s representa la cantidad de pedidos con estado "ePayco Pago Cancelado Prueba"
+#. translators: %s representa la cantidad de pedidos con estado "Davipay Pago Cancelado Prueba"
 #: epayco-subscription.php:147
 #, php-format
-msgid "ePayco Pago Cancelado Prueba <span class=\"count\">(%s)</span>"
-msgid_plural "ePayco Pago Cancelado Prueba <span class=\"count\">(%s)</span>"
+msgid "Davipay Pago Cancelado Prueba <span class=\"count\">(%s)</span>"
+msgid_plural "Davipay Pago Cancelado Prueba <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#. translators: %s representa la cantidad de pedidos con estado "ePayco Pago Pendiente"
+#. translators: %s representa la cantidad de pedidos con estado "Davipay Pago Pendiente"
 #: epayco-subscription.php:161
 #, php-format
-msgid "ePayco Pago Pendiente <span class=\"count\">(%s)</span>"
-msgid_plural "ePayco Pago Pendiente <span class=\"count\">(%s)</span>"
+msgid "Davipay Pago Pendiente <span class=\"count\">(%s)</span>"
+msgid_plural "Davipay Pago Pendiente <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#. translators: %s representa la cantidad de pedidos con estado "ePayco Pago Pendiente Prueba"
+#. translators: %s representa la cantidad de pedidos con estado "Davipay Pago Pendiente Prueba"
 #: epayco-subscription.php:175
 #, php-format
-msgid "ePayco Pago Pendiente Prueba <span class=\"count\">(%s)</span>"
-msgid_plural "ePayco Pago Pendiente Prueba <span class=\"count\">(%s)</span>"
+msgid "Davipay Pago Pendiente Prueba <span class=\"count\">(%s)</span>"
+msgid_plural "Davipay Pago Pendiente Prueba <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#. translators: %s representa la cantidad de pedidos con estado "ePayco Procesando Pago"
+#. translators: %s representa la cantidad de pedidos con estado "Davipay Procesando Pago"
 #: epayco-subscription.php:189
 #, php-format
-msgid "ePayco Procesando Pago <span class=\"count\">(%s)</span>"
-msgid_plural "ePayco Procesando Pago <span class=\"count\">(%s)</span>"
+msgid "Davipay Procesando Pago <span class=\"count\">(%s)</span>"
+msgid_plural "Davipay Procesando Pago <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#. translators: %s representa la cantidad de pedidos con estado "ePayco Procesando Pago Prueba"
+#. translators: %s representa la cantidad de pedidos con estado "Davipay Procesando Pago Prueba"
 #: epayco-subscription.php:203
 #, php-format
-msgid "ePayco Procesando Pago Prueba<span class=\"count\">(%s)</span>"
-msgid_plural "ePayco Procesando Pago Prueba<span class=\"count\">(%s)</span>"
+msgid "Davipay Procesando Pago Prueba<span class=\"count\">(%s)</span>"
+msgid_plural "Davipay Procesando Pago Prueba<span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#. translators: %s representa la cantidad de pedidos con estado "ePayco Pago Cancelado Prueba"
+#. translators: %s representa la cantidad de pedidos con estado "Davipay Pago Cancelado Prueba"
 #: epayco-subscription.php:217
 #, php-format
 msgid "Procesando<span class=\"count\">(%s)</span>"
@@ -204,19 +204,19 @@ msgid_plural "Procesando Prueba<span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#. translators: %s representa la cantidad de pedidos con estado "ePayco Pago Completado"
+#. translators: %s representa la cantidad de pedidos con estado "Davipay Pago Completado"
 #: epayco-subscription.php:237
 #, php-format
-msgid "ePayco Pago Completado <span class=\"count\">(%s)</span>"
-msgid_plural "ePayco Pago Completado <span class=\"count\">(%s)</span>"
+msgid "Davipay Pago Completado <span class=\"count\">(%s)</span>"
+msgid_plural "Davipay Pago Completado <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
-#. translators: %s representa la cantidad de pedidos con estado "ePayco Pago Completado Prueba"
+#. translators: %s representa la cantidad de pedidos con estado "Davipay Pago Completado Prueba"
 #: epayco-subscription.php:247
 #, php-format
-msgid "ePayco Pago Completado Prueba <span class=\"count\">(%s)</span>"
-msgid_plural "ePayco Pago Completado Prueba <span class=\"count\">(%s)</span>"
+msgid "Davipay Pago Completado Prueba <span class=\"count\">(%s)</span>"
+msgid_plural "Davipay Pago Completado Prueba <span class=\"count\">(%s)</span>"
 msgstr[0] ""
 msgstr[1] ""
 
@@ -363,16 +363,16 @@ msgstr ""
 #: src/Blocks/AbstractBlock.php:123
 #: src/Gateways/EpaycoSuscription.php:62
 #: assets/js/blocks.js:9
-msgid "Pay with ePayco"
+msgid "Pay with Davipay"
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:72
-msgid "Subscription payments with ePayco"
+msgid "Subscription payments with Davipay"
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:73
 #: src/Gateways/EpaycoSuscription.php:310
-msgid "ePayco Subscriptions"
+msgid "Davipay Subscriptions"
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:74
@@ -384,7 +384,7 @@ msgid "Enable/Disable"
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:166
-msgid "Enable ePayco subscription"
+msgid "Enable Davipay subscription"
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:170
@@ -413,7 +413,7 @@ msgid "This is the description of the store that users see at checkout"
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:194
-msgid "ePayco subscription details"
+msgid "Davipay subscription details"
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:198
@@ -427,7 +427,7 @@ msgstr ""
 #: src/Gateways/EpaycoSuscription.php:212
 #: src/Gateways/EpaycoSuscription.php:220
 #: src/Gateways/EpaycoSuscription.php:228
-#: src/Gateways/EpaycoSuscription.php:236
+#: src/Gateways/DavipaySuscription.php:236
 msgid "You can find it in the ePayco panel, integrations, API Keys"
 msgstr ""
 
@@ -440,11 +440,11 @@ msgid "Select the order status to apply when accepting and confirming the order 
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:247
-msgid "ePayco Processing Payment"
+msgid "Davipay Processing Payment"
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:248
-msgid "ePayco Payment Completed"
+msgid "Davipay Payment Completed"
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:249
@@ -476,15 +476,15 @@ msgid "Update subscription status every 60 seconds"
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:311
-msgid "With this module, you can safely accept subscription payments through the ePayco platform."
+msgid "With this module, you can safely accept subscription payments through the Davipay platform."
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:312
-msgid "When a customer selects ePayco as the payment method, the order status will change to ePayco Pending Payment."
+msgid "When a customer selects Davipay as the payment method, the order status will change to Davipay Pending Payment."
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:313
-msgid "Once the payment is accepted or rejected, ePayco will automatically notify your store and the order status will be updated accordingly."
+msgid "Once the payment is accepted or rejected, Davipay will automatically notify your store and the order status will be updated accordingly."
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:323
@@ -516,7 +516,7 @@ msgid "Check them in the integrations section"
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:344
-msgid "API Keys in your ePayco Dashboard."
+msgid "API Keys in your Davipay Dashboard."
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:738
@@ -533,7 +533,7 @@ msgid "El identificador del plan ya está en uso para este comercio. Por favor, 
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:1136
-msgid "Error al actualizar el plan en ePayco, por favor intente de nuevo."
+msgid "Error al actualizar el plan en Davipay, por favor intente de nuevo."
 msgstr ""
 
 #: src/Gateways/EpaycoSuscription.php:1613
@@ -597,7 +597,7 @@ msgstr ""
 msgid "Payment rejected: %s"
 msgstr ""
 
-#. translators: %s es la respuesta de la transacción de ePayco
+#. translators: %s es la respuesta de la transacción de Davipay
 #: src/Helpers/Subscription.php:160
 #, php-format
 msgid "La transacción %s, por favor intente de nuevo."
@@ -610,7 +610,7 @@ msgstr ""
 #. translators: %1$s es la URL de la documentación, %2$s es el texto del enlace
 #: src/WoocommerceEpaycoSubscription.php:245
 #, php-format
-msgid "Subscription ePayco: Woocommerce subscriptions must be installed and active, <a target=\"_blank\" href=\"%1$s\">%2$s</a>"
+msgid "Subscription Davipay: Woocommerce subscriptions must be installed and active, <a target=\"_blank\" href=\"%1$s\">%2$s</a>"
 msgstr ""
 
 #: src/WoocommerceEpaycoSubscription.php:247
@@ -632,5 +632,5 @@ msgstr ""
 #. translators: %s será reemplazado con el enlace a la página de WooCommerce
 #: src/WoocommerceEpaycoSubscription.php:303
 #, php-format
-msgid "Epayco module needs an active version of %s in order to work!"
+msgid "Davipay module needs an active version of %s in order to work!"
 msgstr ""

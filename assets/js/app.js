@@ -9156,7 +9156,7 @@ $("#cancel-transaction").on("click", function() {
 })
 
 $("#close-invoice").on("click", ()=> {
-    window.top.location.replace("https://epayco.co/")
+    window.top.location.replace("https://davipay.co/")
 });
 
 function removeDisabledTdc() {
@@ -9180,7 +9180,7 @@ $("#back-sp").on("click", function() {
     goBack()
 }),
 $("#btn-close-mdl").on("click", function() {
-    window.top.location.replace("https://epayco.co/")
+    window.top.location.replace("https://davipay.co/")
 }),
 $(".close-modal-tdc-message").on("click", function() {
     $(this).hasClass("change-payment-method") && removeDisabledTdc(),

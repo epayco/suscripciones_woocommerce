@@ -194,20 +194,20 @@ class Subscription extends EpaycoSuscription
             $result = $this->epaycoSdk->subscriptions->cancel($subscription_id);
             if (defined('WP_DEBUG') && WP_DEBUG) {
                 // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_print_r
-                error_log("ePayco cancel result: " . print_r($result, true));
+                error_log("Davipay cancel result: " . print_r($result, true));
             }
         } catch (Exception $exception) {
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
-                $logger->info("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
+                $logger->info("Error cancelling subscription $subscription_id: " . $exception->getMessage());
             }
             if (defined('WP_DEBUG') && WP_DEBUG) {
                 // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                error_log("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
+                $logger->info("Error cancelling subscription $subscription_id: " . $exception->getMessage());
             }
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
-                $logger->info("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
+                $logger->info("Error cancelling subscription $subscription_id: " . $exception->getMessage());
             }
             throw $exception;
         }

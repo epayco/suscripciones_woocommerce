@@ -66,7 +66,7 @@ class Plan extends EpaycoSuscription
                 $body = array_merge($body,
                     [
                         "firstPaymentAdditionalCost" => $firstPaymentAdditionalCost,
-                        "greetMessage" => "gracias por tu compra con epayco"
+                        "greetMessage" => "gracias por tu compra con Davipay"
                     ],
                 );
             }

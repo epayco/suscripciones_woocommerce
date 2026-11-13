@@ -127,7 +127,7 @@ class Customer extends EpaycoSuscription
                 if($customerExist){
                     if (defined('WP_DEBUG') && WP_DEBUG) {
                         // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                        error_log("createOrUpdateEpaycoCustomer: " . json_encode(["success" => true, "customer_id" => $customerExist]));
+                        error_log("createOrUpdateDavipayCustomer: " . json_encode(["success" => true, "customer_id" => $customerExist]));
                     }
                    return ["success" => true, "customer_id" => $customerExist];
                 }
@@ -142,7 +142,7 @@ class Customer extends EpaycoSuscription
                     wc_add_notice($error, 'error');
                     if (defined('WP_DEBUG') && WP_DEBUG) {
                         // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                        error_log("createOrUpdateEpaycoCustomer Error: " . json_encode($isAddedToken));
+                        error_log("createOrUpdateDavipayCustomer Error: " . json_encode($isAddedToken));
                     }
                     return ["success" => false, "customer_id" => null, 'message' => $error];
                     //wp_redirect(wc_get_checkout_url());
@@ -153,7 +153,7 @@ class Customer extends EpaycoSuscription
                 }else{
                     if (defined('WP_DEBUG') && WP_DEBUG) {
                         // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                        error_log("createOrUpdateEpaycoCustomer: " . json_encode(["success" => true, "customer_id" => $customer_id]));
+                        error_log("createOrUpdateDavipayCustomer: " . json_encode(["success" => true, "customer_id" => $customer_id]));
                     }
                     return ["success" => true, "customer_id" => $customer_id];
                 }
@@ -185,7 +185,7 @@ class Customer extends EpaycoSuscription
             wc_add_notice($error, 'error');
             if (defined('WP_DEBUG') && WP_DEBUG) {
                 // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                error_log("registerEpaycoCustomer Error: " . json_encode($customer));
+                error_log("registerDavipayCustomer Error: " . json_encode($customer));
             }
             return ["success" => false, "customer_id" => null, 'message' => $error];
         } else {
@@ -231,7 +231,7 @@ class Customer extends EpaycoSuscription
                         }
                         if (defined('WP_DEBUG') && WP_DEBUG) {
                             // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                            error_log("getEpaycoExisting Error: " . json_encode($isAddedToken));
+                            error_log("getDavipayExisting Error: " . json_encode($isAddedToken));
                         }
                         return false;
                     }else{

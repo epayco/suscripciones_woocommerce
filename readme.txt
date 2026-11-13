@@ -1,34 +1,34 @@
-=== ePayco Subscriptions for WooCommerce ===
-Plugin Name: ePayco Subscriptions for WooCommerce
-Contributors: epayco
-Donate link: https://epayco.com/
-Tags: e-commerce, checkout, epayco, subscriptions, recurring-payments
+=== Davipay Subscriptions for WooCommerce ===
+Plugin Name: Davipay Subscriptions for WooCommerce
+Contributors: Davipay
+Donate link: https://davipay.com/
+Tags: e-commerce, checkout, davipay, subscriptions, recurring-payments
 Requires at least: 5.5
 Tested up to: 7.0
 Requires PHP: 8.2 
-Stable tag: 6.6.3
+Stable tag: 7.0.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
-**Accept recurring payments with ePayco Subscriptions for WooCommerce.**
+**Accept recurring payments with Davipay Subscriptions for WooCommerce.**
 
 == Description ==
 
-The official ePayco Subscriptions plugin for WooCommerce enables you to offer subscription-based products and services, allowing customers to pay on a recurring basis using their preferred payment methods. This plugin integrates seamlessly with WooCommerce and ePayco, providing a smooth experience for both store owners and customers.
+The official Davipay Subscriptions plugin for WooCommerce enables you to offer subscription-based products and services, allowing customers to pay on a recurring basis using their preferred payment methods. This plugin integrates seamlessly with WooCommerce and Davipay, providing a smooth experience for both store owners and customers.
 
 With this plugin, you can:
 
 - **Create and manage subscription products** with different billing cycles (daily, weekly, monthly, yearly).
-- **Automate recurring payments** using ePayco's secure payment gateway.
+- **Automate recurring payments** using Davipay's secure payment gateway.
 - **Offer flexible subscription plans** with free trials, discounts, and more.
 - **Manage subscriptions** directly from your WooCommerce dashboard.
 
-== Why Choose ePayco Subscriptions? ==
+== Why Choose Davipay Subscriptions? ==
 
-* **Seamless Integration**: The plugin integrates effortlessly with WooCommerce and ePayco, ensuring a smooth setup process.
+* **Seamless Integration**: The plugin integrates effortlessly with WooCommerce and Davipay, ensuring a smooth setup process.
 * **Flexible Billing Cycles**: Offer subscriptions with daily, weekly, monthly, or yearly billing cycles.
 * **Free Trials and Discounts**: Attract more customers by offering free trials and discounts on subscription plans.
-* **Secure Payments**: ePayco handles all payments securely, with support for 3D-Secure and advanced fraud prevention tools.
+* **Secure Payments**: Davipay handles all payments securely, with support for 3D-Secure and advanced fraud prevention tools.
 * **Automated Recurring Payments**: Once a subscription is set up, payments are processed automatically, reducing manual work for you.
 * **Sandbox Environment**: Test your subscription setup in a sandbox environment before going live.
 
@@ -61,7 +61,7 @@ Yes, an SSL certificate is required to ensure secure transactions and protect cu
 
 1. Log in to your WordPress dashboard.
 2. Go to the **Plugins** menu and click **Add New**.
-3. In the search field, type "ePayco Subscriptions for WooCommerce" and hit **Search Plugins**.
+3. In the search field, type "Davipay Subscriptions for WooCommerce" and hit **Search Plugins**.
 4. Once you find the plugin, click **Install Now** and then **Activate**.
 
 = Manual Installation =
@@ -72,7 +72,7 @@ Yes, an SSL certificate is required to ensure secure transactions and protect cu
 
 = Configuration =
 
-1. Log in to your ePayco dashboard with your credentials.
+1. Log in to your Davipay dashboard with your credentials.
 2. Go to **Settings > Customizations > Secret Keys**.
 3. Enter the **P_CUST_ID_CLIENTE, P_KEY, PUBLIC_KEY, PRIVATE_KEY**.
 4. Test your subscription setup with sandbox credentials.
@@ -91,10 +91,10 @@ Yes, an SSL certificate is required to ensure secure transactions and protect cu
 = 6.5 =
 
 = 6.6 =
-* Initial release of the ePayco Subscriptions plugin for WooCommerce.
+* Initial release of the Davipay Subscriptions plugin for WooCommerce.
 
 == Additional Info ==
 
-For more detailed documentation, visit our [developer website](https://docs.epayco.com/docs/descripcion-general-1).
+For more detailed documentation, visit our [developer website](https://docs.davipay.com/docs/descripcion-general-1).
 
 Contribute to the repository on GitHub: [Visit the GitHub repository](https://github.com/epayco/suscripciones_woocommerce)

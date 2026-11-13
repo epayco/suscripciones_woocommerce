@@ -103,7 +103,7 @@ class Client extends GraphqlClient
                 "data" => array()
             );
             $objectReturnError = (object)$data;
-            error_log("Epayco SDk Error: " . json_encode($objectReturnError));
+            error_log("Davipay SDk Error: " . json_encode($objectReturnError));
             return $objectReturnError;
         }
 
