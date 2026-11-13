@@ -19,7 +19,7 @@ if (!defined('ABSPATH')) {
 <div id="message" class="notice notice-error">
     <div class="mp-alert-frame">
         <div class="mp-left-alert">
-            <?php echo wp_get_attachment_image($minilogo, 'full', false, array('alt' => 'ePayco mini logo')); ?>
+            <?php echo wp_get_attachment_image($minilogo, 'full', false, array('alt' => 'Davipay mini logo')); ?>
         </div>
 
         <div class="mp-right-alert">
