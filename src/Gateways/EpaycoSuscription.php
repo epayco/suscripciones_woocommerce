@@ -782,7 +782,7 @@ class EpaycoSuscription extends AbstractGateway
                         // return $return;
                     }
                     if (class_exists('WC_Logger')) {
-                        $logger->info("Error : 'No se inserto el registro del cliente en la base de datos.'");
+                        $logger->info("Error: 'The customer record was not inserted into the database.'");
                     }
                     $customerData['customer_id'] = $customer->data->customerId;
                 }
@@ -1113,9 +1113,9 @@ class EpaycoSuscription extends AbstractGateway
         } else {
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
-                $logger->info("el id del plan creado no concuerda!");
+                $logger->info("The ID of the created plan does not match!");
             }
-            echo 'el id del plan creado no concuerda!';
+            echo 'The ID of the created plan does not match!';
             die();
         }
     }
@@ -1373,14 +1373,14 @@ class EpaycoSuscription extends AbstractGateway
 
                         $sub = wcs_get_subscription($sub->get_id());
                     } else {
-                        $logger->add($this->id, "Elemento no es una instancia de WC_Subscription.");
+                        $logger->add($this->id, "Item is not an instance of WC_Subscription.");
                     }
                 }
             } else {
-                $logger->add($this->id, "Objeto no es una instancia de WC_Subscription.");
+                $logger->add($this->id, "Object is not an instance of WC_Subscription.");
             }
         } catch (\Exception $ex) {
-            $error_message = "Error al actualizar la suscripción: {$ex->getMessage()}";
+            $error_message = "Error updating the subscription: {$ex->getMessage()}";
             $logger->add($this->id, $error_message);
         }
     }
@@ -1764,7 +1764,7 @@ class EpaycoSuscription extends AbstractGateway
                     }
 
                     if ($logger !== null) {
-                        $logger->info("Intentando actualizar estado de orden a: " . $orderStatus);
+                        $logger->info("Attempting to update order status to: " . $orderStatus);
                     }
 
                     $order->update_status($orderStatus);
@@ -2356,14 +2356,14 @@ class EpaycoSuscription extends AbstractGateway
         $logger = new \WC_Logger();
 
         if (empty($this->epaycoSdk) || empty($this->epaycoSdk->subscriptions)) {
-            $logger->add(self::LOG_SOURCE, "No se puede ejecutar getList(). Revisar inicialización del SDK/credenciales.");
+            $logger->add(self::LOG_SOURCE, "Unable to run getList(). Check the SDK/credentials initialization.");
             return;
         }
 
         try {
             $subs = $this->epaycoSdk->subscriptions->getList();
         } catch (\Throwable $e) {
-            $logger->add(self::LOG_SOURCE, "Excepción al llamar getList(): " . $e->getMessage());
+            $logger->add(self::LOG_SOURCE, "Exception when calling getList(): " . $e->getMessage());
             return;
         }
 
@@ -2412,7 +2412,7 @@ class EpaycoSuscription extends AbstractGateway
 
                             $allowed_force_statuses = ['active', 'cancelled', 'on-hold'];
 
-                            $logger->add(self::LOG_SOURCE, "Actualizando estado de la suscripción. ID={$wc_subscription_id}, Estado actual: {$current_status}, Nuevo estado: {$desired_status}");
+                            $logger->add(self::LOG_SOURCE, "Updating subscription status. ID={$wc_subscription_id}, Current status: {$current_status}, New status: {$desired_status}");
                             if (in_array($desired_status, $allowed_force_statuses)) {
                                 if ($desired_status == 'cancelled') {
                                     if ($counter <= 0) {
@@ -2436,7 +2436,7 @@ class EpaycoSuscription extends AbstractGateway
                                 }
                             }
                         } catch (\Throwable $e) {
-                            $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post " . $e);
+                            $logger->add(self::LOG_SOURCE, "Could not change the subscription status with wp_update_post " . $e);
                         }
 
                         if ($current_status === 'pending-cancel' && $desired_status === 'active') {
@@ -2445,17 +2445,17 @@ class EpaycoSuscription extends AbstractGateway
                                 // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                                 $result = $wpdb->query($sql);
                                 if ($result === false) {
-                                    $logger->add(self::LOG_SOURCE, "Error en consulta SQL para ID={$wc_subscription_id}");
+                                    $logger->add(self::LOG_SOURCE, "SQL query error for ID={$wc_subscription_id}");
                                 }
                             } catch (\Throwable $e) {
-                                $logger->add(self::LOG_SOURCE, "❗ Excepción en SQL manual para ID={$wc_subscription_id}: " . $e->getMessage());
+                                $logger->add(self::LOG_SOURCE, "Exception in manual SQL for ID={$wc_subscription_id}: " . $e->getMessage());
                             }
                         }
                     }
                 }
             }
         } else {
-            $logger->add(self::LOG_SOURCE, "No se encontraron suscripciones");
+            $logger->add(self::LOG_SOURCE, "No subscriptions found");
         }
     }
 
