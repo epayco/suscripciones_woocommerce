@@ -82,7 +82,7 @@ if (!defined('ABSPATH')) {
             // phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template local variables defined within this file and passed from controller
             if (strtoupper($lang) == 'ES') {
   
-                $loader =  DAVIPAY_ROUTE_IMAGES_S3 . 'checkout/checkout-button/logo-checkout-payment-loader.svg';
+                $loader =  DAVIPAY_ROUTE_IMAGES_S3 . 'checkout/checkout-button/loader.png';
                 $button = DAVIPAY_ROUTE_IMAGES_S3 . 'checkout/checkout-button/logo-checkout-payment-button-es.png';
                 $title = 'Cargando métodos de pago';
                 $subtitle = 'Si no se cargan automáticamente, haz click en el botón "Pagar con Davipay"';
@@ -113,7 +113,7 @@ if (!defined('ABSPATH')) {
                 $cardInfoTitle = 'Información de la tarjeta';
                 $pay = 'Pagar';
             } else {
-                $loader =  DAVIPAY_ROUTE_IMAGES_S3 . 'checkout/checkout-button/logo-checkout-payment-loader.svg';
+                $loader =  DAVIPAY_ROUTE_IMAGES_S3 . 'checkout/checkout-button/loader.png';
                 $button = DAVIPAY_ROUTE_IMAGES_S3 . 'checkout/checkout-button/logo-checkout-payment-button-ing.png';
                 $title = 'Loading payment methods';
                 $subtitle = 'If they do not load automatically, click on the "Pay with Davipay" button';

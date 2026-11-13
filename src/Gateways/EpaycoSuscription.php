@@ -298,13 +298,13 @@ class EpaycoSuscription extends AbstractGateway
             <?php echo esc_attr($this->get_option('environment') ? 'test' : 'production'); ?>
         </div>
         <?php
-        //$logo_url = (defined('DAVIPAY_ROUTE_IMAGES_S3') && trim(DAVIPAY_ROUTE_IMAGES_S3) !== '')
-        //  ? DAVIPAY_ROUTE_IMAGES_S3 . 'Imagotipo/checkoutSmallWhite_01_v1.svg'
-        //: CMS_ROUTE_IMAGES_S3 . 'checkoutSmallWhite_01_v1.svg';
+        $logo_url = (defined('DAVIPAY_ROUTE_IMAGES_S3') && trim(DAVIPAY_ROUTE_IMAGES_S3) !== '')
+         ? DAVIPAY_ROUTE_IMAGES_S3 . 'Imagotipo/checkoutSmallWhite_01_v1.svg'
+        : CMS_ROUTE_IMAGES_S3 . 'checkoutSmallWhite_01_v1.svg';
         ?>
 
         <div style="margin-bottom: 20px; text-align: left;">
-            <img src="<?php echo esc_url($logo_url_s3); ?>" alt="Davipay Logo" style="max-width: 290px;">
+            <img src="<?php echo esc_url($logo_url); ?>" alt="Davipay Logo" style="max-width: 290px;">
         </div>
 
         <div style="color: #31708f; background-color: #d9edf7; border-color: #bce8f1; padding: 10px; border-radius: 5px;">
@@ -564,7 +564,7 @@ class EpaycoSuscription extends AbstractGateway
             $product_name_ = $resultado . "...";
         }
 
-        $logo_comercio = plugins_url('assets/images/comercio.png', EPS_PLUGIN_FILE);
+        $logo_comercio =  DAVIPAY_ROUTE_IMAGES_S3 . 'Icons/suscriptions/comercio.png';
         //$logo_comercio=$this->get_option('shop_icon');
         $css_checkout = plugins_url('assets/css/css-suscription.css', EPS_PLUGIN_FILE);
         $js_suscription = plugins_url('assets/js/js-suscription.js', EPS_PLUGIN_FILE);
@@ -1788,12 +1788,6 @@ class EpaycoSuscription extends AbstractGateway
                     $messageStatus['date'] = array_merge($messageStatus['date'], [current_time('Y-m-d H:i:s')]);
                     $subscription->update_status('active');
                     $subscription->payment_complete();
-
-                    // if ($logger !== null) {
-                    //     $logger->info("✅ Orden y suscripción actualizadas correctamente - Order ID: " . $order->get_id());
-                    // }
-                    // $this->restore_order_stock($order->get_id(), "-");
-
 
                 } elseif (isset($sub->data->cod_respuesta) && (intval($sub->data->cod_respuesta) === 3 || $sub->data->cod_respuesta === '3')) {
                     if ($isTestMode == "true") {

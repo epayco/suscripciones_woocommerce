@@ -1644,31 +1644,31 @@ input {
 }
 
 .main-steps.step-1 .remember-pay .number-container .number.mc {
-    background-image: url(../img/mc.png)
+    background-image: url(http://multimedia.epayco.io/plugins-sdks/Icons/suscriptions/methods/mc.png)
 }
 
 .main-steps.step-1 .remember-pay .number-container .number.visa {
-    background-image: url(../img/credit-cards/vs.png)
+    background-image: url(http://multimedia.epayco.io/plugins-sdks/Icons/suscriptions/methods/vs.png)
 }
 
 .main-steps.step-1 .remember-pay .number-container .number.mastercard {
-    background-image: url(../img/credit-cards/mc.png)
+    background-image: url(http://multimedia.epayco.io/plugins-sdks/Icons/suscriptions/methods/mc.png)
 }
 
 .main-steps.step-1 .remember-pay .number-container .number.maestro {
-    background-image: url(../img/credit-cards/codensa.png)
+    background-image: url(http://multimedia.epayco.io/plugins-sdks/Icons/suscriptions/methods/codensa.png)
 }
 
 .main-steps.step-1 .remember-pay .number-container .number.epm {
-    background-image: url(../img/credit-cards/epm.png)
+    background-image: url(http://multimedia.epayco.io/plugins-sdks/Icons/suscriptions/methods/epm.png)
 }
 
 .main-steps.step-1 .remember-pay .number-container .number.diners {
-    background-image: url(../img/credit-cards/vdc.png)
+    background-image: url(http://multimedia.epayco.io/plugins-sdks/Icons/suscriptions/methods/vdc.png)
 }
 
 .main-steps.step-1 .remember-pay .number-container .number.american {
-    background-image: url(../img/credit-cards/amex.png)
+    background-image: url(http://multimedia.epayco.io/plugins-sdks/Icons/suscriptions/methods/amex.png)
 }
 
 .main-steps.step-1 .remember-pay .number-container .number {

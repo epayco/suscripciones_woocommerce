@@ -724,7 +724,7 @@ add_action('wp_enqueue_scripts', 'EPAYCO_SFW_enqueue_epayco_index_script');
 add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
     if ($attachment_id === 0) {
         // URL de la imagen externa
-        $external_logo = plugin_dir_url(__FILE__) . 'assets/images/comercio.png';
+        $external_logo = DAVIPAY_ROUTE_IMAGES_S3 . 'Icons/suscriptions/comercio.png';
         return [$external_logo, 90, 90, false];
     }
     return $image;
@@ -733,7 +733,7 @@ add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $siz
 add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
     if ($attachment_id === 1) {
         // URL de la imagen externa
-        $external_logo2 = 'https://msecure.epayco.co/img/credit-cards/disable.png';
+        $external_logo2 =  DAVIPAY_ROUTE_IMAGES_S3 . 'Icons/suscriptions/methods/disable.png';
         return [$external_logo2, 90, 90, false];
     }
     return $image;
@@ -753,7 +753,7 @@ add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $siz
 add_filter('wp_get_attachment_image_src', function ($image, $attachment_id, $size, $icon) {
     if ($attachment_id === 3) {
         // URL de la imagen externa
-        $external_logo4 = 'https://msecure.epayco.co/img/reloj.png';
+        $external_logo4 =  DAVIPAY_ROUTE_IMAGES_S3 . '/Icons/suscriptions/reloj.png';
         return [$external_logo4, 60, 60, false];
     }
     return $image;

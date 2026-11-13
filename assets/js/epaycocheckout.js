@@ -59,16 +59,16 @@ document.addEventListener('DOMContentLoaded', function () {
         let logoUrl = '';
         
         if (/^4[0-9]{6,}$/.test(cardNumber)) {
-          logoUrl = 'https://msecure.epayco.co/img/credit-cards/vs.png';
+          logoUrl = 'http://multimedia.epayco.io/plugins-sdks/Icons/suscriptions/methods/vs.png';
           isCardDetected = true;
         } else if (/^5[1-5][0-9]{5,}$/.test(cardNumber)) {
-          logoUrl = 'https://msecure.epayco.co/img/credit-cards/mc.png';
+          logoUrl = 'http://multimedia.epayco.io/plugins-sdks/Icons/suscriptions/methods/mc.png';
           isCardDetected = true;
         } else if (/^3[47][0-9]{3,}$/.test(cardNumber)) {
-          logoUrl = 'https://msecure.epayco.co/img/credit-cards/amex.png';
+          logoUrl = 'http://multimedia.epayco.io/plugins-sdks/Icons/suscriptions/methods/amex.png';
           isCardDetected = true;
         } else if (/^6(?:011|5[0-9]{2})[0-9]{3,}$/.test(cardNumber)) {
-          logoUrl = 'https://msecure.epayco.co/img/credit-cards/discover.png';
+          logoUrl = 'http://multimedia.epayco.io/plugins-sdks/Icons/suscriptions/methods/discover.png';
           isCardDetected = true;
         }
 
