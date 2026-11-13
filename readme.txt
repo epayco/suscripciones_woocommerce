@@ -1,7 +1,7 @@
 === Davipay Subscriptions for WooCommerce ===
 Plugin Name: Davipay Subscriptions for WooCommerce
 Contributors: Davipay
-Donate link: https://davipay.com/
+Donate link: https://www.davipay.com/
 Tags: e-commerce, checkout, davipay, subscriptions, recurring-payments
 Requires at least: 5.5
 Tested up to: 7.0

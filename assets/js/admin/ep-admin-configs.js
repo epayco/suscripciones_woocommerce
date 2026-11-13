@@ -41,6 +41,11 @@ window.addEventListener("load", (function () {
         var modalContent = document.getElementsByClassName("modal-content")[0];
         var span = document.getElementsByClassName("closeEpaycoModal")[0];
         var loader = document.getElementsByClassName("loader")[0];
+
+        // El modal solo existe en los ajustes del gateway
+        if (!modal || !modalContent || !span || !loader) {
+            return;
+        }
         span.onclick = function () {
             modal.style.display = "none";
             modalContent.style.display = "none";

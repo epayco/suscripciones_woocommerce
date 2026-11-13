@@ -122,13 +122,13 @@ abstract class AbstractBlock extends AbstractPaymentMethodType implements Epayco
         if (empty($title)) {
             $title = __('Pay with Davipay', 'suscripciones_woocommerce');
         }
-        
+
         $description = $this->get_setting('description');
         // Si no hay descripción en settings, usar la del gateway
         if (empty($description) && $this->gateway) {
             $description = $this->gateway->get_description();
         }
-        
+
         return [
             'title'       => $title,
             'description' => $description,
@@ -137,13 +137,13 @@ abstract class AbstractBlock extends AbstractPaymentMethodType implements Epayco
         ];
     }
 
-/**
-* Set selected gateway from blocks on session and update WC_Cart
-*
-* @param mixed $data
-*
-* @return void
-*/
+    /**
+     * Set selected gateway from blocks on session and update WC_Cart
+     *
+     * @param mixed $data
+     *
+     * @return void
+     */
     public function updateCartToRegisterDiscountAndCommission($data)
     {
         $action  = $data['action'] ?? '';
@@ -155,7 +155,6 @@ abstract class AbstractBlock extends AbstractPaymentMethodType implements Epayco
 
         $this->epaycosuscription->helpers->session->setSession(self::ACTION_SESSION_KEY, $action);
         $this->epaycosuscription->helpers->session->setSession(self::GATEWAY_SESSION_KEY, $gateway);
-
     }
 
     /**
@@ -178,7 +177,7 @@ abstract class AbstractBlock extends AbstractPaymentMethodType implements Epayco
         $payment_gateways_class = WC()->payment_gateways();
         $payment_gateways       = $payment_gateways_class->payment_gateways();
 
-        return $payment_gateways[ $this->name ] ?? null;
+        return $payment_gateways[$this->name] ?? null;
     }
 
     /**
@@ -190,7 +189,4 @@ abstract class AbstractBlock extends AbstractPaymentMethodType implements Epayco
     {
         return [];
     }
-
-
-
 }

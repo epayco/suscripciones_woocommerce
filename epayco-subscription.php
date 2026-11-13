@@ -9,8 +9,8 @@
  * Description:       Plugin Davipay Subscription
  * Version:           7.0.0
  * Author:            Davipay
+ * Author URI:        https://www.davipay.com/
  * Text Domain:       suscripciones_woocommerce
- * Author URI:
  * License:           GPLv2 or later
  * License URI:       https://www.gnu.org/licenses/gpl-2.0.html
  * Domain Path:       /languages

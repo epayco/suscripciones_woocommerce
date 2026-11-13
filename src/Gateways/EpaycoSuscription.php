@@ -339,7 +339,7 @@ class EpaycoSuscription extends AbstractGateway
                             <div class="modal-content">
                                 <span class="closeEpaycoModal" style="cursor: pointer;">&times;</span>
                                 <center>
-                                    <img id="epaycoModalImg" src="<?php echo esc_url($path . 'logo_warning.png'); ?>">
+                                    <img id="epaycoModalImg" src="<?php echo esc_url(DAVIPAY_ROUTE_IMAGES_S3 . 'admin/credentials/logos/warning/logo-credentials-warning.png'); ?>">
                                 </center>
                                 <p id="epaycoCredentialTittle"><strong><?php esc_html_e('Invalid merchant keys', 'suscripciones_woocommerce'); ?></strong> </p>
                                 <p id="epaycoCredentialDescription"><?php esc_html_e('The Public Key and Private Key inserted', 'suscripciones_woocommerce'); ?><br><?php esc_html_e('from the merchant are invalid.', 'suscripciones_woocommerce'); ?><br><?php esc_html_e('Check them in the integrations section', 'suscripciones_woocommerce'); ?> <br><?php esc_html_e('API Keys in your Davipay Dashboard.', 'suscripciones_woocommerce'); ?>,</p>
