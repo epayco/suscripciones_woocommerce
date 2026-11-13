@@ -31,7 +31,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway implements EpaycoSubsc
         $this->epaycosuscription = $epaycosuscription;
 
         $this->has_fields = true;
-        $this->supports   = [ 'products', 'refunds' ];
+        $this->supports   = ['products', 'refunds'];
         $this->init_settings();
     }
 
@@ -58,10 +58,8 @@ abstract class AbstractGateway extends WC_Payment_Gateway implements EpaycoSubsc
             $this->registerAdminScripts();
         }
 
-
         if ($this->canCheckoutLoadScriptsAndStyles()) {
             $this->registerCheckoutScripts();
-            $this->registerAdminScripts();
         }
     }
 
@@ -74,22 +72,21 @@ abstract class AbstractGateway extends WC_Payment_Gateway implements EpaycoSubsc
      */
     public function canAdminLoadScriptsAndStyles(string $gatewaySection): bool
     {
-        return $this->epaycosuscription->hooks->admin->isAdmin() && ( $this->epaycosuscription->helpers->url->validatePage('wc-settings') &&
-                $this->epaycosuscription->helpers->url->validateSection($gatewaySection)
-            );
+        return $this->epaycosuscription->hooks->admin->isAdmin() && ($this->epaycosuscription->helpers->url->validatePage('wc-settings') &&
+            $this->epaycosuscription->helpers->url->validateSection($gatewaySection)
+        );
     }
 
-       /**
+    /**
      * Register admin scripts
      *
      * @return void
      */
     public function registerAdminScripts()
     {
-  
         $wp_locale = get_locale();
         $is_english = strpos($wp_locale, 'en') === 0;
-        
+
         $this->epaycosuscription->hooks->scripts->registerAdminScript(
             'wc_epaycosuscription_admin_components',
             $this->epaycosuscription->helpers->url->getJsAsset('admin/ep-admin-configs'),
@@ -147,9 +144,7 @@ abstract class AbstractGateway extends WC_Payment_Gateway implements EpaycoSubsc
      *
      * @return void
      */
-    public function payment_fields(): void
-    {
-    }
+    public function payment_fields(): void {}
 
     /**
      * Validate gateway checkout form fields
@@ -194,7 +189,8 @@ abstract class AbstractGateway extends WC_Payment_Gateway implements EpaycoSubsc
         return true;
     }
 
-    protected function errorMessages($dataError){
+    protected function errorMessages($dataError)
+    {
         $error = "Ocurrió un error, por favor contactar con soporte.";
         if (is_array($dataError)) {
             $message = $dataError['message'] ?? $error;
@@ -215,20 +211,20 @@ abstract class AbstractGateway extends WC_Payment_Gateway implements EpaycoSubsc
                 }
             }
 
-            if(isset($dataError['data']['errors'])){
+            if (isset($dataError['data']['errors'])) {
                 $message = $dataError['data']['errors'];
             }
         }
-        if(is_object($dataError)){
+        if (is_object($dataError)) {
             $message = $dataError->message ?? $error;
             $errores_listados = [];
             $errors = $dataError->data->errors ?? null;
             if (is_array($errors)) {
-            foreach ($errors as $campo => $mensajes) {
-                foreach ((array) $mensajes as $msg) {
-                    $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                foreach ($errors as $campo => $mensajes) {
+                    foreach ((array) $mensajes as $msg) {
+                        $errores_listados[] = ucfirst($campo) . ': ' . $msg;
+                    }
                 }
-            }
             } elseif (is_string($errors)) {
                 $message = $errors;
             }
@@ -240,5 +236,4 @@ abstract class AbstractGateway extends WC_Payment_Gateway implements EpaycoSubsc
         }
         return $errorMessage;
     }
-
 }

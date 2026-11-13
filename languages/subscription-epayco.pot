@@ -1,7 +1,7 @@
 #, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Subscription ePayco\n"
+"Project-Id-Version: Subscription Davipay\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2019-07-18 22:41+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
@@ -87,11 +87,11 @@ msgid "Cardholder"
 msgstr ""
 
 #. Name of the plugin
-msgid "Subscription ePayco"
+msgid "Subscription Davipay"
 msgstr ""
 
 #. Description of the plugin
-msgid "Cobros periódicos, suscripciones de ePayco"
+msgid "Cobros periódicos, suscripciones de Davipay"
 msgstr ""
 
 #. Author of the plugin

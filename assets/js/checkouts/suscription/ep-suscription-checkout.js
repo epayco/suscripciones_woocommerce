@@ -6,7 +6,7 @@
     $(function () {
         var epayco_submit_ticket = false;
 
-        console.log("suscription epayco",wc_epaycosuscription_checkout_params)
+        console.log("suscription davipay",wc_epaycosuscription_checkout_params)
 
 
 

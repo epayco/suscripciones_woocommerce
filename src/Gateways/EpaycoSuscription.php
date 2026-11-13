@@ -5,6 +5,7 @@ namespace EpaycoSubscription\Woocommerce\Gateways;
 use Exception;
 use Epayco as EpaycoSdk;
 use EpaycoSubscription\Woocommerce\Helpers\Customer;
+use EpaycoSubscription\Woocommerce\Helpers\EpaycoHandler;
 use function wc_get_order;
 use function get_locale;
 use function sanitize_text_field;
@@ -58,8 +59,11 @@ class EpaycoSuscription extends AbstractGateway
     {
         parent::__construct();
         $this->id        = self::ID;
-        $this->icon      = 'https://multimedia.epayco.co/plugins-sdks/PaymentsCreditCards.svg';
-        $this->title     = $this->epaycosuscription->storeConfig->getGatewayTitle($this, __('Pay with ePayco', 'suscripciones_woocommerce'));
+        $logo_url_s3 = (defined('DAVIPAY_ROUTE_IMAGES_S3') && trim(DAVIPAY_ROUTE_IMAGES_S3) !== '')
+            ? DAVIPAY_ROUTE_IMAGES_S3 . 'checkout/payment-methods/logo-checkout-payment-methods-subscription.svg'
+            : CMS_ROUTE_IMAGES_S3 . 'logo-checkout-payment-methods-subscription.svg';
+        $this->icon = apply_filters('woocommerce_' . $this->id . '_icon', $logo_url_s3);
+        $this->title     = $this->epaycosuscription->storeConfig->getGatewayTitle($this, __('Pay with Davipay', 'suscripciones_woocommerce'));
         $this->init_form_fields();
         $this->payment_scripts($this->id);
         $this->supports = [
@@ -69,8 +73,8 @@ class EpaycoSuscription extends AbstractGateway
             'subscription_cancellation',
             'multiple_subscriptions'
         ];
-        $this->description        = __('Subscription payments with ePayco', 'suscripciones_woocommerce');
-        $this->method_title       = __('ePayco Subscriptions', 'suscripciones_woocommerce');
+        $this->description        = __('Subscription payments with Davipay', 'suscripciones_woocommerce');
+        $this->method_title       = __('Davipay Subscriptions', 'suscripciones_woocommerce');
         $this->method_description = __('Create subscription products for your customers', 'suscripciones_woocommerce');
 
         $this->epaycosuscription->hooks->gateway->registerUpdateOptions($this);
@@ -91,7 +95,7 @@ class EpaycoSuscription extends AbstractGateway
 
         add_action('woocommerce_subscription_status_cancelled', [$this, 'on_wc_subscription_cancelled']);
 
-        add_action('woocommerce_epayco_suscripcion_cleanup_draft_orders', [$this, 'update_cron_status_suscription']);
+        add_action('woocommerce_davipay_suscripcion_cleanup_draft_orders', [$this, 'update_cron_status_suscription']);
         // add_action('woocommerc_epayco_suscripcion_cron_hook', [$this, 'woocommerc_epayco_suscripcion_cron_job_funcion']);
         add_action('admin_init', [$this, 'install']);
         $this->epaycoSdk = new EpaycoSdk\Epayco(
@@ -127,8 +131,8 @@ class EpaycoSuscription extends AbstractGateway
         // $cron_data = $this->cron_data == "yes" ? true : false;
         $intervalo = $this->get_option('cron_interval_30') == "yes" ? 30 : ($this->get_option('cron_interval_60') == "yes" ? 60 : 0);
         if ($intervalo) {
-            if (function_exists('as_next_scheduled_action') && false === as_next_scheduled_action('woocommerce_epayco_suscripcion_cleanup_draft_orders')) {
-                as_schedule_recurring_action(time() + $intervalo, $intervalo, 'woocommerce_epayco_suscripcion_cleanup_draft_orders');
+            if (function_exists('as_next_scheduled_action') && false === as_next_scheduled_action('woocommerce_davipay_suscripcion_cleanup_draft_orders')) {
+                as_schedule_recurring_action(time() + $intervalo, $intervalo, 'woocommerce_davipay_suscripcion_cleanup_draft_orders');
             }
         }
     }
@@ -163,7 +167,7 @@ class EpaycoSuscription extends AbstractGateway
             'enabled' => array(
                 'title' => __('Enable/Disable', 'suscripciones_woocommerce'),
                 'type' => 'checkbox',
-                'label' => __('Enable ePayco subscription', 'suscripciones_woocommerce'),
+                'label' => __('Enable Davipay subscription', 'suscripciones_woocommerce'),
                 'default' => 'yes'
             ),
             'epayco_title' => array(
@@ -191,7 +195,7 @@ class EpaycoSuscription extends AbstractGateway
                 'title' => __('Description', 'suscripciones_woocommerce'),
                 'type' => 'textarea',
                 'description' => __('This is the description of the store that users see at checkout', 'suscripciones_woocommerce'),
-                'default' => __('ePayco subscription details', 'suscripciones_woocommerce'),
+                'default' => __('Davipay subscription details', 'suscripciones_woocommerce'),
                 'desc_tip' => false,
             ),
             'environment' => array(
@@ -209,7 +213,7 @@ class EpaycoSuscription extends AbstractGateway
             'custIdCliente' => array(
                 'title' => __('P_CUST_ID_CLIENTE', 'suscripciones_woocommerce'),
                 'type' => 'text',
-                'description' => __('You can find it in the ePayco panel, integrations, API Keys', 'suscripciones_woocommerce'),
+                'description' => __('You can find it in the Davipay panel, integrations, API Keys', 'suscripciones_woocommerce'),
                 'default' => '',
                 'desc_tip' => false,
                 'placeholder' => ''
@@ -217,7 +221,7 @@ class EpaycoSuscription extends AbstractGateway
             'pKey' => array(
                 'title' => __('P_KEY', 'suscripciones_woocommerce'),
                 'type' => 'text',
-                'description' => __('You can find it in the ePayco panel, integrations, API Keys', 'suscripciones_woocommerce'),
+                'description' => __('You can find it in the Davipay panel, integrations, API Keys', 'suscripciones_woocommerce'),
                 'default' => '',
                 'desc_tip' => false,
                 'placeholder' => ''
@@ -225,7 +229,7 @@ class EpaycoSuscription extends AbstractGateway
             'apiKey' => array(
                 'title' => __('PUBLIC_KEY', 'suscripciones_woocommerce'),
                 'type' => 'text',
-                'description' => __('You can find it in the ePayco panel, integrations, API Keys', 'suscripciones_woocommerce'),
+                'description' => __('You can find it in the Davipay panel, integrations, API Keys', 'suscripciones_woocommerce'),
                 'default' => '',
                 'desc_tip' => false,
                 'placeholder' => ''
@@ -233,7 +237,7 @@ class EpaycoSuscription extends AbstractGateway
             'privateKey' => array(
                 'title' => __('PRIVATE_KEY', 'suscripciones_woocommerce'),
                 'type' => 'text',
-                'description' => __('You can find it in the ePayco panel, integrations, API Keys', 'suscripciones_woocommerce'),
+                'description' => __('You can find it in the Davipay panel, integrations, API Keys', 'suscripciones_woocommerce'),
                 'default' => '',
                 'desc_tip' => false,
                 'placeholder' => ''
@@ -244,8 +248,8 @@ class EpaycoSuscription extends AbstractGateway
                 'css' => 'line-height: inherit',
                 'description' => __('Select the order status to apply when accepting and confirming the order payment', 'suscripciones_woocommerce'),
                 'options' => array(
-                    'epayco-processing' => __('ePayco Processing Payment', 'suscripciones_woocommerce'),
-                    "epayco-completed" => __('ePayco Payment Completed', 'suscripciones_woocommerce'),
+                    'epayco-processing' => __('Davipay Processing Payment', 'suscripciones_woocommerce'),
+                    "epayco-completed" => __('Davipay Payment Completed', 'suscripciones_woocommerce'),
                     'processing' => __('Processing', 'suscripciones_woocommerce'),
                     "completed" => __('Completed', 'suscripciones_woocommerce')
                 ),
@@ -277,13 +281,13 @@ class EpaycoSuscription extends AbstractGateway
 
     public function admin_options()
     {
-        $path  = EPAYCO_PLUGIN_SUSCRIPCIONES_URL . 'assets/images/';
+
         $validation_url = get_site_url() . "/";
         $validation_url = add_query_arg('wc-api', self::WEBHOOK_API_NAME_VALIDATION, $validation_url);
         //$validation_url = add_query_arg('wc-api', get_class($this) . "Validation", $validation_url);
 ?>
-        <div id="path_plugin" hidden>
-            <?php echo esc_attr($path); ?>
+        <div id="path_davipay_s3" hidden>
+            <?php echo esc_url((defined('DAVIPAY_ROUTE_IMAGES_S3') && trim(DAVIPAY_ROUTE_IMAGES_S3) !== '') ? DAVIPAY_ROUTE_IMAGES_S3 : CMS_ROUTE_IMAGES_S3); ?>
         </div>
         <div id="path_validate" hidden>
             <?php echo esc_attr($validation_url); ?>
@@ -295,22 +299,20 @@ class EpaycoSuscription extends AbstractGateway
             <?php echo esc_attr($this->get_option('environment') ? 'test' : 'production'); ?>
         </div>
         <?php
-        $lang = $this->getLanguage();
-
-        $logo_url = ($lang === 'en')
-            ? EPAYCO_PLUGIN_SUSCRIPCIONES_URL . '/assets/images/logo-en-.png'
-            : EPAYCO_PLUGIN_SUSCRIPCIONES_URL . '/assets/images/iconoepayco2025.png';
+        $logo_url = (defined('DAVIPAY_ROUTE_IMAGES_S3') && trim(DAVIPAY_ROUTE_IMAGES_S3) !== '')
+            ? DAVIPAY_ROUTE_IMAGES_S3 . 'Imagotipo/checkoutSmallWhite_01_v1.svg'
+            : CMS_ROUTE_IMAGES_S3 . 'checkoutSmallWhite_01_v1.svg';
         ?>
 
         <div style="margin-bottom: 20px; text-align: left;">
-            <img src="<?php echo esc_url($logo_url); ?>" alt="ePayco Logo" style="max-width: 290px;">
+            <img src="<?php echo esc_url($logo_url); ?>" alt="Davipay Logo" style="max-width: 290px;">
         </div>
 
         <div style="color: #31708f; background-color: #d9edf7; border-color: #bce8f1; padding: 10px; border-radius: 5px;">
-            <h2><?php esc_html_e('ePayco Subscriptions', 'suscripciones_woocommerce'); ?></h2><br>
-            <?php esc_html_e('With this module, you can safely accept subscription payments through the ePayco platform.', 'suscripciones_woocommerce'); ?>
-            <br><?php esc_html_e('When a customer selects ePayco as the payment method, the order status will change to ePayco Pending Payment.', 'suscripciones_woocommerce'); ?>
-            <br><?php esc_html_e('Once the payment is accepted or rejected, ePayco will automatically notify your store and the order status will be updated accordingly.', 'suscripciones_woocommerce'); ?>
+            <h2><?php esc_html_e('Davipay Subscriptions', 'suscripciones_woocommerce'); ?></h2><br>
+            <?php esc_html_e('With this module, you can safely accept subscription payments through the Davipay platform.', 'suscripciones_woocommerce'); ?>
+            <br><?php esc_html_e('When a customer selects Davipay as the payment method, the order status will change to Davipay Pending Payment.', 'suscripciones_woocommerce'); ?>
+            <br><?php esc_html_e('Once the payment is accepted or rejected, Davipay will automatically notify your store and the order status will be updated accordingly.', 'suscripciones_woocommerce'); ?>
             <br><br>
         </div>
         <table class="form-table">
@@ -338,10 +340,10 @@ class EpaycoSuscription extends AbstractGateway
                             <div class="modal-content">
                                 <span class="closeEpaycoModal" style="cursor: pointer;">&times;</span>
                                 <center>
-                                    <img id="epaycoModalImg" src="<?php echo esc_url($path . 'logo_warning.png'); ?>">
+                                    <img id="epaycoModalImg" src="<?php echo esc_url(DAVIPAY_ROUTE_IMAGES_S3 . 'admin/credentials/logos/warning/logo-credentials-warning.png'); ?>">
                                 </center>
                                 <p id="epaycoCredentialTittle"><strong><?php esc_html_e('Invalid merchant keys', 'suscripciones_woocommerce'); ?></strong> </p>
-                                <p id="epaycoCredentialDescription"><?php esc_html_e('The Public Key and Private Key inserted', 'suscripciones_woocommerce'); ?><br><?php esc_html_e('from the merchant are invalid.', 'suscripciones_woocommerce'); ?><br><?php esc_html_e('Check them in the integrations section', 'suscripciones_woocommerce'); ?> <br><?php esc_html_e('API Keys in your ePayco Dashboard.', 'suscripciones_woocommerce'); ?>,</p>
+                                <p id="epaycoCredentialDescription"><?php esc_html_e('The Public Key and Private Key inserted', 'suscripciones_woocommerce'); ?><br><?php esc_html_e('from the merchant are invalid.', 'suscripciones_woocommerce'); ?><br><?php esc_html_e('Check them in the integrations section', 'suscripciones_woocommerce'); ?> <br><?php esc_html_e('API Keys in your Davipay Dashboard.', 'suscripciones_woocommerce'); ?>,</p>
                             </div>
                             <span class="loader"></span>
                         </div>
@@ -404,7 +406,7 @@ class EpaycoSuscription extends AbstractGateway
         if (is_wp_error($response)) {
             return wp_send_json(array(
                 'success' => false,
-                'message' => 'Error connecting to ePayco API'
+                'message' => 'Error connecting to Davipay API'
             ));
         }
 
@@ -493,21 +495,21 @@ class EpaycoSuscription extends AbstractGateway
                 // Log para debugging si es necesario
                 if (class_exists('WC_Logger')) {
                     $logger = wc_get_logger();
-                    $logger->info("Token creado exitosamente: " . json_encode($token));
+                    $logger->info("Token created successfully: " . json_encode($token));
                 }
                 //error_log("Epayco createToken request: " . json_encode($token));
                 return $token;
             } else {
                 if (class_exists('WC_Logger')) {
                     $logger = wc_get_logger();
-                    $logger->error("Error al decodificar base64 data", array('source' => 'epayco_subscription'));
+                    $logger->error("Error decoding base64 data", array('source' => 'epayco_subscription'));
                 }
                 return null;
             }
         } else {
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
-                $logger->error("No se recibieron datos de ePayco", array('source' => 'epayco_subscription'));
+                $logger->error("No data received from Davipay", array('source' => 'epayco_subscription'));
             }
         }
 
@@ -563,7 +565,7 @@ class EpaycoSuscription extends AbstractGateway
             $product_name_ = $resultado . "...";
         }
 
-        $logo_comercio = plugins_url('assets/images/comercio.png', EPS_PLUGIN_FILE);
+        $logo_comercio =  DAVIPAY_ROUTE_IMAGES_S3 . 'Icons/suscriptions/comercio.png';
         //$logo_comercio=$this->get_option('shop_icon');
         $css_checkout = plugins_url('assets/css/css-suscription.css', EPS_PLUGIN_FILE);
         $js_suscription = plugins_url('assets/js/js-suscription.js', EPS_PLUGIN_FILE);
@@ -579,6 +581,7 @@ class EpaycoSuscription extends AbstractGateway
         $epaycojs = plugins_url('assets/js/epayco.js', EPS_PLUGIN_FILE);
         //$epaycojs ="https://checkout.epayco.co/epayco.min.js";
         $epaycocheckout =  plugins_url('assets/js/epaycocheckout.js', EPS_PLUGIN_FILE);
+
 
 
         $lang = $this->getLanguage(); // 'en' or 'es' only
@@ -603,7 +606,7 @@ class EpaycoSuscription extends AbstractGateway
                 'city' => $order_data['billing']['city'],
                 'address' => $order_data['billing']['address_1'],
                 'amount' => $mountFloat,
-                'epayco'  => 'epayco subscription',
+                'epayco'  => 'Davipay subscription',
                 'shop_name' => $shop_name,
                 'product_name_' => $suscriptionDescription,
                 'currency' => $currency,
@@ -625,6 +628,7 @@ class EpaycoSuscription extends AbstractGateway
                 'privateKey' => $this->get_option('privateKey'),
                 'lang' => $lang,
                 'epaycocheckout' => $epaycocheckout,
+
 
             ]
         );
@@ -693,7 +697,7 @@ class EpaycoSuscription extends AbstractGateway
                 } catch (Exception $e) {
                     if (defined('WP_DEBUG') && WP_DEBUG) {
                         // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                        error_log("DEBUG: Error creando token: " . $e->getMessage());
+                        error_log("DEBUG: Error creating token: " . $e->getMessage());
                     }
                     $token = null;
                 }
@@ -779,7 +783,7 @@ class EpaycoSuscription extends AbstractGateway
                         // return $return;
                     }
                     if (class_exists('WC_Logger')) {
-                        $logger->info("Error : 'No se inserto el registro del cliente en la base de datos.'");
+                        $logger->info("Error: 'The customer record was not inserted into the database.'");
                     }
                     $customerData['customer_id'] = $customer->data->customerId;
                 }
@@ -852,7 +856,7 @@ class EpaycoSuscription extends AbstractGateway
             return;
         }
 
-        wp_die('Do not access this page directly (ePayco)');
+        wp_die('Do not access this page directly (Davipay)');
     }
 
     // phpcs:enable WordPress.Security.NonceVerification.Missing
@@ -1110,9 +1114,9 @@ class EpaycoSuscription extends AbstractGateway
         } else {
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
-                $logger->info("el id del plan creado no concuerda!");
+                $logger->info("The ID of the created plan does not match!");
             }
-            echo 'el id del plan creado no concuerda!';
+            echo 'The ID of the created plan does not match!';
             die();
         }
     }
@@ -1133,7 +1137,7 @@ class EpaycoSuscription extends AbstractGateway
         }
         return [
             "success" => false,
-            "message" => __('Error al actualizar el plan en ePayco, por favor intente de nuevo.', 'suscripciones_woocommerce')
+            "message" => __('Error updating the plan in Davipay, please try again.', 'suscripciones_woocommerce')
         ];
     }
 
@@ -1144,8 +1148,12 @@ class EpaycoSuscription extends AbstractGateway
         if (class_exists('WC_Logger')) {
             $logger = wc_get_logger();
         }
+        $davipay_s3_img = (defined('DAVIPAY_ROUTE_IMAGES_S3') && trim(DAVIPAY_ROUTE_IMAGES_S3) !== '')
+            ? DAVIPAY_ROUTE_IMAGES_S3 . 'Imagotipo/checkoutSmallWhite_01_v1.svg'
+            : CMS_ROUTE_IMAGES_S3 . 'checkoutSmallWhite_01_v1.svg';
         foreach ($plans as $plan) {
             try {
+
                 $plan_ = $this->epaycoSdk->plan->create(
                     [
                         "id_plan" => (string)strtolower($plan['id_plan']),
@@ -1163,7 +1171,7 @@ class EpaycoSuscription extends AbstractGateway
                         "greetMessage" => isset($plan['greetMessage']) ? $plan['greetMessage'] : "",
                         "linkExpirationDate" => isset($plan['linkExpirationDate']) ? $plan['linkExpirationDate'] : "",
                         "subscriptionLimit" => isset($plan['subscriptionLimit']) ? $plan['subscriptionLimit'] : 1000,
-                        "imgUrl" => isset($plan['imgUrl']) ? $plan['imgUrl'] : "https://epayco.com/wp-content/uploads/2023/04/logo-blanco.svg",
+                        "imgUrl" => !empty($plan['imgUrl']) ? $plan['imgUrl'] : $davipay_s3_img,
                         // "discountValue" => isset($plan['discountValue']) ? $plan['discountValue'] : 5000,
                         // "discountPercentage" => isset($plan['discountPercentage']) ? $plan['discountPercentage'] : 19,
                         // "transactionalLimit" => isset($plan['transactionalLimit']) ? $plan['transactionalLimit'] : 2,
@@ -1308,20 +1316,20 @@ class EpaycoSuscription extends AbstractGateway
             $result = $this->epaycoSdk->subscriptions->cancel($subscription_id);
             if (defined('WP_DEBUG') && WP_DEBUG) {
                 // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log, WordPress.PHP.DevelopmentFunctions.error_log_print_r
-                error_log("ePayco cancel result: " . print_r($result, true));
+                error_log("Davipay cancel result: " . print_r($result, true));
             }
         } catch (Exception $exception) {
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
-                $logger->info("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
+                $logger->info("Error cancelling subscription $subscription_id: " . $exception->getMessage());
             }
             if (defined('WP_DEBUG') && WP_DEBUG) {
                 // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                error_log("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
+                $logger->info("Error cancelling subscription $subscription_id: " . $exception->getMessage());
             }
             if (class_exists('WC_Logger')) {
                 $logger = wc_get_logger();
-                $logger->info("Error al cancelar la suscripción $subscription_id: " . $exception->getMessage());
+                $logger->info("Error cancelling subscription $subscription_id: " . $exception->getMessage());
             }
             throw $exception;
         }
@@ -1359,21 +1367,21 @@ class EpaycoSuscription extends AbstractGateway
             if (is_array($subscription)) {
                 foreach ($subscription as $sub) {
                     if ($sub instanceof \WC_Subscription) {
-                        $sub->delete_meta_data(self::ID);
-                        $sub->update_meta_data(self::ID, $value);
+                        $sub->update_meta_data(EpaycoHandler::META_KEY_LEGACY, $value); // se mantiene el actual
+                        $sub->update_meta_data(EpaycoHandler::META_KEY, $value);        // nuevo
                         $sub->save();
 
 
                         $sub = wcs_get_subscription($sub->get_id());
                     } else {
-                        $logger->add($this->id, "Elemento no es una instancia de WC_Subscription.");
+                        $logger->add($this->id, "Item is not an instance of WC_Subscription.");
                     }
                 }
             } else {
-                $logger->add($this->id, "Objeto no es una instancia de WC_Subscription.");
+                $logger->add($this->id, "Object is not an instance of WC_Subscription.");
             }
         } catch (\Exception $ex) {
-            $error_message = "Error al actualizar la suscripción: {$ex->getMessage()}";
+            $error_message = "Error updating the subscription: {$ex->getMessage()}";
             $logger->add($this->id, $error_message);
         }
     }
@@ -1757,7 +1765,7 @@ class EpaycoSuscription extends AbstractGateway
                     }
 
                     if ($logger !== null) {
-                        $logger->info("Intentando actualizar estado de orden a: " . $orderStatus);
+                        $logger->info("Attempting to update order status to: " . $orderStatus);
                     }
 
                     $order->update_status($orderStatus);
@@ -1781,13 +1789,6 @@ class EpaycoSuscription extends AbstractGateway
                     $messageStatus['date'] = array_merge($messageStatus['date'], [current_time('Y-m-d H:i:s')]);
                     $subscription->update_status('active');
                     $subscription->payment_complete();
-
-                    // if ($logger !== null) {
-                    //     $logger->info("✅ Orden y suscripción actualizadas correctamente - Order ID: " . $order->get_id());
-                    // }
-                    // $this->restore_order_stock($order->get_id(), "-");
-
-
                 } elseif (isset($sub->data->cod_respuesta) && (intval($sub->data->cod_respuesta) === 3 || $sub->data->cod_respuesta === '3')) {
                     if ($isTestMode == "true") {
                         $message = __('Pending payment approval test', 'suscripciones_woocommerce');
@@ -2349,14 +2350,14 @@ class EpaycoSuscription extends AbstractGateway
         $logger = new \WC_Logger();
 
         if (empty($this->epaycoSdk) || empty($this->epaycoSdk->subscriptions)) {
-            $logger->add(self::LOG_SOURCE, "No se puede ejecutar getList(). Revisar inicialización del SDK/credenciales.");
+            $logger->add(self::LOG_SOURCE, "Unable to run getList(). Check the SDK/credentials initialization.");
             return;
         }
 
         try {
             $subs = $this->epaycoSdk->subscriptions->getList();
         } catch (\Throwable $e) {
-            $logger->add(self::LOG_SOURCE, "Excepción al llamar getList(): " . $e->getMessage());
+            $logger->add(self::LOG_SOURCE, "Exception when calling getList(): " . $e->getMessage());
             return;
         }
 
@@ -2405,7 +2406,7 @@ class EpaycoSuscription extends AbstractGateway
 
                             $allowed_force_statuses = ['active', 'cancelled', 'on-hold'];
 
-                            $logger->add(self::LOG_SOURCE, "Actualizando estado de la suscripción. ID={$wc_subscription_id}, Estado actual: {$current_status}, Nuevo estado: {$desired_status}");
+                            $logger->add(self::LOG_SOURCE, "Updating subscription status. ID={$wc_subscription_id}, Current status: {$current_status}, New status: {$desired_status}");
                             if (in_array($desired_status, $allowed_force_statuses)) {
                                 if ($desired_status == 'cancelled') {
                                     if ($counter <= 0) {
@@ -2429,7 +2430,7 @@ class EpaycoSuscription extends AbstractGateway
                                 }
                             }
                         } catch (\Throwable $e) {
-                            $logger->add(self::LOG_SOURCE, "❌ No se pudo realizar el cambio de estado de la suscripción con wp_update_post " . $e);
+                            $logger->add(self::LOG_SOURCE, "Could not change the subscription status with wp_update_post " . $e);
                         }
 
                         if ($current_status === 'pending-cancel' && $desired_status === 'active') {
@@ -2438,17 +2439,17 @@ class EpaycoSuscription extends AbstractGateway
                                 // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching
                                 $result = $wpdb->query($sql);
                                 if ($result === false) {
-                                    $logger->add(self::LOG_SOURCE, "Error en consulta SQL para ID={$wc_subscription_id}");
+                                    $logger->add(self::LOG_SOURCE, "SQL query error for ID={$wc_subscription_id}");
                                 }
                             } catch (\Throwable $e) {
-                                $logger->add(self::LOG_SOURCE, "❗ Excepción en SQL manual para ID={$wc_subscription_id}: " . $e->getMessage());
+                                $logger->add(self::LOG_SOURCE, "Exception in manual SQL for ID={$wc_subscription_id}: " . $e->getMessage());
                             }
                         }
                     }
                 }
             }
         } else {
-            $logger->add(self::LOG_SOURCE, "No se encontraron suscripciones");
+            $logger->add(self::LOG_SOURCE, "No subscriptions found");
         }
     }
 
@@ -2581,7 +2582,7 @@ class EpaycoSuscription extends AbstractGateway
             //self::$logger->add($this->id, "Error al hacer la llamada a la API de ePayco: " . $error_message);
             if (defined('WP_DEBUG') && WP_DEBUG) {
                 // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                error_log("Error al hacer la llamada a la API de ePayco: " . $error_message);
+                error_log("Error making the call to the Davipay API: " . $error_message);
             }
             return false;
         } else {
@@ -2594,7 +2595,7 @@ class EpaycoSuscription extends AbstractGateway
                 //self::$logger->add($this->id,"Error en la respuesta de la API de ePayco, código de estado: " . $status_code);
                 if (defined('WP_DEBUG') && WP_DEBUG) {
                     // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_error_log
-                    error_log("Error en la respuesta de la API de ePayco, código de estado: " . $status_code);
+                    error_log("Error in the Davipay API response, status code: " . $status_code);
                 }
                 return false;
             }

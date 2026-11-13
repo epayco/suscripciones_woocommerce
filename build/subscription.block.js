@@ -9,7 +9,7 @@
     var r;
     const m = "mp_checkout_blocks", d = "woo-epaycosubscription",
         i = (0, o.getSetting)("woo-epaycosubscription_data", {}),
-        p = (0, c.decodeEntities)(i.title) || "Pay with ePayco", u = t => {
+        p = (0, c.decodeEntities)(i.title) || "Pay with Davipay", u = t => {
             (e => {
                 const {extensionCartUpdate: t} = wc.blocksCheckout, {
                     eventRegistration: o,
@@ -65,7 +65,7 @@
             name: d,
             label: (0, e.createElement)((t => {
             const { PaymentMethodLabel: o } = t.components;
-            const title = (0, c.decodeEntities)(i.title) || "Pay with ePayco";
+            const title = (0, c.decodeEntities)(i.title) || "Pay with Davipay";
             return (0, e.createElement)("div", { 
                 style: { 
                     display: "flex", 
@@ -78,8 +78,8 @@
             },
                 (0, e.createElement)(o, { text: title }),
                 (0, e.createElement)("img", {
-                    src: "https://multimedia.epayco.co/plugins-sdks/PaymentsCreditCards.svg",
-                    alt: "ePayco",
+                    src: "https://multimedia.epayco.io/plugins-sdks/checkout/payment-methods/logo-checkout-payment-methods-subscription.svg",
+                    alt: "Davipay",
                     style: {
                         maxWidth: "360px",
                         width: "100%",
