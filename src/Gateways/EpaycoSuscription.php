@@ -5,6 +5,7 @@ namespace EpaycoSubscription\Woocommerce\Gateways;
 use Exception;
 use Epayco as EpaycoSdk;
 use EpaycoSubscription\Woocommerce\Helpers\Customer;
+use EpaycoSubscription\Woocommerce\Helpers\EpaycoHandler;
 use function wc_get_order;
 use function get_locale;
 use function sanitize_text_field;
@@ -299,8 +300,8 @@ class EpaycoSuscription extends AbstractGateway
         </div>
         <?php
         $logo_url = (defined('DAVIPAY_ROUTE_IMAGES_S3') && trim(DAVIPAY_ROUTE_IMAGES_S3) !== '')
-         ? DAVIPAY_ROUTE_IMAGES_S3 . 'Imagotipo/checkoutSmallWhite_01_v1.svg'
-        : CMS_ROUTE_IMAGES_S3 . 'checkoutSmallWhite_01_v1.svg';
+            ? DAVIPAY_ROUTE_IMAGES_S3 . 'Imagotipo/checkoutSmallWhite_01_v1.svg'
+            : CMS_ROUTE_IMAGES_S3 . 'checkoutSmallWhite_01_v1.svg';
         ?>
 
         <div style="margin-bottom: 20px; text-align: left;">
@@ -1366,8 +1367,8 @@ class EpaycoSuscription extends AbstractGateway
             if (is_array($subscription)) {
                 foreach ($subscription as $sub) {
                     if ($sub instanceof \WC_Subscription) {
-                        $sub->delete_meta_data(self::ID);
-                        $sub->update_meta_data(self::ID, $value);
+                        $sub->update_meta_data(EpaycoHandler::META_KEY_LEGACY, $value); // se mantiene el actual
+                        $sub->update_meta_data(EpaycoHandler::META_KEY, $value);        // nuevo
                         $sub->save();
 
 
@@ -1788,7 +1789,6 @@ class EpaycoSuscription extends AbstractGateway
                     $messageStatus['date'] = array_merge($messageStatus['date'], [current_time('Y-m-d H:i:s')]);
                     $subscription->update_status('active');
                     $subscription->payment_complete();
-
                 } elseif (isset($sub->data->cod_respuesta) && (intval($sub->data->cod_respuesta) === 3 || $sub->data->cod_respuesta === '3')) {
                     if ($isTestMode == "true") {
                         $message = __('Pending payment approval test', 'suscripciones_woocommerce');

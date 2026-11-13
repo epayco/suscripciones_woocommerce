@@ -7,8 +7,12 @@ use EpaycoSubscription\Woocommerce\Helpers\Customer;
 use EpaycoSubscription\Woocommerce\Helpers\Plan;
 use EpaycoSubscription\Woocommerce\Helpers\Subscription;
 
+
+
 class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
 {
+    const META_KEY        = 'woo-davipaysubscription';
+    const META_KEY_LEGACY = 'woo-epaycosubscription';
     private $orderEpayco;
     protected $customer;
     protected $plan;
@@ -346,8 +350,10 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
             if (is_array($subscription)) {
                 foreach ($subscription as $sub) {
                     if ($sub instanceof \WC_Subscription) {
-                        $sub->delete_meta_data('woo-epaycosubscription');
-                        $sub->update_meta_data('woo-epaycosubscription', $value);
+                        // $sub->delete_meta_data('woo-epaycosubscription');
+                        // $sub->update_meta_data('woo-epaycosubscription', $value);
+                        $sub->update_meta_data(self::META_KEY_LEGACY, $value); // se mantiene el actual
+                        $sub->update_meta_data(self::META_KEY, $value);
                         $sub->save();
 
 
@@ -363,5 +369,16 @@ class EpaycoHandler implements EpaycoSubscriptionHandlerInterface
             $error_message = "Error updating the subscription: {$ex->getMessage()}";
             $logger->add("DavipaySubscription", $error_message);
         }
+    }
+
+    public static function get_subscription_meta(\WC_Subscription $sub)
+    {
+        $value = $sub->get_meta(self::META_KEY);
+
+        if ('' === $value || null === $value) {
+            $value = $sub->get_meta(self::META_KEY_LEGACY);
+        }
+
+        return $value;
     }
 }
