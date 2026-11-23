@@ -1,6 +1,6 @@
 # Davipay Suscripciones Woocommerce
 
-**Si usted tiene alguna pregunta o problema, no dude en ponerse en contacto con nuestro soporte técnico: desarrollo@davipay.com.**
+**Si usted tiene alguna pregunta o problema, no dude en ponerse en contacto con nuestro soporte técnico:  desarrollo@epayco.com ó desarrolladores@epayco.com**
 
 ## Tabla de contenido
 
@@ -27,7 +27,7 @@
 4. Busca el plugin descargado en tu equipo y súbelo como cualquier otro archivo.
 5. Después de instalar el .zip lo puedes ver en la lista de plugins instalados , puedes activarlo o desactivarlo.
 6. Para configurar el plugin debes ir a: WooCommerce / Ajustes / Pagos y Ubica la pestaña Davipay.
-7. Configura el plugin ingresando el **P_CUST_ID_CLIENTE**,**P_KEY**, **PRIVATE_KEY**,**PUBLIC_KEY** , los puedes ver en tu [panel de clientes](https://secure.payco.co/clientes/).
+7. Configura el plugin ingresando el **P_CUST_ID_CLIENTE**,**P_KEY**, **PRIVATE_KEY**,**PUBLIC_KEY** , los puedes ver en tu [panel de clientes](https://dashboard.davipay.com/configuration).
 8. Selecciona o crea una página de respuesta donde el usuario será devuelto después de finalizar la compra (por defecto el sistema redirecciona a la pagina de gracias de Woocommerce).
 9. Configurar los productos en el panel de Wordpress: WooCommerce / Productos
    con los respectivos valores para la suscripcion
